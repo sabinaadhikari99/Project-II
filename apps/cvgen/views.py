@@ -11,24 +11,6 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle, HRFlowable
 
 
-from django.shortcuts import render
-
-from django.shortcuts import render, redirect
-from .forms import JobSeekerProfileForm
-
-def cvgen_home(request):
-    if request.method == "POST":
-        form = JobSeekerProfileForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect("cvgen_home")  # or your success page
-    else:
-        form = JobSeekerProfileForm()
-
-    return render(request, "cvgen/create_profile.html", {
-        "form": form
-    })
-
 def _build_pdf_for_profile(profile):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
