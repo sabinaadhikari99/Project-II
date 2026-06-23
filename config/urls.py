@@ -29,6 +29,8 @@ urlpatterns = [
     path("api/quiz/", include("apps.quiz.urls")),
     path("api/external/", include("apps.external.urls")),
     path("api/notifications/", include("apps.notifications.urls")),
+    path('cvgen/', include('apps.cvgen.urls', namespace='cvgen'))
+
 ]
 
 admin.site.site_header = "SkillSync AI Admin"

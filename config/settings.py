@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "apps.quiz",
     "apps.external",
     "apps.notifications",
+    "apps.cvgen",
 ]
 
 MIDDLEWARE = [

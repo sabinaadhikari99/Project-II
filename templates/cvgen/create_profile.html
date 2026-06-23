@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CV Builder - SkillSync AI{% endblock %}
+
+{% block content %}
+
+<style>
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --bg: #f4f7ff;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+}
+
+body {
+    background: var(--bg);
+}
+
+.cv-wrapper {
+    padding: 40px 0;
+}
+
+.cv-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 40px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+}
+
+.cv-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.cv-header p {
+    opacity: 0.9;
+}
+
+.badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.badge-pill {
+    background: rgba(255,255,255,0.15);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.section-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text);
+}
+
+input, textarea {
+    border-radius: 10px !important;
+    border: 1px solid #e5e7eb !important;
+    padding: 10px !important;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+}
+</style>
+
+<div class="container cv-wrapper">
+
+    <!-- HEADER -->
+    <div class="cv-header">
+        <h1>Professional CV Builder</h1>
+        <p>Create a recruiter-ready CV in minutes with ATS-friendly formatting</p>
+
+        <div class="badges">
+            <div class="badge-pill">ATS Optimized</div>
+            <div class="badge-pill">Clean Modern Format</div>
+            <div class="badge-pill">Instant PDF Download</div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- PERSONAL -->
+        <div class="section-card">
+            <div class="section-title">Personal Details</div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Full Name *</label>
+                    {{ form.full_name }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Email *</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    {{ form.phone_number }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Address</label>
+                    {{ form.address }}
+                </div>
+            </div>
+        </div>
+
+        <!-- CAREER -->
+        <div class="section-card">
+            <div class="section-title">Career Summary</div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Education</label>
+                    {{ form.education }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Skills</label>
+                    {{ form.skills }}
+                </div>
+            </div>
+        </div>
+
+        <!-- EXPERIENCE -->
+        <div class="section-card">
+            <div class="section-title">Professional Background</div>
+
+            <label class="form-label">Work Experience</label>
+            {{ form.work_experience }}
+
+            <label class="form-label mt-3">Projects</label>
+            {{ form.projects }}
+
+            <label class="form-label mt-3">Certifications</label>
+            {{ form.certifications }}
+        </div>
+
+        <!-- LINKS -->
+        <div class="section-card">
+            <div class="section-title">Online Profiles</div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">LinkedIn</label>
+                    {{ form.linkedin_url }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">GitHub</label>
+                    {{ form.github_url }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Profile Photo</label>
+                    {{ form.profile_photo }}
+                </div>
+            </div>
+
+            <small class="text-muted d-block mt-2">
+                Profile photo is optional but improves CV presentation.
+            </small>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="section-card text-center">
+            <p class="mb-3">Ready to generate your professional CV?</p>
+            <button type="submit" class="submit-btn">Generate CV</button>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}
