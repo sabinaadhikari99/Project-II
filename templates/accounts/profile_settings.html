@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Profile Settings | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Account settings</div>
+    <h1 class="page-title">Profile Settings</h1>
+    <p class="page-subtitle mb-0">Update your profile picture for dashboards, applications, and recruiter views.</p>
+  </div>
+  <button class="btn btn-outline-primary" onclick="routeByRole(localStorage.getItem('role'))"><i class="bi bi-arrow-left"></i> Dashboard</button>
+</div>
+
+<section class="panel profile-settings-panel">
+  <div class="row g-4 align-items-center">
+    <div class="col-md-auto">
+      <span id="settingsProfilePreview"></span>
+    </div>
+    <div class="col-md">
+      <h2 class="h5 mb-2">Profile picture</h2>
+      <p class="text-muted-strong mb-3">Upload a clear professional image. Square images display best.</p>
+      <form id="profilePictureForm" class="row g-3 align-items-end">
+        <div class="col-lg-8">
+          <label class="form-label fw-semibold" for="settings_profile_picture_file">Upload new picture</label>
+          <input id="settings_profile_picture_file" class="form-control" type="file" accept="image/*">
+        </div>
+        <div class="col-lg-4 d-grid">
+          <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Save picture</button>
+        </div>
+      </form>
+      <div id="message" class="small mt-3"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+requireAuthenticated();
+let settingsImageData = "";
+
+async function loadSettings() {
+  const user = await api("/api/auth/profile/");
+  saveUser(user);
+  document.getElementById("settingsProfilePreview").innerHTML = renderAvatar(user.profile_picture, user.username || user.email, "avatar-lg");
+}
+
+document.getElementById("settings_profile_picture_file").addEventListener("change", async (event) => {
+  settingsImageData = await fileToDataUrl(event.target.files[0]);
+  document.getElementById("settingsProfilePreview").innerHTML = renderAvatar(settingsImageData, localStorage.getItem("username"), "avatar-lg");
+});
+
+document.getElementById("profilePictureForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!settingsImageData) {
+    showMessage("Choose a new picture first.", "danger");
+    return;
+  }
+  const current = await api("/api/auth/profile/");
+  const result = await api("/api/auth/profile/", {
+    method: "PUT",
+    body: JSON.stringify({username: current.username, profile_picture: settingsImageData, profile: current.profile || {}})
+  });
+  saveUser(result);
+  showMessage("Profile picture updated.", "success");
+  hydrateNavbar();
+});
+
+loadSettings();
+</script>
+{% endblock %}

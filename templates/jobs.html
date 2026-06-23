@@ -1,0 +1,151 @@
+<!-- file path: templates/jobs.html -->
+{% extends "base.html" %}
+{% block title %}Jobs | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Opportunity search</div>
+    <h1 class="page-title">Jobs for you</h1>
+    <p class="page-subtitle mb-0">Browse professional openings with filters, bookmarks, and recently viewed roles.</p>
+  </div>
+  <button class="btn btn-outline-primary" onclick="loadJobs()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+</div>
+
+<section class="panel mb-4">
+  <form id="jobSearchForm" class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label fw-semibold" for="role">Role</label>
+      <input id="role" class="form-control" name="role" placeholder="Designer, Django, analyst">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold" for="location">Location</label>
+      <input id="location" class="form-control" name="location" placeholder="Remote, Kathmandu, Austin">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold" for="experience">Experience</label>
+      <input id="experience" class="form-control" name="experience" type="number" min="0" step="0.5" placeholder="2">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold" for="work_mode">Work mode</label>
+      <select id="work_mode" class="form-select" name="work_mode">
+        <option value="">Any</option>
+        <option value="remote">Remote</option>
+        <option value="hybrid">Hybrid</option>
+        <option value="onsite">On-site</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold" for="skill">Skill</label>
+      <input id="skill" class="form-control" name="skill" placeholder="Python, React, SQL">
+    </div>
+    <div class="col-md-1 d-grid">
+      <button class="btn btn-primary" type="submit" aria-label="Search jobs"><i class="bi bi-search"></i></button>
+    </div>
+  </form>
+</section>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <section class="panel">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Matching openings</h2>
+        <span id="jobCount" class="status-chip status-chip-success">0 jobs</span>
+      </div>
+      <div id="jobsList" class="result-list"></div>
+    </section>
+  </div>
+  <div class="col-xl-4">
+    <section class="panel mb-4">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Bookmarked jobs</h2>
+        <span id="savedCount" class="status-chip status-chip-success">0</span>
+      </div>
+      <div id="savedJobs" class="result-list"></div>
+    </section>
+    <section class="panel">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Recently viewed</h2>
+        <span id="recentCount" class="status-chip status-chip-success">0</span>
+      </div>
+      <div id="recentJobs" class="result-list"></div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("job_seeker");
+
+function renderJob(job) {
+  const skills = (job.required_skills || []).map(skill => `<span class="skill-chip">${escapeHtml(skill)}</span>`).join("");
+  const saveClass = job.is_saved ? "btn-primary" : "btn-outline-primary";
+  const saveLabel = job.is_saved ? "Bookmarked" : "Bookmark";
+  const saveIcon = job.is_saved ? "bi-bookmark-fill" : "bi-bookmark";
+  return `
+    <article class="job-card">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div class="d-flex gap-3">
+          ${renderCompanyLogo(job.company_logo, job.company)}
+          <div>
+            <h3 class="h5 mb-1">${escapeHtml(job.title)}</h3>
+            <div class="text-muted-strong">${escapeHtml(job.company)} &middot; ${escapeHtml(job.location || "Flexible")}</div>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <span class="status-chip status-chip-soft">${workModeLabel(job.work_mode)}</span>
+              <span class="status-chip status-chip-soft">${Number(job.experience_required || 0)}+ years</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-lg-end">
+          <div class="fw-bold">${escapeHtml(job.salary_range || "Salary not listed")}</div>
+        </div>
+      </div>
+      <p class="my-3">${escapeHtml(job.description)}</p>
+      <div class="d-flex flex-wrap gap-2 mb-3">${skills || '<span class="text-muted-strong small">No skills listed</span>'}</div>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary btn-sm" type="button" onclick="submitJobApplication(${job.id}, this)"><i class="bi bi-send"></i> Apply</button>
+        <button class="btn ${saveClass} btn-sm" type="button" onclick="toggleSavedJob(${job.id}, this).then(loadSavedAndRecent)"><i class="bi ${saveIcon}"></i> ${saveLabel}</button>
+        <button class="btn btn-outline-primary btn-sm" type="button" onclick="markRecentlyViewed(${job.id}).then(loadSavedAndRecent)"><i class="bi bi-eye"></i> View details</button>
+      </div>
+    </article>`;
+}
+
+function renderMiniJob(item) {
+  const job = item.job || item;
+  return `
+    <article class="mini-job">
+      <div class="d-flex gap-2 align-items-start">
+        ${renderCompanyLogo(job.company_logo, job.company, "company-logo-sm")}
+        <div>
+          <div class="fw-semibold">${escapeHtml(job.title)}</div>
+          <div class="small text-muted-strong">${escapeHtml(job.company)} &middot; ${escapeHtml(job.location || "Flexible")}</div>
+        </div>
+      </div>
+    </article>`;
+}
+
+async function loadJobs() {
+  const form = Object.fromEntries(new FormData(document.getElementById("jobSearchForm")));
+  const params = new URLSearchParams(Object.entries(form).filter(([, value]) => value));
+  const jobs = await api(`/api/jobs/filter/?${params.toString()}`);
+  document.getElementById("jobCount").textContent = `${jobs.length} ${jobs.length === 1 ? "job" : "jobs"}`;
+  document.getElementById("jobsList").innerHTML = jobs.map(renderJob).join("") || `
+    <div class="empty-state">
+      <div><i class="bi bi-search h3 d-block"></i>No active jobs match this search.</div>
+    </div>`;
+}
+
+async function loadSavedAndRecent() {
+  const [saved, recent] = await Promise.all([api("/api/jobs/saved/"), api("/api/jobs/recent/")]);
+  document.getElementById("savedCount").textContent = saved.length;
+  document.getElementById("recentCount").textContent = recent.length;
+  document.getElementById("savedJobs").innerHTML = saved.map(renderMiniJob).join("") || `<div class="empty-state">Bookmarked jobs will appear here.</div>`;
+  document.getElementById("recentJobs").innerHTML = recent.map(renderMiniJob).join("") || `<div class="empty-state">Viewed jobs will appear here.</div>`;
+}
+
+document.getElementById("jobSearchForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  loadJobs();
+});
+Promise.all([loadJobs(), loadSavedAndRecent()]);
+</script>
+{% endblock %}

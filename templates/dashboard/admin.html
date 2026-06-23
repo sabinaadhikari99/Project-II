@@ -1,0 +1,169 @@
+<!-- file path: templates/dashboard/admin.html -->
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Platform operations</div>
+    <h1 class="page-title">Admin dashboard</h1>
+    <p class="page-subtitle mb-0">Monitor users, job activity, and application reports with interactive charts.</p>
+  </div>
+  <button class="btn btn-outline-primary" onclick="loadAdmin()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Total jobs</div>
+      <div id="totalJobs" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Active jobs</div>
+      <div id="activeJobs" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Applications</div>
+      <div id="totalApplications" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-4">
+    <section class="panel h-100">
+      <h2 class="h5 mb-3">Users by role</h2>
+      <div class="chart-box"><canvas id="rolesChart"></canvas></div>
+    </section>
+  </div>
+  <div class="col-lg-4">
+    <section class="panel h-100">
+      <h2 class="h5 mb-3">Job status</h2>
+      <div class="chart-box"><canvas id="jobsChart"></canvas></div>
+    </section>
+  </div>
+  <div class="col-lg-4">
+    <section class="panel h-100">
+      <h2 class="h5 mb-3">Applications by status</h2>
+      <div class="chart-box"><canvas id="applicationsChart"></canvas></div>
+    </section>
+  </div>
+</div>
+
+<section class="panel">
+  <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+    <h2 class="h5 mb-0">Users</h2>
+    <span id="userCount" class="status-chip status-chip-success">0 users</span>
+  </div>
+  <div id="users" class="table-responsive"></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+requireRole("admin");
+const charts = {};
+const palette = ["#2563EB", "#14B8A6", "#0F172A", "#f59f1a", "#dd3f4b"];
+
+function destroyChart(id) {
+  if (charts[id]) {
+    charts[id].destroy();
+    delete charts[id];
+  }
+}
+
+function makeChart(id, type, labels, data, label) {
+  destroyChart(id);
+  const canvas = document.getElementById(id);
+  charts[id] = new Chart(canvas, {
+    type,
+    data: {
+      labels,
+      datasets: [{
+        label,
+        data,
+        backgroundColor: palette,
+        borderColor: "#ffffff",
+        borderWidth: type === "bar" ? 0 : 3,
+        borderRadius: type === "bar" ? 8 : 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {position: "bottom"},
+        tooltip: {enabled: true}
+      },
+      scales: type === "bar" ? {y: {beginAtZero: true, ticks: {precision: 0}}} : {}
+    }
+  });
+}
+
+function prettyRole(role) {
+  return roleLabel(role).replace("Jobseeker", "Jobseeker");
+}
+
+function renderUsers(users) {
+  return `<table class="table align-middle">
+    <thead><tr><th>User</th><th>Role</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+    <tbody>${users.map(user => `
+      <tr>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            ${renderAvatar(user.profile_picture, user.username || user.email, "avatar-sm")}
+            <div>
+              <div class="fw-semibold">${escapeHtml(user.username || user.email)}</div>
+              <div class="small text-muted-strong">${escapeHtml(user.email)}</div>
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(roleLabel(user.role))}</td>
+        <td><span class="status-chip ${user.is_active ? "status-chip-success" : "status-chip-warning"}">${user.is_active ? "Active" : "Inactive"}</span></td>
+        <td class="text-end"><button class="btn btn-sm btn-outline-danger" type="button" onclick="deleteUser(${user.id})"><i class="bi bi-trash"></i> Delete</button></td>
+      </tr>`).join("")}</tbody>
+  </table>`;
+}
+
+async function loadAdmin() {
+  const [reports, users] = await Promise.all([api("/api/admin/reports/"), api("/api/admin/users/")]);
+  document.getElementById("totalJobs").textContent = reports.total_jobs || 0;
+  document.getElementById("activeJobs").textContent = reports.active_jobs || 0;
+  document.getElementById("totalApplications").textContent = reports.total_applications || 0;
+  document.getElementById("userCount").textContent = `${users.length} ${users.length === 1 ? "user" : "users"}`;
+
+  const roleRows = reports.users_by_role || [];
+  makeChart(
+    "rolesChart",
+    "doughnut",
+    roleRows.length ? roleRows.map(row => prettyRole(row.role)) : ["No users"],
+    roleRows.length ? roleRows.map(row => row.total) : [0],
+    "Users"
+  );
+
+  const inactiveJobs = Math.max((reports.total_jobs || 0) - (reports.active_jobs || 0), 0);
+  makeChart("jobsChart", "pie", ["Active", "Inactive"], [reports.active_jobs || 0, inactiveJobs], "Jobs");
+
+  const statusRows = reports.applications_by_status || [];
+  makeChart(
+    "applicationsChart",
+    "bar",
+    statusRows.length ? statusRows.map(row => row.status) : ["No applications"],
+    statusRows.length ? statusRows.map(row => row.total) : [0],
+    "Applications"
+  );
+
+  document.getElementById("users").innerHTML = renderUsers(users);
+}
+
+async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
+  await api(`/api/admin/users/${id}/`, {method: "DELETE"});
+  loadAdmin();
+}
+loadAdmin();
+</script>
+{% endblock %}

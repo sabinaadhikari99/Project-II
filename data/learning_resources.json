@@ -1,0 +1,8 @@
+[
+  {"skill": "python", "title": "Python for Everybody", "url": "https://www.py4e.com/", "type": "course"},
+  {"skill": "django", "title": "Django Official Tutorial", "url": "https://docs.djangoproject.com/en/4.2/intro/tutorial01/", "type": "docs"},
+  {"skill": "drf", "title": "Django REST Framework Tutorial", "url": "https://www.django-rest-framework.org/tutorial/quickstart/", "type": "docs"},
+  {"skill": "faiss", "title": "FAISS Getting Started", "url": "https://github.com/facebookresearch/faiss/wiki/Getting-started", "type": "docs"},
+  {"skill": "machine learning", "title": "Machine Learning Crash Course", "url": "https://developers.google.com/machine-learning/crash-course", "type": "course"},
+  {"skill": "javascript", "title": "MDN JavaScript Guide", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", "type": "docs"}
+]

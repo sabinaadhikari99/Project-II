@@ -1,0 +1,166 @@
+<!-- file path: templates/dashboard/recruiter.html -->
+{% extends "base.html" %}
+{% block title %}Recruiter Dashboard | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Recruiter workspace</div>
+    <h1 class="page-title">Recruiter dashboard</h1>
+    <p class="page-subtitle mb-0">Post jobs, manage active roles, and review AI-ranked candidate matches.</p>
+  </div>
+  <button class="btn btn-outline-primary" onclick="loadJobs()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Posted jobs</div>
+      <div id="postedMetric" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Active roles</div>
+      <div id="activeMetric" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Candidate matching</div>
+      <div class="metric-value mt-2">AI</div>
+    </section>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <section class="panel">
+      <h2 class="h5 mb-3">Post a job</h2>
+      <form id="jobForm" class="vstack gap-3">
+        <div>
+          <label class="form-label fw-semibold" for="title">Job title</label>
+          <input id="title" class="form-control" name="title" placeholder="Machine Learning Engineer" required>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="company">Company</label>
+            <input id="company" class="form-control" name="company" placeholder="Company" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="company_logo">Company logo URL</label>
+            <input id="company_logo" class="form-control" name="company_logo" type="url" placeholder="https://example.com/logo.png">
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="location">Location</label>
+            <input id="location" class="form-control" name="location" placeholder="Remote">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="work_mode">Work mode</label>
+            <select id="work_mode" class="form-select" name="work_mode">
+              <option value="onsite">On-site</option>
+              <option value="remote">Remote</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="form-label fw-semibold" for="required_skills">Required skills</label>
+          <input id="required_skills" class="form-control" name="required_skills" placeholder="Python, Django, APIs">
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="experience_required">Experience</label>
+            <input id="experience_required" class="form-control" name="experience_required" type="number" step="0.5" min="0" placeholder="2">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" for="salary_range">Salary range</label>
+            <input id="salary_range" class="form-control" name="salary_range" placeholder="$90k-$120k">
+          </div>
+        </div>
+        <div>
+          <label class="form-label fw-semibold" for="description">Description</label>
+          <textarea id="description" class="form-control" name="description" rows="4" placeholder="Describe the role, team, and responsibilities" required></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Post job</button>
+      </form>
+      <div id="message" class="mt-3"></div>
+    </section>
+  </div>
+  <div class="col-lg-7">
+    <section class="panel">
+      <h2 class="h5 mb-3">Your jobs</h2>
+      <div id="jobs" class="result-list"></div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("recruiter");
+
+function renderRecruiterJob(job) {
+  const skills = (job.required_skills || []).map(skill => `<span class="skill-chip">${escapeHtml(skill)}</span>`).join("");
+  return `
+    <article class="job-card">
+      <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+        <div class="d-flex gap-3">
+          ${renderCompanyLogo(job.company_logo, job.company)}
+          <div>
+          <h3 class="h5 mb-1">${escapeHtml(job.title)}</h3>
+          <div class="text-muted-strong">${escapeHtml(job.company)} &middot; ${escapeHtml(job.location || "Flexible")} &middot; ${workModeLabel(job.work_mode)}</div>
+          </div>
+        </div>
+        <span class="status-chip ${job.is_active ? "status-chip-success" : "status-chip-warning"}">${job.is_active ? "Active" : "Paused"}</span>
+      </div>
+      <p class="my-3">${escapeHtml(job.description)}</p>
+      <div class="d-flex flex-wrap gap-2 mb-3">${skills || '<span class="text-muted-strong small">No skills listed</span>'}</div>
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <button class="btn btn-outline-primary btn-sm" type="button" onclick="loadCandidates(${job.id})"><i class="bi bi-people"></i> Candidate matches</button>
+        <span class="small text-muted-strong">${escapeHtml(job.salary_range || "Salary not listed")}</span>
+      </div>
+      <div id="candidates-${job.id}" class="mt-3"></div>
+    </article>`;
+}
+
+async function loadJobs() {
+  const jobs = await api("/api/recruiter/jobs/");
+  document.getElementById("postedMetric").textContent = jobs.length;
+  document.getElementById("activeMetric").textContent = jobs.filter(job => job.is_active).length;
+  document.getElementById("jobs").innerHTML = jobs.map(renderRecruiterJob).join("") || `
+    <div class="empty-state">No jobs posted yet. Create your first role from the form.</div>`;
+}
+
+async function loadCandidates(id) {
+  const matches = await api(`/api/recruiter/jobs/${id}/candidates/`);
+  document.getElementById(`candidates-${id}`).innerHTML = matches.map(match => `
+    <div class="d-flex align-items-center justify-content-between gap-3 border-top py-2">
+      <div class="d-flex align-items-center gap-2">
+        ${renderAvatar(match.candidate.profile_picture, match.candidate.username || match.candidate.email, "avatar-sm")}
+        <div>
+          <div class="fw-semibold">${escapeHtml(match.candidate.username || match.candidate.email)}</div>
+          <div class="small text-muted-strong">${escapeHtml(match.candidate.email)}</div>
+        </div>
+      </div>
+      <span class="status-chip status-chip-success">${formatPercent(match.score)}</span>
+    </div>`).join("") || `<div class="small text-muted-strong border-top py-2">No candidates indexed yet.</div>`;
+}
+
+document.getElementById("jobForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = Object.fromEntries(new FormData(event.target));
+  form.required_skills = (form.required_skills || "").split(",").map(skill => skill.trim()).filter(Boolean);
+  form.experience_required = Number(form.experience_required || 0);
+  try {
+    await api("/api/recruiter/jobs/", {method: "POST", body: JSON.stringify(form)});
+    event.target.reset();
+    showMessage("Job posted and indexed for AI matching.", "success");
+    loadJobs();
+  } catch (error) {
+    showMessage(error.message, "danger");
+  }
+});
+loadJobs();
+</script>
+{% endblock %}

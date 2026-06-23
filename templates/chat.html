@@ -1,0 +1,76 @@
+<!-- file path: templates/chat.html -->
+{% extends "base.html" %}
+{% block title %}Career Chatbot | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Career assistant</div>
+    <h1 class="page-title">Career chatbot</h1>
+    <p class="page-subtitle mb-0">Ask for help with resumes, interviews, learning paths, or role preparation.</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <section class="panel h-100">
+      <div id="chatOutput" class="chat-window mb-3">
+        <div class="empty-state">Start a conversation with SkillSync AI.</div>
+      </div>
+      <form id="chatForm" class="input-group">
+        <input class="form-control" name="message" placeholder="Ask about resumes, interviews, or skills" required>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-chat-dots"></i> Send</button>
+      </form>
+    </section>
+  </div>
+  <div class="col-lg-4">
+    <section class="panel h-100">
+      <h2 class="h5">Interview practice</h2>
+      <p class="text-muted-strong small">Generate quick interview prompts for a target role.</p>
+      <form id="interviewForm" class="vstack gap-3">
+        <div>
+          <label class="form-label fw-semibold" for="role">Role</label>
+          <input id="role" class="form-control" name="role" placeholder="Frontend Developer">
+        </div>
+        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-list-check"></i> Generate</button>
+      </form>
+      <div id="interviewOutput" class="result-list mt-3"></div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("job_seeker");
+
+function appendChat(message, reply) {
+  const output = document.getElementById("chatOutput");
+  if (output.querySelector(".empty-state")) output.innerHTML = "";
+  output.insertAdjacentHTML("beforeend", `
+    <div class="chat-bubble chat-bubble-user mb-2"><strong>You</strong><div>${escapeHtml(message)}</div></div>
+    <div class="chat-bubble chat-bubble-ai mb-3"><strong>SkillSync AI</strong><div>${escapeHtml(reply)}</div></div>`);
+  output.scrollTop = output.scrollHeight;
+}
+
+document.getElementById("chatForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const input = event.target.elements.message;
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = "";
+  try {
+    const result = await api("/api/chatbot/", {method: "POST", body: JSON.stringify({message})});
+    appendChat(message, result.reply);
+  } catch (error) {
+    appendChat(message, error.message);
+  }
+});
+
+document.getElementById("interviewForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const role = new FormData(event.target).get("role") || "Software Developer";
+  const result = await api("/api/chatbot/interview/", {method: "POST", body: JSON.stringify({role})});
+  document.getElementById("interviewOutput").innerHTML = (result.questions || []).map(question => `
+    <div class="tool-card small">${escapeHtml(question)}</div>`).join("") || `<div class="empty-state">No questions returned yet.</div>`;
+});
+</script>
+{% endblock %}

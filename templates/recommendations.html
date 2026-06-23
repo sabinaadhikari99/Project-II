@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block title %}AI Match | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">AI Match</div>
+    <h1 class="page-title">AI Match Dashboard</h1>
+    <p class="page-subtitle mb-0">Upload a resume PDF to generate resume insights, skill gaps, match analytics, and recommended jobs.</p>
+  </div>
+  <button class="btn btn-outline-primary" onclick="loadNotificationsPanel()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-4">
+    <section class="panel h-100">
+      <h2 class="h5 mb-3">Resume Upload</h2>
+      <form id="aiMatchForm" class="vstack gap-3">
+        <div>
+          <label class="form-label fw-semibold" for="resume_pdf">Resume PDF</label>
+          <input id="resume_pdf" class="form-control" name="resume" type="file" accept="application/pdf" required>
+        </div>
+        <button id="analyzeButton" class="btn btn-primary" type="submit"><i class="bi bi-stars"></i> Analyze Resume</button>
+      </form>
+      <div id="message" class="mt-3"></div>
+    </section>
+  </div>
+  <div class="col-lg-8">
+    <div class="row g-4">
+      <div class="col-md-3">
+        <section class="panel metric">
+          <div class="metric-label">Resume Score</div>
+          <div id="resumeScore" class="metric-value mt-2">--</div>
+        </section>
+      </div>
+      <div class="col-md-3">
+        <section class="panel metric">
+          <div class="metric-label">Skills Extracted</div>
+          <div id="skillCount" class="metric-value mt-2">0</div>
+        </section>
+      </div>
+      <div class="col-md-3">
+        <section class="panel metric">
+          <div class="metric-label">Missing Skills</div>
+          <div id="missingCount" class="metric-value mt-2">0</div>
+        </section>
+      </div>
+      <div class="col-md-3">
+        <section class="panel metric">
+          <div class="metric-label">Job Matches</div>
+          <div id="jobCount" class="metric-value mt-2">0</div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-7">
+    <section class="panel mb-4">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Resume Summary</h2>
+        <span class="status-chip status-chip-success">Resume Analyzer</span>
+      </div>
+      <p id="resumeSummary" class="mb-0 text-muted-strong">Upload a resume to generate a professional summary.</p>
+    </section>
+
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Match Analytics</h2>
+      <div class="chart-box chart-box-sm"><canvas id="matchChart"></canvas></div>
+    </section>
+
+    <section class="panel">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Recommended Jobs</h2>
+        <span id="recommendedCount" class="status-chip status-chip-success">0 roles</span>
+      </div>
+      <div id="recommendedJobs" class="result-list"></div>
+    </section>
+  </div>
+
+  <div class="col-xl-5">
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Skills Extracted</h2>
+      <div id="skillsExtracted" class="d-flex flex-wrap gap-2"></div>
+    </section>
+
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Missing Skills</h2>
+      <div id="missingSkills" class="d-flex flex-wrap gap-2"></div>
+    </section>
+
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Skill Gap Analysis</h2>
+      <p id="skillGapAnalysis" class="mb-0 text-muted-strong">Upload a resume to compare your skills against active jobs.</p>
+    </section>
+
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Recommended Courses</h2>
+      <div id="recommendedCourses" class="result-list"></div>
+    </section>
+
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Learning Roadmap</h2>
+      <ol id="learningRoadmap" class="roadmap-list mb-0"></ol>
+    </section>
+
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Resume Insights</h2>
+      <ul id="resumeInsights" class="roadmap-list mb-0"></ul>
+    </section>
+
+    <section class="panel mb-4">
+      <h2 class="h5 mb-3">Resume Improvement Suggestions</h2>
+      <ul id="resumeSuggestions" class="roadmap-list mb-0"></ul>
+    </section>
+
+    <section class="panel">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Notifications Panel</h2>
+        <span id="panelNotificationCount" class="status-chip status-chip-success">0 unread</span>
+      </div>
+      <div id="notificationsPanel" class="result-list"></div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+requireRole("job_seeker");
+let matchChart;
+
+function chipList(values, emptyText, kind = "") {
+  return (values || []).length
+    ? values.map(value => `<span class="skill-chip ${kind}">${escapeHtml(value)}</span>`).join("")
+    : `<div class="empty-state w-100">${escapeHtml(emptyText)}</div>`;
+}
+
+function renderCourse(course) {
+  return `
+    <article class="mini-job">
+      <div class="d-flex justify-content-between gap-3">
+        <div>
+          <div class="fw-semibold">${escapeHtml(course.title || "Learning resource")}</div>
+          <div class="small text-muted-strong">${escapeHtml(course.skill || "Skill")} &middot; ${escapeHtml(course.type || "resource")}</div>
+        </div>
+        <a class="btn btn-outline-primary btn-sm" href="${escapeHtml(course.url || "#")}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i></a>
+      </div>
+    </article>`;
+}
+
+function renderRecommendedJob(item) {
+  const job = item.job;
+  const missing = (item.missing_skills || []).map(skill => `<span class="skill-chip skill-chip-warning">${escapeHtml(skill)}</span>`).join("");
+  const matched = (item.matched_skills || []).map(skill => `<span class="skill-chip skill-chip-success">${escapeHtml(skill)}</span>`).join("");
+  return `
+    <article class="job-card">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div class="d-flex gap-3">
+          ${renderCompanyLogo(job.company_logo, job.company)}
+          <div>
+            <h3 class="h5 mb-1">${escapeHtml(job.title)}</h3>
+            <div class="text-muted-strong">${escapeHtml(job.company)} &middot; ${escapeHtml(job.location || "Flexible")} &middot; ${workModeLabel(job.work_mode)}</div>
+          </div>
+        </div>
+        <div class="text-lg-end">
+          <span class="status-chip status-chip-success">${item.match_percentage}% match</span>
+          <div class="small text-muted-strong mt-2">${escapeHtml(job.salary_range || "Salary not listed")}</div>
+        </div>
+      </div>
+      <p class="my-3">${escapeHtml(job.description)}</p>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6"><div class="small fw-semibold mb-2">Matched Skills</div><div class="d-flex flex-wrap gap-2">${matched || '<span class="text-muted-strong small">No direct matches yet</span>'}</div></div>
+        <div class="col-md-6"><div class="small fw-semibold mb-2">Missing Skills</div><div class="d-flex flex-wrap gap-2">${missing || '<span class="text-muted-strong small">No major gaps</span>'}</div></div>
+      </div>
+      <div class="recommendation-insight mb-3">${escapeHtml(item.skill_gap_analysis)}</div>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary btn-sm" type="button" onclick="submitJobApplication(${job.id}, this)"><i class="bi bi-send"></i> Apply</button>
+        <button class="btn btn-outline-primary btn-sm" type="button" onclick="toggleSavedJob(${job.id}, this)"><i class="bi bi-bookmark"></i> Bookmark</button>
+      </div>
+    </article>`;
+}
+
+function renderChart(rows) {
+  const canvas = document.getElementById("matchChart");
+  if (matchChart) matchChart.destroy();
+  matchChart = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: (rows || []).map(row => row.title),
+      datasets: [{
+        label: "Match %",
+        data: (rows || []).map(row => row.match_percentage),
+        backgroundColor: "#2563EB",
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {legend: {display: false}},
+      scales: {y: {beginAtZero: true, max: 100}}
+    }
+  });
+}
+
+function renderNotificationPanel(notification) {
+  return `
+    <article class="notification-card ${notification.is_read ? "" : "notification-card-unread"}">
+      <div class="fw-semibold">${escapeHtml(notification.title)}</div>
+      <div class="small text-muted-strong">${escapeHtml(notification.message)}</div>
+      ${notification.is_read ? "" : `<button class="btn btn-outline-primary btn-sm mt-2" type="button" onclick="markNotificationRead(${notification.id})"><i class="bi bi-check2"></i> Mark read</button>`}
+    </article>`;
+}
+
+async function loadNotificationsPanel() {
+  const notifications = await api("/api/notifications/");
+  const unread = notifications.filter(item => !item.is_read).length;
+  document.getElementById("panelNotificationCount").textContent = `${unread} unread`;
+  document.getElementById("notificationsPanel").innerHTML = notifications.slice(0, 4).map(renderNotificationPanel).join("") || `<div class="empty-state">Strong match alerts will appear here.</div>`;
+}
+
+async function markNotificationRead(id) {
+  await api(`/api/notifications/${id}/read/`, {method: "POST"});
+  loadNotificationsPanel();
+  loadNotificationBell();
+}
+
+function applyAnalysis(data) {
+  document.getElementById("resumeScore").textContent = `${data.resume_score || 0}%`;
+  document.getElementById("skillCount").textContent = (data.skills_extracted || []).length;
+  document.getElementById("missingCount").textContent = (data.missing_skills || []).length;
+  document.getElementById("jobCount").textContent = (data.recommended_jobs || []).length;
+  document.getElementById("recommendedCount").textContent = `${(data.recommended_jobs || []).length} roles`;
+  document.getElementById("resumeSummary").textContent = data.resume_summary || "No summary returned.";
+  document.getElementById("skillsExtracted").innerHTML = chipList(data.skills_extracted, "No skills extracted yet.", "skill-chip-success");
+  document.getElementById("missingSkills").innerHTML = chipList(data.missing_skills, "No major gaps found.", "skill-chip-warning");
+  document.getElementById("skillGapAnalysis").textContent = data.skill_gap_analysis || "No skill gap analysis returned.";
+  document.getElementById("recommendedCourses").innerHTML = (data.recommended_courses || []).map(renderCourse).join("") || `<div class="empty-state">Courses will appear when missing skills match the resource library.</div>`;
+  document.getElementById("learningRoadmap").innerHTML = (data.learning_roadmap || []).map(step => `<li>${escapeHtml(step)}</li>`).join("");
+  document.getElementById("resumeInsights").innerHTML = (data.resume_insights || []).map(item => `<li>${escapeHtml(item)}</li>`).join("");
+  document.getElementById("resumeSuggestions").innerHTML = (data.resume_improvement_suggestions || []).map(item => `<li>${escapeHtml(item)}</li>`).join("");
+  document.getElementById("recommendedJobs").innerHTML = (data.recommended_jobs || []).map(renderRecommendedJob).join("") || `<div class="empty-state">No recommended jobs yet.</div>`;
+  renderChart(data.match_analytics || []);
+  loadNotificationsPanel();
+}
+
+document.getElementById("aiMatchForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const file = document.getElementById("resume_pdf").files[0];
+  if (!file) return;
+  const button = document.getElementById("analyzeButton");
+  button.disabled = true;
+  button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Analyzing';
+  try {
+    const formData = new FormData();
+    formData.append("resume", file);
+    const data = await api("/api/jobs/ai-match/", {method: "POST", body: formData});
+    showMessage("Resume analyzed successfully.", "success");
+    applyAnalysis(data);
+  } catch (error) {
+    showMessage(error.message, "danger");
+  } finally {
+    button.disabled = false;
+    button.innerHTML = '<i class="bi bi-stars"></i> Analyze Resume';
+  }
+});
+
+renderChart([]);
+loadNotificationsPanel();
+</script>
+{% endblock %}

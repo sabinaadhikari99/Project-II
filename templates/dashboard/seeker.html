@@ -1,0 +1,141 @@
+<!-- file path: templates/dashboard/seeker.html -->
+{% extends "base.html" %}
+{% block title %}Jobseeker Dashboard | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Jobseeker workspace</div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle mb-0">Track your recommended roles, skill gaps, and career tools from one responsive view.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a class="btn btn-primary" href="/ai-match/"><i class="bi bi-stars"></i> AI Match</a>
+    <button class="btn btn-outline-primary" onclick="loadSeeker()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Recommended jobs</div>
+      <div id="recommendedMetric" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Skill gaps</div>
+      <div id="gapMetric" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Career tools</div>
+      <div class="metric-value mt-2">4</div>
+    </section>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <section class="panel h-100">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Top recommendations</h2>
+        <a class="btn btn-outline-primary btn-sm" href="/ai-match/">View all</a>
+      </div>
+      <div id="recommended" class="result-list"></div>
+    </section>
+  </div>
+  <div class="col-lg-5">
+    <section class="panel h-100">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Skill gap preview</h2>
+        <a class="btn btn-outline-primary btn-sm" href="/skillgap/">Open</a>
+      </div>
+      <div id="skillgap"></div>
+    </section>
+  </div>
+  <div class="col-12">
+    <section class="panel">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="h5 mb-0">Notifications</h2>
+        <span id="notificationCount" class="status-chip status-chip-success">0 alerts</span>
+      </div>
+      <div id="notifications" class="result-list"></div>
+    </section>
+  </div>
+  <div class="col-12">
+    <section class="panel">
+      <h2 class="h5 mb-3">Quick actions</h2>
+      <div class="row g-3">
+        <div class="col-md-4"><a class="tool-card h-100 d-block text-decoration-none" href="/jobs/"><i class="bi bi-briefcase h4 d-block"></i><strong>Browse Jobs</strong><p class="text-muted-strong mb-0 mt-2">Search and apply to active postings.</p></a></div>
+        <div class="col-md-4"><a class="tool-card h-100 d-block text-decoration-none" href="/chat/"><i class="bi bi-chat-dots h4 d-block"></i><strong>Career Chatbot</strong><p class="text-muted-strong mb-0 mt-2">Ask for resume, interview, or skill advice.</p></a></div>
+        <div class="col-md-4"><a class="tool-card h-100 d-block text-decoration-none" href="/quiz/"><i class="bi bi-ui-checks-grid h4 d-block"></i><strong>Skill Quiz</strong><p class="text-muted-strong mb-0 mt-2">Measure your knowledge with a fast quiz.</p></a></div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("job_seeker");
+
+function renderCompactJob(item) {
+  const job = item.job;
+  return `
+    <article class="job-card">
+      <div class="d-flex justify-content-between gap-3">
+        <div>
+          <h3 class="h6 mb-1">${escapeHtml(job.title)}</h3>
+          <div class="text-muted-strong small">${escapeHtml(job.company)} &middot; ${escapeHtml(job.location || "Flexible")}</div>
+        </div>
+        <span class="status-chip status-chip-success">${item.match_percentage || Math.round((item.score || 0) * 100)}%</span>
+      </div>
+      <p class="small my-3">${escapeHtml(job.description)}</p>
+      <button class="btn btn-primary btn-sm" type="button" onclick="submitJobApplication(${job.id}, this)"><i class="bi bi-send"></i> Apply</button>
+    </article>`;
+}
+
+function renderNotification(notification) {
+  return `
+    <article class="notification-card ${notification.is_read ? "" : "notification-card-unread"}">
+      <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+        <div>
+          <div class="fw-semibold">${escapeHtml(notification.title)}</div>
+          <div class="text-muted-strong small">${escapeHtml(notification.message)}</div>
+        </div>
+        ${notification.is_read ? '<span class="status-chip status-chip-soft">Read</span>' : `<button class="btn btn-outline-primary btn-sm" type="button" onclick="markNotificationRead(${notification.id})"><i class="bi bi-check2"></i> Mark read</button>`}
+      </div>
+    </article>`;
+}
+
+async function loadNotifications() {
+  const notifications = await api("/api/notifications/");
+  document.getElementById("notificationCount").textContent = `${notifications.length} ${notifications.length === 1 ? "alert" : "alerts"}`;
+  document.getElementById("notifications").innerHTML = notifications.slice(0, 4).map(renderNotification).join("") || `<div class="empty-state">Eligible job alerts will appear here.</div>`;
+}
+
+async function markNotificationRead(id) {
+  await api(`/api/notifications/${id}/read/`, {method: "POST"});
+  loadNotifications();
+}
+
+async function loadSeeker() {
+  const [jobs, gap] = await Promise.all([api("/api/jobs/recommended/"), api("/api/skillgap/")]);
+  document.getElementById("recommendedMetric").textContent = jobs.length;
+  document.getElementById("gapMetric").textContent = (gap.missing_skills || []).length;
+  document.getElementById("recommended").innerHTML = jobs.slice(0, 3).map(renderCompactJob).join("") || `
+    <div class="empty-state">Add your career signal to generate recommendations.</div>`;
+  document.getElementById("skillgap").innerHTML = `
+    <div class="mb-3">
+      <div class="fw-semibold mb-2">Your skills</div>
+      <div class="d-flex flex-wrap gap-2">${(gap.user_skills || []).slice(0, 8).map(skill => `<span class="skill-chip">${escapeHtml(skill)}</span>`).join("") || '<span class="text-muted-strong small">No skills added yet</span>'}</div>
+    </div>
+    <div>
+      <div class="fw-semibold mb-2">Missing skills</div>
+      <div class="d-flex flex-wrap gap-2">${(gap.missing_skills || []).slice(0, 8).map(skill => `<span class="skill-chip">${escapeHtml(skill)}</span>`).join("") || '<span class="text-muted-strong small">No major gaps found</span>'}</div>
+    </div>`;
+  loadNotifications();
+}
+loadSeeker();
+</script>
+{% endblock %}

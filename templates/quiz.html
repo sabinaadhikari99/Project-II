@@ -1,0 +1,65 @@
+<!-- file path: templates/quiz.html -->
+{% extends "base.html" %}
+{% block title %}Quiz | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Skill check</div>
+    <h1 class="page-title">Skill quiz</h1>
+    <p class="page-subtitle mb-0">Answer a short set of questions and get an instant score.</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <section class="panel">
+      <form id="quizForm" class="vstack gap-3"></form>
+      <div id="message" class="mt-3"></div>
+    </section>
+  </div>
+  <div class="col-lg-4">
+    <section class="panel h-100">
+      <h2 class="h5">Quiz status</h2>
+      <div class="metric mt-3">
+        <div class="metric-label">Latest score</div>
+        <div id="scoreMetric" class="metric-value mt-2">--</div>
+      </div>
+      <p class="text-muted-strong mb-0">Use your score to guide what you practice next in the Skill Gap page.</p>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("job_seeker");
+
+async function loadQuiz() {
+  const data = await api("/api/quiz/");
+  const questions = data.questions || [];
+  document.getElementById("quizForm").innerHTML = questions.map((question, index) => `
+    <fieldset class="tool-card">
+      <legend class="h6 mb-3">${index + 1}. ${escapeHtml(question.question)}</legend>
+      <div class="vstack gap-2">
+        ${(question.options || []).map(option => `
+          <label class="d-flex gap-2 align-items-start">
+            <input class="form-check-input mt-1" type="radio" name="${escapeHtml(question.id)}" value="${escapeHtml(option)}" required>
+            <span>${escapeHtml(option)}</span>
+          </label>`).join("")}
+      </div>
+    </fieldset>`).join("") + (questions.length ? `<button class="btn btn-primary" type="submit"><i class="bi bi-check2-circle"></i> Submit quiz</button>` : `<div class="empty-state">No quiz questions found.</div>`);
+}
+
+document.getElementById("quizForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const answers = Object.fromEntries(new FormData(event.target));
+  try {
+    const result = await api("/api/quiz/submit/", {method: "POST", body: JSON.stringify({answers})});
+    document.getElementById("scoreMetric").textContent = `${result.percentage}%`;
+    showMessage(`Score: ${result.score}/${result.total} (${result.percentage}%)`, "success");
+  } catch (error) {
+    showMessage(error.message, "danger");
+  }
+});
+loadQuiz();
+</script>
+{% endblock %}

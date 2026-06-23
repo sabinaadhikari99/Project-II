@@ -1,0 +1,59 @@
+<!-- file path: templates/linkedin.html -->
+{% extends "base.html" %}
+{% block title %}LinkedIn Jobs | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">External search</div>
+    <h1 class="page-title">LinkedIn jobs</h1>
+    <p class="page-subtitle mb-0">Search external listings and jump out to LinkedIn when you find a fit.</p>
+  </div>
+</div>
+
+<section class="panel mb-4">
+  <form id="linkedinForm" class="row g-3 align-items-end">
+    <div class="col-md-5">
+      <label class="form-label fw-semibold" for="query">Keyword</label>
+      <input id="query" class="form-control" name="query" placeholder="python" value="python">
+    </div>
+    <div class="col-md-5">
+      <label class="form-label fw-semibold" for="location">Location</label>
+      <input id="location" class="form-control" name="location" placeholder="Remote" value="Remote">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+    <h2 class="h5 mb-0">Search results</h2>
+    <span id="linkedinCount" class="status-chip status-chip-success">0 jobs</span>
+  </div>
+  <div id="linkedinJobs" class="result-list"></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("job_seeker");
+
+document.getElementById("linkedinForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = Object.fromEntries(new FormData(event.target));
+  const data = await api(`/api/external/linkedin/?query=${encodeURIComponent(form.query)}&location=${encodeURIComponent(form.location)}`);
+  const jobs = data.jobs || [];
+  document.getElementById("linkedinCount").textContent = `${jobs.length} ${jobs.length === 1 ? "job" : "jobs"}`;
+  document.getElementById("linkedinJobs").innerHTML = jobs.map(job => `
+    <article class="job-card">
+      <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+        <div>
+          <h3 class="h5 mb-1">${escapeHtml(job.title || "Untitled role")}</h3>
+          <div class="text-muted-strong">${escapeHtml(job.company || "Company not listed")} &middot; ${escapeHtml(job.location || "Location not listed")}</div>
+        </div>
+        <a class="btn btn-outline-primary btn-sm" href="${escapeHtml(job.url || "https://www.linkedin.com/jobs/")}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> View</a>
+      </div>
+    </article>`).join("") || `<div class="empty-state">No LinkedIn jobs returned for this search.</div>`;
+});
+</script>
+{% endblock %}

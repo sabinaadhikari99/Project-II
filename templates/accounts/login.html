@@ -1,0 +1,61 @@
+<!-- file path: templates/accounts/login.html -->
+{% extends "base.html" %}
+{% block title %}Login | SkillSync AI{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <section class="panel auth-panel p-0">
+    <div class="row g-0">
+      <div class="col-lg-5">
+        <div class="auth-aside h-100 p-4 p-lg-5 d-flex flex-column justify-content-between">
+          <div>
+            <div class="navbar-brand-mark mb-4 bg-white text-primary">S</div>
+            <h1 class="display-6 fw-bold mb-3">Welcome back to SkillSync AI</h1>
+            <p class="mb-0 opacity-75">Sign in to manage recommendations, job searches, dashboards, and recruiting workflows.</p>
+          </div>
+          <div class="row g-3 mt-4">
+            <div class="col-6"><div class="auth-stat"><div class="h4 mb-0">AI</div><div class="small opacity-75">matching</div></div></div>
+            <div class="col-6"><div class="auth-stat"><div class="h4 mb-0">24/7</div><div class="small opacity-75">career tools</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="p-4 p-lg-5">
+          <div class="mb-4">
+            <div class="page-kicker">Secure access</div>
+            <h2 class="h3 fw-bold mb-1">Login</h2>
+            <p class="text-muted-strong mb-0">Use your email and password to continue.</p>
+          </div>
+          <form id="loginForm" class="vstack gap-3">
+            <div>
+              <label class="form-label fw-semibold" for="email">Email</label>
+              <input id="email" class="form-control" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            </div>
+            <div>
+              <label class="form-label fw-semibold" for="password">Password</label>
+              <input id="password" class="form-control" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+            </div>
+            <button class="btn btn-primary" type="submit"><i class="bi bi-box-arrow-in-right"></i> Login</button>
+            <p class="mb-0 text-muted-strong">New here? <a class="fw-semibold" href="/register/">Create an account</a></p>
+          </form>
+          <div id="message" class="small mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(event.target));
+  try {
+    const result = await api("/api/auth/login/", {method: "POST", body: JSON.stringify(data)}, false);
+    saveSession(result);
+    routeByRole(result.user.role);
+  } catch (error) {
+    showMessage(error.message, "danger");
+  }
+});
+</script>
+{% endblock %}

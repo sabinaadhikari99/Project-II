@@ -1,0 +1,60 @@
+<!-- file path: templates/skillgap.html -->
+{% extends "base.html" %}
+{% block title %}Skill Gap | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Growth plan</div>
+    <h1 class="page-title">Skill Gap</h1>
+    <p class="page-subtitle mb-0">Compare your skills with active job demand and get focused learning resources.</p>
+  </div>
+  <button class="btn btn-outline-primary" onclick="loadSkillGap()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <section class="panel">
+      <h2 class="h5">Your current skills</h2>
+      <div id="userSkills" class="d-flex flex-wrap gap-2 mt-3"></div>
+    </section>
+  </div>
+  <div class="col-lg-7">
+    <section class="panel">
+      <h2 class="h5">Recommended focus areas</h2>
+      <div id="missingSkills" class="d-flex flex-wrap gap-2 mt-3"></div>
+    </section>
+  </div>
+  <div class="col-12">
+    <section class="panel">
+      <h2 class="h5 mb-3">Learning resources</h2>
+      <div id="resources" class="row g-3"></div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("job_seeker");
+
+function chips(values, empty) {
+  return values.length
+    ? values.map(value => `<span class="skill-chip">${escapeHtml(value)}</span>`).join("")
+    : `<div class="empty-state w-100">${escapeHtml(empty)}</div>`;
+}
+
+async function loadSkillGap() {
+  const gap = await api("/api/skillgap/");
+  document.getElementById("userSkills").innerHTML = chips(gap.user_skills || [], "No skills added yet. Upload your resume on AI Match.");
+  document.getElementById("missingSkills").innerHTML = chips(gap.missing_skills || [], "No major gaps found from current active jobs.");
+  document.getElementById("resources").innerHTML = (gap.recommended_resources || []).map(resource => `
+    <div class="col-md-6 col-xl-4">
+      <article class="tool-card h-100">
+        <div class="status-chip status-chip-warning mb-3">${escapeHtml(resource.skill || "Skill")}</div>
+        <h3 class="h6">${escapeHtml(resource.title)}</h3>
+        <a class="btn btn-outline-primary btn-sm mt-2" href="${escapeHtml(resource.url)}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> Open resource</a>
+      </article>
+    </div>`).join("") || `<div class="col-12"><div class="empty-state">Resources will appear when a missing skill matches the library.</div></div>`;
+}
+loadSkillGap();
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Notifications | SkillSync AI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-kicker">Job match alerts</div>
+    <h1 class="page-title">Notification History</h1>
+    <p class="page-subtitle mb-0">Review AI-generated job match alerts and mark updates as read.</p>
+  </div>
+  <button class="btn btn-outline-primary" onclick="loadNotifications()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Total notifications</div>
+      <div id="totalNotifications" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Unread</div>
+      <div id="unreadNotifications" class="metric-value mt-2">0</div>
+    </section>
+  </div>
+  <div class="col-md-4">
+    <section class="panel metric">
+      <div class="metric-label">Top match</div>
+      <div id="topMatchNotification" class="metric-value mt-2">0%</div>
+    </section>
+  </div>
+</div>
+
+<section class="panel">
+  <div id="notificationsList" class="result-list"></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+requireRole("job_seeker");
+
+function renderNotificationHistory(item) {
+  const job = item.job || {};
+  const recruiter = item.recruiter || {};
+  return `
+    <article class="notification-card ${item.is_read ? "" : "notification-card-unread"}">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div>
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <span class="status-chip status-chip-success">${item.match_percentage}% match</span>
+            <span class="small text-muted-strong">${escapeHtml(new Date(item.created_at).toLocaleString())}</span>
+          </div>
+          <h2 class="h5 mb-1">${escapeHtml(item.title)}</h2>
+          <p class="text-muted-strong mb-2">${escapeHtml(item.message)}</p>
+          <div class="small text-muted-strong">
+            ${escapeHtml(job.company || "Company")} &middot; ${escapeHtml(job.title || "Role")} &middot; Recruiter: ${escapeHtml(recruiter.email || "Not listed")}
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 align-items-start">
+          <a class="btn btn-primary btn-sm" href="/jobs/?role=${encodeURIComponent(job.title || "")}"><i class="bi bi-send"></i> Apply</a>
+          ${item.is_read ? '<span class="status-chip status-chip-soft">Read</span>' : `<button class="btn btn-outline-primary btn-sm" type="button" onclick="markRead(${item.id})"><i class="bi bi-check2"></i> Mark read</button>`}
+        </div>
+      </div>
+    </article>`;
+}
+
+async function markRead(id) {
+  await api(`/api/notifications/${id}/read/`, {method: "POST"});
+  loadNotifications();
+  loadNotificationBell();
+}
+
+async function loadNotifications() {
+  const notifications = await api("/api/notifications/");
+  const unread = notifications.filter(item => !item.is_read).length;
+  document.getElementById("totalNotifications").textContent = notifications.length;
+  document.getElementById("unreadNotifications").textContent = unread;
+  document.getElementById("topMatchNotification").textContent = `${Math.max(0, ...notifications.map(item => item.match_percentage || 0))}%`;
+  document.getElementById("notificationsList").innerHTML = notifications.map(renderNotificationHistory).join("") || `<div class="empty-state">No notifications yet. Upload a resume in AI Match to generate alerts.</div>`;
+}
+
+loadNotifications();
+setInterval(loadNotifications, 30000);
+</script>
+{% endblock %}

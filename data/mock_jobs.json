@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Machine Learning Engineer",
+    "company": "Northstar Analytics",
+    "location": "Remote",
+    "description": "Build ranking, recommendation, and NLP systems for recruiting workflows.",
+    "required_skills": ["Python", "Django", "Machine Learning", "FAISS", "APIs"],
+    "experience_required": 3,
+    "salary_range": "$120k-$155k"
+  },
+  {
+    "title": "Full Stack Django Developer",
+    "company": "SkillForge Labs",
+    "location": "San Francisco, CA",
+    "description": "Own Django REST APIs, Bootstrap dashboards, and integration features.",
+    "required_skills": ["Django", "DRF", "JavaScript", "Bootstrap", "SQLite"],
+    "experience_required": 2,
+    "salary_range": "$105k-$135k"
+  },
+  {
+    "title": "Data Engineer",
+    "company": "HiringGraph",
+    "location": "Austin, TX",
+    "description": "Develop pipelines for job, profile, and application analytics.",
+    "required_skills": ["Python", "Pandas", "SQL", "ETL", "Data Modeling"],
+    "experience_required": 4,
+    "salary_range": "$115k-$145k"
+  }
+]
