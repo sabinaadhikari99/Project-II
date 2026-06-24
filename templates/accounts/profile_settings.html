@@ -1,69 +1,1154 @@
+<!-- file path: templates/accounts/profile_settings.html -->
 {% extends "base.html" %}
 {% block title %}Profile Settings | SkillSync AI{% endblock %}
-{% block content %}
-<div class="page-header">
-  <div>
-    <div class="page-kicker">Account settings</div>
-    <h1 class="page-title">Profile Settings</h1>
-    <p class="page-subtitle mb-0">Update your profile picture for dashboards, applications, and recruiter views.</p>
-  </div>
-  <button class="btn btn-outline-primary" onclick="routeByRole(localStorage.getItem('role'))"><i class="bi bi-arrow-left"></i> Dashboard</button>
-</div>
 
-<section class="panel profile-settings-panel">
-  <div class="row g-4 align-items-center">
-    <div class="col-md-auto">
-      <span id="settingsProfilePreview"></span>
+{% block content %}
+<style>
+  /* ── Page Container ── */
+  .settings-page {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 0 3rem;
+    animation: settingsReveal 0.6s ease both;
+  }
+
+  @keyframes settingsReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Page Header ── */
+  .settings-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .settings-header .page-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .settings-header .page-kicker::before {
+    content: "";
+    width: 24px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--bs-primary);
+    opacity: 0.4;
+  }
+
+  .settings-header .page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+  }
+
+  .settings-header .page-subtitle {
+    font-size: 0.92rem;
+    max-width: 500px;
+  }
+
+  .settings-header .btn-back {
+    border-radius: 12px;
+    padding: 0.55rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .settings-header .btn-back:hover {
+    transform: translateX(-3px);
+  }
+
+  .settings-header .btn-back i {
+    margin-right: 0.3rem;
+    transition: transform 0.25s ease;
+  }
+
+  .settings-header .btn-back:hover i {
+    transform: translateX(-3px);
+  }
+
+  /* ── Section Card ── */
+  .settings-card {
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 24px;
+    box-shadow:
+      0 16px 48px rgba(15, 23, 42, 0.06),
+      0 1px 3px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    animation: cardSlideUp 0.5s ease both;
+  }
+
+  .settings-card:nth-child(2) { animation-delay: 0.08s; }
+  .settings-card:nth-child(3) { animation-delay: 0.16s; }
+  .settings-card:nth-child(4) { animation-delay: 0.24s; }
+
+  @keyframes cardSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Card Banner ── */
+  .card-banner {
+    height: 110px;
+    background: var(--bs-primary);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-banner::before,
+  .card-banner::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .card-banner::before {
+    width: 200px; height: 200px;
+    top: -80px; right: -40px;
+    animation: bannerOrb 12s ease-in-out infinite alternate;
+  }
+
+  .card-banner::after {
+    width: 140px; height: 140px;
+    bottom: -60px; left: 40px;
+    animation: bannerOrb 16s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes bannerOrb {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(20px, -15px) scale(1.1); }
+  }
+
+  /* ── Card Body ── */
+  .card-body-section {
+    padding: 0 2.25rem 2.25rem;
+  }
+
+  /* ── Section Header (no banner) ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 2.25rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .section-header .sec-icon {
+    width: 40px; height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(var(--bs-primary-rgb), 0.08);
+    color: var(--bs-primary);
+    font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+
+  .section-header .sec-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.1rem;
+  }
+
+  .section-header .sec-desc {
+    font-size: 0.8rem;
+    color: rgba(15, 23, 42, 0.5);
+    margin-bottom: 0;
+  }
+
+  .section-body {
+    padding: 1.5rem 2.25rem 2rem;
+  }
+
+  /* ── Avatar Section ── */
+  .avatar-section {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.75rem;
+    margin-top: -44px;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+  }
+
+  .avatar-container {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .avatar-container #settingsProfilePreview .avatar-lg,
+  .avatar-container #settingsProfilePreview img {
+    width: 92px; height: 92px;
+    border-radius: 22px;
+    border: 4px solid #fff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    object-fit: cover;
+    transition: all 0.3s ease;
+    background: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .avatar-container:hover #settingsProfilePreview .avatar-lg,
+  .avatar-container:hover #settingsProfilePreview img {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+  }
+
+  .avatar-badge {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 28px; height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: var(--bs-primary);
+    color: #fff;
+    font-size: 0.7rem;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.3);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    z-index: 3;
+  }
+
+  .avatar-badge:hover {
+    transform: scale(1.15);
+  }
+
+  .avatar-info h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  .avatar-info p {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+  }
+
+  /* ── Upload Area ── */
+  .upload-area {
+    background: rgba(var(--bs-primary-rgb), 0.02);
+    border: 1.5px solid rgba(15, 23, 42, 0.08);
+    border-radius: 18px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .upload-area .form-control {
+    height: 48px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(15, 23, 42, 0.10);
+    background: #fff;
+    font-size: 0.88rem;
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+
+  .upload-area .form-control:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+  }
+
+  .upload-area .form-control:focus {
+    border-color: rgba(var(--bs-primary-rgb), 0.5);
+    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.10);
+    outline: none;
+  }
+
+  .upload-area .form-control::file-selector-button {
+    border: none;
+    background: rgba(var(--bs-primary-rgb), 0.08);
+    color: var(--bs-primary);
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 8px;
+    margin-right: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .upload-area .form-control::file-selector-button:hover {
+    background: rgba(var(--bs-primary-rgb), 0.14);
+  }
+
+  .format-badges {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+
+  .format-badge {
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: rgba(15, 23, 42, 0.04);
+    color: rgba(15, 23, 42, 0.42);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+  }
+
+  /* ── Button Row ── */
+  .btn-row {
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    height: 46px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0 1.5rem;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .btn-action.btn-primary {
+    box-shadow: 0 8px 20px rgba(var(--bs-primary-rgb), 0.20);
+  }
+
+  .btn-action.btn-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  .btn-action.btn-primary:hover::before { transform: translateX(100%); }
+
+  .btn-action:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-action:active { transform: translateY(0); }
+  .btn-action i { margin-right: 0.35rem; }
+
+  .btn-action.btn-outline-danger {
+    border: 1.5px solid rgba(220, 53, 69, 0.25);
+    color: #dc3545;
+    background: transparent;
+  }
+
+  .btn-action.btn-outline-danger:hover {
+    background: rgba(220, 53, 69, 0.06);
+    border-color: rgba(220, 53, 69, 0.4);
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.12);
+  }
+
+  /* ── Setting Row ── */
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+    flex-wrap: wrap;
+  }
+
+  .setting-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .setting-row:first-child {
+    padding-top: 0;
+  }
+
+  .setting-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .setting-icon {
+    width: 38px; height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: rgba(var(--bs-primary-rgb), 0.07);
+    color: var(--bs-primary);
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+  }
+
+  .setting-row:hover .setting-icon {
+    background: rgba(var(--bs-primary-rgb), 0.12);
+    transform: scale(1.05);
+  }
+
+  .setting-label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: rgba(15, 23, 42, 0.8);
+    margin-bottom: 0.1rem;
+  }
+
+  .setting-desc {
+    font-size: 0.78rem;
+    color: rgba(15, 23, 42, 0.42);
+    margin-bottom: 0;
+    line-height: 1.4;
+  }
+
+  .setting-right {
+    flex-shrink: 0;
+  }
+
+  /* Toggle Switch */
+  .toggle-switch {
+    position: relative;
+    width: 48px; height: 26px;
+    display: inline-block;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.14);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .toggle-slider::before {
+    content: "";
+    position: absolute;
+    left: 3px; top: 3px;
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .toggle-switch input:checked + .toggle-slider {
+    background: var(--bs-primary);
+  }
+
+  .toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(22px);
+  }
+
+  /* Select small */
+  .setting-select {
+    height: 36px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(15, 23, 42, 0.10);
+    background: #f8f9fb;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0 2rem 0 0.75rem;
+    color: rgba(15, 23, 42, 0.7);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(15,23,42,0.4)' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+  }
+
+  .setting-select:hover {
+    border-color: rgba(15, 23, 42, 0.18);
+    background-color: #fff;
+  }
+
+  .setting-select:focus {
+    border-color: rgba(var(--bs-primary-rgb), 0.5);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.10);
+    outline: none;
+  }
+
+  /* Color swatches */
+  .color-swatches {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .color-swatch {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  .color-swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .color-swatch.active {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.18);
+  }
+
+  .color-swatch.active::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  /* ── Message ── */
+  #message:not(:empty) {
+    padding: 0.8rem 1.1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    animation: msgSlideIn 0.35s ease both;
+  }
+
+  @keyframes msgSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Danger Zone ── */
+  .danger-zone {
+    border-color: rgba(220, 53, 69, 0.12) !important;
+  }
+
+  .danger-zone .section-header {
+    border-bottom-color: rgba(220, 53, 69, 0.08);
+  }
+
+  .danger-zone .sec-icon {
+    background: rgba(220, 53, 69, 0.08);
+    color: #dc3545;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 767.98px) {
+    .settings-page { padding: 1rem 0 2rem; }
+    .settings-header { flex-direction: column; gap: 1rem; }
+    .card-body-section { padding: 0 1.25rem 1.5rem; }
+    .section-body { padding: 1.25rem 1.25rem 1.5rem; }
+    .section-header { padding: 1.25rem; }
+    .avatar-section {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+    }
+    .setting-row { flex-direction: column; align-items: flex-start; gap: 0.65rem; }
+    .setting-right { align-self: flex-end; }
+    .btn-row { flex-direction: column; }
+    .btn-action { width: 100%; justify-content: center; }
+  }
+
+  @media (max-width: 575.98px) {
+    .card-body-section { padding: 0 1rem 1.25rem; }
+    .section-body { padding: 1rem; }
+    .section-header { padding: 1rem; }
+    .card-banner { height: 90px; }
+    .avatar-container #settingsProfilePreview .avatar-lg,
+    .avatar-container #settingsProfilePreview img {
+      width: 80px; height: 80px;
+      border-radius: 18px;
+    }
+  }
+</style>
+
+<div class="settings-page">
+
+  <!-- ── Page Header ── -->
+  <div class="settings-header">
+    <div>
+      <div class="page-kicker">Account settings</div>
+      <h1 class="page-title">Profile Settings</h1>
+      <p class="page-subtitle text-muted-strong mb-0">
+        Manage your profile picture, display preferences, and notification settings.
+      </p>
     </div>
-    <div class="col-md">
-      <h2 class="h5 mb-2">Profile picture</h2>
-      <p class="text-muted-strong mb-3">Upload a clear professional image. Square images display best.</p>
-      <form id="profilePictureForm" class="row g-3 align-items-end">
-        <div class="col-lg-8">
-          <label class="form-label fw-semibold" for="settings_profile_picture_file">Upload new picture</label>
-          <input id="settings_profile_picture_file" class="form-control" type="file" accept="image/*">
+    <button class="btn btn-outline-primary btn-back" onclick="routeByRole(localStorage.getItem('role'))">
+      <i class="bi bi-arrow-left"></i> Dashboard
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       CARD 1: Profile Picture
+       ════════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="card-banner"></div>
+    <div class="card-body-section">
+
+      <div class="avatar-section">
+        <div class="avatar-container">
+          <span id="settingsProfilePreview"></span>
+          <label for="settings_profile_picture_file" class="avatar-badge" title="Change picture">
+            <i class="bi bi-camera-fill"></i>
+          </label>
         </div>
-        <div class="col-lg-4 d-grid">
-          <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Save picture</button>
+        <div class="avatar-info">
+          <h2>Profile picture</h2>
+          <p class="text-muted-strong">Upload a clear professional image. Square images display best.</p>
         </div>
-      </form>
-      <div id="message" class="small mt-3"></div>
+      </div>
+
+      <div class="upload-area">
+        <form id="profilePictureForm">
+          <div class="file-input-wrap mb-2">
+            <input id="settings_profile_picture_file" class="form-control" type="file" accept="image/*">
+          </div>
+          <div class="format-badges">
+            <span class="format-badge">JPG</span>
+            <span class="format-badge">PNG</span>
+            <span class="format-badge">WEBP</span>
+            <span class="format-badge">Max 5 MB</span>
+          </div>
+          <div class="btn-row mt-3">
+            <button class="btn-action btn btn-primary" type="submit" id="btnSavePicture">
+              <i class="bi bi-check-circle"></i> Save picture
+            </button>
+            <button class="btn-action btn btn-outline-danger" type="button" id="btnDeletePicture">
+              <i class="bi bi-trash3"></i> Delete current picture
+            </button>
+          </div>
+        </form>
+        <div id="message" class="small mt-3"></div>
+      </div>
+
     </div>
   </div>
-</section>
+
+  <!-- ════════════════════════════════════════════════
+       CARD 2: Display Preferences
+       ════════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="section-header">
+      <div class="sec-icon"><i class="bi bi-palette"></i></div>
+      <div>
+        <div class="sec-title">Display Preferences</div>
+        <p class="sec-desc">Customize how SkillSync AI looks and feels for you.</p>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <!-- Theme -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-moon-stars"></i></div>
+          <div>
+            <div class="setting-label">Theme</div>
+            <div class="setting-desc">Choose your preferred interface theme.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <select class="setting-select" id="themeSelect">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Accent Color -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-brush"></i></div>
+          <div>
+            <div class="setting-label">Accent color</div>
+            <div class="setting-desc">Personalize your dashboard highlight color.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <div class="color-swatches" id="colorSwatches">
+            <div class="color-swatch active" data-color="#4f46e5" style="background:#4f46e5;" title="Indigo"></div>
+            <div class="color-swatch" data-color="#2563eb" style="background:#2563eb;" title="Blue"></div>
+            <div class="color-swatch" data-color="#0891b2" style="background:#0891b2;" title="Teal"></div>
+            <div class="color-swatch" data-color="#059669" style="background:#059669;" title="Green"></div>
+            <div class="color-swatch" data-color="#d97706" style="background:#d97706;" title="Amber"></div>
+            <div class="color-swatch" data-color="#dc2626" style="background:#dc2626;" title="Red"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact Mode -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-layout-text-sidebar"></i></div>
+          <div>
+            <div class="setting-label">Compact mode</div>
+            <div class="setting-desc">Reduce spacing for denser information display.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="compactToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Animations -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-stars"></i></div>
+          <div>
+            <div class="setting-label">Animations</div>
+            <div class="setting-desc">Enable smooth transitions and motion effects.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="animationToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       CARD 3: Notification Preferences
+       ════════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="section-header">
+      <div class="sec-icon"><i class="bi bi-bell"></i></div>
+      <div>
+        <div class="sec-title">Notifications</div>
+        <p class="sec-desc">Control how and when you receive alerts.</p>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <!-- Email notifications -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-envelope"></i></div>
+          <div>
+            <div class="setting-label">Email notifications</div>
+            <div class="setting-desc">Receive updates about jobs, matches, and messages via email.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="emailNotifToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Job alerts -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-briefcase"></i></div>
+          <div>
+            <div class="setting-label">Job recommendation alerts</div>
+            <div class="setting-desc">Get notified when AI finds matching opportunities for you.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="jobAlertToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Weekly digest -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-calendar-week"></i></div>
+          <div>
+            <div class="setting-label">Weekly digest</div>
+            <div class="setting-desc">Receive a summary of activity and new opportunities each week.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="digestToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Sound -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-volume-up"></i></div>
+          <div>
+            <div class="setting-label">Sound effects</div>
+            <div class="setting-desc">Play subtle sounds on actions and notifications.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="soundToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       CARD 4: Privacy & Data
+       ════════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="section-header">
+      <div class="sec-icon"><i class="bi bi-shield-lock"></i></div>
+      <div>
+        <div class="sec-title">Privacy &amp; Visibility</div>
+        <p class="sec-desc">Control who can see your information.</p>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <!-- Profile visibility -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-eye"></i></div>
+          <div>
+            <div class="setting-label">Profile visibility</div>
+            <div class="setting-desc">Make your profile visible to recruiters and hiring managers.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <select class="setting-select" id="visibilitySelect">
+            <option value="public">Public</option>
+            <option value="recruiters">Recruiters only</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Show email -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-at"></i></div>
+          <div>
+            <div class="setting-label">Show email on profile</div>
+            <div class="setting-desc">Display your email address on your public profile.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="showEmailToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Activity status -->
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon"><i class="bi bi-circle-fill" style="font-size:0.6rem;color:#22c55e;"></i></div>
+          <div>
+            <div class="setting-label">Online activity status</div>
+            <div class="setting-desc">Let others see when you were last active.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <label class="toggle-switch">
+            <input type="checkbox" id="activityToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       CARD 5: Danger Zone
+       ════════════════════════════════════════════════ -->
+  <div class="settings-card danger-zone">
+    <div class="section-header">
+      <div class="sec-icon"><i class="bi bi-exclamation-triangle"></i></div>
+      <div>
+        <div class="sec-title">Danger Zone</div>
+        <p class="sec-desc">Irreversible actions — proceed with caution.</p>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <div class="setting-row">
+        <div class="setting-left">
+          <div class="setting-icon" style="background:rgba(220,53,69,0.08);color:#dc3545;">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </div>
+          <div>
+            <div class="setting-label">Reset all preferences</div>
+            <div class="setting-desc">Restore all display, notification, and privacy settings to defaults.</div>
+          </div>
+        </div>
+        <div class="setting-right">
+          <button class="btn-action btn btn-outline-danger" type="button" id="btnResetPrefs" style="height:38px;font-size:0.8rem;padding:0 1.1rem;">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
 {% endblock %}
+
 {% block scripts %}
 <script>
-requireAuthenticated();
-let settingsImageData = "";
+  requireAuthenticated();
+  let settingsImageData = "";
 
-async function loadSettings() {
-  const user = await api("/api/auth/profile/");
-  saveUser(user);
-  document.getElementById("settingsProfilePreview").innerHTML = renderAvatar(user.profile_picture, user.username || user.email, "avatar-lg");
-}
+  /* ══════════════════════════════════════════
+     Preference Keys (all localStorage-only)
+     ══════════════════════════════════════════ */
+  const PREFS = {
+    theme:        "pref_theme",
+    accent:       "pref_accent",
+    compact:      "pref_compact",
+    animations:   "pref_animations",
+    emailNotif:   "pref_email_notif",
+    jobAlerts:    "pref_job_alerts",
+    digest:       "pref_digest",
+    sound:        "pref_sound",
+    visibility:   "pref_visibility",
+    showEmail:    "pref_show_email",
+    activity:     "pref_activity"
+  };
 
-document.getElementById("settings_profile_picture_file").addEventListener("change", async (event) => {
-  settingsImageData = await fileToDataUrl(event.target.files[0]);
-  document.getElementById("settingsProfilePreview").innerHTML = renderAvatar(settingsImageData, localStorage.getItem("username"), "avatar-lg");
-});
+  /* ── Load profile from API ── */
+  async function loadSettings() {
+    const user = await api("/api/auth/profile/");
+    saveUser(user);
+    document.getElementById("settingsProfilePreview").innerHTML =
+      renderAvatar(user.profile_picture, user.username || user.email, "avatar-lg");
 
-document.getElementById("profilePictureForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (!settingsImageData) {
-    showMessage("Choose a new picture first.", "danger");
-    return;
+    // Restore saved preferences
+    restorePreferences();
   }
-  const current = await api("/api/auth/profile/");
-  const result = await api("/api/auth/profile/", {
-    method: "PUT",
-    body: JSON.stringify({username: current.username, profile_picture: settingsImageData, profile: current.profile || {}})
-  });
-  saveUser(result);
-  showMessage("Profile picture updated.", "success");
-  hydrateNavbar();
-});
 
-loadSettings();
+  /* ── File input → preview ── */
+  document.getElementById("settings_profile_picture_file").addEventListener("change", async (event) => {
+    if (!event.target.files[0]) return;
+    settingsImageData = await fileToDataUrl(event.target.files[0]);
+    document.getElementById("settingsProfilePreview").innerHTML =
+      renderAvatar(settingsImageData, localStorage.getItem("username"), "avatar-lg");
+  });
+
+  /* ── Save picture ── */
+  document.getElementById("profilePictureForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!settingsImageData) {
+      showMessage("Choose a new picture first.", "danger");
+      return;
+    }
+
+    const btn = document.getElementById("btnSavePicture");
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving…';
+    btn.disabled = true;
+
+    try {
+      const current = await api("/api/auth/profile/");
+      const result = await api("/api/auth/profile/", {
+        method: "PUT",
+        body: JSON.stringify({
+          username: current.username,
+          profile_picture: settingsImageData,
+          profile: current.profile || {}
+        })
+      });
+      saveUser(result);
+      showMessage("Profile picture updated successfully.", "success");
+      hydrateNavbar();
+    } catch (error) {
+      showMessage(error.message || "Upload failed.", "danger");
+    } finally {
+      btn.innerHTML = orig;
+      btn.disabled = false;
+    }
+  });
+
+  /* ── Delete picture ── */
+  document.getElementById("btnDeletePicture").addEventListener("click", async () => {
+    if (!confirm("Remove your current profile picture? This will reset it to your initials.")) return;
+
+    const btn = document.getElementById("btnDeletePicture");
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Removing…';
+    btn.disabled = true;
+
+    try {
+      const current = await api("/api/auth/profile/");
+      const result = await api("/api/auth/profile/", {
+        method: "PUT",
+        body: JSON.stringify({
+          username: current.username,
+          profile_picture: "",
+          profile: current.profile || {}
+        })
+      });
+      saveUser(result);
+      settingsImageData = "";
+      document.getElementById("settings_profile_picture_file").value = "";
+      document.getElementById("settingsProfilePreview").innerHTML =
+        renderAvatar("", result.username || result.email, "avatar-lg");
+      showMessage("Profile picture removed.", "success");
+      hydrateNavbar();
+    } catch (error) {
+      showMessage(error.message || "Failed to remove picture.", "danger");
+    } finally {
+      btn.innerHTML = orig;
+      btn.disabled = false;
+    }
+  });
+
+  /* ══════════════════════════════════════════
+     Frontend-Only Preferences (localStorage)
+     ══════════════════════════════════════════ */
+
+  // Theme
+  document.getElementById("themeSelect").addEventListener("change", function() {
+    localStorage.setItem(PREFS.theme, this.value);
+    applyTheme(this.value);
+  });
+
+  // Accent color swatches
+  document.querySelectorAll(".color-swatch").forEach(swatch => {
+    swatch.addEventListener("click", () => {
+      document.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("active"));
+      swatch.classList.add("active");
+      const color = swatch.dataset.color;
+      localStorage.setItem(PREFS.accent, color);
+      document.documentElement.style.setProperty("--bs-primary", color);
+    });
+  });
+
+  // Toggle helpers
+  function bindToggle(elementId, prefKey) {
+    document.getElementById(elementId).addEventListener("change", function() {
+      localStorage.setItem(PREFS[prefKey], this.checked ? "1" : "0");
+    });
+  }
+
+  bindToggle("compactToggle",    "compact");
+  bindToggle("animationToggle",  "animations");
+  bindToggle("emailNotifToggle", "emailNotif");
+  bindToggle("jobAlertToggle",   "jobAlerts");
+  bindToggle("digestToggle",     "digest");
+  bindToggle("soundToggle",      "sound");
+  bindToggle("showEmailToggle",  "showEmail");
+  bindToggle("activityToggle",   "activity");
+
+  // Visibility
+  document.getElementById("visibilitySelect").addEventListener("change", function() {
+    localStorage.setItem(PREFS.visibility, this.value);
+  });
+
+  // Apply theme helper
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else if (theme === "system") {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }
+
+  // Restore all preferences from localStorage
+  function restorePreferences() {
+    // Theme
+    const savedTheme = localStorage.getItem(PREFS.theme) || "light";
+    document.getElementById("themeSelect").value = savedTheme;
+    applyTheme(savedTheme);
+
+    // Accent
+    const savedAccent = localStorage.getItem(PREFS.accent);
+    if (savedAccent) {
+      document.querySelectorAll(".color-swatch").forEach(s => {
+        s.classList.toggle("active", s.dataset.color === savedAccent);
+      });
+      document.documentElement.style.setProperty("--bs-primary", savedAccent);
+    }
+
+    // Toggles
+    function restoreToggle(elementId, prefKey, defaultVal) {
+      const val = localStorage.getItem(PREFS[prefKey]);
+      document.getElementById(elementId).checked = val !== null ? val === "1" : defaultVal;
+    }
+
+    restoreToggle("compactToggle",    "compact",    false);
+    restoreToggle("animationToggle",  "animations", true);
+    restoreToggle("emailNotifToggle", "emailNotif",  true);
+    restoreToggle("jobAlertToggle",   "jobAlerts",   true);
+    restoreToggle("digestToggle",     "digest",      false);
+    restoreToggle("soundToggle",      "sound",       false);
+    restoreToggle("showEmailToggle",  "showEmail",   false);
+    restoreToggle("activityToggle",   "activity",    true);
+
+    // Visibility
+    const savedVis = localStorage.getItem(PREFS.visibility) || "public";
+    document.getElementById("visibilitySelect").value = savedVis;
+  }
+
+  // Reset all preferences
+  document.getElementById("btnResetPrefs").addEventListener("click", () => {
+    if (!confirm("Reset all preferences to default values?")) return;
+
+    Object.values(PREFS).forEach(key => localStorage.removeItem(key));
+    document.documentElement.removeAttribute("data-theme");
+    document.documentElement.style.removeProperty("--bs-primary");
+    restorePreferences();
+    showMessage("All preferences reset to defaults.", "success");
+  });
+
+  /* ── Init ── */
+  loadSettings();
 </script>
 {% endblock %}
