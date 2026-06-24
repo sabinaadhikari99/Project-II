@@ -1,4 +1,5 @@
 # file path: apps/quiz/views.py
+
 import json
 
 from django.conf import settings
@@ -18,7 +19,12 @@ class QuizAPIView(APIView):
 
     def get(self, request):
         questions = load_questions()
-        public = [{k: v for k, v in item.items() if k != "answer"} for item in questions]
+
+        public = [
+            {k: v for k, v in item.items() if k != "answer"}
+            for item in questions
+        ]
+
         return Response({"questions": public})
 
 
@@ -28,6 +34,17 @@ class QuizSubmitAPIView(APIView):
     def post(self, request):
         answers = request.data.get("answers", {})
         questions = load_questions()
+
         total = len(questions)
-        correct = sum(1 for item in questions if answers.get(str(item["id"])) == item["answer"])
-        return Response({"score": correct, "total": total, "percentage": round((correct / total) * 100, 2) if total else 0})
+
+        correct = sum(
+            1
+            for item in questions
+            if answers.get(str(item["id"])) == item["answer"]
+        )
+
+        return Response({
+            "score": correct,
+            "total": total,
+            "percentage": round((correct / total) * 100, 2) if total else 0,
+        })
