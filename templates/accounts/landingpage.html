@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}SkillSync AI - Smart Career Matching Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-decoration {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(70px);
+        opacity: 0.35;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .hero-decoration.top-circle {
+        width: 320px;
+        height: 320px;
+        top: -80px;
+        left: -80px;
+        background: rgba(255, 255, 255, 0.35);
+    }
+
+    .hero-decoration.bottom-circle {
+        width: 260px;
+        height: 260px;
+        bottom: -60px;
+        right: -60px;
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .hero-section .card {
+        position: relative;
+        z-index: 1;
+        border-radius: 28px;
+    }
+
+    .hero-section .badge {
+        letter-spacing: 0.08em;
+    }
+
+    .hero-section .btn-outline-light {
+        border-color: rgba(255,255,255,0.6);
+    }
+
+    .hero-section .btn-outline-light:hover {
+        background: rgba(255,255,255,0.12);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section min-vh-100 d-flex align-items-center position-relative overflow-hidden" style="background: radial-gradient(circle at top left, rgba(255,255,255,.18), transparent 22%), radial-gradient(circle at bottom right, rgba(255,255,255,.12), transparent 15%), linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="hero-decoration top-circle"></div>
+    <div class="hero-decoration bottom-circle"></div>
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-white" data-aos="fade-right">
+                <span class="badge bg-white text-dark rounded-pill px-4 py-2 shadow-sm mb-4">AI Career Intelligence</span>
+                <h1 class="display-3 fw-bold mb-4">
+                    Launch your career with
+                    <span class="text-warning">smarter job matches</span>
+                </h1>
+                <p class="lead mb-4 fs-5 text-white-75">
+                    SkillSync AI uses advanced matching, resume optimization, and skill gap analysis to help you get noticed by recruiters and land the right opportunities faster.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="/register.html" class="btn btn-light btn-lg px-5 py-3 fw-bold shadow-sm">
+                        <i class="fas fa-rocket me-2"></i>Join Free
+                    </a>
+                    <a href="#how-it-works" class="btn btn-outline-light btn-lg px-5 py-3">
+                        <i class="fas fa-play me-2"></i>See how it works
+                    </a>
+                </div>
+                <div class="row mt-5 pt-4 g-3">
+                    <div class="col-4">
+                        <div class="rounded-4 p-4 bg-white bg-opacity-10">
+                            <h2 class="text-white fw-bold display-6 mb-1">10K+</h2>
+                            <p class="text-white-50 mb-0">Active Jobs</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="rounded-4 p-4 bg-white bg-opacity-10">
+                            <h2 class="text-white fw-bold display-6 mb-1">50K+</h2>
+                            <p class="text-white-50 mb-0">Happy Users</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="rounded-4 p-4 bg-white bg-opacity-10">
+                            <h2 class="text-white fw-bold display-6 mb-1">95%</h2>
+                            <p class="text-white-50 mb-0">Match Accuracy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 mt-5 mt-lg-0" data-aos="fade-left">
+                <div class="card border-0 shadow-lg rounded-5 overflow-hidden" style="background: rgba(255,255,255,.96); backdrop-filter: blur(12px);">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div>
+                                <h5 class="fw-bold mb-1">Quick Job Search</h5>
+                                <p class="text-muted mb-0">Find ideal roles based on your experience.</p>
+                            </div>
+                            <div class="badge bg-gradient text-white py-2 px-3 rounded-pill">Fast</div>
+                        </div>
+                        <form id="quick-job-search">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Job Title / Keyword</label>
+                                <input type="text" class="form-control form-control-lg border-0 shadow-sm" placeholder="e.g., Software Engineer">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Location</label>
+                                <input type="text" class="form-control form-control-lg border-0 shadow-sm" placeholder="e.g., Remote, New York">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Experience Level</label>
+                                <select class="form-select form-select-lg border-0 shadow-sm">
+                                    <option>Entry Level (0-2 years)</option>
+                                    <option>Mid Level (3-5 years)</option>
+                                    <option>Senior Level (6+ years)</option>
+                                </select>
+                            </div>
+                            <a href="{% url 'register' %}" class="btn btn-gradient w-100 py-3 fw-bold fs-5">
+                                <i class="fas fa-search me-2"></i>Search Jobs
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3">Why Choose SkillSync AI?</h2>
+            <p class="lead text-muted">Discover the power of AI-driven career development</p>
+            <div class="divider mx-auto" style="width: 80px; height: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px;"></div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-robot fa-4x" style="color: #667eea;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">AI-Powered Matching</h4>
+                        <p class="text-muted">
+                            Our advanced algorithms analyze your skills and experience to find 
+                            the perfect job matches with high accuracy.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-line fa-4x" style="color: #764ba2;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Skill Gap Analysis</h4>
+                        <p class="text-muted">
+                            Identify missing skills and get personalized learning recommendations 
+                            to advance your career.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-file-alt fa-4x" style="color: #667eea;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Smart Resume Builder</h4>
+                        <p class="text-muted">
+                            Create ATS-optimized resumes with AI suggestions and professional 
+                            templates that stand out.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3">How It Works</h2>
+            <p class="lead text-muted">Simple 3-step process to land your dream job</p>
+            <div class="divider mx-auto" style="width: 80px; height: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px;"></div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center">
+                    <div class="rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center mb-4" 
+                         style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="display-4 fw-bold text-white">1</span>
+                    </div>
+                    <h4 class="fw-bold mb-3">Create Account</h4>
+                    <p class="text-muted px-3">
+                        Sign up for free and complete your profile with your skills, 
+                        experience, and career preferences.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center">
+                    <div class="rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center mb-4" 
+                         style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="display-4 fw-bold text-white">2</span>
+                    </div>
+                    <h4 class="fw-bold mb-3">Upload Resume</h4>
+                    <p class="text-muted px-3">
+                        Upload your resume and let our AI analyze your skills, 
+                        experience, and career trajectory.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center">
+                    <div class="rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center mb-4" 
+                         style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="display-4 fw-bold text-white">3</span>
+                    </div>
+                    <h4 class="fw-bold mb-3">Get Matched</h4>
+                    <p class="text-muted px-3">
+                        Receive personalized job recommendations and start applying 
+                        to positions that match your profile.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4" data-aos="fade-up">
+            <a href="/register.html" class="btn btn-gradient btn-lg px-5 py-3">
+                <i class="fas fa-rocket me-2"></i>Start Your Journey Now
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3">Simple, Transparent Pricing</h2>
+            <p class="lead text-muted">Choose the plan that works for you</p>
+            <div class="divider mx-auto" style="width: 80px; height: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px;"></div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="fw-bold mb-2">Free</h3>
+                        <p class="text-muted">Perfect for getting started</p>
+                        <div class="mb-4">
+                            <span class="display-4 fw-bold text-primary">$0</span>
+                            <span class="text-muted">/month</span>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>5 job applications/month</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Basic resume analysis</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Limited job matches</li>
+                            <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>AI interview coach</li>
+                            <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>Priority support</li>
+                        </ul>
+                        <a href="/register.html" class="btn btn-outline-primary w-100 py-2">Get Started</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card border-0 shadow-lg h-100 position-relative overflow-hidden hover-lift">
+                    <div class="position-absolute top-0 end-0 bg-gradient text-white px-3 py-2 small fw-bold" 
+                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 0 10px;">
+                        POPULAR
+                    </div>
+                    <div class="card-body p-4 text-center">
+                        <h3 class="fw-bold mb-2">Pro</h3>
+                        <p class="text-muted">Best for active job seekers</p>
+                        <div class="mb-4">
+                            <span class="display-4 fw-bold text-primary">$19</span>
+                            <span class="text-muted">/month</span>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Unlimited job applications</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Advanced AI resume analysis</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Personalized job matches</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>AI interview coach</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Email support</li>
+                        </ul>
+                        <a href="/register.html?plan=pro" class="btn btn-gradient w-100 py-2">Start Free Trial</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="fw-bold mb-2">Enterprise</h3>
+                        <p class="text-muted">For companies & recruiters</p>
+                        <div class="mb-4">
+                            <span class="display-4 fw-bold text-primary">Custom</span>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Custom job posting limits</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Advanced candidate filtering</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Team collaboration tools</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>API access</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>24/7 priority support</li>
+                        </ul>
+                        <a href="/contact.html" class="btn btn-outline-primary w-100 py-2">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 text-white" data-aos="fade-right">
+                <h2 class="display-5 fw-bold mb-3">Ready to Transform Your Career?</h2>
+                <p class="lead mb-0">Join thousands of successful job seekers who found their dream jobs with SkillSync AI</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0" data-aos="fade-left">
+                <a href="/register.html" class="btn btn-light btn-lg px-5 py-3 fw-bold">
+                    <i class="fas fa-arrow-right me-2"></i>Get Started Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Quick job search form submission
+    document.getElementById('quick-job-search')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (typeof showToast === 'function') {
+            showToast('Search functionality coming soon!', 'info');
+        } else {
+            alert('Search functionality coming soon!');
+        }
+    });
+</script>
+{% endblock %}
