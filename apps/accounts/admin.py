@@ -7,8 +7,19 @@ from .models import User, UserProfile
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    fieldsets = UserAdmin.fieldsets + (("SkillSync", {"fields": ("profile_picture", "role")}),)
-    list_display = ("email", "username", "role", "is_staff", "is_active", "date_joined")
+    fieldsets = UserAdmin.fieldsets + (
+        ("SkillSync", {"fields": ("profile_picture", "role")}),
+    )
+
+    list_display = (
+        "email",
+        "username",
+        "role",
+        "is_staff",
+        "is_active",
+        "date_joined",
+    )
+
     search_fields = ("email", "username")
     list_filter = ("role", "is_staff", "is_active", "date_joined")
     ordering = ("email",)

@@ -26,7 +26,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ["id", "email", "username", "password", "role"]
 
     def create(self, validated_data):
+        password = validated_data.pop("password")
         user = User.objects.create_user(**validated_data)
+        user.set_password(password)
+        user.save()
+
         UserProfile.objects.create(user=user)
         return user
 
@@ -47,6 +51,7 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(username=attrs["email"], password=attrs["password"])
         if not user:
             raise serializers.ValidationError("Invalid email or password.")
+
         refresh = RefreshToken.for_user(user)
         return {
             "user": UserSerializer(user).data,
@@ -65,12 +70,15 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop("profile", None)
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
+
         if profile_data is not None:
             profile, _ = UserProfile.objects.get_or_create(user=instance)
             for attr, value in profile_data.items():
                 setattr(profile, attr, value)
             profile.save()
+
         return instance

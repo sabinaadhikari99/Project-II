@@ -1,85 +1,928 @@
+<!-- file path: templates/notifications.html -->
 {% extends "base.html" %}
 {% block title %}Notifications | SkillSync AI{% endblock %}
+
 {% block content %}
-<div class="page-header">
-  <div>
-    <div class="page-kicker">Job match alerts</div>
-    <h1 class="page-title">Notification History</h1>
-    <p class="page-subtitle mb-0">Review AI-generated job match alerts and mark updates as read.</p>
-  </div>
-  <button class="btn btn-outline-primary" onclick="loadNotifications()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-</div>
+<style>
+  :root {
+    --accent: var(--bs-primary, #4f46e5);
+    --accent-rgb: var(--bs-primary-rgb, 79, 70, 229);
+    --surface: #fff;
+    --surface-alt: #f8f9fb;
+    --txt: rgba(15,23,42,0.88);
+    --txt-soft: rgba(15,23,42,0.55);
+    --txt-muted: rgba(15,23,42,0.38);
+    --bdr: rgba(15,23,42,0.06);
+    --bdr-hover: rgba(15,23,42,0.12);
+    --shadow: rgba(15,23,42,0.06);
+    --shadow-lg: rgba(15,23,42,0.10);
+    --success: #16a34a;
+    --success-bg: rgba(34,197,94,0.10);
+    --success-bdr: rgba(34,197,94,0.18);
+    --warn: #d97706;
+    --warn-bg: rgba(217,119,6,0.10);
+  }
 
-<div class="row g-4 mb-4">
-  <div class="col-md-4">
-    <section class="panel metric">
-      <div class="metric-label">Total notifications</div>
-      <div id="totalNotifications" class="metric-value mt-2">0</div>
-    </section>
-  </div>
-  <div class="col-md-4">
-    <section class="panel metric">
-      <div class="metric-label">Unread</div>
-      <div id="unreadNotifications" class="metric-value mt-2">0</div>
-    </section>
-  </div>
-  <div class="col-md-4">
-    <section class="panel metric">
-      <div class="metric-label">Top match</div>
-      <div id="topMatchNotification" class="metric-value mt-2">0%</div>
-    </section>
-  </div>
-</div>
+  .notif-page { animation: pageIn 0.6s ease both; }
 
-<section class="panel">
-  <div id="notificationsList" class="result-list"></div>
-</section>
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Header ── */
+  .dash-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    animation: fadeDown 0.5s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .dash-header .page-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.45rem;
+  }
+
+  .dash-header .page-kicker .pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 999px;
+    background: var(--accent);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseDot {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: 0.35; transform: scale(0.55); }
+  }
+
+  .dash-header .page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.2rem;
+    color: var(--txt);
+  }
+
+  .dash-header .page-subtitle {
+    font-size: 0.88rem;
+    max-width: 500px;
+    color: var(--txt-soft);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  .btn-outline-accent {
+    background: transparent !important;
+    border: 1.5px solid rgba(var(--accent-rgb), 0.28) !important;
+    color: var(--accent) !important;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 0.5rem 1.15rem;
+    transition: all 0.25s ease;
+  }
+
+  .btn-outline-accent:hover {
+    background: rgba(var(--accent-rgb), 0.06) !important;
+    border-color: rgba(var(--accent-rgb), 0.4) !important;
+    transform: translateY(-2px);
+    color: var(--accent) !important;
+  }
+
+  /* ── Metric Cards ── */
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--bdr);
+    border-radius: 20px;
+    padding: 1.4rem 1.35rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px var(--shadow);
+    height: 100%;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .metric-col:nth-child(1) .metric-card { animation-delay: 0.10s; }
+  .metric-col:nth-child(2) .metric-card { animation-delay: 0.16s; }
+  .metric-col:nth-child(3) .metric-card { animation-delay: 0.22s; }
+
+  .metric-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 20px 20px 0 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+
+  .metric-card:hover::before { transform: scaleX(1); }
+
+  .metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px var(--shadow-lg);
+    border-color: rgba(var(--accent-rgb), 0.14);
+  }
+
+  .metric-card .mc-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .metric-card .mc-icon {
+    width: 42px; height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover .mc-icon {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.08) rotate(-3deg);
+    box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.28);
+  }
+
+  .metric-card .mc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: var(--success-bg);
+    color: var(--success);
+  }
+
+  .metric-card .mc-badge.warn {
+    background: var(--warn-bg);
+    color: var(--warn);
+  }
+
+  .metric-card .mc-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--txt);
+    margin-bottom: 0.3rem;
+    transition: color 0.3s ease;
+  }
+
+  .metric-card:hover .mc-value { color: var(--accent); }
+
+  .metric-card .mc-label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--txt-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Main Panel ── */
+  .dash-panel {
+    background: var(--surface);
+    border: 1px solid var(--bdr);
+    border-radius: 20px;
+    box-shadow: 0 4px 14px var(--shadow);
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.28s ease both;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--bdr);
+  }
+
+  .panel-head .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    color: var(--txt);
+  }
+
+  .panel-head .panel-icon {
+    width: 32px; height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .panel-head .badge-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success-bdr);
+  }
+
+  .panel-head .unread-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.16);
+  }
+
+  .panel-head .unread-badge .u-dot {
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+
+  .panel-body { padding: 1.5rem; }
+
+  /* ── Notification Items ── */
+  .notif-item {
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 18px;
+    border: 1px solid var(--bdr);
+    background: var(--surface-alt);
+    margin-bottom: 0.85rem;
+    transition: all 0.3s ease;
+    animation: itemSlide 0.4s ease both;
+    overflow: hidden;
+  }
+
+  .notif-item:last-child { margin-bottom: 0; }
+
+  @keyframes itemSlide {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .notif-item.unread {
+    background: rgba(var(--accent-rgb), 0.025);
+    border-color: rgba(var(--accent-rgb), 0.14);
+    border-left: 3px solid var(--accent);
+  }
+
+  .notif-item:hover {
+    border-color: rgba(var(--accent-rgb), 0.18);
+    background: var(--surface);
+    box-shadow: 0 10px 28px var(--shadow-lg);
+    transform: translateX(4px);
+  }
+
+  .notif-item.unread:hover {
+    border-left-color: var(--accent);
+  }
+
+  /* Unread dot */
+  .notif-dot-wrap {
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+
+  .notif-dot {
+    width: 9px; height: 9px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+
+  .notif-dot.read {
+    background: rgba(15,23,42,0.15);
+    box-shadow: none;
+    animation: none;
+  }
+
+  /* Body */
+  .notif-body { flex: 1; min-width: 0; }
+
+  .notif-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .match-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success-bdr);
+  }
+
+  .match-pill i { font-size: 0.6rem; }
+
+  .match-pill.high {
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: var(--success-bdr);
+  }
+
+  .match-pill.medium {
+    background: rgba(217,119,6,0.10);
+    color: var(--warn);
+    border-color: rgba(217,119,6,0.18);
+  }
+
+  .match-pill.low {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb), 0.18);
+  }
+
+  .notif-time {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--txt-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .notif-time i { font-size: 0.65rem; }
+
+  .notif-unread-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.22rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.14);
+  }
+
+  .notif-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 0.25rem;
+  }
+
+  .notif-msg {
+    font-size: 0.82rem;
+    color: var(--txt-soft);
+    line-height: 1.55;
+    margin-bottom: 0.6rem;
+  }
+
+  .notif-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    color: var(--txt-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .notif-meta i { font-size: 0.68rem; opacity: 0.55; }
+
+  .notif-meta .meta-dot {
+    width: 3px; height: 3px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.2);
+  }
+
+  .notif-meta .meta-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: rgba(var(--accent-rgb), 0.06);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.10);
+  }
+
+  /* Actions */
+  .notif-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .btn-apply-notif {
+    height: 32px;
+    padding: 0 0.9rem;
+    border-radius: 9px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    border: none;
+    background: var(--accent) !important;
+    color: #fff !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.20);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .btn-apply-notif::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.20) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.45s ease;
+  }
+
+  .btn-apply-notif:hover::before { transform: translateX(100%); }
+
+  .btn-apply-notif:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.30);
+    filter: brightness(1.08);
+    color: #fff !important;
+  }
+
+  .btn-apply-notif:active { transform: translateY(0); }
+
+  .btn-mark-read {
+    height: 32px;
+    padding: 0 0.9rem;
+    border-radius: 9px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid rgba(var(--accent-rgb), 0.22);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .btn-mark-read:hover {
+    background: rgba(var(--accent-rgb), 0.06);
+    border-color: rgba(var(--accent-rgb), 0.4);
+    transform: translateY(-1px);
+    color: var(--accent);
+  }
+
+  .read-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--txt-muted);
+    padding: 0.15rem 0.5rem;
+    border-radius: 7px;
+    background: rgba(15,23,42,0.04);
+    border: 1px solid var(--bdr);
+  }
+
+  /* ── Auto-refresh indicator ── */
+  .refresh-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--txt-muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr);
+    animation: fadeIn 0.4s ease both;
+  }
+
+  .refresh-indicator .ri-dot {
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: var(--success);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── Empty / Loading States ── */
+  .empty-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3.5rem 1rem;
+    text-align: center;
+  }
+
+  .empty-block .eb-icon {
+    width: 56px; height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: rgba(var(--accent-rgb), 0.07);
+    color: var(--accent);
+    font-size: 1.4rem;
+    margin-bottom: 0.85rem;
+    animation: iconPop 0.5s 0.2s ease both;
+  }
+
+  @keyframes iconPop {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .empty-block .eb-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--txt-soft);
+    margin-bottom: 0.3rem;
+  }
+
+  .empty-block .eb-sub {
+    font-size: 0.8rem;
+    color: var(--txt-muted);
+    max-width: 280px;
+    line-height: 1.6;
+  }
+
+  /* Shimmer */
+  .shimmer-item {
+    padding: 1.25rem;
+    border-radius: 18px;
+    border: 1px solid var(--bdr);
+    background: var(--surface-alt);
+    margin-bottom: 0.85rem;
+    animation: shimmerPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmerPulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+  }
+
+  .shimmer-line {
+    height: 11px;
+    border-radius: 6px;
+    background: rgba(15,23,42,0.06);
+    margin-bottom: 0.5rem;
+  }
+
+  .shimmer-line.short { width: 40%; }
+  .shimmer-line.medium { width: 65%; }
+  .shimmer-line.full { width: 100%; }
+  .shimmer-line.wide { width: 80%; }
+
+  /* ── Responsive ── */
+  @media (max-width: 767.98px) {
+    .dash-header { flex-direction: column; gap: 1rem; }
+    .dash-header .page-title { font-size: 1.5rem; }
+    .panel-head { padding: 1rem 1.15rem; flex-wrap: wrap; gap: 0.65rem; }
+    .panel-body { padding: 1.15rem; }
+    .notif-item { flex-direction: column; gap: 0.75rem; }
+    .notif-dot-wrap { display: flex; align-items: center; gap: 0.5rem; }
+    .metric-card .mc-value { font-size: 1.75rem; }
+  }
+
+  @media (max-width: 575.98px) {
+    .metric-card { padding: 1.15rem; }
+    .notif-item { padding: 1rem; }
+    .notif-actions { flex-direction: column; align-items: flex-start; }
+    .btn-apply-notif, .btn-mark-read { width: 100%; justify-content: center; }
+  }
+</style>
+
+<div class="notif-page">
+
+  <!-- ── Header ── -->
+  <div class="dash-header">
+    <div>
+      <div class="page-kicker">
+        <span class="pulse-dot"></span>
+        Job match alerts
+      </div>
+      <h1 class="page-title">Notification History</h1>
+      <p class="page-subtitle mb-0">
+        Review AI-generated job match alerts and mark updates as read.
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-outline-accent" onclick="loadNotifications()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Metrics ── -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4 metric-col">
+      <div class="metric-card">
+        <div class="mc-top">
+          <div class="mc-icon"><i class="bi bi-bell"></i></div>
+          <div class="mc-badge"><i class="bi bi-database"></i> All</div>
+        </div>
+        <div id="totalNotifications" class="mc-value">–</div>
+        <div class="mc-label">Total notifications</div>
+      </div>
+    </div>
+    <div class="col-md-4 metric-col">
+      <div class="metric-card">
+        <div class="mc-top">
+          <div class="mc-icon"><i class="bi bi-bell-fill"></i></div>
+          <div class="mc-badge warn"><i class="bi bi-dot"></i> New</div>
+        </div>
+        <div id="unreadNotifications" class="mc-value">–</div>
+        <div class="mc-label">Unread</div>
+      </div>
+    </div>
+    <div class="col-md-4 metric-col">
+      <div class="metric-card">
+        <div class="mc-top">
+          <div class="mc-icon"><i class="bi bi-stars"></i></div>
+          <div class="mc-badge"><i class="bi bi-arrow-up-short"></i> Best</div>
+        </div>
+        <div id="topMatchNotification" class="mc-value">–</div>
+        <div class="mc-label">Top match</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Notifications Panel ── -->
+  <div class="dash-panel">
+    <div class="panel-head">
+      <div class="panel-title">
+        <div class="panel-icon"><i class="bi bi-bell"></i></div>
+        All notifications
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span id="unreadBadge" class="unread-badge" style="display:none!important;">
+          <span class="u-dot"></span>
+          <span id="unreadBadgeText">0 unread</span>
+        </span>
+        <span class="refresh-indicator">
+          <span class="ri-dot"></span>
+          Auto-refreshes every 30s
+        </span>
+      </div>
+    </div>
+    <div class="panel-body" id="notificationsList"></div>
+  </div>
+
+</div>
 {% endblock %}
+
 {% block scripts %}
 <script>
-requireRole("job_seeker");
+  requireRole("job_seeker");
 
-function renderNotificationHistory(item) {
-  const job = item.job || {};
-  const recruiter = item.recruiter || {};
-  return `
-    <article class="notification-card ${item.is_read ? "" : "notification-card-unread"}">
-      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-          <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-            <span class="status-chip status-chip-success">${item.match_percentage}% match</span>
-            <span class="small text-muted-strong">${escapeHtml(new Date(item.created_at).toLocaleString())}</span>
+  /* ── Apply accent color ── */
+  (function applyAccentColor() {
+    const saved = localStorage.getItem("pref_accent");
+    if (!saved) return;
+    document.documentElement.style.setProperty("--bs-primary", saved);
+    const temp = document.createElement("div");
+    temp.style.color = saved;
+    document.body.appendChild(temp);
+    const rgb = getComputedStyle(temp).color;
+    document.body.removeChild(temp);
+    const m = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
+    if (m) document.documentElement.style.setProperty(
+      "--bs-primary-rgb", `${m[1]}, ${m[2]}, ${m[3]}`
+    );
+  })();
+
+  /* ── Number animation ── */
+  function animateValue(id, target, suffix = "") {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (isNaN(target)) { el.textContent = target + suffix; return; }
+    const dur = 600, start = performance.now();
+    function step(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * ease) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ── Time formatter ── */
+  function timeAgo(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    if (diff < 60)     return "Just now";
+    if (diff < 3600)   return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400)  return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+    return date.toLocaleDateString();
+  }
+
+  /* ── Match pill class ── */
+  function matchPillClass(pct) {
+    if (pct >= 75) return "match-pill high";
+    if (pct >= 50) return "match-pill medium";
+    return "match-pill low";
+  }
+
+  /* ── Shimmer loader ── */
+  function shimmerLoader(count = 4) {
+    return Array.from({ length: count }, (_, i) => `
+      <div class="shimmer-item" style="animation-delay:${i * 0.08}s">
+        <div class="shimmer-line short mb-2"></div>
+        <div class="shimmer-line medium mb-2"></div>
+        <div class="shimmer-line wide mb-2"></div>
+        <div class="shimmer-line full"></div>
+      </div>`
+    ).join("");
+  }
+
+  /* ── Empty state ── */
+  function emptyBlock(icon, title, sub) {
+    return `
+      <div class="empty-block">
+        <div class="eb-icon"><i class="bi bi-${icon}"></i></div>
+        <div class="eb-title">${title}</div>
+        <div class="eb-sub">${sub}</div>
+      </div>`;
+  }
+
+  /* ── Render notification card ── */
+  function renderNotificationHistory(item, index) {
+    const job       = item.job || {};
+    const recruiter = item.recruiter || {};
+    const pct       = item.match_percentage || 0;
+    const isUnread  = !item.is_read;
+    const ago       = timeAgo(item.created_at);
+    const fullDate  = new Date(item.created_at).toLocaleString();
+    const pillClass = matchPillClass(pct);
+
+    return `
+      <div class="notif-item ${isUnread ? 'unread' : ''}"
+           style="animation-delay:${index * 0.06}s">
+
+        <div class="notif-dot-wrap">
+          <div class="notif-dot ${isUnread ? '' : 'read'}"></div>
+        </div>
+
+        <div class="notif-body">
+          <div class="notif-top">
+            <span class="${pillClass}">
+              <i class="bi bi-check-circle-fill"></i> ${pct}% match
+            </span>
+            <span class="notif-time" title="${escapeHtml(fullDate)}">
+              <i class="bi bi-clock"></i> ${escapeHtml(ago)}
+            </span>
+            ${isUnread ? `<span class="notif-unread-tag"><i class="bi bi-dot"></i> Unread</span>` : ''}
           </div>
-          <h2 class="h5 mb-1">${escapeHtml(item.title)}</h2>
-          <p class="text-muted-strong mb-2">${escapeHtml(item.message)}</p>
-          <div class="small text-muted-strong">
-            ${escapeHtml(job.company || "Company")} &middot; ${escapeHtml(job.title || "Role")} &middot; Recruiter: ${escapeHtml(recruiter.email || "Not listed")}
+
+          <div class="notif-title">${escapeHtml(item.title)}</div>
+          <div class="notif-msg">${escapeHtml(item.message)}</div>
+
+          <div class="notif-meta">
+            <i class="bi bi-building"></i> ${escapeHtml(job.company || "Company")}
+            <span class="meta-dot"></span>
+            <span class="meta-tag">
+              <i class="bi bi-briefcase" style="font-size:0.6rem;"></i>
+              ${escapeHtml(job.title || "Role")}
+            </span>
+            <span class="meta-dot"></span>
+            <i class="bi bi-person"></i> ${escapeHtml(recruiter.email || "Recruiter not listed")}
+          </div>
+
+          <div class="notif-actions">
+            <a class="btn-apply-notif"
+               href="/jobs/?role=${encodeURIComponent(job.title || '')}">
+              <i class="bi bi-send"></i> Apply
+            </a>
+            ${isUnread
+              ? `<button class="btn-mark-read" type="button" onclick="markRead(${item.id})">
+                   <i class="bi bi-check2"></i> Mark read
+                 </button>`
+              : `<span class="read-badge">
+                   <i class="bi bi-check2-all"></i> Read
+                 </span>`
+            }
           </div>
         </div>
-        <div class="d-flex flex-wrap gap-2 align-items-start">
-          <a class="btn btn-primary btn-sm" href="/jobs/?role=${encodeURIComponent(job.title || "")}"><i class="bi bi-send"></i> Apply</a>
-          ${item.is_read ? '<span class="status-chip status-chip-soft">Read</span>' : `<button class="btn btn-outline-primary btn-sm" type="button" onclick="markRead(${item.id})"><i class="bi bi-check2"></i> Mark read</button>`}
-        </div>
-      </div>
-    </article>`;
-}
+      </div>`;
+  }
 
-async function markRead(id) {
-  await api(`/api/notifications/${id}/read/`, {method: "POST"});
+  /* ── Mark as read ── */
+  async function markRead(id) {
+    const btn = document.querySelector(`[onclick="markRead(${id})"]`);
+    if (btn) {
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>';
+      btn.disabled = true;
+    }
+    await api(`/api/notifications/${id}/read/`, { method: "POST" });
+    await loadNotifications();
+    loadNotificationBell();
+  }
+
+  /* ── Load notifications ── */
+  async function loadNotifications() {
+    document.getElementById("notificationsList").innerHTML = shimmerLoader(4);
+
+    const notifications = await api("/api/notifications/");
+    const total  = notifications.length;
+    const unread = notifications.filter(n => !n.is_read).length;
+    const topPct = Math.max(0, ...notifications.map(n => n.match_percentage || 0));
+
+    /* Metrics */
+    animateValue("totalNotifications", total);
+    animateValue("unreadNotifications", unread);
+    document.getElementById("topMatchNotification").textContent = topPct + "%";
+
+    /* Unread badge */
+    const unreadBadge = document.getElementById("unreadBadge");
+    const unreadText  = document.getElementById("unreadBadgeText");
+    if (unread > 0) {
+      unreadBadge.style.removeProperty("display");
+      unreadText.textContent = `${unread} unread`;
+    } else {
+      unreadBadge.style.setProperty("display", "none", "important");
+    }
+
+    /* List */
+    document.getElementById("notificationsList").innerHTML = total
+      ? notifications.map(renderNotificationHistory).join("")
+      : emptyBlock(
+          "bell-slash",
+          "No notifications yet",
+          "Upload a resume in AI Match to start generating job match alerts."
+        );
+  }
+
   loadNotifications();
-  loadNotificationBell();
-}
-
-async function loadNotifications() {
-  const notifications = await api("/api/notifications/");
-  const unread = notifications.filter(item => !item.is_read).length;
-  document.getElementById("totalNotifications").textContent = notifications.length;
-  document.getElementById("unreadNotifications").textContent = unread;
-  document.getElementById("topMatchNotification").textContent = `${Math.max(0, ...notifications.map(item => item.match_percentage || 0))}%`;
-  document.getElementById("notificationsList").innerHTML = notifications.map(renderNotificationHistory).join("") || `<div class="empty-state">No notifications yet. Upload a resume in AI Match to generate alerts.</div>`;
-}
-
-loadNotifications();
-setInterval(loadNotifications, 30000);
+  setInterval(loadNotifications, 30000);
 </script>
 {% endblock %}

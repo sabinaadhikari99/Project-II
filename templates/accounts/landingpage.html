@@ -1,0 +1,1232 @@
+<!-- file path: templates/landing.html -->
+{% extends "base.html" %}
+{% block title %}SkillSync AI — AI-Powered Career Platform{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --accent: var(--bs-primary, #4f46e5);
+    --accent-rgb: var(--bs-primary-rgb, 79, 70, 229);
+    --surface: #fff;
+    --surface-alt: #f8f9fb;
+    --txt: rgba(15,23,42,0.88);
+    --txt-soft: rgba(15,23,42,0.55);
+    --txt-muted: rgba(15,23,42,0.38);
+    --bdr: rgba(15,23,42,0.06);
+    --shadow: rgba(15,23,42,0.06);
+    --shadow-lg: rgba(15,23,42,0.10);
+    --success: #16a34a;
+    --success-bg: rgba(34,197,94,0.10);
+    --success-bdr: rgba(34,197,94,0.18);
+  }
+
+  .landing-page {
+    overflow-x: hidden;
+  }
+
+  /* ══════════════════════════════
+     ANIMATED BACKGROUND
+     ══════════════════════════════ */
+  .landing-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .landing-bg .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(15,23,42,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15,23,42,0.018) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridPulse 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes gridPulse {
+    0%   { opacity: 0.4; }
+    100% { opacity: 0.7; }
+  }
+
+  .landing-bg .orb {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(80px);
+    opacity: 0.08;
+    animation: orbFloat 18s ease-in-out infinite alternate;
+  }
+
+  .landing-bg .orb-1 {
+    width: 500px; height: 500px;
+    background: var(--accent);
+    top: -150px; right: -100px;
+    animation-duration: 20s;
+  }
+
+  .landing-bg .orb-2 {
+    width: 400px; height: 400px;
+    background: var(--accent);
+    bottom: 20%; left: -100px;
+    animation-duration: 16s;
+    animation-delay: -4s;
+  }
+
+  .landing-bg .orb-3 {
+    width: 300px; height: 300px;
+    background: var(--accent);
+    top: 55%; right: 20%;
+    animation-duration: 22s;
+    animation-delay: -8s;
+    opacity: 0.05;
+  }
+
+  @keyframes orbFloat {
+    0%   { transform: translate(0,0) scale(1); }
+    33%  { transform: translate(40px,-30px) scale(1.08); }
+    66%  { transform: translate(-20px,40px) scale(0.95); }
+    100% { transform: translate(30px,-20px) scale(1.03); }
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 999px;
+    background: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    animation: particleRise linear infinite;
+  }
+
+  @keyframes particleRise {
+    0%   { opacity: 0; transform: translateY(100vh) scale(0); }
+    10%  { opacity: 0.2; }
+    90%  { opacity: 0.06; }
+    100% { opacity: 0; transform: translateY(-20vh) scale(1); }
+  }
+
+  /* ══════════════════════════════
+     HERO SECTION
+     ══════════════════════════════ */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 0 4rem;
+    text-align: center;
+  }
+
+  .hero .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid rgba(var(--accent-rgb), 0.15);
+    background: rgba(var(--accent-rgb), 0.06);
+    color: var(--accent);
+    margin-bottom: 2rem;
+    animation: fadeSlideDown 0.6s ease both;
+  }
+
+  .hero .hero-badge .hb-dot {
+    width: 8px; height: 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseDot {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: 0.35; transform: scale(0.55); }
+  }
+
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.12;
+    max-width: 820px;
+    margin: 0 auto 1.25rem;
+    color: var(--txt);
+    animation: fadeSlideDown 0.6s 0.1s ease both;
+  }
+
+  .hero h1 .gradient-text {
+    background: linear-gradient(135deg, var(--accent), rgba(var(--accent-rgb), 0.55));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .hero-sub {
+    font-size: 1.1rem;
+    color: var(--txt-soft);
+    max-width: 580px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+    animation: fadeSlideDown 0.6s 0.2s ease both;
+  }
+
+  .hero .hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    animation: fadeSlideDown 0.6s 0.3s ease both;
+  }
+
+  .btn-hero-primary {
+    height: 54px;
+    padding: 0 2rem;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: none;
+    background: var(--accent) !important;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 12px 28px rgba(var(--accent-rgb), 0.28);
+  }
+
+  .btn-hero-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  .btn-hero-primary:hover::before { transform: translateX(100%); }
+
+  .btn-hero-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(var(--accent-rgb), 0.35);
+    filter: brightness(1.08);
+    color: #fff !important;
+  }
+
+  .btn-hero-primary:active { transform: translateY(0); }
+
+  .btn-hero-secondary {
+    height: 54px;
+    padding: 0 2rem;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    background: transparent !important;
+    color: var(--accent) !important;
+    border: 2px solid rgba(var(--accent-rgb), 0.22) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-hero-secondary:hover {
+    background: rgba(var(--accent-rgb), 0.06) !important;
+    border-color: rgba(var(--accent-rgb), 0.4) !important;
+    transform: translateY(-3px);
+    color: var(--accent) !important;
+  }
+
+  /* ── Stats row ── */
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    animation: fadeSlideDown 0.6s 0.4s ease both;
+  }
+
+  .hero-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.35rem;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--bdr);
+    box-shadow: 0 8px 20px var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .hero-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px var(--shadow-lg);
+  }
+
+  .hero-stat .hs-icon {
+    width: 40px; height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .hero-stat:hover .hs-icon {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
+  }
+
+  .hero-stat .hs-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--txt);
+    line-height: 1.2;
+  }
+
+  .hero-stat .hs-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--txt-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ══════════════════════════════
+     FEATURES SECTION
+     ══════════════════════════════ */
+  .features {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(var(--accent-rgb), 0.06);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.14);
+    margin-bottom: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 800;
+    color: var(--txt);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-header p {
+    font-size: 1rem;
+    color: var(--txt-soft);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .feature-card {
+    padding: 1.75rem;
+    border-radius: 22px;
+    border: 1px solid var(--bdr);
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 22px 22px 0 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px var(--shadow-lg);
+    border-color: rgba(var(--accent-rgb), 0.14);
+  }
+
+  .feature-card .fc-icon {
+    width: 52px; height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 1.3rem;
+    margin-bottom: 1.15rem;
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover .fc-icon {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.1) rotate(-4deg);
+    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.28);
+  }
+
+  .feature-card .fc-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-card .fc-desc {
+    font-size: 0.84rem;
+    color: var(--txt-soft);
+    line-height: 1.65;
+    margin-bottom: 0;
+  }
+
+  /* ══════════════════════════════
+     HOW IT WORKS
+     ══════════════════════════════ */
+  .how-it-works {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    position: relative;
+  }
+
+  /* Connecting line */
+  .steps-grid::before {
+    content: "";
+    position: absolute;
+    top: 38px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.15), rgba(var(--accent-rgb), 0.15), transparent);
+    z-index: 0;
+  }
+
+  .step-card {
+    text-align: center;
+    padding: 1.5rem 1.25rem;
+    border-radius: 20px;
+    border: 1px solid var(--bdr);
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+
+  .step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 36px var(--shadow-lg);
+    border-color: rgba(var(--accent-rgb), 0.14);
+  }
+
+  .step-card .sc-num {
+    width: 44px; height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.25);
+    transition: all 0.3s ease;
+  }
+
+  .step-card:hover .sc-num {
+    transform: scale(1.12) rotate(-5deg);
+    box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.35);
+  }
+
+  .step-card .sc-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 0.3rem;
+  }
+
+  .step-card .sc-desc {
+    font-size: 0.78rem;
+    color: var(--txt-soft);
+    line-height: 1.55;
+  }
+
+  /* ══════════════════════════════
+     ROLES SECTION
+     ══════════════════════════════ */
+  .roles {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+  }
+
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .role-card {
+    padding: 2rem 1.75rem;
+    border-radius: 22px;
+    border: 1px solid var(--bdr);
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(12px);
+    text-align: center;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .role-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .role-card:hover::before { opacity: 1; }
+
+  .role-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px var(--shadow-lg);
+    border-color: rgba(var(--accent-rgb), 0.16);
+  }
+
+  .role-card .rc-icon {
+    width: 60px; height: 60px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+    transition: all 0.3s ease;
+  }
+
+  .role-card:hover .rc-icon {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.1) rotate(-4deg);
+    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.28);
+  }
+
+  .role-card .rc-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 0.4rem;
+  }
+
+  .role-card .rc-desc {
+    font-size: 0.84rem;
+    color: var(--txt-soft);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .role-card .rc-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+  }
+
+  .role-card .rc-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--txt-soft);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--bdr);
+  }
+
+  .role-card .rc-features li:last-child { border-bottom: none; }
+
+  .role-card .rc-features li i {
+    color: var(--accent);
+    font-size: 0.75rem;
+  }
+
+  /* ══════════════════════════════
+     TESTIMONIALS
+     ══════════════════════════════ */
+  .testimonials {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .testi-card {
+    padding: 1.75rem;
+    border-radius: 22px;
+    border: 1px solid var(--bdr);
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+  }
+
+  .testi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px var(--shadow-lg);
+    border-color: rgba(var(--accent-rgb), 0.12);
+  }
+
+  .testi-card .tc-stars {
+    display: flex;
+    gap: 0.15rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .testi-card .tc-stars i {
+    color: #f59e0b;
+    font-size: 0.85rem;
+  }
+
+  .testi-card .tc-quote {
+    font-size: 0.88rem;
+    color: var(--txt-soft);
+    line-height: 1.7;
+    margin-bottom: 1.15rem;
+    font-style: italic;
+  }
+
+  .testi-card .tc-author {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .testi-card .tc-avatar {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .testi-card .tc-name {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--txt);
+  }
+
+  .testi-card .tc-role {
+    font-size: 0.72rem;
+    color: var(--txt-muted);
+  }
+
+  /* ══════════════════════════════
+     CTA SECTION
+     ══════════════════════════════ */
+  .cta-section {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0 5rem;
+  }
+
+  .cta-card {
+    background: var(--accent);
+    border-radius: 28px;
+    padding: 3.5rem;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(var(--accent-rgb), 0.25);
+  }
+
+  .cta-card::before,
+  .cta-card::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .cta-card::before {
+    width: 300px; height: 300px;
+    top: -120px; right: -80px;
+    animation: orbFloat 14s ease-in-out infinite alternate;
+  }
+
+  .cta-card::after {
+    width: 200px; height: 200px;
+    bottom: -80px; left: 40px;
+    animation: orbFloat 18s ease-in-out infinite alternate-reverse;
+  }
+
+  .cta-card .cta-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-card h2 {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  .cta-card p {
+    font-size: 1rem;
+    opacity: 0.82;
+    max-width: 480px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  .cta-card .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-cta-white {
+    height: 52px;
+    padding: 0 2rem;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    background: #fff !important;
+    color: var(--accent) !important;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .btn-cta-white:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.18);
+    color: var(--accent) !important;
+  }
+
+  .btn-cta-outline {
+    height: 52px;
+    padding: 0 2rem;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    background: transparent !important;
+    color: #fff !important;
+    border: 2px solid rgba(255,255,255,0.3) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-cta-outline:hover {
+    background: rgba(255,255,255,0.12) !important;
+    border-color: rgba(255,255,255,0.5) !important;
+    transform: translateY(-3px);
+    color: #fff !important;
+  }
+
+  /* ══════════════════════════════
+     FOOTER
+     ══════════════════════════════ */
+  .landing-footer {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 0;
+    border-top: 1px solid var(--bdr);
+    text-align: center;
+  }
+
+  .landing-footer .lf-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--txt);
+    margin-bottom: 0.5rem;
+  }
+
+  .landing-footer .lf-brand .lf-mark {
+    width: 32px; height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .landing-footer p {
+    font-size: 0.78rem;
+    color: var(--txt-muted);
+    margin-bottom: 0;
+  }
+
+  /* ══════════════════════════════
+     SCROLL ANIMATIONS
+     ══════════════════════════════ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.08s; }
+  .reveal-delay-2 { transition-delay: 0.16s; }
+  .reveal-delay-3 { transition-delay: 0.24s; }
+  .reveal-delay-4 { transition-delay: 0.32s; }
+
+  /* ══════════════════════════════
+     RESPONSIVE
+     ══════════════════════════════ */
+  @media (max-width: 991.98px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps-grid::before { display: none; }
+    .roles-grid { grid-template-columns: repeat(2, 1fr); }
+    .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero { padding: 3.5rem 0 3rem; }
+    .cta-card { padding: 2.5rem 1.75rem; }
+  }
+
+  @media (max-width: 767.98px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+    .roles-grid { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.85rem; }
+    .hero .hero-sub { font-size: 0.95rem; }
+    .hero-stats { flex-direction: column; align-items: center; }
+    .cta-card h2 { font-size: 1.5rem; }
+    .cta-card { padding: 2rem 1.25rem; border-radius: 22px; }
+  }
+
+  @media (max-width: 575.98px) {
+    .steps-grid { grid-template-columns: 1fr; }
+    .hero { padding: 2.5rem 0 2rem; }
+    .hero-stat { width: 100%; justify-content: center; }
+    .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
+  }
+</style>
+
+<!-- ── Animated Background ── -->
+<div class="landing-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="landing-page">
+
+  <!-- ════════════════════════════════
+       HERO
+       ════════════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="hb-dot"></span>
+        AI-Powered Career Platform
+      </div>
+
+      <h1>
+        Your Career, Supercharged by<br>
+        <span class="gradient-text">Artificial Intelligence</span>
+      </h1>
+
+      <p class="hero-sub">
+        SkillSync AI connects talent, recruiters, and opportunities through intelligent
+        recommendations, skill analytics, and career insights — all in one platform.
+      </p>
+
+      <div class="hero-actions">
+        <a href="/register/" class="btn-hero-primary">
+          <i class="bi bi-rocket-takeoff"></i> Get Started Free
+        </a>
+        <a href="/login/" class="btn-hero-secondary">
+          <i class="bi bi-box-arrow-in-right"></i> Sign In
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hs-icon"><i class="bi bi-cpu"></i></div>
+          <div>
+            <div class="hs-value">AI</div>
+            <div class="hs-label">Smart Matching</div>
+          </div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-icon"><i class="bi bi-lightning-charge"></i></div>
+          <div>
+            <div class="hs-value">Instant</div>
+            <div class="hs-label">Skill Analysis</div>
+          </div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-icon"><i class="bi bi-shield-check"></i></div>
+          <div>
+            <div class="hs-value">Secure</div>
+            <div class="hs-label">& Encrypted</div>
+          </div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-icon"><i class="bi bi-clock"></i></div>
+          <div>
+            <div class="hs-value">24/7</div>
+            <div class="hs-label">Career Tools</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       FEATURES
+       ════════════════════════════════ -->
+  <section class="features">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-badge"><i class="bi bi-stars"></i> Platform Features</div>
+        <h2>Everything you need to accelerate your career</h2>
+        <p>From resume analysis to AI-powered job matching — SkillSync gives you an unfair advantage.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="fc-icon"><i class="bi bi-stars"></i></div>
+          <div class="fc-title">AI Resume Analyzer</div>
+          <div class="fc-desc">Upload your resume PDF and get instant AI-powered scoring, skill extraction, and improvement suggestions.</div>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="fc-icon"><i class="bi bi-briefcase"></i></div>
+          <div class="fc-title">Smart Job Matching</div>
+          <div class="fc-desc">Our AI matches your skills to active job postings and ranks them by compatibility percentage.</div>
+        </div>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="fc-icon"><i class="bi bi-lightning-charge"></i></div>
+          <div class="fc-title">Skill Gap Analysis</div>
+          <div class="fc-desc">Discover exactly which skills you're missing and get targeted learning resources to close the gap.</div>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="fc-icon"><i class="bi bi-chat-dots"></i></div>
+          <div class="fc-title">Career Chatbot</div>
+          <div class="fc-desc">Get personalized career advice, interview prep, and resume tips from our AI assistant anytime.</div>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="fc-icon"><i class="bi bi-ui-checks-grid"></i></div>
+          <div class="fc-title">Skill Quizzes</div>
+          <div class="fc-desc">Test your knowledge with AI-generated quizzes and track your progress across different domains.</div>
+        </div>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="fc-icon"><i class="bi bi-bell"></i></div>
+          <div class="fc-title">Match Notifications</div>
+          <div class="fc-desc">Get real-time alerts when new jobs match your profile, so you never miss an opportunity.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       HOW IT WORKS
+       ════════════════════════════════ -->
+  <section class="how-it-works">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-badge"><i class="bi bi-signpost-split"></i> How It Works</div>
+        <h2>From signup to your dream job in 4 steps</h2>
+        <p>Simple, fast, and powered by AI at every stage.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card reveal reveal-delay-1">
+          <div class="sc-num">1</div>
+          <div class="sc-title">Create Account</div>
+          <div class="sc-desc">Sign up in seconds with just your email and choose your role.</div>
+        </div>
+        <div class="step-card reveal reveal-delay-2">
+          <div class="sc-num">2</div>
+          <div class="sc-title">Upload Resume</div>
+          <div class="sc-desc">Upload your resume PDF for instant AI analysis and skill extraction.</div>
+        </div>
+        <div class="step-card reveal reveal-delay-3">
+          <div class="sc-num">3</div>
+          <div class="sc-title">Get Matched</div>
+          <div class="sc-desc">AI matches your profile to relevant jobs with compatibility scores.</div>
+        </div>
+        <div class="step-card reveal reveal-delay-4">
+          <div class="sc-num">4</div>
+          <div class="sc-title">Apply & Grow</div>
+          <div class="sc-desc">Apply to matched roles, close skill gaps, and advance your career.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       ROLES
+       ════════════════════════════════ -->
+  <section class="roles">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-badge"><i class="bi bi-people"></i> Built For Everyone</div>
+        <h2>Three roles, one platform</h2>
+        <p>Whether you're seeking, hiring, or managing — SkillSync adapts to your workflow.</p>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-card reveal reveal-delay-1">
+          <div class="rc-icon"><i class="bi bi-search"></i></div>
+          <div class="rc-title">Job Seekers</div>
+          <div class="rc-desc">Find your perfect role with AI-powered recommendations tailored to your skills.</div>
+          <ul class="rc-features">
+            <li><i class="bi bi-check-circle-fill"></i> AI resume analysis</li>
+            <li><i class="bi bi-check-circle-fill"></i> Smart job matching</li>
+            <li><i class="bi bi-check-circle-fill"></i> Skill gap insights</li>
+            <li><i class="bi bi-check-circle-fill"></i> Career chatbot</li>
+          </ul>
+        </div>
+        <div class="role-card reveal reveal-delay-2">
+          <div class="rc-icon"><i class="bi bi-person-badge"></i></div>
+          <div class="rc-title">Recruiters</div>
+          <div class="rc-desc">Post jobs and let AI rank the best candidates based on skill compatibility.</div>
+          <ul class="rc-features">
+            <li><i class="bi bi-check-circle-fill"></i> Job posting dashboard</li>
+            <li><i class="bi bi-check-circle-fill"></i> AI candidate ranking</li>
+            <li><i class="bi bi-check-circle-fill"></i> Match scoring</li>
+            <li><i class="bi bi-check-circle-fill"></i> Application management</li>
+          </ul>
+        </div>
+        <div class="role-card reveal reveal-delay-3">
+          <div class="rc-icon"><i class="bi bi-shield-check"></i></div>
+          <div class="rc-title">Admins</div>
+          <div class="rc-desc">Monitor platform health with analytics dashboards and user management tools.</div>
+          <ul class="rc-features">
+            <li><i class="bi bi-check-circle-fill"></i> User management</li>
+            <li><i class="bi bi-check-circle-fill"></i> Analytics reports</li>
+            <li><i class="bi bi-check-circle-fill"></i> Activity charts</li>
+            <li><i class="bi bi-check-circle-fill"></i> Platform controls</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       TESTIMONIALS
+       ════════════════════════════════ -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-badge"><i class="bi bi-chat-quote"></i> What People Say</div>
+        <h2>Trusted by professionals worldwide</h2>
+        <p>See how SkillSync AI is transforming career journeys.</p>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testi-card reveal reveal-delay-1">
+          <div class="tc-stars">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+          </div>
+          <div class="tc-quote">"SkillSync's AI matched me to a role I never would have found on my own. The skill gap analysis showed me exactly what to learn."</div>
+          <div class="tc-author">
+            <div class="tc-avatar">AK</div>
+            <div>
+              <div class="tc-name">Aisha K.</div>
+              <div class="tc-role">Software Engineer</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card reveal reveal-delay-2">
+          <div class="tc-stars">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+          </div>
+          <div class="tc-quote">"As a recruiter, the AI candidate ranking saves me hours. I get the best matches instantly instead of sorting through hundreds of resumes."</div>
+          <div class="tc-author">
+            <div class="tc-avatar">JM</div>
+            <div>
+              <div class="tc-name">James M.</div>
+              <div class="tc-role">Senior Recruiter</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card reveal reveal-delay-3">
+          <div class="tc-stars">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+          </div>
+          <div class="tc-quote">"The career chatbot gave me interview tips that actually worked. I landed my dream job within two weeks of using SkillSync."</div>
+          <div class="tc-author">
+            <div class="tc-avatar">RP</div>
+            <div>
+              <div class="tc-name">Ravi P.</div>
+              <div class="tc-role">Data Analyst</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       CTA
+       ════════════════════════════════ -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-card reveal">
+        <div class="cta-content">
+          <h2>Ready to supercharge your career?</h2>
+          <p>Join thousands of professionals using SkillSync AI to find better opportunities, close skill gaps, and grow faster.</p>
+          <div class="cta-actions">
+            <a href="/register/" class="btn-cta-white">
+              <i class="bi bi-rocket-takeoff"></i> Create Free Account
+            </a>
+            <a href="/login/" class="btn-cta-outline">
+              <i class="bi bi-box-arrow-in-right"></i> Sign In
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       FOOTER
+       ════════════════════════════════ -->
+  <footer class="landing-footer">
+    <div class="container">
+      <div class="lf-brand">
+        <div class="lf-mark">S</div>
+        SkillSync AI
+      </div>
+      <p>&copy; 2025 SkillSync AI. AI-powered career platform for everyone.</p>
+    </div>
+  </footer>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /* ── Floating Particles ── */
+  (function createParticles() {
+    const bg = document.querySelector('.landing-bg');
+    if (!bg) return;
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const s = Math.random() * 4 + 2;
+      p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*8}s;`;
+      bg.appendChild(p);
+    }
+  })();
+
+  /* ── Scroll reveal ── */
+  (function scrollReveal() {
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+  })();
+
+  /* ── Apply accent color ── */
+  (function applyAccentColor() {
+    const saved = localStorage.getItem("pref_accent");
+    if (!saved) return;
+    document.documentElement.style.setProperty("--bs-primary", saved);
+    const temp = document.createElement("div");
+    temp.style.color = saved;
+    document.body.appendChild(temp);
+    const rgb = getComputedStyle(temp).color;
+    document.body.removeChild(temp);
+    const m = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
+    if (m) document.documentElement.style.setProperty(
+      "--bs-primary-rgb", `${m[1]}, ${m[2]}, ${m[3]}`
+    );
+  })();
+</script>
+{% endblock %}

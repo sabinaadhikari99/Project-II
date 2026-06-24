@@ -1,7 +1,12 @@
 # file path: apps/accounts/urls.py
 from django.urls import path
 
-from .views import LoginAPIView, ProfileAPIView, RegisterAPIView, ResumeUploadAPIView
+from .views import (
+    LoginAPIView,
+    ProfileAPIView,
+    RegisterAPIView,
+    ResumeUploadAPIView,
+)
 
 urlpatterns = [
     path("register/", RegisterAPIView.as_view(), name="auth-register"),
