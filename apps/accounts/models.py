@@ -8,7 +8,11 @@ from apps.shared.constants import ROLE_JOB_SEEKER, USER_ROLES
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     profile_picture = models.TextField(blank=True, default="")
-    role = models.CharField(max_length=20, choices=USER_ROLES, default=ROLE_JOB_SEEKER)
+    role = models.CharField(
+        max_length=20,
+        choices=USER_ROLES,
+        default=ROLE_JOB_SEEKER
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -18,7 +22,7 @@ class User(AbstractUser):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    user = models.OneToOneField(User,on_delete=models.CASCADE,related_name="profile")
     skills = models.JSONField(default=list, blank=True)
     resume_text = models.TextField(blank=True)
     cv_url = models.URLField(blank=True)
