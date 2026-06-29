@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
 
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("", TemplateView.as_view(template_name="accounts/login.html"), name="home"),
@@ -29,8 +31,13 @@ urlpatterns = [
     path("api/quiz/", include("apps.quiz.urls")),
     path("api/external/", include("apps.external.urls")),
     path("api/notifications/", include("apps.notifications.urls")),
-    path('cvgen/', include('apps.cvgen.urls', namespace='cvgen'))
+    path('cvgen/', include('apps.cvgen.urls', namespace='cvgen')),
+
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema')),
 
 ]
 
 admin.site.site_header = "SkillSync AI Admin"
+
+

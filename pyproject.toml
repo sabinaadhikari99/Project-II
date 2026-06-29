@@ -26,6 +26,7 @@ dependencies = [
   "requests==2.31.0",
   "cloudinary==1.36.0",
   "pypdf2>=3.0.1",
+  "drf-spectacular>=0.29.0",
 ]
 
 [tool.uv]

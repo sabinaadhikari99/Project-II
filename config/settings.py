@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "apps.external",
     "apps.notifications",
     "apps.cvgen",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -97,6 +98,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
@@ -119,3 +122,26 @@ DATA_DIR = BASE_DIR / "data"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 APIFY_TOKEN = os.getenv("APIFY_API_TOKEN") or os.getenv("APIFY_TOKEN", "")
 LINKEDIN_ACTOR_ID = os.getenv("LINKEDIN_ACTOR_ID", "hKByXkMQaC5Qt9UMN")
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "SkillSync AI API",
+    "DESCRIPTION": "API documentation",
+    "VERSION": "1.0.0",
+
+    "SECURITY": [
+        {
+            "BearerAuth": []
+        }
+    ],
+
+    "COMPONENTS": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    },
+}
+
