@@ -13,6 +13,8 @@ DEBUG = os.getenv("DEBUG", "1") == "1"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 INSTALLED_APPS = [
+    "jazzmin",
+    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -145,3 +147,13 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Inventory Management",
+    "site_header": "Inventory Management",
+    "site_brand": "Inventory Management",
+    "welcome_sign": "Welcome to Inventory Management Admin",
+    "copyright": "Satkriti",
+    "show_sidebar": True,
+    "navigation_expanded": True,
+}
