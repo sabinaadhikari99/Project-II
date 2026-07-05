@@ -1,1233 +1,2128 @@
-<!-- file path: templates/landing.html -->
 {% extends "base.html" %}
-{% block title %}SkillSync AI — AI-Powered Career Platform{% endblock %}
+{% load static %}
+
+{% block title %}SkillSync AI - Smart Career Matching Platform{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    /* ============================================
+       VIBRANT BLUE THEME - FACEBOOK INSPIRED
+       ============================================ */
+    :root {
+        --fb-blue: #1877F2;
+        --fb-blue-dark: #0D65D9;
+        --fb-blue-darker: #0A4FA8;
+        --fb-blue-light: #4B8BF5;
+        --fb-blue-lighter: #E7F3FF;
+        --fb-blue-lightest: #F0F8FF;
+        --fb-blue-bg: #F0F2F5;
+        --fb-white: #FFFFFF;
+        --fb-text: #050505;
+        --fb-text-secondary: #65676B;
+        --fb-border: #DADDE1;
+        --gradient-primary: linear-gradient(135deg, #1877F2 0%, #4B8BF5 50%, #42B0FF 100%);
+        --gradient-secondary: linear-gradient(135deg, #1877F2 0%, #42B0FF 100%);
+        --gradient-hero: linear-gradient(180deg, #F0F8FF 0%, #E7F3FF 40%, #D6E9FF 80%, #E7F3FF 100%);
+        --glass-bg: rgba(255, 255, 255, 0.92);
+        --glass-border: rgba(24, 119, 242, 0.15);
+        --text-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        --transition-smooth: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        --font-display: 'Lexend', 'Inter', sans-serif;
+        --font-body: 'Inter', sans-serif;
+        --shadow-blue: 0 8px 30px rgba(24, 119, 242, 0.2);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: var(--font-body);
+        background: var(--fb-blue-bg);
+        color: var(--fb-text);
+        overflow-x: hidden;
+    }
+
+    /* Override container-fluid from base */
+    .app-main.container-fluid {
+        padding: 0 !important;
+        max-width: 100%;
+    }
+
+    /* ============================================
+       UTILITY CLASSES
+       ============================================ */
+    .text-gradient {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .text-gradient-blue {
+        background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 50%, #42B0FF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .bg-gradient-primary {
+        background: var(--gradient-primary);
+    }
+
+    .btn-gradient {
+        background: var(--gradient-primary);
+        border: none;
+        color: #fff;
+        padding: 14px 36px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-family: var(--font-body);
+        box-shadow: 0 4px 25px rgba(24, 119, 242, 0.3);
+        background-size: 200% 200%;
+        animation: gradientMove 4s ease-in-out infinite;
+    }
+
+    @keyframes gradientMove {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    .btn-gradient .btn-shimmer {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+        transform: skewX(-25deg);
+        animation: shimmerSlide 4s ease-in-out infinite;
+        z-index: 2;
+    }
+
+    @keyframes shimmerSlide {
+        0% { left: -100%; }
+        100% { left: 200%; }
+    }
+
+    .btn-gradient::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, #0D65D9, #1877F2, #4B8BF5);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        border-radius: 12px;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 8px 40px rgba(24, 119, 242, 0.45);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .btn-gradient:hover::before {
+        opacity: 1;
+    }
+
+    .btn-gradient span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-outline-gradient {
+        background: transparent;
+        border: 2px solid rgba(24, 119, 242, 0.2);
+        color: var(--fb-blue);
+        padding: 14px 36px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-outline-gradient:hover {
+        background: var(--gradient-primary);
+        color: #fff;
+        border-color: transparent;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 35px rgba(24, 119, 242, 0.25);
+        text-decoration: none;
+    }
+
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(24, 119, 242, 0.1);
+        color: var(--fb-blue);
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border: 1px solid rgba(24, 119, 242, 0.1);
+    }
+
+    .section-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 16px 0 8px;
+    }
+
+    .section-subtitle {
+        color: var(--fb-text-secondary);
+        font-size: 1.1rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .section-divider {
+        width: 80px;
+        height: 4px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+        margin: 16px auto 0;
+        box-shadow: 0 2px 10px rgba(24, 119, 242, 0.2);
+    }
+
+    /* ============================================
+       HERO SECTION - VIBRANT BLUE
+       ============================================ */
+    .hero-section {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background: 
+            radial-gradient(ellipse at 20% 40%, rgba(24, 119, 242, 0.15) 0%, transparent 60%),
+            radial-gradient(ellipse at 80% 60%, rgba(66, 176, 255, 0.10) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 100%, rgba(24, 119, 242, 0.06) 0%, transparent 50%),
+            linear-gradient(180deg, #F0F8FF 0%, #E7F3FF 40%, #D6E9FF 80%, #E7F3FF 100%);
+        overflow: hidden;
+        padding: 80px 0 60px;
+    }
+
+    /* Enhanced Floating Orbs - More Vibrant */
+    .floating-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        pointer-events: none;
+        animation: floatOrb 12s ease-in-out infinite;
+    }
+
+    .floating-orb:nth-child(1) {
+        width: 550px;
+        height: 550px;
+        top: -20%;
+        right: -10%;
+        background: #4B8BF5;
+        opacity: 0.20;
+        animation-delay: 0s;
+    }
+
+    .floating-orb:nth-child(2) {
+        width: 450px;
+        height: 450px;
+        bottom: -25%;
+        left: -10%;
+        background: #1877F2;
+        opacity: 0.15;
+        animation-delay: -4s;
+    }
+
+    .floating-orb:nth-child(3) {
+        width: 300px;
+        height: 300px;
+        top: 40%;
+        left: 40%;
+        background: #42B0FF;
+        opacity: 0.12;
+        animation-delay: -8s;
+    }
+
+    @keyframes floatOrb {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(50px, -50px) scale(1.2); }
+        66% { transform: translate(-40px, 40px) scale(0.85); }
+    }
+
+    /* Enhanced Particles */
+    .hero-particles {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(24, 119, 242, 0.2);
+        border-radius: 50%;
+        animation: floatParticle linear infinite;
+        box-shadow: 0 0 8px rgba(24, 119, 242, 0.1);
+    }
+
+    @keyframes floatParticle {
+        0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Enhanced AI Badge */
+    .ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(24, 119, 242, 0.15);
+        border-radius: 100px;
+        padding: 8px 24px 8px 10px;
+        margin-bottom: 32px;
+        transition: var(--transition-smooth);
+        box-shadow: 0 4px 25px rgba(24, 119, 242, 0.06);
+        cursor: default;
+    }
+
+    .ai-badge:hover {
+        background: #ffffff;
+        transform: scale(1.03);
+        box-shadow: 0 8px 35px rgba(24, 119, 242, 0.12);
+        border-color: rgba(24, 119, 242, 0.25);
+    }
+
+    .ai-badge .dot-live {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+        animation: pulseDot 1.5s ease-in-out infinite;
+        flex-shrink: 0;
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+    }
+
+    @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.6); }
+    }
+
+    .ai-badge .badge-text {
+        color: #0F172A;
+        font-size: 0.85rem;
+        font-weight: 600;
+        font-family: var(--font-body);
+    }
+
+    .ai-badge .badge-divider {
+        width: 1px;
+        height: 20px;
+        background: #E2E8F0;
+    }
+
+    .ai-badge .badge-accuracy {
+        color: #64748B;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .ai-badge .badge-accuracy i {
+        color: #1877F2;
+        margin-right: 4px;
+        font-size: 0.9rem;
+    }
+
+    /* Hero Heading - More Vibrant */
+    .hero-heading {
+        font-family: var(--font-display);
+        font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+        font-weight: 700;
+        line-height: 1.05;
+        color: #0F172A;
+        margin-bottom: 24px;
+        letter-spacing: -0.02em;
+    }
+
+    .hero-heading .highlight {
+        background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 40%, #42B0FF 70%, #1877F2 100%);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        animation: gradientShift 4s ease-in-out infinite;
+    }
+
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    .hero-heading .highlight::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 40%, #42B0FF 70%, #1877F2 100%);
+        border-radius: 4px;
+        opacity: 0.3;
+        box-shadow: 0 0 30px rgba(24, 119, 242, 0.15);
+        animation: underlineGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes underlineGlow {
+        0%, 100% { opacity: 0.3; transform: scaleX(1); }
+        50% { opacity: 0.6; transform: scaleX(1.05); }
+    }
+
+    .hero-subtext {
+        font-size: 1.15rem;
+        line-height: 1.8;
+        color: #64748B;
+        max-width: 520px;
+        margin-bottom: 36px;
+        font-weight: 400;
+    }
+
+    /* Enhanced Stats */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 48px;
+        max-width: 500px;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(24, 119, 242, 0.08);
+        border-radius: 16px;
+        padding: 20px 16px;
+        text-align: center;
+        transition: var(--transition-smooth);
+        cursor: default;
+        box-shadow: 0 4px 20px rgba(24, 119, 242, 0.04);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-item::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(24, 119, 242, 0.02), rgba(75, 139, 245, 0.02));
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .stat-item:hover {
+        background: #ffffff;
+        transform: translateY(-6px) scale(1.03);
+        border-color: rgba(24, 119, 242, 0.15);
+        box-shadow: 0 12px 40px rgba(24, 119, 242, 0.08);
+    }
+
+    .stat-item:hover::before {
+        opacity: 1;
+    }
+
+    .stat-number {
+        font-family: var(--font-display);
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: #64748B;
+        font-weight: 500;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-progress {
+        width: 100%;
+        height: 3px;
+        background: rgba(24, 119, 242, 0.06);
+        border-radius: 4px;
+        margin-top: 10px;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-progress .progress-fill {
+        height: 100%;
+        background: var(--gradient-primary);
+        border-radius: 4px;
+        width: 0%;
+        transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 15px rgba(24, 119, 242, 0.15);
+    }
+
+    /* Search Card - Enhanced */
+    .search-card {
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-radius: 20px;
+        border: 1px solid rgba(24, 119, 242, 0.1);
+        padding: 36px 32px;
+        box-shadow: 0 12px 50px rgba(24, 119, 242, 0.08);
+        transition: var(--transition-smooth);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .search-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(24, 119, 242, 0.15), rgba(66, 176, 255, 0.15));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    .search-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 70px rgba(24, 119, 242, 0.12);
+    }
+
+    .search-card-title {
+        color: var(--fb-text);
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .search-card-subtitle {
+        color: var(--fb-text-secondary);
+        font-size: 0.85rem;
+        margin: 2px 0 0;
+    }
+
+    .search-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(24, 119, 242, 0.08);
+        border: 1px solid rgba(24, 119, 242, 0.12);
+        border-radius: 50px;
+        padding: 4px 14px 4px 10px;
+        color: var(--fb-blue);
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .search-badge i {
+        color: var(--fb-blue);
+    }
+
+    /* Search Form */
+    .search-form .form-group {
+        margin-bottom: 18px;
+    }
+
+    .search-form .form-label {
+        display: block;
+        color: var(--fb-text-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .search-form .form-control,
+    .search-form .form-select {
+        width: 100%;
+        background: var(--fb-blue-bg);
+        border: 2px solid transparent;
+        border-radius: 10px;
+        padding: 12px 16px;
+        color: var(--fb-text);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        font-family: var(--font-body);
+    }
+
+    .search-form .form-control::placeholder {
+        color: var(--fb-text-secondary);
+        opacity: 0.6;
+    }
+
+    .search-form .form-control:focus,
+    .search-form .form-select:focus {
+        outline: none;
+        border-color: var(--fb-blue);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.08);
+    }
+
+    .search-form .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2365676B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        padding-right: 40px;
+        cursor: pointer;
+    }
+
+    .search-form .form-select option {
+        background: #fff;
+        color: var(--fb-text);
+        padding: 8px;
+    }
+
+    .btn-search {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: var(--gradient-primary);
+        color: #fff;
+        padding: 16px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        box-shadow: 0 4px 20px rgba(24, 119, 242, 0.3);
+        position: relative;
+        overflow: hidden;
+        font-family: var(--font-body);
+    }
+
+    .btn-search::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        transform: skewX(-25deg);
+        animation: shimmerSlide 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmerSlide {
+        0% { left: -100%; }
+        100% { left: 200%; }
+    }
+
+    .btn-search:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 35px rgba(24, 119, 242, 0.4);
+        color: #fff;
+        background: var(--fb-blue-dark);
+    }
+
+    .btn-search.loading {
+        pointer-events: none;
+        opacity: 0.85;
+    }
+
+    .btn-search .btn-loader {
+        display: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid rgba(255,255,255,0.2);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.8s ease-in-out infinite;
+        position: absolute;
+    }
+
+    .btn-search.loading .btn-text {
+        visibility: hidden;
+    }
+
+    .btn-search.loading .btn-loader {
+        display: block;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Trust indicators */
+    .trust-indicators {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid var(--fb-border);
+        flex-wrap: wrap;
+    }
+
+    .trust-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--fb-text-secondary);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.7;
+    }
+
+    .trust-item i {
+        font-size: 0.75rem;
+        color: var(--fb-blue);
+        opacity: 0.7;
+    }
+
+    /* ============================================
+       FEATURES SECTION
+       ============================================ */
+    .features-section {
+        padding: 80px 0;
+        background: #fff;
+    }
+
+    .feature-card {
+        background: #fff;
+        border: 1px solid var(--fb-border);
+        border-radius: 20px;
+        padding: 36px 28px;
+        text-align: center;
+        height: 100%;
+        transition: var(--transition-smooth);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transition: transform 0.5s ease;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 50px rgba(24, 119, 242, 0.08);
+        border-color: rgba(24, 119, 242, 0.15);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gradient-primary);
+        color: #fff;
+        font-size: 2.2rem;
+        margin: 0 auto 20px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 20px rgba(24, 119, 242, 0.2);
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(-5deg);
+        box-shadow: 0 8px 30px rgba(24, 119, 242, 0.3);
+    }
+
+    .feature-card h4 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+        color: var(--fb-text);
+    }
+
+    .feature-card p {
+        color: var(--fb-text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .feature-tag {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 4px 16px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        background: rgba(24, 119, 242, 0.08);
+        color: var(--fb-blue);
+        border: 1px solid rgba(24, 119, 242, 0.08);
+    }
+
+    /* ============================================
+       HOW IT WORKS SECTION
+       ============================================ */
+    .how-it-works-section {
+        padding: 80px 0;
+        background: var(--fb-blue-lightest);
+    }
+
+    .step-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 36px 28px;
+        text-align: center;
+        height: 100%;
+        transition: var(--transition-smooth);
+        border: 1px solid var(--fb-border);
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .step-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 50px rgba(24, 119, 242, 0.06);
+        border-color: rgba(24, 119, 242, 0.15);
+    }
+
+    .step-number {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.6rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 6px 25px rgba(24, 119, 242, 0.25);
+        transition: transform 0.3s ease;
+    }
+
+    .step-card:hover .step-number {
+        transform: scale(1.1) rotate(-5deg);
+        box-shadow: 0 8px 35px rgba(24, 119, 242, 0.35);
+    }
+
+    .step-card h4 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+        color: var(--fb-text);
+    }
+
+    .step-card p {
+        color: var(--fb-text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    /* ============================================
+       STEP LINK - CLICKABLE (Redirects to register)
+       ============================================ */
+    .step-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 16px;
+        color: var(--fb-blue);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: var(--font-body);
+        padding: 8px 20px;
+        border-radius: 8px;
+        background: rgba(24, 119, 242, 0.06);
+        border: 1px solid rgba(24, 119, 242, 0.12);
+    }
+
+    .step-link:hover {
+        gap: 14px;
+        color: var(--fb-white);
+        text-decoration: none;
+        background: var(--gradient-primary);
+        border-color: transparent;
+        box-shadow: 0 4px 20px rgba(24, 119, 242, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .step-link i {
+        font-size: 0.9rem;
+    }
+
+    /* ============================================
+       PRICING SECTION
+       ============================================ */
+    .pricing-section {
+        padding: 80px 0;
+        background: #fff;
+    }
+
+    .pricing-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 36px 28px;
+        height: 100%;
+        transition: var(--transition-smooth);
+        border: 2px solid var(--fb-border);
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pricing-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 50px rgba(24, 119, 242, 0.06);
+    }
+
+    .pricing-card.popular {
+        border-color: var(--fb-blue);
+        background: var(--fb-blue-lightest);
+        box-shadow: 0 8px 30px rgba(24, 119, 242, 0.08);
+    }
+
+    .pricing-badge {
+        position: absolute;
+        top: -14px;
+        right: 24px;
+        background: var(--gradient-primary);
+        color: #fff;
+        padding: 4px 18px;
+        border-radius: 50px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        box-shadow: 0 4px 20px rgba(24, 119, 242, 0.3);
+    }
+
+    .pricing-card h3 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+        color: var(--fb-text);
+    }
+
+    .pricing-card .price-sub {
+        color: var(--fb-text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+    }
+
+    .pricing-card .price {
+        font-family: var(--font-display);
+        font-size: 3.2rem;
+        font-weight: 700;
+        color: var(--fb-blue);
+        line-height: 1;
+    }
+
+    .pricing-card .price-period {
+        color: var(--fb-text-secondary);
+        font-size: 1rem;
+        font-weight: 400;
+    }
+
+    .pricing-features {
+        list-style: none;
+        padding: 0;
+        margin: 24px 0 32px;
+        flex-grow: 1;
+    }
+
+    .pricing-features li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        font-size: 0.9rem;
+        color: var(--fb-text);
+        border-bottom: 1px solid var(--fb-border);
+    }
+
+    .pricing-features li:last-child {
+        border-bottom: none;
+    }
+
+    .pricing-features li .pf-icon {
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    .pricing-features li .pf-icon.success {
+        color: #31A24C;
+    }
+
+    .pricing-features li .pf-icon.danger {
+        color: var(--fb-text-secondary);
+    }
+
+    .pricing-features li.is-off {
+        color: var(--fb-text-secondary);
+    }
+
+    .btn-pricing {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        text-decoration: none;
+        font-family: var(--font-body);
+    }
+
+    .btn-pricing-primary {
+        background: var(--gradient-primary);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(24, 119, 242, 0.2);
+    }
+
+    .btn-pricing-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(24, 119, 242, 0.35);
+        color: #fff;
+        text-decoration: none;
+        background: var(--fb-blue-dark);
+    }
+
+    .btn-pricing-secondary {
+        background: transparent;
+        border: 2px solid var(--fb-blue);
+        color: var(--fb-blue);
+    }
+
+    .btn-pricing-secondary:hover {
+        background: var(--gradient-primary);
+        color: #fff;
+        border-color: transparent;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(24, 119, 242, 0.2);
+        text-decoration: none;
+    }
+
+    /* ============================================
+       CTA SECTION - VIBRANT BLUE
+       ============================================ */
+    .cta-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #E7F3FF 0%, #D6E9FF 50%, #E7F3FF 100%);
+        position: relative;
+        overflow: hidden;
+        border-top: 1px solid rgba(24, 119, 242, 0.08);
+        border-bottom: 1px solid rgba(24, 119, 242, 0.08);
+    }
+
+    .cta-section .cta-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        pointer-events: none;
+        opacity: 0.1;
+    }
+
+    .cta-section .cta-orb:nth-child(1) {
+        width: 400px;
+        height: 400px;
+        top: -50%;
+        right: -10%;
+        background: #4B8BF5;
+    }
+
+    .cta-section .cta-orb:nth-child(2) {
+        width: 300px;
+        height: 300px;
+        bottom: -40%;
+        left: -5%;
+        background: #1877F2;
+        animation-delay: -3s;
+    }
+
+    .cta-section h2 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: clamp(2rem, 3.5vw, 2.8rem);
+        color: var(--fb-text);
+        letter-spacing: -0.02em;
+    }
+
+    .cta-section p {
+        color: var(--fb-text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .cta-section .btn-cta {
+        background: var(--gradient-primary);
+        color: #fff;
+        padding: 16px 44px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-body);
+        box-shadow: 0 4px 25px rgba(24, 119, 242, 0.3);
+    }
+
+    .cta-section .btn-cta:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 40px rgba(24, 119, 242, 0.4);
+        color: #fff;
+        text-decoration: none;
+        background: var(--fb-blue-dark);
+    }
+
+    /* ============================================
+       TOAST NOTIFICATIONS
+       ============================================ */
+    .toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
+    }
+
+    .toast-custom {
+        background: #fff;
+        border: 1px solid var(--fb-border);
+        border-radius: 12px;
+        padding: 16px 20px;
+        color: var(--fb-text);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: slideInRight 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .toast-custom.hiding {
+        animation: slideOutRight 0.4s ease forwards;
+    }
+
+    @keyframes slideInRight {
+        from { transform: translateX(120%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(120%); opacity: 0; }
+    }
+
+    .toast-custom .toast-icon {
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+
+    .toast-custom .toast-content {
+        flex: 1;
+    }
+
+    .toast-custom .toast-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        font-family: var(--font-display);
+        margin-bottom: 2px;
+    }
+
+    .toast-custom .toast-message {
+        font-size: 0.85rem;
+        color: var(--fb-text-secondary);
+    }
+
+    .toast-custom .toast-close {
+        background: none;
+        border: none;
+        color: var(--fb-text-secondary);
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0 4px;
+        transition: color 0.3s ease;
+    }
+
+    .toast-custom .toast-close:hover {
+        color: var(--fb-text);
+    }
+
+    /* ============================================
+       FLOATING CTA BUTTON
+       ============================================ */
+    .floating-cta {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 1000;
+        background: var(--gradient-primary);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 56px;
+        height: 56px;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 25px rgba(24, 119, 242, 0.35);
+        transition: var(--transition-smooth);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .floating-cta:hover {
+        transform: scale(1.1) rotate(-5deg);
+        box-shadow: 0 8px 35px rgba(24, 119, 242, 0.45);
+    }
+
+    .floating-cta.visible {
+        display: flex;
+    }
+
+    /* ============================================
+       RESPONSIVE DESIGN
+       ============================================ */
+    @media (max-width: 992px) {
+        .hero-section {
+            min-height: auto;
+            padding: 60px 0;
+        }
+        .hero-heading {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+        }
+        .stat-grid {
+            max-width: 100%;
+        }
+        .stat-number {
+            font-size: 1.8rem;
+        }
+        .btn-gradient, .btn-outline-gradient {
+            padding: 12px 28px;
+            font-size: 0.95rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-heading {
+            font-size: 2.4rem;
+        }
+        .hero-subtext {
+            font-size: 1rem;
+        }
+        .btn-gradient, .btn-outline-gradient {
+            width: 100%;
+            justify-content: center;
+            padding: 14px 24px;
+        }
+        .search-card {
+            padding: 24px 20px;
+        }
+        .stat-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .stat-item {
+            padding: 14px 10px;
+        }
+        .stat-number {
+            font-size: 1.4rem;
+        }
+        .stat-label {
+            font-size: 0.6rem;
+        }
+        .ai-badge {
+            padding: 6px 16px 6px 8px;
+        }
+        .ai-badge .badge-text {
+            font-size: 0.75rem;
+        }
+        .ai-badge .badge-accuracy {
+            font-size: 0.7rem;
+        }
+        .features-section {
+            padding: 60px 0;
+        }
+        .how-it-works-section {
+            padding: 60px 0;
+        }
+        .pricing-section {
+            padding: 60px 0;
+        }
+        .cta-section {
+            padding: 60px 0;
+        }
+        .cta-section h2 {
+            font-size: 1.8rem;
+        }
+        .pricing-card .price {
+            font-size: 2.2rem;
+        }
+        .toast-container {
+            right: 12px;
+            left: 12px;
+            max-width: 100%;
+        }
+        .floating-cta {
+            bottom: 16px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-heading {
+            font-size: 1.8rem;
+        }
+        .hero-subtext {
+            font-size: 0.95rem;
+        }
+        .ai-badge {
+            padding: 4px 12px 4px 4px;
+        }
+        .ai-badge .badge-text {
+            font-size: 0.7rem;
+        }
+        .ai-badge .badge-accuracy {
+            font-size: 0.6rem;
+        }
+        .section-title {
+            font-size: 1.6rem;
+        }
+        .stat-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .stat-item {
+            padding: 12px 8px;
+            border-radius: 12px;
+        }
+        .stat-number {
+            font-size: 1.2rem;
+        }
+        .stat-label {
+            font-size: 0.55rem;
+        }
+        .feature-card {
+            padding: 24px 16px;
+        }
+        .step-card {
+            padding: 24px 16px;
+        }
+        .pricing-card {
+            padding: 24px 16px;
+        }
+        .floating-orb {
+            opacity: 0.08 !important;
+        }
+    }
+
+    /* ============================================
+       SCROLLBAR STYLING
+       ============================================ */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--fb-blue-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--gradient-primary);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--fb-blue-dark);
+    }
+
+    /* ============================================
+       SELECTION STYLING
+       ============================================ */
+    ::selection {
+        background: rgba(24, 119, 242, 0.15);
+        color: var(--fb-text);
+    }
+
+    /* ============================================
+       AOS ANIMATIONS
+       ============================================ */
+    [data-aos] {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    [data-aos].aos-animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    [data-aos="fade-right"] {
+        transform: translateX(-30px);
+    }
+
+    [data-aos="fade-right"].aos-animate {
+        transform: translateX(0);
+    }
+
+    [data-aos="fade-left"] {
+        transform: translateX(30px);
+    }
+
+    [data-aos="fade-left"].aos-animate {
+        transform: translateX(0);
+    }
+
+    [data-aos="fade-up"] {
+        transform: translateY(30px);
+    }
+
+    [data-aos="fade-up"].aos-animate {
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<style>
-  :root {
-    --accent: var(--bs-primary, #4f46e5);
-    --accent-rgb: var(--bs-primary-rgb, 79, 70, 229);
-    --surface: #fff;
-    --surface-alt: #f8f9fb;
-    --txt: rgba(15,23,42,0.88);
-    --txt-soft: rgba(15,23,42,0.55);
-    --txt-muted: rgba(15,23,42,0.38);
-    --bdr: rgba(15,23,42,0.06);
-    --shadow: rgba(15,23,42,0.06);
-    --shadow-lg: rgba(15,23,42,0.10);
-    --success: #16a34a;
-    --success-bg: rgba(34,197,94,0.10);
-    --success-bdr: rgba(34,197,94,0.18);
-  }
 
+<!-- ============================================
+     HERO SECTION - ENHANCED VIBRANT
+     ============================================ -->
+<section class="hero-section" id="home">
+    <!-- Floating Orbs -->
+    <div class="floating-orb"></div>
+    <div class="floating-orb"></div>
+    <div class="floating-orb"></div>
 
-  .landing-page {
-    overflow-x: hidden;
-  }
+    <!-- Particles -->
+    <div class="hero-particles" id="particles"></div>
 
-  /* ══════════════════════════════
-     ANIMATED BACKGROUND
-     ══════════════════════════════ */
-  .landing-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
+    <div class="container position-relative">
+        <div class="row align-items-center g-5">
+            <!-- Left Content -->
+            <div class="col-lg-7" data-aos="fade-right">
+                <!-- Enhanced AI Badge -->
+                <div class="ai-badge">
+                    <span class="dot-live"></span>
+                    <span class="badge-text">Powered by AI</span>
+                    <span class="badge-divider"></span>
+                    <span class="badge-accuracy">
+                        <i class="bi bi-check-circle-fill"></i> 98% Accuracy
+                    </span>
+                    <span class="badge-divider"></span>
+                    <span class="badge-accuracy" style="color: #1877F2;">
+                        <i class="bi bi-graph-up-arrow"></i> 12K+ Matches
+                    </span>
+                </div>
 
-  .landing-bg .grid-overlay {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(15,23,42,0.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(15,23,42,0.018) 1px, transparent 1px);
-    background-size: 60px 60px;
-    animation: gridPulse 4s ease-in-out infinite alternate;
-  }
+                <!-- Enhanced Heading -->
+                <h1 class="hero-heading">
+                    Launch Your Career with<br>
+                    <span class="highlight">Smarter Job Matches</span>
+                </h1>
 
-  @keyframes gridPulse {
-    0%   { opacity: 0.4; }
-    100% { opacity: 0.7; }
-  }
+                <p class="hero-subtext">
+                    SkillSync AI uses advanced machine learning, resume optimization, 
+                    and skill gap analysis to help you land the right opportunities faster.
+                </p>
 
-  .landing-bg .orb {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(80px);
-    opacity: 0.08;
-    animation: orbFloat 18s ease-in-out infinite alternate;
-  }
+                <!-- Enhanced Buttons -->
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'register' %}" class="btn-gradient">
+                        <span class="btn-shimmer"></span>
+                        <span><i class="bi bi-rocket-takeoff me-2"></i>Join Free</span>
+                    </a>
+                    <a href="#how-it-works" class="btn-outline-gradient">
+                        <i class="bi bi-play-circle me-2"></i>See How It Works
+                    </a>
+                </div>
 
-  .landing-bg .orb-1 {
-    width: 500px; height: 500px;
-    background: var(--accent);
-    top: -150px; right: -100px;
-    animation-duration: 20s;
-  }
+                <!-- Enhanced Stats -->
+                <div class="stat-grid">
+                    <div class="stat-item" data-count="10000">
+                        <div class="stat-number counter">0</div>
+                        <div class="stat-label">Active Jobs</div>
+                        <div class="stat-progress">
+                            <div class="progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item" data-count="50000">
+                        <div class="stat-number counter">0</div>
+                        <div class="stat-label">Happy Users</div>
+                        <div class="stat-progress">
+                            <div class="progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item" data-count="95">
+                        <div class="stat-number counter">0</div>
+                        <div class="stat-label">Match Accuracy</div>
+                        <div class="stat-progress">
+                            <div class="progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  .landing-bg .orb-2 {
-    width: 400px; height: 400px;
-    background: var(--accent);
-    bottom: 20%; left: -100px;
-    animation-duration: 16s;
-    animation-delay: -4s;
-  }
+            <!-- Right Content - Search Card -->
+            <div class="col-lg-5" data-aos="fade-left" data-aos-delay="200">
+                <div class="search-card">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div>
+                            <h5 class="search-card-title">Quick Job Search</h5>
+                            <p class="search-card-subtitle">Find your ideal role instantly</p>
+                        </div>
+                        <span class="search-badge">
+                            <i class="bi bi-lightning-fill"></i> Fast
+                        </span>
+                    </div>
 
-  .landing-bg .orb-3 {
-    width: 300px; height: 300px;
-    background: var(--accent);
-    top: 55%; right: 20%;
-    animation-duration: 22s;
-    animation-delay: -8s;
-    opacity: 0.05;
-  }
+                    <form id="quick-job-search" class="search-form" novalidate>
+                        <div class="form-group">
+                            <label class="form-label" for="job-title">
+                                <i class="bi bi-briefcase me-1"></i> Job Title / Keyword
+                            </label>
+                            <input type="text" id="job-title" class="form-control" 
+                                   placeholder="e.g., Software Engineer" required>
+                        </div>
 
-  @keyframes orbFloat {
-    0%   { transform: translate(0,0) scale(1); }
-    33%  { transform: translate(40px,-30px) scale(1.08); }
-    66%  { transform: translate(-20px,40px) scale(0.95); }
-    100% { transform: translate(30px,-20px) scale(1.03); }
-  }
+                        <div class="form-group">
+                            <label class="form-label" for="job-location">
+                                <i class="bi bi-geo-alt me-1"></i> Location
+                            </label>
+                            <input type="text" id="job-location" class="form-control" 
+                                   placeholder="e.g., Remote, New York">
+                        </div>
 
-  .particle {
-    position: absolute;
-    border-radius: 999px;
-    background: var(--accent);
-    opacity: 0;
-    pointer-events: none;
-    animation: particleRise linear infinite;
-  }
+                        <div class="form-group">
+                            <label class="form-label" for="experience-level">
+                                <i class="bi bi-mortarboard me-1"></i> Experience Level
+                            </label>
+                            <select id="experience-level" class="form-select">
+                                <option value="entry">Entry Level (0-2 years)</option>
+                                <option value="mid" selected>Mid Level (3-5 years)</option>
+                                <option value="senior">Senior Level (6+ years)</option>
+                                <option value="lead">Lead / Manager (10+ years)</option>
+                            </select>
+                        </div>
 
-  @keyframes particleRise {
-    0%   { opacity: 0; transform: translateY(100vh) scale(0); }
-    10%  { opacity: 0.2; }
-    90%  { opacity: 0.06; }
-    100% { opacity: 0; transform: translateY(-20vh) scale(1); }
-  }
+                        <button type="submit" class="btn-search" id="search-btn">
+                            <span class="btn-text"><i class="bi bi-search me-2"></i>Search Jobs</span>
+                            <span class="btn-loader"></span>
+                        </button>
+                    </form>
 
-  /* ══════════════════════════════
-     HERO SECTION
-     ══════════════════════════════ */
-  .hero {
-    position: relative;
-    z-index: 1;
-    padding: 5rem 0 4rem;
-    text-align: center;
-  }
+                    <!-- Trust indicators -->
+                    <div class="trust-indicators">
+                        <span class="trust-item">
+                            <i class="bi bi-shield-check"></i> Secure
+                        </span>
+                        <span class="trust-item">
+                            <i class="bi bi-person-check"></i> 50K+ Users
+                        </span>
+                        <span class="trust-item">
+                            <i class="bi bi-star-fill"></i> 4.9/5 Rating
+                        </span>
+                        <span class="trust-item">
+                            <i class="bi bi-clock"></i> Real-time
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-  .hero .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.25rem;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: 1px solid rgba(var(--accent-rgb), 0.15);
-    background: rgba(var(--accent-rgb), 0.06);
-    color: var(--accent);
-    margin-bottom: 2rem;
-    animation: fadeSlideDown 0.6s ease both;
-  }
-
-  .hero .hero-badge .hb-dot {
-    width: 8px; height: 8px;
-    border-radius: 999px;
-    background: var(--accent);
-    animation: pulseDot 2s ease-in-out infinite;
-  }
-
-  @keyframes pulseDot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50%     { opacity: 0.35; transform: scale(0.55); }
-  }
-
-  @keyframes fadeSlideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .hero h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 900;
-    line-height: 1.12;
-    max-width: 820px;
-    margin: 0 auto 1.25rem;
-    color: var(--txt);
-    animation: fadeSlideDown 0.6s 0.1s ease both;
-  }
-
-  .hero h1 .gradient-text {
-    background: linear-gradient(135deg, var(--accent), rgba(var(--accent-rgb), 0.55));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero .hero-sub {
-    font-size: 1.1rem;
-    color: var(--txt-soft);
-    max-width: 580px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.7;
-    animation: fadeSlideDown 0.6s 0.2s ease both;
-  }
-
-  .hero .hero-actions {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-bottom: 3rem;
-    animation: fadeSlideDown 0.6s 0.3s ease both;
-  }
-
-  .btn-hero-primary {
-    height: 54px;
-    padding: 0 2rem;
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    border: none;
-    background: var(--accent) !important;
-    color: #fff !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 12px 28px rgba(var(--accent-rgb), 0.28);
-  }
-
-  .btn-hero-primary::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-
-  .btn-hero-primary:hover::before { transform: translateX(100%); }
-
-  .btn-hero-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 40px rgba(var(--accent-rgb), 0.35);
-    filter: brightness(1.08);
-    color: #fff !important;
-  }
-
-  .btn-hero-primary:active { transform: translateY(0); }
-
-  .btn-hero-secondary {
-    height: 54px;
-    padding: 0 2rem;
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    background: transparent !important;
-    color: var(--accent) !important;
-    border: 2px solid rgba(var(--accent-rgb), 0.22) !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-
-  .btn-hero-secondary:hover {
-    background: rgba(var(--accent-rgb), 0.06) !important;
-    border-color: rgba(var(--accent-rgb), 0.4) !important;
-    transform: translateY(-3px);
-    color: var(--accent) !important;
-  }
-
-  /* ── Stats row ── */
-  .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    animation: fadeSlideDown 0.6s 0.4s ease both;
-  }
-
-  .hero-stat {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.85rem 1.35rem;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--bdr);
-    box-shadow: 0 8px 20px var(--shadow);
-    transition: all 0.3s ease;
-  }
-
-  .hero-stat:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 32px var(--shadow-lg);
-  }
-
-  .hero-stat .hs-icon {
-    width: 40px; height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-  }
-
-  .hero-stat:hover .hs-icon {
-    background: var(--accent);
-    color: #fff;
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
-  }
-
-  .hero-stat .hs-value {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--txt);
-    line-height: 1.2;
-  }
-
-  .hero-stat .hs-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--txt-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  /* ══════════════════════════════
+<!-- ============================================
      FEATURES SECTION
-     ══════════════════════════════ */
-  .features {
-    position: relative;
-    z-index: 1;
-    padding: 4rem 0;
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .section-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 1rem;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: rgba(var(--accent-rgb), 0.06);
-    color: var(--accent);
-    border: 1px solid rgba(var(--accent-rgb), 0.14);
-    margin-bottom: 1rem;
-  }
-
-  .section-header h2 {
-    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-    font-weight: 800;
-    color: var(--txt);
-    margin-bottom: 0.5rem;
-  }
-
-  .section-header p {
-    font-size: 1rem;
-    color: var(--txt-soft);
-    max-width: 520px;
-    margin: 0 auto;
-    line-height: 1.7;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-
-  .feature-card {
-    padding: 1.75rem;
-    border-radius: 22px;
-    border: 1px solid var(--bdr);
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .feature-card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 22px 22px 0 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .feature-card:hover::before { opacity: 1; }
-
-  .feature-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 50px var(--shadow-lg);
-    border-color: rgba(var(--accent-rgb), 0.14);
-  }
-
-  .feature-card .fc-icon {
-    width: 52px; height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 1.3rem;
-    margin-bottom: 1.15rem;
-    transition: all 0.3s ease;
-  }
-
-  .feature-card:hover .fc-icon {
-    background: var(--accent);
-    color: #fff;
-    transform: scale(1.1) rotate(-4deg);
-    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.28);
-  }
-
-  .feature-card .fc-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--txt);
-    margin-bottom: 0.4rem;
-  }
-
-  .feature-card .fc-desc {
-    font-size: 0.84rem;
-    color: var(--txt-soft);
-    line-height: 1.65;
-    margin-bottom: 0;
-  }
-
-  /* ══════════════════════════════
-     HOW IT WORKS
-     ══════════════════════════════ */
-  .how-it-works {
-    position: relative;
-    z-index: 1;
-    padding: 4rem 0;
-  }
-
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-    position: relative;
-  }
-
-  /* Connecting line */
-  .steps-grid::before {
-    content: "";
-    position: absolute;
-    top: 38px;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.15), rgba(var(--accent-rgb), 0.15), transparent);
-    z-index: 0;
-  }
-
-  .step-card {
-    text-align: center;
-    padding: 1.5rem 1.25rem;
-    border-radius: 20px;
-    border: 1px solid var(--bdr);
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(12px);
-    position: relative;
-    z-index: 1;
-    transition: all 0.3s ease;
-  }
-
-  .step-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 36px var(--shadow-lg);
-    border-color: rgba(var(--accent-rgb), 0.14);
-  }
-
-  .step-card .sc-num {
-    width: 44px; height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 14px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.25);
-    transition: all 0.3s ease;
-  }
-
-  .step-card:hover .sc-num {
-    transform: scale(1.12) rotate(-5deg);
-    box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.35);
-  }
-
-  .step-card .sc-title {
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: var(--txt);
-    margin-bottom: 0.3rem;
-  }
-
-  .step-card .sc-desc {
-    font-size: 0.78rem;
-    color: var(--txt-soft);
-    line-height: 1.55;
-  }
-
-  /* ══════════════════════════════
-     ROLES SECTION
-     ══════════════════════════════ */
-  .roles {
-    position: relative;
-    z-index: 1;
-    padding: 4rem 0;
-  }
-
-  .roles-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-
-  .role-card {
-    padding: 2rem 1.75rem;
-    border-radius: 22px;
-    border: 1px solid var(--bdr);
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(12px);
-    text-align: center;
-    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .role-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.04), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .role-card:hover::before { opacity: 1; }
-
-  .role-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 50px var(--shadow-lg);
-    border-color: rgba(var(--accent-rgb), 0.16);
-  }
-
-  .role-card .rc-icon {
-    width: 60px; height: 60px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 18px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 1.5rem;
-    margin-bottom: 1.25rem;
-    transition: all 0.3s ease;
-  }
-
-  .role-card:hover .rc-icon {
-    background: var(--accent);
-    color: #fff;
-    transform: scale(1.1) rotate(-4deg);
-    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.28);
-  }
-
-  .role-card .rc-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--txt);
-    margin-bottom: 0.4rem;
-  }
-
-  .role-card .rc-desc {
-    font-size: 0.84rem;
-    color: var(--txt-soft);
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-  }
-
-  .role-card .rc-features {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-  }
-
-  .role-card .rc-features li {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--txt-soft);
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--bdr);
-  }
-
-  .role-card .rc-features li:last-child { border-bottom: none; }
-
-  .role-card .rc-features li i {
-    color: var(--accent);
-    font-size: 0.75rem;
-  }
-
-  /* ══════════════════════════════
-     TESTIMONIALS
-     ══════════════════════════════ */
-  .testimonials {
-    position: relative;
-    z-index: 1;
-    padding: 4rem 0;
-  }
-
-  .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-
-  .testi-card {
-    padding: 1.75rem;
-    border-radius: 22px;
-    border: 1px solid var(--bdr);
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
-  }
-
-  .testi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px var(--shadow-lg);
-    border-color: rgba(var(--accent-rgb), 0.12);
-  }
-
-  .testi-card .tc-stars {
-    display: flex;
-    gap: 0.15rem;
-    margin-bottom: 0.85rem;
-  }
-
-  .testi-card .tc-stars i {
-    color: #f59e0b;
-    font-size: 0.85rem;
-  }
-
-  .testi-card .tc-quote {
-    font-size: 0.88rem;
-    color: var(--txt-soft);
-    line-height: 1.7;
-    margin-bottom: 1.15rem;
-    font-style: italic;
-  }
-
-  .testi-card .tc-author {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-  }
-
-  .testi-card .tc-avatar {
-    width: 38px; height: 38px;
-    border-radius: 12px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .testi-card .tc-name {
-    font-size: 0.84rem;
-    font-weight: 700;
-    color: var(--txt);
-  }
-
-  .testi-card .tc-role {
-    font-size: 0.72rem;
-    color: var(--txt-muted);
-  }
-
-  /* ══════════════════════════════
-     CTA SECTION
-     ══════════════════════════════ */
-  .cta-section {
-    position: relative;
-    z-index: 1;
-    padding: 4rem 0 5rem;
-  }
-
-  .cta-card {
-    background: var(--accent);
-    border-radius: 28px;
-    padding: 3.5rem;
-    text-align: center;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 24px 60px rgba(var(--accent-rgb), 0.25);
-  }
-
-  .cta-card::before,
-  .cta-card::after {
-    content: "";
-    position: absolute;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.07);
-  }
-
-  .cta-card::before {
-    width: 300px; height: 300px;
-    top: -120px; right: -80px;
-    animation: orbFloat 14s ease-in-out infinite alternate;
-  }
-
-  .cta-card::after {
-    width: 200px; height: 200px;
-    bottom: -80px; left: 40px;
-    animation: orbFloat 18s ease-in-out infinite alternate-reverse;
-  }
-
-  .cta-card .cta-content {
-    position: relative;
-    z-index: 1;
-  }
-
-  .cta-card h2 {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-    font-weight: 800;
-    margin-bottom: 0.75rem;
-  }
-
-  .cta-card p {
-    font-size: 1rem;
-    opacity: 0.82;
-    max-width: 480px;
-    margin: 0 auto 2rem;
-    line-height: 1.7;
-  }
-
-  .cta-card .cta-actions {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .btn-cta-white {
-    height: 52px;
-    padding: 0 2rem;
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 0.92rem;
-    background: #fff !important;
-    color: var(--accent) !important;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  }
-
-  .btn-cta-white:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 36px rgba(0,0,0,0.18);
-    color: var(--accent) !important;
-  }
-
-  .btn-cta-outline {
-    height: 52px;
-    padding: 0 2rem;
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 0.92rem;
-    background: transparent !important;
-    color: #fff !important;
-    border: 2px solid rgba(255,255,255,0.3) !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-
-  .btn-cta-outline:hover {
-    background: rgba(255,255,255,0.12) !important;
-    border-color: rgba(255,255,255,0.5) !important;
-    transform: translateY(-3px);
-    color: #fff !important;
-  }
-
-  /* ══════════════════════════════
-     FOOTER
-     ══════════════════════════════ */
-  .landing-footer {
-    position: relative;
-    z-index: 1;
-    padding: 2rem 0;
-    border-top: 1px solid var(--bdr);
-    text-align: center;
-  }
-
-  .landing-footer .lf-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--txt);
-    margin-bottom: 0.5rem;
-  }
-
-  .landing-footer .lf-brand .lf-mark {
-    width: 32px; height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: 800;
-  }
-
-  .landing-footer p {
-    font-size: 0.78rem;
-    color: var(--txt-muted);
-    margin-bottom: 0;
-  }
-
-  /* ══════════════════════════════
-     SCROLL ANIMATIONS
-     ══════════════════════════════ */
-  .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .reveal-delay-1 { transition-delay: 0.08s; }
-  .reveal-delay-2 { transition-delay: 0.16s; }
-  .reveal-delay-3 { transition-delay: 0.24s; }
-  .reveal-delay-4 { transition-delay: 0.32s; }
-
-  /* ══════════════════════════════
-     RESPONSIVE
-     ══════════════════════════════ */
-  @media (max-width: 991.98px) {
-    .features-grid { grid-template-columns: repeat(2, 1fr); }
-    .steps-grid { grid-template-columns: repeat(2, 1fr); }
-    .steps-grid::before { display: none; }
-    .roles-grid { grid-template-columns: repeat(2, 1fr); }
-    .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
-    .hero { padding: 3.5rem 0 3rem; }
-    .cta-card { padding: 2.5rem 1.75rem; }
-  }
-
-  @media (max-width: 767.98px) {
-    .features-grid { grid-template-columns: 1fr; }
-    .steps-grid { grid-template-columns: 1fr 1fr; }
-    .roles-grid { grid-template-columns: 1fr; }
-    .testimonials-grid { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 1.85rem; }
-    .hero .hero-sub { font-size: 0.95rem; }
-    .hero-stats { flex-direction: column; align-items: center; }
-    .cta-card h2 { font-size: 1.5rem; }
-    .cta-card { padding: 2rem 1.25rem; border-radius: 22px; }
-  }
-
-  @media (max-width: 575.98px) {
-    .steps-grid { grid-template-columns: 1fr; }
-    .hero { padding: 2.5rem 0 2rem; }
-    .hero-stat { width: 100%; justify-content: center; }
-    .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
-  }
-</style>
-
-<!-- ── Animated Background ── -->
-<div class="landing-bg">
-  <div class="grid-overlay"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
-
-<div class="landing-page">
-
-  <!-- ════════════════════════════════
-       HERO
-       ════════════════════════════════ -->
-  <section class="hero">
+     ============================================ -->
+<section class="features-section" id="features">
     <div class="container">
-      <div class="hero-badge">
-        <span class="hb-dot"></span>
-        AI-Powered Career Platform
-      </div>
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-badge">
+                <i class="bi bi-trophy"></i> Features
+            </span>
+            <h2 class="section-title">Why Choose <span class="text-gradient">SkillSync AI</span>?</h2>
+            <p class="section-subtitle">Discover the power of AI-driven career development</p>
+            <div class="section-divider"></div>
+        </div>
 
-      <h1>
-        Your Career, Supercharged by<br>
-        <span class="gradient-text">Artificial Intelligence</span>
-      </h1>
-
-      <p class="hero-sub">
-        SkillSync AI connects talent, recruiters, and opportunities through intelligent
-        recommendations, skill analytics, and career insights — all in one platform.
-      </p>
-
-      <div class="hero-actions">
-        <a href="/register/" class="btn-hero-primary">
-          <i class="bi bi-rocket-takeoff"></i> Get Started Free
-        </a>
-        <a href="/login/" class="btn-hero-secondary">
-          <i class="bi bi-box-arrow-in-right"></i> Sign In
-        </a>
-      </div>
-
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hs-icon"><i class="bi bi-cpu"></i></div>
-          <div>
-            <div class="hs-value">AI</div>
-            <div class="hs-label">Smart Matching</div>
-          </div>
-        </div>
-        <div class="hero-stat">
-          <div class="hs-icon"><i class="bi bi-lightning-charge"></i></div>
-          <div>
-            <div class="hs-value">Instant</div>
-            <div class="hs-label">Skill Analysis</div>
-          </div>
-        </div>
-        <div class="hero-stat">
-          <div class="hs-icon"><i class="bi bi-shield-check"></i></div>
-          <div>
-            <div class="hs-value">Secure</div>
-            <div class="hs-label">& Encrypted</div>
-          </div>
-        </div>
-        <div class="hero-stat">
-          <div class="hs-icon"><i class="bi bi-clock"></i></div>
-          <div>
-            <div class="hs-value">24/7</div>
-            <div class="hs-label">Career Tools</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════
-       FEATURES
-       ════════════════════════════════ -->
-  <section class="features">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-badge"><i class="bi bi-stars"></i> Platform Features</div>
-        <h2>Everything you need to accelerate your career</h2>
-        <p>From resume analysis to AI-powered job matching — SkillSync gives you an unfair advantage.</p>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card reveal reveal-delay-1">
-          <div class="fc-icon"><i class="bi bi-stars"></i></div>
-          <div class="fc-title">AI Resume Analyzer</div>
-          <div class="fc-desc">Upload your resume PDF and get instant AI-powered scoring, skill extraction, and improvement suggestions.</div>
-        </div>
-        <div class="feature-card reveal reveal-delay-2">
-          <div class="fc-icon"><i class="bi bi-briefcase"></i></div>
-          <div class="fc-title">Smart Job Matching</div>
-          <div class="fc-desc">Our AI matches your skills to active job postings and ranks them by compatibility percentage.</div>
-        </div>
-        <div class="feature-card reveal reveal-delay-3">
-          <div class="fc-icon"><i class="bi bi-lightning-charge"></i></div>
-          <div class="fc-title">Skill Gap Analysis</div>
-          <div class="fc-desc">Discover exactly which skills you're missing and get targeted learning resources to close the gap.</div>
-        </div>
-        <div class="feature-card reveal reveal-delay-1">
-          <div class="fc-icon"><i class="bi bi-chat-dots"></i></div>
-          <div class="fc-title">Career Chatbot</div>
-          <div class="fc-desc">Get personalized career advice, interview prep, and resume tips from our AI assistant anytime.</div>
-        </div>
-        <div class="feature-card reveal reveal-delay-2">
-          <div class="fc-icon"><i class="bi bi-ui-checks-grid"></i></div>
-          <div class="fc-title">Skill Quizzes</div>
-          <div class="fc-desc">Test your knowledge with AI-generated quizzes and track your progress across different domains.</div>
-        </div>
-        <div class="feature-card reveal reveal-delay-3">
-          <div class="fc-icon"><i class="bi bi-bell"></i></div>
-          <div class="fc-title">Match Notifications</div>
-          <div class="fc-desc">Get real-time alerts when new jobs match your profile, so you never miss an opportunity.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════
-       HOW IT WORKS
-       ════════════════════════════════ -->
-  <section class="how-it-works">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-badge"><i class="bi bi-signpost-split"></i> How It Works</div>
-        <h2>From signup to your dream job in 4 steps</h2>
-        <p>Simple, fast, and powered by AI at every stage.</p>
-      </div>
-
-      <div class="steps-grid">
-        <div class="step-card reveal reveal-delay-1">
-          <div class="sc-num">1</div>
-          <div class="sc-title">Create Account</div>
-          <div class="sc-desc">Sign up in seconds with just your email and choose your role.</div>
-        </div>
-        <div class="step-card reveal reveal-delay-2">
-          <div class="sc-num">2</div>
-          <div class="sc-title">Upload Resume</div>
-          <div class="sc-desc">Upload your resume PDF for instant AI analysis and skill extraction.</div>
-        </div>
-        <div class="step-card reveal reveal-delay-3">
-          <div class="sc-num">3</div>
-          <div class="sc-title">Get Matched</div>
-          <div class="sc-desc">AI matches your profile to relevant jobs with compatibility scores.</div>
-        </div>
-        <div class="step-card reveal reveal-delay-4">
-          <div class="sc-num">4</div>
-          <div class="sc-title">Apply & Grow</div>
-          <div class="sc-desc">Apply to matched roles, close skill gaps, and advance your career.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════
-       ROLES
-       ════════════════════════════════ -->
-  <section class="roles">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-badge"><i class="bi bi-people"></i> Built For Everyone</div>
-        <h2>Three roles, one platform</h2>
-        <p>Whether you're seeking, hiring, or managing — SkillSync adapts to your workflow.</p>
-      </div>
-
-      <div class="roles-grid">
-        <div class="role-card reveal reveal-delay-1">
-          <div class="rc-icon"><i class="bi bi-search"></i></div>
-          <div class="rc-title">Job Seekers</div>
-          <div class="rc-desc">Find your perfect role with AI-powered recommendations tailored to your skills.</div>
-          <ul class="rc-features">
-            <li><i class="bi bi-check-circle-fill"></i> AI resume analysis</li>
-            <li><i class="bi bi-check-circle-fill"></i> Smart job matching</li>
-            <li><i class="bi bi-check-circle-fill"></i> Skill gap insights</li>
-            <li><i class="bi bi-check-circle-fill"></i> Career chatbot</li>
-          </ul>
-        </div>
-        <div class="role-card reveal reveal-delay-2">
-          <div class="rc-icon"><i class="bi bi-person-badge"></i></div>
-          <div class="rc-title">Recruiters</div>
-          <div class="rc-desc">Post jobs and let AI rank the best candidates based on skill compatibility.</div>
-          <ul class="rc-features">
-            <li><i class="bi bi-check-circle-fill"></i> Job posting dashboard</li>
-            <li><i class="bi bi-check-circle-fill"></i> AI candidate ranking</li>
-            <li><i class="bi bi-check-circle-fill"></i> Match scoring</li>
-            <li><i class="bi bi-check-circle-fill"></i> Application management</li>
-          </ul>
-        </div>
-        <div class="role-card reveal reveal-delay-3">
-          <div class="rc-icon"><i class="bi bi-shield-check"></i></div>
-          <div class="rc-title">Admins</div>
-          <div class="rc-desc">Monitor platform health with analytics dashboards and user management tools.</div>
-          <ul class="rc-features">
-            <li><i class="bi bi-check-circle-fill"></i> User management</li>
-            <li><i class="bi bi-check-circle-fill"></i> Analytics reports</li>
-            <li><i class="bi bi-check-circle-fill"></i> Activity charts</li>
-            <li><i class="bi bi-check-circle-fill"></i> Platform controls</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════
-       TESTIMONIALS
-       ════════════════════════════════ -->
-  <section class="testimonials">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-badge"><i class="bi bi-chat-quote"></i> What People Say</div>
-        <h2>Trusted by professionals worldwide</h2>
-        <p>See how SkillSync AI is transforming career journeys.</p>
-      </div>
-
-      <div class="testimonials-grid">
-        <div class="testi-card reveal reveal-delay-1">
-          <div class="tc-stars">
-            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-          </div>
-          <div class="tc-quote">"SkillSync's AI matched me to a role I never would have found on my own. The skill gap analysis showed me exactly what to learn."</div>
-          <div class="tc-author">
-            <div class="tc-avatar">AK</div>
-            <div>
-              <div class="tc-name">Aisha K.</div>
-              <div class="tc-role">Software Engineer</div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <h4>AI-Powered Matching</h4>
+                    <p>Our advanced neural networks analyze your skills and experience to find the perfect job matches with 98% accuracy.</p>
+                    <span class="feature-tag">98% Accurate</span>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="testi-card reveal reveal-delay-2">
-          <div class="tc-stars">
-            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-          </div>
-          <div class="tc-quote">"As a recruiter, the AI candidate ranking saves me hours. I get the best matches instantly instead of sorting through hundreds of resumes."</div>
-          <div class="tc-author">
-            <div class="tc-avatar">JM</div>
-            <div>
-              <div class="tc-name">James M.</div>
-              <div class="tc-role">Senior Recruiter</div>
-            </div>
-          </div>
-        </div>
-        <div class="testi-card reveal reveal-delay-3">
-          <div class="tc-stars">
-            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-          </div>
-          <div class="tc-quote">"The career chatbot gave me interview tips that actually worked. I landed my dream job within two weeks of using SkillSync."</div>
-          <div class="tc-author">
-            <div class="tc-avatar">RP</div>
-            <div>
-              <div class="tc-name">Ravi P.</div>
-              <div class="tc-role">Data Analyst</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ════════════════════════════════
-       CTA
-       ════════════════════════════════ -->
-  <section class="cta-section">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #1877F2, #42B0FF);">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h4>Skill Gap Analysis</h4>
+                    <p>Identify missing skills and get personalized learning recommendations to advance your career trajectory.</p>
+                    <span class="feature-tag">Smart Insights</span>
+                </div>
+            </div>
+
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #0D65D9, #1877F2);">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <h4>Smart Resume Builder</h4>
+                    <p>Create ATS-optimized resumes with AI suggestions and professional templates that stand out to recruiters.</p>
+                    <span class="feature-tag">ATS Optimized</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     HOW IT WORKS SECTION - ALL CLICKABLE
+     ============================================ -->
+<section class="how-it-works-section" id="how-it-works">
     <div class="container">
-      <div class="cta-card reveal">
-        <div class="cta-content">
-          <h2>Ready to supercharge your career?</h2>
-          <p>Join thousands of professionals using SkillSync AI to find better opportunities, close skill gaps, and grow faster.</p>
-          <div class="cta-actions">
-            <a href="/register/" class="btn-cta-white">
-              <i class="bi bi-rocket-takeoff"></i> Create Free Account
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-badge">
+                <i class="bi bi-diagram-3"></i> Process
+            </span>
+            <h2 class="section-title">How It <span class="text-gradient">Works</span></h2>
+            <p class="section-subtitle">Simple 3-step process to land your dream job</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Step 01 -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <h4>Create Your Profile</h4>
+                    <p>Sign up for free and complete your profile with your skills, experience, and career preferences.</p>
+                    <a href="{% url 'register' %}" class="step-link">
+                        Get Started <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 02 - CLICKABLE (Redirects to Register) -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-card">
+                    <div class="step-number" style="background: linear-gradient(135deg, #1877F2, #42B0FF);">02</div>
+                    <h4>Upload Your Resume</h4>
+                    <p>Upload your resume and let our AI analyze your skills, experience, and career trajectory.</p>
+                    <a href="{% url 'register' %}" class="step-link">
+                        <i class="bi bi-cloud-upload"></i> Upload Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 03 - CLICKABLE (Redirects to Register) -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-card">
+                    <div class="step-number" style="background: linear-gradient(135deg, #0D65D9, #1877F2);">03</div>
+                    <h4>Get Matched</h4>
+                    <p>Receive personalized job recommendations and start applying to positions that match your profile.</p>
+                    <a href="{% url 'register' %}" class="step-link">
+                        <i class="bi bi-magic"></i> Find Matches
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'register' %}" class="btn-gradient btn-lg">
+                <span><i class="bi bi-rocket-takeoff me-2"></i>Start Your Journey Now</span>
             </a>
-            <a href="/login/" class="btn-cta-outline">
-              <i class="bi bi-box-arrow-in-right"></i> Sign In
-            </a>
-          </div>
         </div>
-      </div>
     </div>
-  </section>
+</section>
 
-  <!-- ════════════════════════════════
-       FOOTER
-       ════════════════════════════════ -->
-  <footer class="landing-footer">
+<!-- ============================================
+     PRICING SECTION
+     ============================================ -->
+<section class="pricing-section" id="pricing">
     <div class="container">
-      <div class="lf-brand">
-        <div class="lf-mark">S</div>
-        SkillSync AI
-      </div>
-      <p>&copy; 2025 SkillSync AI. AI-powered career platform for everyone.</p>
-    </div>
-  </footer>
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="section-badge">
+                <i class="bi bi-tags"></i> Pricing
+            </span>
+            <h2 class="section-title">Simple, <span class="text-gradient">Transparent</span> Pricing</h2>
+            <p class="section-subtitle">Choose the plan that works for you</p>
+            <div class="section-divider"></div>
+        </div>
 
-</div>
+        <div class="row g-4 align-items-stretch">
+            <!-- Free Plan -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <p class="price-sub">Perfect for getting started</p>
+                    <div>
+                        <span class="price">$0</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> 5 job applications/month</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Basic resume analysis</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Limited job matches</li>
+                        <li class="is-off"><span class="pf-icon danger"><i class="bi bi-x-circle-fill"></i></span> AI interview coach</li>
+                        <li class="is-off"><span class="pf-icon danger"><i class="bi bi-x-circle-fill"></i></span> Priority support</li>
+                    </ul>
+                    <a href="{% url 'register' %}" class="btn-pricing btn-pricing-secondary">Get Started</a>
+                </div>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="pricing-card popular">
+                    <span class="pricing-badge"><i class="bi bi-star-fill me-1"></i>Popular</span>
+                    <h3>Pro</h3>
+                    <p class="price-sub">Best for active job seekers</p>
+                    <div>
+                        <span class="price">$19</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Unlimited job applications</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Advanced AI resume analysis</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Personalized job matches</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> AI interview coach</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Email support</li>
+                    </ul>
+                    <a href="{% url 'register' %}?plan=pro" class="btn-pricing btn-pricing-primary">Start Free Trial</a>
+                </div>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <p class="price-sub">For companies & recruiters</p>
+                    <div>
+                        <span class="price" style="font-size: 2rem;">Custom</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Custom job posting limits</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Advanced candidate filtering</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Team collaboration tools</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> API access</li>
+                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> 24/7 priority support</li>
+                    </ul>
+                    <a href="#" class="btn-pricing btn-pricing-secondary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     CTA SECTION - VIBRANT BLUE
+     ============================================ -->
+<section class="cta-section">
+    <div class="cta-orb"></div>
+    <div class="cta-orb"></div>
+    
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8" data-aos="fade-right">
+                <span class="section-badge" style="background: rgba(24,119,242,0.1); color: #1877F2; border-color: rgba(24,119,242,0.15);">
+                    <i class="bi bi-graph-up"></i> Join 50,000+ Users
+                </span>
+                <h2>Ready to <span class="text-gradient">Transform</span> Your Career?</h2>
+                <p>Join thousands of successful job seekers who found their dream jobs with SkillSync AI</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0" data-aos="fade-left">
+                <a href="{% url 'register' %}" class="btn-cta">
+                    <i class="bi bi-arrow-right"></i> Get Started Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     TOAST CONTAINER
+     ============================================ -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- ============================================
+     FLOATING CTA BUTTON
+     ============================================ -->
+<button class="floating-cta" id="floatingCta" aria-label="Back to top">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
-  /* ── Floating Particles ── */
-  (function createParticles() {
-    const bg = document.querySelector('.landing-bg');
-    if (!bg) return;
-    for (let i = 0; i < 18; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const s = Math.random() * 4 + 2;
-      p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*8}s;`;
-      bg.appendChild(p);
+    // ============================================================
+    // TOAST NOTIFICATION SYSTEM
+    // ============================================================
+    function showToast(message, type = 'info', title = '') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        
+        const titles = {
+            success: 'Success!',
+            error: 'Error!',
+            warning: 'Warning!',
+            info: 'Information'
+        };
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        toast.innerHTML = `
+            <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+            <div class="toast-content">
+                <div class="toast-title">${title || titles[type] || 'Info'}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <button class="toast-close" onclick="this.closest('.toast-custom').remove()">×</button>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.classList.add('hiding');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }
+        }, 5000);
+        
+        toast.addEventListener('click', function(e) {
+            if (!e.target.closest('.toast-close')) {
+                this.classList.add('hiding');
+                setTimeout(() => {
+                    if (this.parentNode) {
+                        this.remove();
+                    }
+                }, 400);
+            }
+        });
     }
-  })();
 
-  /* ── Scroll reveal ── */
-  (function scrollReveal() {
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
+    // ============================================================
+    // COUNTER ANIMATION
+    // ============================================================
+    function animateCounters() {
+        const counters = document.querySelectorAll('.counter');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statItem = entry.target;
+                    const counter = statItem.querySelector('.counter');
+                    const progressFill = statItem.querySelector('.progress-fill');
+                    const target = parseInt(statItem.dataset.count);
+                    
+                    if (counter && !counter.dataset.animated) {
+                        counter.dataset.animated = 'true';
+                        
+                        let current = 0;
+                        const duration = 2000;
+                        const step = target / (duration / 16);
+                        
+                        const updateCounter = () => {
+                            current += step;
+                            if (current < target) {
+                                counter.textContent = Math.floor(current).toLocaleString();
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                counter.textContent = target.toLocaleString() + (target === 95 ? '%' : '+');
+                            }
+                        };
+                        updateCounter();
+                    }
+                    
+                    if (progressFill) {
+                        const width = progressFill.style.width;
+                        progressFill.style.width = '0%';
+                        setTimeout(() => {
+                            progressFill.style.width = width;
+                        }, 100);
+                    }
+                    
+                    observer.unobserve(statItem);
+                }
+            });
+        }, {
+            threshold: 0.3,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        document.querySelectorAll('.stat-item').forEach(item => {
+            observer.observe(item);
+        });
+    }
+
+    // ============================================================
+    // AOS ANIMATIONS
+    // ============================================================
+    function initAOS() {
+        const elements = document.querySelectorAll('[data-aos]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = parseInt(entry.target.dataset.aosDelay) || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('aos-animate');
+                    }, delay);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        elements.forEach(el => observer.observe(el));
+    }
+
+    // ============================================================
+    // QUICK JOB SEARCH - REDIRECTS TO REGISTER
+    // ============================================================
+    document.getElementById('quick-job-search')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('search-btn');
+        const title = document.getElementById('job-title')?.value.trim();
+        
+        if (!title) {
+            showToast('Please enter a job title or keyword', 'warning', 'Required Field');
+            document.getElementById('job-title')?.focus();
+            return;
         }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        
+        btn.classList.add('loading');
+        
+        setTimeout(() => {
+            btn.classList.remove('loading');
+            showToast(`Searching for "${title}" positions... Redirecting to registration.`, 'info', 'Search Initiated');
+            setTimeout(() => {
+                window.location.href = "{% url 'register' %}";
+            }, 800);
+        }, 1200);
+    });
 
-    reveals.forEach(el => observer.observe(el));
-  })();
+    // ============================================================
+    // GENERATE PARTICLES
+    // ============================================================
+    function generateParticles() {
+        const container = document.getElementById('particles');
+        if (!container) return;
+        
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.width = (Math.random() * 4 + 2) + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+            particle.style.animationDelay = (Math.random() * 10) + 's';
+            particle.style.opacity = Math.random() * 0.3 + 0.1;
+            container.appendChild(particle);
+        }
+    }
 
-  /* ── Apply accent color ── */
-  (function applyAccentColor() {
-    const saved = localStorage.getItem("pref_accent");
-    if (!saved) return;
-    document.documentElement.style.setProperty("--bs-primary", saved);
-    const temp = document.createElement("div");
-    temp.style.color = saved;
-    document.body.appendChild(temp);
-    const rgb = getComputedStyle(temp).color;
-    document.body.removeChild(temp);
-    const m = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
-    if (m) document.documentElement.style.setProperty(
-      "--bs-primary-rgb", `${m[1]}, ${m[2]}, ${m[3]}`
-    );
-  })();
+    // ============================================================
+    // FLOATING CTA BUTTON
+    // ============================================================
+    function initFloatingCta() {
+        const floatingCta = document.getElementById('floatingCta');
+        if (!floatingCta) return;
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 600) {
+                floatingCta.classList.add('visible');
+            } else {
+                floatingCta.classList.remove('visible');
+            }
+        });
+        
+        floatingCta.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // ============================================================
+    // KEYBOARD SHORTCUTS
+    // ============================================================
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const searchInput = document.getElementById('job-title');
+            if (searchInput) {
+                searchInput.focus();
+                searchInput.select();
+                showToast('Start typing your job search...', 'info', 'Search Mode');
+            }
+        }
+        
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.toast-custom').forEach(toast => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 400);
+            });
+        }
+    });
+
+    // ============================================================
+    // FORM VALIDATION
+    // ============================================================
+    document.querySelectorAll('.form-control, .form-select').forEach(field => {
+        field.addEventListener('blur', function() {
+            if (this.hasAttribute('required') && !this.value.trim()) {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else if (this.hasAttribute('required')) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+        
+        field.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+    });
+
+    // ============================================================
+    // SMOOTH SCROLL
+    // ============================================================
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href === '#') return;
+            
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // ============================================================
+    // INITIALIZE ALL
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        animateCounters();
+        generateParticles();
+        initFloatingCta();
+        initAOS();
+        
+        setTimeout(() => {
+            showToast('Welcome to SkillSync AI! 🚀 Find your perfect career match.', 'info', 'Welcome!');
+        }, 1500);
+    });
+
+    window.showToast = showToast;
 </script>
 {% endblock %}

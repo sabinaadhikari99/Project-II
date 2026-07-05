@@ -1,12 +1,584 @@
+<style>
+    /* ============================================
+       ENHANCED NAVBAR & SIDEBAR STYLES
+       ============================================ */
+    
+    /* ----- NAVBAR ENHANCEMENTS ----- */
+    .navbar {
+        background: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border-bottom: 1px solid rgba(24, 119, 242, 0.08);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        transition: all 0.3s ease;
+        padding: 0.6rem 0;
+    }
 
-<nav class="navbar navbar-expand-xl bg-white navbar-light sticky-top">
+    .navbar.sticky-top.scrolled {
+        box-shadow: 0 4px 30px rgba(24, 119, 242, 0.08);
+        background: rgba(255, 255, 255, 0.98) !important;
+    }
+
+    /* Brand */
+    .navbar-brand {
+        gap: 12px !important;
+        font-weight: 700 !important;
+        font-size: 1.15rem;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        color: #1877F2 !important;
+    }
+
+    .navbar-brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 50%, #42B0FF 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(24, 119, 242, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover .navbar-brand-mark {
+        transform: scale(1.05) rotate(-3deg);
+        box-shadow: 0 6px 25px rgba(24, 119, 242, 0.35);
+    }
+
+    /* Navbar Toggler */
+    .navbar-toggler {
+        border: none;
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: rgba(24, 119, 242, 0.04);
+        transition: all 0.3s ease;
+    }
+
+    .navbar-toggler:hover {
+        background: rgba(24, 119, 242, 0.08);
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+    }
+
+    .navbar-toggler-icon {
+        background-image: none !important;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 24px;
+        padding: 2px 0;
+        height: auto;
+    }
+
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after {
+        display: none !important;
+    }
+
+    .navbar-toggler-icon span {
+        display: block;
+        height: 2.5px;
+        background: #0F172A;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-toggler-icon span:nth-child(2) {
+        width: 70%;
+    }
+
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon span:nth-child(1) {
+        transform: rotate(45deg) translate(4px, 5px);
+    }
+
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon span:nth-child(2) {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon span:nth-child(3) {
+        transform: rotate(-45deg) translate(4px, -5px);
+        width: 100%;
+    }
+
+    /* Nav Links */
+    .navbar-nav .nav-link {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #475569 !important;
+        padding: 8px 16px !important;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover {
+        color: #1877F2 !important;
+        background: rgba(24, 119, 242, 0.04);
+    }
+
+    .navbar-nav .nav-link i {
+        font-size: 1.1rem;
+        opacity: 0.6;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover i {
+        opacity: 1;
+    }
+
+    /* Buttons */
+    .btn-outline-primary {
+        border: 1.5px solid rgba(24, 119, 242, 0.2) !important;
+        color: #1877F2 !important;
+        padding: 8px 22px !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .btn-outline-primary:hover {
+        background: rgba(24, 119, 242, 0.04) !important;
+        border-color: #1877F2 !important;
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 100%) !important;
+        border: none !important;
+        color: #fff !important;
+        padding: 8px 24px !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        box-shadow: 0 4px 15px rgba(24, 119, 242, 0.2) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(24, 119, 242, 0.35) !important;
+        background: linear-gradient(135deg, #0D65D9 0%, #1877F2 100%) !important;
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #EF4444;
+        color: #fff;
+        font-size: 0.55rem;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-outline-primary.position-relative {
+        width: 40px;
+        height: 40px;
+        padding: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px !important;
+        font-size: 1.1rem;
+    }
+
+    .btn-outline-primary.position-relative:hover {
+        background: rgba(24, 119, 242, 0.08) !important;
+    }
+
+    /* User Dropdown Button */
+    .dropdown-toggle.btn-outline-primary {
+        padding: 4px 12px 4px 4px !important;
+        gap: 10px !important;
+        border-radius: 10px !important;
+        display: flex;
+        align-items: center;
+        background: rgba(24, 119, 242, 0.04) !important;
+        border-color: rgba(24, 119, 242, 0.06) !important;
+    }
+
+    .dropdown-toggle.btn-outline-primary:hover {
+        background: rgba(24, 119, 242, 0.08) !important;
+        border-color: rgba(24, 119, 242, 0.12) !important;
+    }
+
+    #navAvatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 100%);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        box-shadow: 0 2px 8px rgba(24, 119, 242, 0.15);
+    }
+
+    .dropdown-menu {
+        border: none !important;
+        border-radius: 14px !important;
+        box-shadow: 0 12px 50px rgba(0, 0, 0, 0.08) !important;
+        padding: 6px !important;
+        min-width: 220px;
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(24, 119, 242, 0.06) !important;
+        margin-top: 8px !important;
+    }
+
+    .dropdown-item {
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        font-size: 0.85rem !important;
+        color: #475569 !important;
+        transition: all 0.3s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+
+    .dropdown-item i {
+        font-size: 1.1rem;
+        width: 24px;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+        background: rgba(24, 119, 242, 0.04) !important;
+        color: #1877F2 !important;
+    }
+
+    .dropdown-item:hover i {
+        opacity: 1;
+    }
+
+    .dropdown-item.text-danger {
+        color: #EF4444 !important;
+    }
+
+    .dropdown-item.text-danger:hover {
+        background: rgba(239, 68, 68, 0.04) !important;
+        color: #EF4444 !important;
+    }
+
+    .dropdown-item.text-danger i {
+        color: #EF4444 !important;
+        opacity: 0.6 !important;
+    }
+
+    .dropdown-item.text-danger:hover i {
+        opacity: 1 !important;
+    }
+
+    .dropdown-divider {
+        margin: 4px 8px !important;
+        border-color: rgba(24, 119, 242, 0.06) !important;
+    }
+
+    /* ============================================
+       SIDEBAR ENHANCEMENTS
+       ============================================ */
+    .app-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 270px;
+        background: #FFFFFF;
+        border-right: 1px solid rgba(24, 119, 242, 0.06);
+        padding: 0;
+        overflow-y: auto;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1040;
+        box-shadow: 2px 0 30px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .app-sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .app-sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .app-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(24, 119, 242, 0.15);
+        border-radius: 4px;
+    }
+
+    .app-sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(24, 119, 242, 0.25);
+    }
+
+    /* Sidebar Profile */
+    .sidebar-profile {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 24px 20px 20px;
+        border-bottom: 1px solid rgba(24, 119, 242, 0.06);
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        margin: 12px 16px 8px;
+        border-radius: 12px;
+        border: 1px solid rgba(24, 119, 242, 0.06);
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-profile:hover {
+        background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+        border-color: rgba(24, 119, 242, 0.12);
+    }
+
+    #sidebarAvatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 100%);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 10px rgba(24, 119, 242, 0.15);
+    }
+
+    .sidebar-profile div {
+        flex: 1;
+        min-width: 0;
+    }
+
+    #sidebarUserName {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #0F172A;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #sidebarUserRole {
+        font-size: 0.65rem;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+    }
+
+    /* Sidebar Nav */
+    .app-sidebar .nav {
+        padding: 0 16px 20px;
+        gap: 2px;
+        flex: 1;
+    }
+
+    .app-sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: #1E293B;
+        font-weight: 500;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        position: relative;
+    }
+
+    .app-sidebar .nav-link i {
+        font-size: 1.15rem;
+        width: 24px;
+        color: #64748B;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .app-sidebar .nav-link:hover {
+        background: #F0F7FF;
+        color: #1877F2;
+    }
+
+    .app-sidebar .nav-link:hover i {
+        color: #1877F2;
+    }
+
+    .app-sidebar .nav-link.active {
+        background: #E7F3FF;
+        color: #1877F2;
+        font-weight: 600;
+    }
+
+    .app-sidebar .nav-link.active i {
+        color: #1877F2;
+    }
+
+    .app-sidebar .nav-link.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 24px;
+        background: #1877F2;
+        border-radius: 0 4px 4px 0;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 1199.98px) {
+        .navbar-nav .nav-item.d-xl-none {
+            display: none !important;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .app-sidebar {
+            transform: translateX(-100%);
+            box-shadow: none;
+            width: 300px;
+        }
+
+        .app-sidebar.mobile-open {
+            transform: translateX(0);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 1039;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .sidebar-toggle {
+            display: flex !important;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1041;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1877F2 0%, #4B8BF5 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 20px rgba(24, 119, 242, 0.35);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(24, 119, 242, 0.45);
+        }
+
+        .sidebar-toggle i {
+            font-size: 1.4rem;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .app-sidebar {
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .sidebar-toggle {
+            width: 48px;
+            height: 48px;
+            bottom: 16px;
+            right: 16px;
+            font-size: 1rem;
+        }
+
+        .sidebar-toggle i {
+            font-size: 1.2rem;
+        }
+
+        .navbar-brand {
+            font-size: 1rem;
+        }
+
+        .navbar-brand-mark {
+            width: 32px;
+            height: 32px;
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .sidebar-toggle {
+            display: none !important;
+        }
+        .sidebar-overlay {
+            display: none !important;
+        }
+    }
+</style>
+
+<!-- Sidebar Overlay (Mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar Toggle Button (Mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <i class="bi bi-list"></i>
+</button>
+
+<!-- ============================================
+     NAVBAR
+     ============================================ -->
+<nav class="navbar navbar-expand-xl bg-white navbar-light sticky-top" id="mainNav">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/">
       <span class="navbar-brand-mark">S</span>
       <span>SkillSync AI</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+      <span class="navbar-toggler-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
     </button>
     <div id="nav" class="collapse navbar-collapse">
       <ul class="navbar-nav ms-auto align-items-xl-center gap-xl-1">
@@ -54,7 +626,9 @@
   </div>
 </nav>
 
-<!-- ═══════════ SIDEBAR (desktop, auth only) ═══════════ -->
+<!-- ============================================
+     SIDEBAR
+     ============================================ -->
 <aside class="app-sidebar d-none" data-auth-only id="appSidebar">
   <div class="sidebar-profile">
     <span id="sidebarAvatar">U</span>
@@ -78,3 +652,202 @@
     <a class="nav-link" href="/profile/settings/"><i class="bi bi-person-gear"></i> Profile Settings</a>
   </nav>
 </aside>
+
+<script>
+    // ============================================================
+    // TOGGLE SIDEBAR (Mobile)
+    // ============================================================
+    function toggleSidebar() {
+        const sidebar = document.getElementById('appSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const toggleBtn = document.getElementById('sidebarToggle');
+        
+        if (sidebar.classList.contains('mobile-open')) {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('show');
+            toggleBtn.innerHTML = '<i class="bi bi-list"></i>';
+        } else {
+            sidebar.classList.add('mobile-open');
+            overlay.classList.add('show');
+            toggleBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+        }
+    }
+
+    // ============================================================
+    // CLOSE SIDEBAR ON ESCAPE
+    // ============================================================
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const sidebar = document.getElementById('appSidebar');
+            if (sidebar.classList.contains('mobile-open')) {
+                toggleSidebar();
+            }
+        }
+    });
+
+    // ============================================================
+    // CLOSE SIDEBAR ON RESIZE TO DESKTOP
+    // ============================================================
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 991.98) {
+            const sidebar = document.getElementById('appSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            if (sidebar.classList.contains('mobile-open')) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('show');
+                toggleBtn.innerHTML = '<i class="bi bi-list"></i>';
+            }
+        }
+    });
+
+    // ============================================================
+    // NAVBAR SCROLL EFFECT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbar = document.getElementById('mainNav');
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 20) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    });
+
+    // ============================================================
+    // ROUTE BY ROLE
+    // ============================================================
+    function routeByRole(role) {
+        const routes = {
+            'job_seeker': '/dashboard/seeker/',
+            'recruiter': '/dashboard/recruiter/',
+            'admin': '/dashboard/admin/'
+        };
+        window.location.href = routes[role] || '/';
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('user');
+        window.location.href = '/login/';
+    }
+
+    // ============================================================
+    // UPDATE SIDEBAR STATE
+    // ============================================================
+    function updateSidebarState() {
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        const user = localStorage.getItem('user');
+        
+        const sidebar = document.getElementById('appSidebar');
+        const guestElements = document.querySelectorAll('[data-guest-only]');
+        const authElements = document.querySelectorAll('[data-auth-only]');
+        const roleElements = document.querySelectorAll('[data-role]');
+        
+        if (token) {
+            if (sidebar) {
+                sidebar.classList.remove('d-none');
+            }
+            
+            guestElements.forEach(el => el.classList.add('d-none'));
+            authElements.forEach(el => el.classList.remove('d-none'));
+            
+            roleElements.forEach(el => {
+                const requiredRole = el.dataset.role;
+                if (requiredRole === role || requiredRole === 'all') {
+                    el.classList.remove('d-none');
+                } else {
+                    el.classList.add('d-none');
+                }
+            });
+            
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    const name = userData.name || userData.email || 'Account';
+                    const initial = name.charAt(0).toUpperCase();
+                    
+                    document.getElementById('navUserName').textContent = name;
+                    document.getElementById('sidebarUserName').textContent = name;
+                    document.getElementById('navAvatar').textContent = initial;
+                    document.getElementById('sidebarAvatar').textContent = initial;
+                    
+                    const roleNames = {
+                        'job_seeker': 'Job Seeker',
+                        'recruiter': 'Recruiter',
+                        'admin': 'Admin'
+                    };
+                    document.getElementById('navUserRole').textContent = roleNames[role] || role;
+                    document.getElementById('sidebarUserRole').textContent = roleNames[role] || role;
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
+            }
+            
+            updateNotificationBadge();
+            
+        } else {
+            if (sidebar) {
+                sidebar.classList.add('d-none');
+            }
+            
+            guestElements.forEach(el => el.classList.remove('d-none'));
+            authElements.forEach(el => el.classList.add('d-none'));
+            roleElements.forEach(el => el.classList.add('d-none'));
+        }
+    }
+
+    // ============================================================
+    // NOTIFICATION BADGE
+    // ============================================================
+    function updateNotificationBadge() {
+        const count = Math.floor(Math.random() * 5);
+        const badge = document.getElementById('notificationBadge');
+        
+        if (count > 0 && badge) {
+            badge.textContent = count;
+            badge.classList.remove('d-none');
+        } else if (badge) {
+            badge.classList.add('d-none');
+        }
+    }
+
+    // ============================================================
+    // ACTIVE LINK HIGHLIGHT
+    // ============================================================
+    function highlightActiveLink() {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.app-sidebar .nav-link').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && currentPath === href) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSidebarState();
+        highlightActiveLink();
+        setInterval(updateNotificationBadge, 30000);
+    });
+
+    // ============================================================
+    // EXPOSE FUNCTIONS
+    // ============================================================
+    window.routeByRole = routeByRole;
+    window.logout = logout;
+    window.updateSidebarState = updateSidebarState;
+    window.toggleSidebar = toggleSidebar;
+</script>

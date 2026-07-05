@@ -7,7 +7,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
-    path("", TemplateView.as_view(template_name="accounts/login.html"), name="home"),
+    # Default landing page
+    path("", TemplateView.as_view(template_name="accounts/landingpage.html"), name="landing-page"),
     path("login/", TemplateView.as_view(template_name="accounts/login.html"), name="login"),
     path("register/", TemplateView.as_view(template_name="accounts/register.html"), name="register"),
     path("profile/settings/", TemplateView.as_view(template_name="accounts/profile_settings.html"), name="profile-settings"),
