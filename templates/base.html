@@ -24,7 +24,7 @@
 </head>
 <body>
 
-  {# Top Navigation #}
+  {# Top Navigation (includes sidebar) #}
   {% include "includes/nav.html" %}
 
   {# Main content area – will be offset by sidebar when present #}
@@ -38,6 +38,41 @@
 
   {# Page-specific scripts #}
   {% block scripts %}{% endblock %}
+
+  {# ── Ensure sidebar toggle is initialized after all scripts ── #}
+  <script>
+    (function() {
+      // Wait for DOM and all scripts to load
+      if (document.readyState === 'complete') {
+        initSidebarToggle();
+      } else {
+        document.addEventListener('readystatechange', function() {
+          if (document.readyState === 'complete') {
+            initSidebarToggle();
+          }
+        });
+      }
+
+      // Also ensure body has the right class for sidebar offset
+      function syncBodyClass() {
+        const sidebar = document.getElementById('appSidebar');
+        if (sidebar) {
+          const isVisible = !sidebar.classList.contains('d-none');
+          document.body.classList.toggle('has-sidebar', isVisible);
+        }
+      }
+
+      // Run after hydration
+      setTimeout(syncBodyClass, 100);
+
+      // Also listen for class changes on sidebar
+      const sidebar = document.getElementById('appSidebar');
+      if (sidebar) {
+        const observer = new MutationObserver(syncBodyClass);
+        observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+      }
+    })();
+  </script>
 
 </body>
 </html>
