@@ -1,5 +1,5 @@
 <!-- file path: templates/dashboard/seeker.html -->
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
 {% load static %}
 
 {% block title %}Dashboard | SkillSync AI{% endblock %}
@@ -906,7 +906,7 @@
       </p>
     </div>
     <div class="header-actions">
-      <a class="btn btn-accent" href="/ai-match/">
+      <a class="btn btn-accent" href="{% url 'ai-match' %}">
         <i class="bi bi-stars me-1"></i> AI Match
       </a>
       <button class="btn btn-outline-accent" onclick="loadSeeker()">
@@ -982,7 +982,7 @@
             <div class="panel-icon"><i class="bi bi-stars"></i></div>
             Top recommendations
           </div>
-          <a class="btn-sm-outline" href="/ai-match/">View all</a>
+          <a class="btn-sm-outline" href="{% url 'ai-match' %}">View all</a>
         </div>
         <div class="panel-body" id="recommended">
           <div class="empty-block">
@@ -1002,7 +1002,7 @@
             <div class="panel-icon"><i class="bi bi-lightning-charge"></i></div>
             Skill gap preview
           </div>
-          <a class="btn-sm-outline" href="/skillgap/">Open</a>
+          <a class="btn-sm-outline" href="{% url 'skillgap' %}">Open</a>
         </div>
         <div class="panel-body" id="skillgap">
           <div class="empty-block">
@@ -1047,19 +1047,19 @@
         </div>
         <div class="panel-body">
           <div class="qa-grid">
-            <a class="qa-card" href="/jobs/">
+            <a class="qa-card" href="{% url 'jobs' %}">
               <div class="qa-icon"><i class="bi bi-briefcase"></i></div>
               <div class="qa-title">Browse Jobs</div>
               <div class="qa-desc">Search and apply to active postings.</div>
               <div class="qa-arrow"><i class="bi bi-arrow-up-right"></i></div>
             </a>
-            <a class="qa-card" href="/chat/">
+            <a class="qa-card" href="{% url 'chat' %}">
               <div class="qa-icon"><i class="bi bi-chat-dots"></i></div>
               <div class="qa-title">Career Chatbot</div>
               <div class="qa-desc">Ask for resume, interview, or skill advice.</div>
               <div class="qa-arrow"><i class="bi bi-arrow-up-right"></i></div>
             </a>
-            <a class="qa-card" href="/quiz/">
+            <a class="qa-card" href="{% url 'quiz' %}">
               <div class="qa-icon"><i class="bi bi-ui-checks-grid"></i></div>
               <div class="qa-title">Skill Quiz</div>
               <div class="qa-desc">Measure your knowledge with a fast quiz.</div>

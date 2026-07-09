@@ -1,9 +1,13 @@
 # file path: apps/accounts/views.py
+from django.contrib.auth import login
 from rest_framework import generics, parsers, permissions, response, views
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.shared.pdf_utils import extract_pdf_text
 from .models import User, UserProfile
-from .serializers import LoginSerializer, ProfileUpdateSerializer, RegisterSerializer
+from .serializers import LoginSerializer, ProfileUpdateSerializer, RegisterSerializer, UserSerializer
 
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -16,9 +20,34 @@ class LoginAPIView(views.APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+        serializer = LoginSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
+        login(request, serializer.user)
         return response.Response(serializer.validated_data)
+
+
+class GetTokenAPIView(views.APIView):
+    """
+    Get or refresh JWT tokens for an authenticated user.
+    Used when user is authenticated via Django session but needs JWT tokens for API calls.
+    """
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        """Generate fresh JWT tokens for the authenticated user."""
+        if not request.user.is_authenticated:
+            return response.Response(
+                {"detail": "User is not authenticated."},
+                status=401
+            )
+        
+        refresh = RefreshToken.for_user(request.user)
+        return response.Response({
+            "user": UserSerializer(request.user).data,
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+        })
 
 
 class ProfileAPIView(generics.RetrieveUpdateAPIView):
@@ -70,6 +99,20 @@ class ResumeUploadAPIView(views.APIView):
             "resume_text": resume_text,
             "extracted_skills": extracted_skills
         })
+
+
+class LogoutAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+        except Exception:
+            pass
+        return response.Response({"detail": "Logged out successfully"})
 
 
 def _extract_known_skills(text):

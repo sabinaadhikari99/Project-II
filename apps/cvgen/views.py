@@ -1,5 +1,6 @@
 import io
 import re
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.views import View
@@ -112,7 +113,7 @@ def _build_pdf_for_profile(profile):
     return buffer
 
 
-class CreateProfileView(View):
+class CreateProfileView(LoginRequiredMixin, View):
     def get(self, request):
         form = JobSeekerProfileForm()
         return render(request, 'cvgen/create_profile.html', {'form': form})
@@ -129,7 +130,7 @@ class CreateProfileView(View):
         return render(request, 'cvgen/create_profile.html', {'form': form})
 
 
-class GenerateCvView(View):
+class GenerateCvView(LoginRequiredMixin, View):
     def get(self, request, pk):
         profile = get_object_or_404(JobSeekerProfile, pk=pk)
         pdf_buffer = _build_pdf_for_profile(profile)

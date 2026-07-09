@@ -10,6 +10,55 @@ function token() {
   return localStorage.getItem("access");
 }
 
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
+
+function getCSRFToken() {
+  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function ensureJWTToken() {
+  const existing = localStorage.getItem("access");
+  if (existing && !isTokenExpired(existing)) return existing;
+
+  if (existing && isTokenExpired(existing)) {
+    const refreshed = await refreshToken();
+    if (refreshed) return refreshed;
+  }
+
+  try {
+    const csrfToken = getCSRFToken();
+    const headers = { "Content-Type": "application/json" };
+    if (csrfToken) headers["X-CSRFToken"] = csrfToken;
+
+    const resp = await fetch("/api/auth/token/", {
+      method: "POST",
+      credentials: "include",
+      headers: headers,
+      body: "{}"
+    });
+
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}));
+      throw new Error(data.detail || "Not authenticated");
+    }
+
+    const data = await resp.json();
+    saveSession(data);
+    return data.access;
+  } catch (e) {
+    console.debug("ensureJWTToken:", e.message);
+    return null;
+  }
+}
+
 function saveSession(result) {
   localStorage.setItem("access", result.access);
   localStorage.setItem("refresh", result.refresh);
@@ -57,6 +106,38 @@ function requireRole(role) {
 /* ────────────────────────────────────────────────────────────
    API
    ──────────────────────────────────────────────────────────── */
+let _refreshPromise = null;
+
+async function refreshToken() {
+  if (_refreshPromise) return _refreshPromise;
+
+  _refreshPromise = (async () => {
+    try {
+      const refresh = localStorage.getItem("refresh");
+      if (!refresh) return null;
+
+      const resp = await fetch("/api/auth/refresh/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh })
+      });
+
+      if (!resp.ok) return null;
+
+      const data = await resp.json();
+      localStorage.setItem("access", data.access);
+      if (data.refresh) localStorage.setItem("refresh", data.refresh);
+      return data.access;
+    } catch {
+      return null;
+    } finally {
+      _refreshPromise = null;
+    }
+  })();
+
+  return _refreshPromise;
+}
+
 async function api(url, options = {}, auth = true) {
   const isFormData = options.body instanceof FormData;
   const headers = { ...(options.headers || {}) };
@@ -69,10 +150,24 @@ async function api(url, options = {}, auth = true) {
     headers["Authorization"] = `Bearer ${token()}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const method = (options.method || "GET").toUpperCase();
+  if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+    const csrfToken = getCSRFToken();
+    if (csrfToken) headers["X-CSRFToken"] = csrfToken;
+  }
+
+  let response = await fetch(url, { ...options, headers });
+
+  if (response.status === 401 && auth) {
+    const newToken = await refreshToken();
+    if (newToken) {
+      headers["Authorization"] = `Bearer ${newToken}`;
+      response = await fetch(url, { ...options, headers });
+    } else {
+      logout();
+      throw new Error("Session expired");
+    }
+  }
 
   const text = await response.text();
   let data = {};
@@ -358,13 +453,20 @@ function hydrateNavbar() {
 /* ────────────────────────────────────────────────────────────
    INIT
    ──────────────────────────────────────────────────────────── */
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
+  await ensureJWTToken();
   hydrateNavbar();
   loadNotificationBell();
   initSidebarToggle();
 });
 
 setInterval(loadNotificationBell, 30000);
+
+window.addEventListener("storage", function(e) {
+  if (e.key === "access" && e.newValue === null) {
+    window.location.href = "/login/";
+  }
+});
 
 // Expose essential functions globally
 window.token = token;
@@ -389,3 +491,7 @@ window.markRecentlyViewed = markRecentlyViewed;
 window.loadNotificationBell = loadNotificationBell;
 window.hydrateNavbar = hydrateNavbar;
 window.initSidebarToggle = initSidebarToggle;
+window.ensureJWTToken = ensureJWTToken;
+window.isTokenExpired = isTokenExpired;
+window.refreshToken = refreshToken;
+window.getCSRFToken = getCSRFToken;

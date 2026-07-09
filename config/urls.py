@@ -1,28 +1,40 @@
 # file path: config/urls.py
+from django.conf import settings
 from django.contrib import admin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.urls import include, path
 from django.views.generic import TemplateView
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+
+class DashboardTemplateView(LoginRequiredMixin, TemplateView):
+    login_url = settings.LOGIN_URL
+    redirect_field_name = "next"
+
+
+class AuthPageTemplateView(TemplateView):
+    pass
+
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
-    # Default landing page
     path("", TemplateView.as_view(template_name="accounts/landingpage.html"), name="landing-page"),
-    path("login/", TemplateView.as_view(template_name="accounts/login.html"), name="login"),
-    path("register/", TemplateView.as_view(template_name="accounts/register.html"), name="register"),
-    path("profile/settings/", TemplateView.as_view(template_name="accounts/profile_settings.html"), name="profile-settings"),
-    path("dashboard/seeker/", TemplateView.as_view(template_name="dashboard/seeker.html"), name="seeker-dashboard"),
-    path("dashboard/recruiter/", TemplateView.as_view(template_name="dashboard/recruiter.html"), name="recruiter-dashboard"),
-    path("dashboard/admin/", TemplateView.as_view(template_name="dashboard/admin.html"), name="admin-dashboard"),
-    path("jobs/", TemplateView.as_view(template_name="jobs.html"), name="jobs"),
-    path("job-recommendation/", TemplateView.as_view(template_name="recommendations.html"), name="job-recommendation"),
-    path("ai-match/", TemplateView.as_view(template_name="recommendations.html"), name="ai-match"),
-    path("skillgap/", TemplateView.as_view(template_name="skillgap.html"), name="skillgap"),
-    path("notifications/", TemplateView.as_view(template_name="notifications.html"), name="notifications"),
-    path("chat/", TemplateView.as_view(template_name="chat.html"), name="chat"),
-    path("quiz/", TemplateView.as_view(template_name="quiz.html"), name="quiz"),
-    path("linkedin/", TemplateView.as_view(template_name="linkedin.html"), name="linkedin"),
+    path("login/", AuthPageTemplateView.as_view(template_name="accounts/login.html"), name="login"),
+    path("register/", AuthPageTemplateView.as_view(template_name="accounts/register.html"), name="register"),
+    path("profile/settings/", DashboardTemplateView.as_view(template_name="accounts/profile_settings.html"), name="profile-settings"),
+    path("dashboard/seeker/", DashboardTemplateView.as_view(template_name="dashboard/seeker.html"), name="seeker-dashboard"),
+    path("dashboard/recruiter/", DashboardTemplateView.as_view(template_name="dashboard/recruiter.html"), name="recruiter-dashboard"),
+    path("dashboard/admin/", DashboardTemplateView.as_view(template_name="dashboard/admin.html"), name="admin-dashboard"),
+    path("jobs/", DashboardTemplateView.as_view(template_name="jobs.html"), name="jobs"),
+    path("job-recommendation/", DashboardTemplateView.as_view(template_name="recommendations.html"), name="job-recommendation"),
+    path("ai-match/", DashboardTemplateView.as_view(template_name="recommendations.html"), name="ai-match"),
+    path("skillgap/", DashboardTemplateView.as_view(template_name="skillgap.html"), name="skillgap"),
+    path("notifications/", DashboardTemplateView.as_view(template_name="notifications.html"), name="notifications"),
+    path("chat/", DashboardTemplateView.as_view(template_name="chat.html"), name="chat"),
+    path("quiz/", DashboardTemplateView.as_view(template_name="quiz.html"), name="quiz"),
+    path("linkedin/", DashboardTemplateView.as_view(template_name="linkedin.html"), name="linkedin"),
     path("api/auth/", include("apps.accounts.urls")),
     path("api/jobs/", include("apps.jobs.urls")),
     path("api/skillgap/", include("apps.skillgap.urls")),

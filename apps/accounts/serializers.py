@@ -48,10 +48,15 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        user = authenticate(username=attrs["email"], password=attrs["password"])
+        user = authenticate(
+            request=self.context.get("request"),
+            username=attrs["email"],
+            password=attrs["password"]
+        )
         if not user:
             raise serializers.ValidationError("Invalid email or password.")
 
+        self.user = user
         refresh = RefreshToken.for_user(user)
         return {
             "user": UserSerializer(user).data,

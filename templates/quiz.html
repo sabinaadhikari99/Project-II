@@ -1,5 +1,5 @@
 <!-- file path: templates/quiz.html -->
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
 {% block title %}Quiz | SkillSync AI{% endblock %}
 
 {% block content %}
@@ -784,8 +784,6 @@
 
 {% block scripts %}
 <script>
-  requireRole("job_seeker");
-
   let totalQuestions = 0;
   let answeredSet = new Set();
 
@@ -838,7 +836,56 @@
     document.getElementById("quizForm").innerHTML = shimmerLoader(3);
     document.getElementById("qBadge").innerHTML = '<i class="bi bi-hourglass-split"></i> Loading…';
 
-    const data      = await api("/api/quiz/");
+    /* Check if user is authenticated */
+    if (!requireAuthenticated()) {
+      document.getElementById("quizForm").innerHTML = `
+        <div class="empty-block">
+          <div class="eb-icon" style="background:rgba(220,38,38,0.08);color:var(--danger);"><i class="bi bi-shield-exclamation"></i></div>
+          <div class="eb-title">Authentication required</div>
+          <div class="eb-sub">Your session has expired. Please login again.</div>
+        </div>`;
+      document.getElementById("qBadge").innerHTML = '<i class="bi bi-question-circle"></i> Error';
+      return;
+    }
+
+    let data;
+    try {
+      data = await api("/api/quiz/");
+    } catch (error) {
+      const message = error.message || "Unable to load quiz questions.";
+      
+      /* Check if it's an authentication error */
+      const isAuthError = message.toLowerCase().includes("authentication") || 
+                         message.toLowerCase().includes("401") ||
+                         message.toLowerCase().includes("unauthorized");
+      
+      let errorIcon = "exclamation-triangle";
+      let errorBg = "rgba(217,119,6,0.08)";
+      let errorColor = "var(--warn)";
+      let errorTitle = "Unable to load quiz";
+      let errorMsg = message;
+      
+      if (isAuthError) {
+        errorIcon = "shield-exclamation";
+        errorBg = "rgba(220,38,38,0.08)";
+        errorColor = "var(--danger)";
+        errorTitle = "Authentication required";
+        errorMsg = "Your session has expired. Please login again.";
+      }
+      
+      document.getElementById("quizForm").innerHTML = `
+        <div class="empty-block">
+          <div class="eb-icon" style="background:${errorBg};color:${errorColor};"><i class="bi bi-${errorIcon}"></i></div>
+          <div class="eb-title">${errorTitle}</div>
+          <div class="eb-sub">${escapeHtml(errorMsg)}</div>
+        </div>`;
+      document.getElementById("qBadge").innerHTML = '<i class="bi bi-question-circle"></i> Error';
+      if (typeof showMessage === "function") {
+        showMessage(message, isAuthError ? "danger" : "warning");
+      }
+      return;
+    }
+
     const questions = data.questions || [];
     totalQuestions  = questions.length;
     answeredSet     = new Set();
@@ -963,12 +1010,35 @@
       btn.style.boxShadow  = "0 8px 22px rgba(34,197,94,0.25)";
 
     } catch (error) {
-      showMessage(error.message || "Submission failed.", "danger");
+      const message = error.message || "Submission failed.";
+      const isAuthError = message.toLowerCase().includes("authentication") || 
+                         message.toLowerCase().includes("401");
+      showMessage(message, isAuthError ? "danger" : "danger");
       btn.innerHTML = orig;
       btn.disabled  = false;
     }
   });
 
-  loadQuiz();
+  /* ── Ensure api() is available and JWT tokens obtained before loading ── */
+  async function initQuizPage() {
+    if (typeof api !== "function" || typeof ensureJWTToken !== "function") {
+      console.warn("Dependencies not yet available, retrying...");
+      requestAnimationFrame(initQuizPage);
+      return;
+    }
+
+    await ensureJWTToken();
+    requireRole("job_seeker");
+    hydrateNavbar();
+
+    loadQuiz();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initQuizPage);
+  } else {
+    // Delay slightly to ensure app.js has fully initialized
+    setTimeout(initQuizPage, 100);
+  }
 </script>
 {% endblock %}

@@ -1,5 +1,5 @@
 <!-- file path: templates/notifications.html -->
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
 {% block title %}Notifications | SkillSync AI{% endblock %}
 
 {% block content %}
@@ -860,7 +860,7 @@
 
           <div class="notif-actions">
             <a class="btn-apply-notif"
-               href="/jobs/?role=${encodeURIComponent(job.title || '')}">
+               href="{% url 'jobs' %}?role=${encodeURIComponent(job.title || '')}">
               <i class="bi bi-send"></i> Apply
             </a>
             ${isUnread
