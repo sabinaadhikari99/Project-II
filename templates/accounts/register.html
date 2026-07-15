@@ -825,6 +825,20 @@
                       <i class="bi bi-eye"></i>
                     </button>
                   </div>
+                  </div>
+
+                  <div class="field-group">
+                  <label for="passwordConfirm"><i class="bi bi-shield-lock"></i> Confirm Password</label>
+                  <div class="input-wrap">
+                    <i class="bi bi-shield-lock field-icon"></i>
+                    <input id="passwordConfirm" class="form-control" name="password_confirm" type="password"
+                      autocomplete="new-password" placeholder="Re-enter your password" required>
+                    <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </div>
+                  </div>
+
                   <div class="pw-strength">
                     <div class="pw-bar" id="bar1"></div>
                     <div class="pw-bar" id="bar2"></div>
@@ -832,8 +846,7 @@
                     <div class="pw-bar" id="bar4"></div>
                   </div>
                   <div class="pw-label" id="pwLabel"></div>
-                </div>
-
+ 
                 <!-- Role: Dropdown + Visual Cards -->
                 <div class="role-section">
                   <div class="role-heading"><i class="bi bi-briefcase"></i> Role</div>
@@ -918,11 +931,20 @@
   })();
 
   /* ── Password Toggle ── */
-  document.querySelector('.pw-toggle')?.addEventListener('click', function() {
-    const inp = document.getElementById('password');
-    const ico = this.querySelector('i');
-    if (inp.type === 'password') { inp.type = 'text'; ico.className = 'bi bi-eye-slash'; }
-    else { inp.type = 'password'; ico.className = 'bi bi-eye'; }
+  document.querySelectorAll('.pw-toggle').forEach(function(button) {
+    button.addEventListener('click', function() {
+      const wrapper = this.closest('.input-wrap');
+      const inp = wrapper ? wrapper.querySelector('input[type="password"]') : document.getElementById('password');
+      const ico = this.querySelector('i');
+      if (!inp) return;
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        ico.className = 'bi bi-eye-slash';
+      } else {
+        inp.type = 'password';
+        ico.className = 'bi bi-eye';
+      }
+    });
   });
 
   /* ── Password Strength ── */
@@ -993,6 +1015,12 @@
     btn.disabled = true;
 
     const form = Object.fromEntries(new FormData(event.target));
+    if (form.password !== form.password_confirm) {
+      btn.innerHTML = orig;
+      btn.disabled = false;
+      return showMessage('Passwords do not match. Please confirm your password.', 'danger');
+    }
+
     const payload = {
       email:    form.email,
       username: form.username,

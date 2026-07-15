@@ -1,6 +1,5 @@
 // ============================================================
-// SkillSync AI — Essential Frontend Utilities
-// Only functions used across templates are kept.
+// SkillSync AI — Essential Frontend Utilities (with Theme Toggle)
 // ============================================================
 
 /* ────────────────────────────────────────────────────────────
@@ -147,7 +146,7 @@ async function api(url, options = {}, auth = true) {
   }
 
   if (auth && token()) {
-    headers["Authorization"] = `Bearer ${token()}`;
+    headers["Authorization"] = "Bearer " + token();
   }
 
   const method = (options.method || "GET").toUpperCase();
@@ -161,7 +160,7 @@ async function api(url, options = {}, auth = true) {
   if (response.status === 401 && auth) {
     const newToken = await refreshToken();
     if (newToken) {
-      headers["Authorization"] = `Bearer ${newToken}`;
+      headers["Authorization"] = "Bearer " + newToken;
       response = await fetch(url, { ...options, headers });
     } else {
       logout();
@@ -186,23 +185,8 @@ async function api(url, options = {}, auth = true) {
 }
 
 /* ────────────────────────────────────────────────────────────
-   UI HELPERS
+   UI HELPERS (including Toast)
    ──────────────────────────────────────────────────────────── */
-function showMessage(message, type = "info") {
-  const target = document.getElementById("message");
-  if (!target) return;
-
-  const typeMap = {
-    success: "text-success",
-    danger: "text-danger",
-    warning: "text-warning",
-    info: "text-info",
-  };
-
-  const className = typeMap[type] || "text-info";
-  target.innerHTML = `<div class="${className}">${escapeHtml(message)}</div>`;
-}
-
 function escapeHtml(value) {
   if (value == null) return "";
   return String(value)
@@ -213,6 +197,123 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+function showToast(message, type = "info", duration = 4500) {
+  const container = document.getElementById("toastContainer");
+  if (!container || typeof bootstrap === "undefined") return;
+
+  const toastEl = document.createElement("div");
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  toastEl.setAttribute("role", "alert");
+  toastEl.setAttribute("aria-live", "assertive");
+  toastEl.setAttribute("aria-atomic", "true");
+  toastEl.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${escapeHtml(message)}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+
+  container.appendChild(toastEl);
+  const toast = new bootstrap.Toast(toastEl, { delay: duration });
+  toast.show();
+  toastEl.addEventListener("hidden.bs.toast", () => toastEl.remove());
+}
+
+function showMessage(message, type = "info") {
+  const target = document.getElementById("message");
+  if (target) {
+    const typeMap = {
+      success: "text-success",
+      danger: "text-danger",
+      warning: "text-warning",
+      info: "text-info",
+    };
+    const className = typeMap[type] || "text-info";
+    target.innerHTML = `<div class="${className}">${escapeHtml(message)}</div>`;
+    return;
+  }
+  showToast(message, type);
+}
+
+/* ────────────────────────────────────────────────────────────
+   THEME MANAGEMENT – FULLY WORKING
+   ──────────────────────────────────────────────────────────── */
+
+// Get preferred theme from localStorage or system preference
+function getPreferredTheme() {
+  const stored = localStorage.getItem("theme");
+  if (stored === "light" || stored === "dark") return stored;
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  }
+  return "light";
+}
+
+// Apply theme to the entire website (REAL color changes)
+function applyTheme(theme) {
+  const html = document.documentElement;
+  html.classList.remove("theme-light", "theme-dark");
+  html.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
+  localStorage.setItem("theme", theme);
+
+  // Update all theme toggle buttons on the page
+  const buttons = document.querySelectorAll("#themeToggleBtn, [data-theme-toggle]");
+  buttons.forEach(btn => {
+    const icon = btn.querySelector("i");
+    if (icon) {
+      if (theme === "dark") {
+        icon.className = "bi bi-sun-fill";
+        btn.setAttribute("aria-label", "Switch to light mode");
+      } else {
+        icon.className = "bi bi-moon-stars-fill";
+        btn.setAttribute("aria-label", "Switch to dark mode");
+      }
+    }
+  });
+
+  // Dispatch custom event for any other components listening
+  document.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme } }));
+}
+
+// Toggle between light and dark
+function toggleTheme() {
+  const current = document.documentElement.classList.contains("theme-dark") ? "dark" : "light";
+  const next = current === "dark" ? "light" : "dark";
+  applyTheme(next);
+  showToast(next === "dark" ? "🌙 Dark mode activated" : "☀️ Light mode activated", "info", 2000);
+}
+
+// Initialize theme on page load
+function initTheme() {
+  const theme = getPreferredTheme();
+  applyTheme(theme);
+
+  // Listen for system theme changes (only if user hasn't manually set a preference)
+  if (window.matchMedia) {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => {
+      if (!localStorage.getItem("theme")) {
+        applyTheme(e.matches ? "dark" : "light");
+      }
+    };
+    try {
+      media.addEventListener("change", handler);
+    } catch (_) {
+      // Fallback for older browsers
+      media.addListener(handler);
+    }
+  }
+}
+
+// ── Expose theme functions globally ──
+window.toggleTheme = toggleTheme;
+window.applyTheme = applyTheme;
+window.getPreferredTheme = getPreferredTheme;
+window.initTheme = initTheme;
+
+/* ────────────────────────────────────────────────────────────
+   ROLE & LABEL HELPERS
+   ──────────────────────────────────────────────────────────── */
 function roleLabel(role) {
   const map = {
     job_seeker: "Job Seeker",
@@ -238,6 +339,10 @@ function workModeLabel(value) {
     onsite: "On-site"
   };
   return map[value] || "On-site";
+}
+
+function formatPercent(value) {
+  return Math.round(value * 100) + "%";
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -299,6 +404,7 @@ async function submitJobApplication(id, button) {
       button.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Applied';
       button.disabled = true;
     }
+    showToast("Application submitted successfully!", "success");
   } catch (error) {
     if (button) {
       button.disabled = false;
@@ -451,24 +557,32 @@ function hydrateNavbar() {
 }
 
 /* ────────────────────────────────────────────────────────────
-   INIT
+   INIT – runs on every page load
    ──────────────────────────────────────────────────────────── */
 document.addEventListener("DOMContentLoaded", async function() {
+  // Initialize theme FIRST
+  initTheme();
+
+  // Then other stuff
   await ensureJWTToken();
   hydrateNavbar();
   loadNotificationBell();
   initSidebarToggle();
 });
 
+// Poll for notification updates every 30 seconds
 setInterval(loadNotificationBell, 30000);
 
+// If token is removed from localStorage, redirect to login
 window.addEventListener("storage", function(e) {
   if (e.key === "access" && e.newValue === null) {
     window.location.href = "/login/";
   }
 });
 
-// Expose essential functions globally
+/* ────────────────────────────────────────────────────────────
+   EXPOSE GLOBALS (so inline onclick attributes work)
+   ──────────────────────────────────────────────────────────── */
 window.token = token;
 window.saveSession = saveSession;
 window.saveUser = saveUser;
@@ -478,10 +592,12 @@ window.requireAuthenticated = requireAuthenticated;
 window.requireRole = requireRole;
 window.api = api;
 window.showMessage = showMessage;
+window.showToast = showToast;
 window.escapeHtml = escapeHtml;
 window.roleLabel = roleLabel;
 window.initials = initials;
 window.workModeLabel = workModeLabel;
+window.formatPercent = formatPercent;
 window.renderAvatar = renderAvatar;
 window.renderCompanyLogo = renderCompanyLogo;
 window.fileToDataUrl = fileToDataUrl;
@@ -495,3 +611,7 @@ window.ensureJWTToken = ensureJWTToken;
 window.isTokenExpired = isTokenExpired;
 window.refreshToken = refreshToken;
 window.getCSRFToken = getCSRFToken;
+window.toggleTheme = toggleTheme;
+window.applyTheme = applyTheme;
+window.getPreferredTheme = getPreferredTheme;
+window.initTheme = initTheme;

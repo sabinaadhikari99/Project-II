@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% block title %}SkillSync AI{% endblock %}</title>
+    <script>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const theme = stored === 'dark' || stored === 'light'
+          ? stored
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
+      })();
+    </script>
 
     <!-- Bootstrap CSS -->
     <link
@@ -20,6 +29,7 @@
 </head>
 
 <body>
+    <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
 
     {% include "includes/public_nav.html" %}
 

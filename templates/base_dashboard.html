@@ -1,7 +1,4 @@
-<!-- base_dashboard.html -->
-
 {% load static %}
-
 
 <!doctype html>
 <html lang="en">
@@ -11,6 +8,16 @@
   <meta name="theme-color" content="#4f46e5">
 
   <title>{% block title %}SkillSync AI{% endblock %}</title>
+
+  <script>
+    (function() {
+      const stored = localStorage.getItem('theme');
+      const theme = stored === 'dark' || stored === 'light'
+        ? stored
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.add('theme-' + theme);
+    })();
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,16 +29,87 @@
   <link href="{% static 'css/app.css' %}" rel="stylesheet">
 
   {% block extra_head %}{% endblock %}
+
+  <style>
+    /* ============================================
+       GLOBAL DASHBOARD LAYOUT – FIXED SIDEBAR
+       ============================================ */
+    :root {
+      --sidebar-width: 300px;
+      --navbar-height: 64px;
+    }
+
+    /* ── Main content offset for fixed sidebar ── */
+    .app-main {
+      margin-left: var(--sidebar-width);
+      padding-top: calc(var(--navbar-height) + 1.5rem);
+      padding-right: 1.5rem;
+      padding-bottom: 2rem;
+      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 100vh;
+      max-width: 1480px;
+      background: var(--ss-bg);
+    }
+
+    /* ── Prevent content from breaking layout ── */
+    .app-main *,
+    .app-main *::before,
+    .app-main *::after {
+      min-width: 0;
+      min-height: 0;
+      box-sizing: border-box;
+    }
+
+    .app-main .container-fluid,
+    .app-main .row,
+    .app-main .col,
+    .app-main .col-* {
+      overflow: hidden;
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+
+    body.has-sidebar .app-main {
+      margin-left: var(--sidebar-width);
+    }
+
+    /* ── Responsive: mobile ── */
+    @media (max-width: 991.98px) {
+      .app-main {
+        margin-left: 0 !important;
+        padding-top: calc(var(--navbar-height) + 1rem);
+        padding-right: 1rem;
+        padding-left: 1rem;
+        max-width: 100%;
+      }
+      body.has-sidebar .app-main {
+        margin-left: 0 !important;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .app-main {
+        padding-top: calc(var(--navbar-height) + 0.75rem);
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+        padding-bottom: 1.25rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
 
   {# Only show navbar/sidebar if NOT landing page #}
   {% if request.path != "/" %}
-      {% include "includes/dashboard_nav.html" %}
+    {% include "includes/dashboard_nav.html" %}
   {% endif %}
 
-  <main class="app-main container-fluid py-4 py-lg-5">
+  <!-- ============================================
+       MAIN CONTENT
+       ============================================ -->
+  <main class="app-main">
     {% block content %}{% endblock %}
   </main>
 
@@ -43,11 +121,11 @@
   <script>
     (function() {
       if (document.readyState === 'complete') {
-        initSidebarToggle();
+        if (typeof initSidebarToggle === 'function') initSidebarToggle();
       } else {
         document.addEventListener('readystatechange', function() {
           if (document.readyState === 'complete') {
-            initSidebarToggle();
+            if (typeof initSidebarToggle === 'function') initSidebarToggle();
           }
         });
       }
@@ -67,6 +145,12 @@
         const observer = new MutationObserver(syncBodyClass);
         observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
       }
+
+      document.addEventListener('click', function(e) {
+        const sidebar = document.getElementById('appSidebar');
+        if (!sidebar) return;
+        setTimeout(syncBodyClass, 50);
+      });
     })();
   </script>
 
