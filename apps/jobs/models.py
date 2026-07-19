@@ -19,7 +19,9 @@ class JobPosting(models.Model):
     description = models.TextField()
     required_skills = models.JSONField(default=list, blank=True)
     experience_required = models.FloatField(default=0)
+    education_required = models.CharField(max_length=100, blank=True, default="")
     salary_range = models.CharField(max_length=120, blank=True)
+    job_category = models.CharField(max_length=80, blank=True, default="")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

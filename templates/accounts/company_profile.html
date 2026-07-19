@@ -1,0 +1,515 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Company Profile | SkillSync AI{% endblock %}
+
+{% block content %}
+<style>
+  .cp-page {
+    animation: pageEnter 0.4s ease both;
+  }
+
+  @keyframes pageEnter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Logo ── */
+  .cp-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .cp-logo-wrap {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--ss-radius-xl);
+    overflow: hidden;
+    border: 3px solid var(--ss-surface);
+    box-shadow: var(--ss-shadow-md);
+    background: var(--ss-surface-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--ss-brand);
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all var(--ss-transition-fast);
+  }
+
+  .cp-logo-wrap:hover {
+    box-shadow: 0 8px 28px rgba(var(--ss-brand-rgb), 0.20);
+    transform: scale(1.03);
+  }
+
+  .cp-logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cp-logo-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15,23,42,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--ss-transition-fast);
+    border-radius: calc(var(--ss-radius-xl) - 3px);
+    color: #fff;
+    font-size: 20px;
+  }
+
+  .cp-logo-wrap:hover .cp-logo-overlay { opacity: 1; }
+
+  .cp-logo-info h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 0.1rem;
+  }
+
+  .cp-logo-info p {
+    font-size: 14px;
+    color: var(--ss-muted);
+    margin-bottom: 0;
+  }
+
+  /* ── Upload zone ── */
+  .cp-upload-zone {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+
+  .cp-upload-zone .cp-upload-btn {
+    height: 34px;
+    padding: 0 1rem;
+    border-radius: var(--ss-radius);
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    border: 1px solid var(--ss-border);
+    background: var(--ss-surface);
+    color: var(--ss-muted);
+    transition: all var(--ss-transition-fast);
+  }
+
+  .cp-upload-zone .cp-upload-btn:hover {
+    border-color: var(--ss-brand);
+    color: var(--ss-brand);
+    background: var(--ss-brand-soft);
+  }
+
+  .cp-upload-hint {
+    font-size: 12px;
+    color: var(--ss-muted-light);
+  }
+
+  /* ── Save bar ── */
+  .cp-save-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--ss-surface);
+    border-top: 1px solid var(--ss-border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    border-radius: 0 0 var(--ss-radius-lg) var(--ss-radius-lg);
+    margin-top: 24px;
+    box-shadow: 0 -4px 20px rgba(15,23,42,0.04);
+  }
+
+  .cp-save-bar .cp-msg {
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Toast ── */
+  .cp-toast {
+    position: fixed;
+    top: 20px; right: 20px;
+    z-index: 9999;
+    padding: 12px 20px;
+    border-radius: var(--ss-radius-lg);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--ss-font-sans);
+    box-shadow: var(--ss-shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: cpToastIn 0.3s ease both;
+    max-width: 380px;
+  }
+
+  .cp-toast.success { background: var(--ss-success-bg); color: #065F46; border: 1px solid var(--ss-success-border); }
+  .cp-toast.error { background: var(--ss-danger-bg); color: #991B1B; border: 1px solid var(--ss-danger-border); }
+  .cp-toast.info { background: var(--ss-info-bg); color: #1E40AF; border: 1px solid var(--ss-info-border); }
+
+  @keyframes cpToastIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes cpToastOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(20px); }
+  }
+
+  @media (max-width: 767.98px) {
+    .cp-logo-area { flex-direction: column; align-items: flex-start; }
+    .cp-save-bar { flex-direction: column; align-items: stretch; }
+    .cp-save-bar .btn { width: 100%; justify-content: center; }
+  }
+</style>
+
+<div class="cp-page">
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <button class="btn btn-outline btn-sm" onclick="routeByRole(localStorage.getItem('role'))" style="border-radius:var(--ss-radius);height:34px;">
+      <i class="bi bi-arrow-left"></i> Dashboard
+    </button>
+    <span style="font-size:13px;color:var(--ss-muted-light);">/ Company Profile</span>
+  </div>
+
+  <!-- ═══ HERO SECTION ═══ -->
+  <div class="dash-hero">
+    <div class="dh-content">
+      <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-start gap-3">
+          <div>
+            <h1 id="cpDisplayName" style="font-size:32px;">Company Name</h1>
+            <p class="dh-sub" id="cpDisplayDesc" style="max-width:600px;">Tell candidates about your company...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ COMPANY LOGO ═══ -->
+  <div class="panel" style="margin-bottom:1.25rem;">
+    <div class="panel-head">
+      <div class="panel-title">
+        <div class="panel-icon"><i class="bi bi-image"></i></div>
+        Company Logo
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="cp-logo-area">
+        <div class="cp-logo-wrap" id="cpLogoPreview" onclick="document.getElementById('cpLogoFile').click()">
+          <span id="cpLogoLetter" style="font-size:34px;font-weight:700;color:var(--ss-brand);">C</span>
+          <div class="cp-logo-overlay"><i class="bi bi-camera-fill"></i></div>
+        </div>
+        <div class="cp-logo-info">
+          <h2 id="cpDisplayNameSmall">Company Name</h2>
+          <p id="cpDisplayMeta">Update your company logo</p>
+          <div class="cp-upload-zone">
+            <button class="cp-upload-btn" onclick="document.getElementById('cpLogoFile').click()">
+              <i class="bi bi-upload"></i> Upload Logo
+            </button>
+            <span class="cp-upload-hint">PNG, JPG or WEBP · Max 5 MB</span>
+          </div>
+        </div>
+      </div>
+      <input id="cpLogoFile" type="file" accept="image/png,image/jpeg,image/webp" style="display:none;">
+    </div>
+  </div>
+
+  <!-- ═══ MAIN FORM ═══ -->
+  <div class="row g-4">
+
+    <!-- Company Information -->
+    <div class="col-12">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <div class="panel-icon"><i class="bi bi-building"></i></div>
+            Company Information
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Company Name</label>
+                <input class="form-input" id="cpName" placeholder="Acme Inc.">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Industry</label>
+                <select class="form-select" id="cpIndustry">
+                  <option value="">Select industry</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Education">Education</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Retail">Retail</option>
+                  <option value="Real Estate">Real Estate</option>
+                  <option value="Consulting">Consulting</option>
+                  <option value="Media">Media</option>
+                  <option value="Energy">Energy</option>
+                  <option value="Transportation">Transportation</option>
+                  <option value="Hospitality">Hospitality</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Company Size</label>
+                <select class="form-select" id="cpSize">
+                  <option value="">Select size</option>
+                  <option value="1-10">1-10 employees</option>
+                  <option value="11-50">11-50 employees</option>
+                  <option value="51-200">51-200 employees</option>
+                  <option value="201-500">201-500 employees</option>
+                  <option value="501-1000">501-1000 employees</option>
+                  <option value="1001-5000">1001-5000 employees</option>
+                  <option value="5001+">5001+ employees</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Headquarters Location</label>
+                <input class="form-input" id="cpAddress" placeholder="San Francisco, CA">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Company Website</label>
+                <input class="form-input" id="cpWebsite" placeholder="https://acme.com" type="url">
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label class="form-label">Company Description</label>
+                <textarea class="form-textarea" id="cpDesc" placeholder="Tell candidates about your company's mission, culture, and what makes it a great place to work..." rows="4"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="col-12">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <div class="panel-icon"><i class="bi bi-share"></i></div>
+            Social Links
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="input-icon-wrap">
+                <i class="bi bi-linkedin input-icon" style="color:#0A66C2;"></i>
+                <input class="form-input" id="cpSocialLinkedin" placeholder="LinkedIn URL" style="padding-left:2.5rem;">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-icon-wrap">
+                <i class="bi bi-facebook input-icon" style="color:#1877F2;"></i>
+                <input class="form-input" id="cpSocialFacebook" placeholder="Facebook URL" style="padding-left:2.5rem;">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-icon-wrap">
+                <i class="bi bi-twitter-x input-icon" style="color:#1DA1F2;"></i>
+                <input class="form-input" id="cpSocialTwitter" placeholder="X (Twitter) URL" style="padding-left:2.5rem;">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-icon-wrap">
+                <i class="bi bi-instagram input-icon" style="color:#E4405F;"></i>
+                <input class="form-input" id="cpSocialInstagram" placeholder="Instagram URL" style="padding-left:2.5rem;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Bar -->
+    <div class="col-12">
+      <div class="cp-save-bar">
+        <span class="cp-msg" id="cpSaveMsg"></span>
+        <button class="btn btn-primary" id="cpSaveBtn" onclick="cpSaveAll()">
+          <i class="bi bi-check-lg"></i> Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+requireRole("recruiter");
+
+(function() {
+  const PK = "company_profile";
+
+  function get() {
+    try { return JSON.parse(localStorage.getItem(PK)) || {}; } catch { return {}; }
+  }
+  function set(data) {
+    localStorage.setItem(PK, JSON.stringify(data));
+  }
+  function val(id) { return document.getElementById(id)?.value ?? ""; }
+  function setVal(id, v) {
+    const el = document.getElementById(id);
+    if (el) el.value = v ?? "";
+  }
+
+  function esc(s) {
+    if (!s) return "";
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function cpToast(type, msg) {
+    const existing = document.querySelector(".cp-toast");
+    if (existing) existing.remove();
+    const t = document.createElement("div");
+    t.className = "cp-toast " + type;
+    const icons = { success: "bi-check-circle-fill", error: "bi-exclamation-circle-fill", info: "bi-info-circle-fill" };
+    t.innerHTML = '<i class="' + (icons[type] || "bi-info-circle-fill") + '"></i> ' + msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.animation = "cpToastOut 0.3s ease both"; setTimeout(() => t.remove(), 300); }, 3000);
+  }
+  window.cpToast = cpToast;
+
+  const fieldMap = {
+    cpName: "name", cpIndustry: "industry", cpSize: "size",
+    cpAddress: "address", cpWebsite: "website",
+    cpDesc: "desc",
+    cpSocialLinkedin: "socialLinkedin", cpSocialFacebook: "socialFacebook",
+    cpSocialTwitter: "socialTwitter", cpSocialInstagram: "socialInstagram"
+  };
+
+  function cpSaveAll() {
+    const btn = document.getElementById("cpSaveBtn");
+    const origHtml = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:14px;height:14px;"></span> Saving...';
+    btn.disabled = true;
+
+    const d = get();
+    Object.keys(fieldMap).forEach(id => { d[fieldMap[id]] = val(id); });
+    set(d);
+
+    setTimeout(() => {
+      cpLoadDisplay();
+      btn.innerHTML = origHtml;
+      btn.disabled = false;
+      cpToast("success", "Company profile saved successfully");
+    }, 400);
+  }
+  window.cpSaveAll = cpSaveAll;
+
+  function cpLoadDisplay() {
+    const d = get();
+    const name = d.name || "Company Name";
+
+    document.getElementById("cpDisplayName").textContent = name;
+    document.getElementById("cpDisplayNameSmall").textContent = name;
+    document.getElementById("cpDisplayDesc").textContent = d.desc || "Tell candidates about your company...";
+    document.getElementById("cpDisplayMeta").textContent = d.industry ? d.industry + (d.size ? " · " + d.size : "") : "Update your company logo";
+
+    const logo = d.logo || "";
+    const logoPreview = document.getElementById("cpLogoPreview");
+    const letter = name.charAt(0).toUpperCase();
+    if (logo) {
+      logoPreview.innerHTML = '<img src="' + esc(logo) + '" alt=""><div class="cp-logo-overlay" onclick="document.getElementById(\'cpLogoFile\').click()"><i class="bi bi-camera-fill"></i></div>';
+    } else {
+      logoPreview.innerHTML = '<span style="font-size:34px;font-weight:700;color:var(--ss-brand);">' + letter + '</span><div class="cp-logo-overlay" onclick="document.getElementById(\'cpLogoFile\').click()"><i class="bi bi-camera-fill"></i></div>';
+    }
+  }
+
+  function cpLoad() {
+    const d = get();
+    Object.keys(fieldMap).forEach(id => { setVal(id, d[fieldMap[id]]); });
+    cpLoadDisplay();
+  }
+
+  async function handleLogoUpload(file) {
+    if (!file) return;
+    const validTypes = ["image/png","image/jpeg","image/webp"];
+    if (!validTypes.includes(file.type)) { cpToast("error", "Only PNG, JPG, and WEBP files are supported."); return; }
+    if (file.size > 5 * 1024 * 1024) { cpToast("error", "Logo must be smaller than 5 MB."); return; }
+    const logoWrap = document.getElementById("cpLogoPreview");
+    const orig = logoWrap.innerHTML;
+    logoWrap.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"><span class="spinner-border spinner-border-sm" style="color:var(--ss-brand);width:24px;height:24px;"></span></div>';
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const d = get();
+      d.logo = dataUrl;
+      set(d);
+      cpLoadDisplay();
+      cpToast("success", "Logo updated successfully");
+    } catch (err) {
+      logoWrap.innerHTML = orig;
+      cpToast("error", "Failed to upload logo. Please try again.");
+    }
+  }
+
+  document.getElementById("cpLogoFile").addEventListener("change", async function(e) {
+    await handleLogoUpload(e.target.files[0]);
+    e.target.value = "";
+  });
+
+  const logoWrap = document.getElementById("cpLogoPreview");
+  logoWrap.addEventListener("dragover", function(e) { e.preventDefault(); this.style.borderColor = "var(--ss-brand)"; });
+  logoWrap.addEventListener("dragleave", function(e) { e.preventDefault(); this.style.borderColor = ""; });
+  logoWrap.addEventListener("drop", async function(e) {
+    e.preventDefault();
+    this.style.borderColor = "";
+    const file = e.dataTransfer.files[0];
+    await handleLogoUpload(file);
+  });
+
+  document.querySelectorAll(".form-input, .form-select, .form-textarea").forEach(el => {
+    el.addEventListener("blur", cpSaveAll);
+  });
+
+  cpLoad();
+})();
+</script>
+
+<style>
+  .input-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-icon-wrap .input-icon {
+    position: absolute;
+    left: 0.85rem;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .input-icon-wrap .form-input {
+    padding-left: 2.5rem;
+  }
+</style>
+{% endblock %}

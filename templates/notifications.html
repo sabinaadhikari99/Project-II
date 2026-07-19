@@ -1,14 +1,13 @@
-<!-- file path: templates/notifications.html -->
 {% extends "base_dashboard.html" %}
 {% block title %}Notifications | SkillSync AI{% endblock %}
 
 {% block content %}
 <style>
   :root {
-    --accent: var(--bs-primary, #4f46e5);
-    --accent-rgb: var(--bs-primary-rgb, 79, 70, 229);
+    --accent: var(--bs-primary, #2563EB);
+    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
     --surface: #fff;
-    --surface-alt: #f8f9fb;
+    --surface-alt: #F8FAFC;
     --txt: rgba(15,23,42,0.88);
     --txt-soft: rgba(15,23,42,0.55);
     --txt-muted: rgba(15,23,42,0.38);
@@ -16,11 +15,13 @@
     --bdr-hover: rgba(15,23,42,0.12);
     --shadow: rgba(15,23,42,0.06);
     --shadow-lg: rgba(15,23,42,0.10);
-    --success: #16a34a;
-    --success-bg: rgba(34,197,94,0.10);
-    --success-bdr: rgba(34,197,94,0.18);
-    --warn: #d97706;
-    --warn-bg: rgba(217,119,6,0.10);
+    --success: #10B981;
+    --success-bg: rgba(16,185,129,0.10);
+    --success-bdr: rgba(16,185,129,0.18);
+    --warn: #F59E0B;
+    --warn-bg: rgba(245,158,11,0.10);
+    --danger: #EF4444;
+    --danger-bg: rgba(239,68,68,0.10);
   }
 
   .notif-page { animation: pageIn 0.6s ease both; }
@@ -30,7 +31,6 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── Header ── */
   .dash-header {
     display: flex;
     align-items: flex-start;
@@ -50,8 +50,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent);
@@ -71,14 +71,14 @@
   }
 
   .dash-header .page-title {
-    font-size: 1.75rem;
-    font-weight: 800;
+    font-size: 28px;
+    font-weight: 700;
     margin-bottom: 0.2rem;
     color: var(--txt);
   }
 
   .dash-header .page-subtitle {
-    font-size: 0.88rem;
+    font-size: 14px;
     max-width: 500px;
     color: var(--txt-soft);
   }
@@ -95,8 +95,8 @@
     border: 1.5px solid rgba(var(--accent-rgb), 0.28) !important;
     color: var(--accent) !important;
     border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.82rem;
+    font-weight: 500;
+    font-size: 14px;
     padding: 0.5rem 1.15rem;
     transition: all 0.25s ease;
   }
@@ -108,7 +108,12 @@
     color: var(--accent) !important;
   }
 
-  /* ── Metric Cards ── */
+  .btn-outline-accent:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
   .metric-card {
     background: var(--surface);
     border: 1px solid var(--bdr);
@@ -130,6 +135,7 @@
   .metric-col:nth-child(1) .metric-card { animation-delay: 0.10s; }
   .metric-col:nth-child(2) .metric-card { animation-delay: 0.16s; }
   .metric-col:nth-child(3) .metric-card { animation-delay: 0.22s; }
+  .metric-col:nth-child(4) .metric-card { animation-delay: 0.28s; }
 
   .metric-card::before {
     content: "";
@@ -166,7 +172,7 @@
     border-radius: 13px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 1.1rem;
+    font-size: 18px;
     transition: all 0.3s ease;
   }
 
@@ -181,8 +187,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     padding: 0.2rem 0.5rem;
     border-radius: 6px;
     background: var(--success-bg);
@@ -195,8 +201,8 @@
   }
 
   .metric-card .mc-value {
-    font-size: 2.1rem;
-    font-weight: 800;
+    font-size: 30px;
+    font-weight: 700;
     line-height: 1;
     color: var(--txt);
     margin-bottom: 0.3rem;
@@ -206,14 +212,13 @@
   .metric-card:hover .mc-value { color: var(--accent); }
 
   .metric-card .mc-label {
-    font-size: 0.76rem;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--txt-muted);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* ── Main Panel ── */
   .dash-panel {
     background: var(--surface);
     border: 1px solid var(--bdr);
@@ -230,14 +235,15 @@
     gap: 1rem;
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--bdr);
+    flex-wrap: wrap;
   }
 
   .panel-head .panel-title {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     margin-bottom: 0;
     color: var(--txt);
   }
@@ -250,7 +256,7 @@
     border-radius: 10px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.85rem;
+    font-size: 14px;
     flex-shrink: 0;
   }
 
@@ -260,8 +266,8 @@
     gap: 0.3rem;
     padding: 0.28rem 0.75rem;
     border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
@@ -273,8 +279,8 @@
     gap: 0.3rem;
     padding: 0.28rem 0.75rem;
     border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
     border: 1px solid rgba(var(--accent-rgb), 0.16);
@@ -289,7 +295,37 @@
 
   .panel-body { padding: 1.5rem; }
 
-  /* ── Notification Items ── */
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0 1.5rem 1rem;
+    border-bottom: 1px solid var(--bdr);
+  }
+
+  .filter-btn {
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--bdr);
+    background: transparent;
+    color: var(--txt-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn:hover {
+    border-color: rgba(var(--accent-rgb), 0.3);
+    color: var(--accent);
+  }
+
+  .filter-btn.active {
+    background: rgba(var(--accent-rgb), 0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   .notif-item {
     position: relative;
     display: flex;
@@ -324,15 +360,9 @@
     transform: translateX(4px);
   }
 
-  .notif-item.unread:hover {
-    border-left-color: var(--accent);
-  }
+  .notif-item.unread:hover { border-left-color: var(--accent); }
 
-  /* Unread dot */
-  .notif-dot-wrap {
-    flex-shrink: 0;
-    padding-top: 4px;
-  }
+  .notif-dot-wrap { flex-shrink: 0; padding-top: 4px; }
 
   .notif-dot {
     width: 9px; height: 9px;
@@ -348,7 +378,6 @@
     animation: none;
   }
 
-  /* Body */
   .notif-body { flex: 1; min-width: 0; }
 
   .notif-top {
@@ -365,14 +394,14 @@
     gap: 0.25rem;
     padding: 0.22rem 0.65rem;
     border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
   }
 
-  .match-pill i { font-size: 0.6rem; }
+  .match-pill i { font-size: 13px; }
 
   .match-pill.high {
     background: var(--success-bg);
@@ -381,9 +410,9 @@
   }
 
   .match-pill.medium {
-    background: rgba(217,119,6,0.10);
+    background: rgba(245,158,11,0.10);
     color: var(--warn);
-    border-color: rgba(217,119,6,0.18);
+    border-color: rgba(245,158,11,0.18);
   }
 
   .match-pill.low {
@@ -393,15 +422,15 @@
   }
 
   .notif-time {
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 400;
     color: var(--txt-muted);
     display: flex;
     align-items: center;
     gap: 0.25rem;
   }
 
-  .notif-time i { font-size: 0.65rem; }
+  .notif-time i { font-size: 13px; }
 
   .notif-unread-tag {
     display: inline-flex;
@@ -409,8 +438,8 @@
     gap: 0.22rem;
     padding: 0.15rem 0.5rem;
     border-radius: 6px;
-    font-size: 0.65rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     background: rgba(var(--accent-rgb), 0.08);
@@ -419,14 +448,14 @@
   }
 
   .notif-title {
-    font-size: 0.92rem;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--txt);
     margin-bottom: 0.25rem;
   }
 
   .notif-msg {
-    font-size: 0.82rem;
+    font-size: 14px;
     color: var(--txt-soft);
     line-height: 1.55;
     margin-bottom: 0.6rem;
@@ -437,12 +466,12 @@
     align-items: center;
     gap: 0.45rem;
     flex-wrap: wrap;
-    font-size: 0.75rem;
+    font-size: 13px;
     color: var(--txt-muted);
     margin-bottom: 0.75rem;
   }
 
-  .notif-meta i { font-size: 0.68rem; opacity: 0.55; }
+  .notif-meta i { font-size: 13px; opacity: 0.55; }
 
   .notif-meta .meta-dot {
     width: 3px; height: 3px;
@@ -456,14 +485,13 @@
     gap: 0.2rem;
     padding: 0.15rem 0.45rem;
     border-radius: 6px;
-    font-size: 0.68rem;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     background: rgba(var(--accent-rgb), 0.06);
     color: var(--accent);
     border: 1px solid rgba(var(--accent-rgb), 0.10);
   }
 
-  /* Actions */
   .notif-actions {
     display: flex;
     flex-wrap: wrap;
@@ -475,8 +503,8 @@
     height: 32px;
     padding: 0 0.9rem;
     border-radius: 9px;
-    font-size: 0.76rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     border: none;
     background: var(--accent) !important;
     color: #fff !important;
@@ -514,8 +542,8 @@
     height: 32px;
     padding: 0 0.9rem;
     border-radius: 9px;
-    font-size: 0.76rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: transparent;
     color: var(--accent);
     border: 1.5px solid rgba(var(--accent-rgb), 0.22);
@@ -523,6 +551,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+    cursor: pointer;
   }
 
   .btn-mark-read:hover {
@@ -532,12 +561,34 @@
     color: var(--accent);
   }
 
+  .btn-delete-notif {
+    height: 32px;
+    padding: 0 0.9rem;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    background: transparent;
+    color: var(--danger);
+    border: 1.5px solid rgba(239,68,68,0.22);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+  }
+
+  .btn-delete-notif:hover {
+    background: var(--danger-bg);
+    border-color: rgba(239,68,68,0.4);
+    transform: translateY(-1px);
+  }
+
   .read-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--txt-muted);
     padding: 0.15rem 0.5rem;
     border-radius: 7px;
@@ -545,34 +596,6 @@
     border: 1px solid var(--bdr);
   }
 
-  /* ── Auto-refresh indicator ── */
-  .refresh-indicator {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--txt-muted);
-    padding: 0.3rem 0.75rem;
-    border-radius: 8px;
-    background: var(--surface-alt);
-    border: 1px solid var(--bdr);
-    animation: fadeIn 0.4s ease both;
-  }
-
-  .refresh-indicator .ri-dot {
-    width: 6px; height: 6px;
-    border-radius: 999px;
-    background: var(--success);
-    animation: pulseDot 2s ease-in-out infinite;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  /* ── Empty / Loading States ── */
   .empty-block {
     display: flex;
     flex-direction: column;
@@ -590,7 +613,7 @@
     border-radius: 18px;
     background: rgba(var(--accent-rgb), 0.07);
     color: var(--accent);
-    font-size: 1.4rem;
+    font-size: 22px;
     margin-bottom: 0.85rem;
     animation: iconPop 0.5s 0.2s ease both;
   }
@@ -601,20 +624,19 @@
   }
 
   .empty-block .eb-title {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--txt-soft);
     margin-bottom: 0.3rem;
   }
 
   .empty-block .eb-sub {
-    font-size: 0.8rem;
+    font-size: 14px;
     color: var(--txt-muted);
     max-width: 280px;
     line-height: 1.6;
   }
 
-  /* Shimmer */
   .shimmer-item {
     padding: 1.25rem;
     border-radius: 18px;
@@ -641,59 +663,96 @@
   .shimmer-line.full { width: 100%; }
   .shimmer-line.wide { width: 80%; }
 
-  /* ── Responsive ── */
+  .pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bdr);
+    margin-top: 0.5rem;
+  }
+
+  .pagination-bar .page-btn {
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--bdr);
+    background: transparent;
+    color: var(--txt-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-bar .page-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .pagination-bar .page-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .pagination-bar .page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .pagination-bar .page-info {
+    font-size: 13px;
+    color: var(--txt-muted);
+  }
+
   @media (max-width: 767.98px) {
     .dash-header { flex-direction: column; gap: 1rem; }
-    .dash-header .page-title { font-size: 1.5rem; }
-    .panel-head { padding: 1rem 1.15rem; flex-wrap: wrap; gap: 0.65rem; }
+    .dash-header .page-title { font-size: 22px; }
+    .panel-head { padding: 1rem 1.15rem; }
     .panel-body { padding: 1.15rem; }
     .notif-item { flex-direction: column; gap: 0.75rem; }
     .notif-dot-wrap { display: flex; align-items: center; gap: 0.5rem; }
-    .metric-card .mc-value { font-size: 1.75rem; }
+    .metric-card .mc-value { font-size: 28px; }
+    .filter-bar { padding: 0.75rem; }
   }
 
   @media (max-width: 575.98px) {
     .metric-card { padding: 1.15rem; }
     .notif-item { padding: 1rem; }
     .notif-actions { flex-direction: column; align-items: flex-start; }
-    .btn-apply-notif, .btn-mark-read { width: 100%; justify-content: center; }
+    .btn-apply-notif, .btn-mark-read, .btn-delete-notif { width: 100%; justify-content: center; }
   }
 </style>
 
 <div class="notif-page">
 
-  <!-- ── Header ── -->
   <div class="dash-header">
     <div>
-      <div class="page-kicker">
-        <span class="pulse-dot"></span>
-        Job match alerts
-      </div>
-      <h1 class="page-title">Notification History</h1>
+      <h1 class="page-title">Notification Center</h1>
       <p class="page-subtitle mb-0">
-        Review AI-generated job match alerts and mark updates as read.
+        Stay updated on job matches, applications, interviews, and more.
       </p>
     </div>
     <div class="header-actions">
-      <button class="btn-outline-accent" onclick="loadNotifications()">
-        <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+      <button class="btn-outline-accent" type="button" onclick="markAllRead()" id="markAllReadBtn">
+        <i class="bi bi-check2-all"></i> Mark all read
       </button>
     </div>
   </div>
 
-  <!-- ── Metrics ── -->
   <div class="row g-3 mb-4">
-    <div class="col-md-4 metric-col">
+    <div class="col-md-3 metric-col">
       <div class="metric-card">
         <div class="mc-top">
           <div class="mc-icon"><i class="bi bi-bell"></i></div>
           <div class="mc-badge"><i class="bi bi-database"></i> All</div>
         </div>
         <div id="totalNotifications" class="mc-value">–</div>
-        <div class="mc-label">Total notifications</div>
+        <div class="mc-label">Total</div>
       </div>
     </div>
-    <div class="col-md-4 metric-col">
+    <div class="col-md-3 metric-col">
       <div class="metric-card">
         <div class="mc-top">
           <div class="mc-icon"><i class="bi bi-bell-fill"></i></div>
@@ -703,7 +762,7 @@
         <div class="mc-label">Unread</div>
       </div>
     </div>
-    <div class="col-md-4 metric-col">
+    <div class="col-md-3 metric-col">
       <div class="metric-card">
         <div class="mc-top">
           <div class="mc-icon"><i class="bi bi-stars"></i></div>
@@ -713,9 +772,18 @@
         <div class="mc-label">Top match</div>
       </div>
     </div>
+    <div class="col-md-3 metric-col">
+      <div class="metric-card">
+        <div class="mc-top">
+          <div class="mc-icon"><i class="bi bi-tags"></i></div>
+          <div class="mc-badge"><i class="bi bi-layers"></i> Types</div>
+        </div>
+        <div id="typeCount" class="mc-value">–</div>
+        <div class="mc-label">Categories</div>
+      </div>
+    </div>
   </div>
 
-  <!-- ── Notifications Panel ── -->
   <div class="dash-panel">
     <div class="panel-head">
       <div class="panel-title">
@@ -727,23 +795,29 @@
           <span class="u-dot"></span>
           <span id="unreadBadgeText">0 unread</span>
         </span>
-        <span class="refresh-indicator">
-          <span class="ri-dot"></span>
-          Auto-refreshes every 30s
-        </span>
       </div>
     </div>
-    <div class="panel-body" id="notificationsList"></div>
-  </div>
 
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+      <button class="filter-btn" data-filter="unread" onclick="setFilter('unread')">Unread</button>
+    </div>
+
+    <div class="panel-body" id="notificationsList"></div>
+
+    <div class="pagination-bar" id="paginationBar" style="display:none">
+      <button class="page-btn" id="prevPage" onclick="changePage(-1)"><i class="bi bi-chevron-left"></i> Prev</button>
+      <span class="page-info" id="pageInfo"></span>
+      <button class="page-btn" id="nextPage" onclick="changePage(1)">Next <i class="bi bi-chevron-right"></i></button>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  requireRole("job_seeker");
+  requireRole(["job_seeker", "recruiter", "admin"]);
 
-  /* ── Apply accent color ── */
   (function applyAccentColor() {
     const saved = localStorage.getItem("pref_accent");
     if (!saved) return;
@@ -754,12 +828,13 @@
     const rgb = getComputedStyle(temp).color;
     document.body.removeChild(temp);
     const m = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
-    if (m) document.documentElement.style.setProperty(
-      "--bs-primary-rgb", `${m[1]}, ${m[2]}, ${m[3]}`
-    );
+    if (m) document.documentElement.style.setProperty("--bs-primary-rgb", `${m[1]}, ${m[2]}, ${m[3]}`);
   })();
 
-  /* ── Number animation ── */
+  let currentPage = 1;
+  let currentFilter = "all";
+  let paginationData = null;
+
   function animateValue(id, target, suffix = "") {
     const el = document.getElementById(id);
     if (!el) return;
@@ -774,7 +849,6 @@
     requestAnimationFrame(step);
   }
 
-  /* ── Time formatter ── */
   function timeAgo(dateStr) {
     const date = new Date(dateStr);
     const now = new Date();
@@ -786,14 +860,12 @@
     return date.toLocaleDateString();
   }
 
-  /* ── Match pill class ── */
   function matchPillClass(pct) {
     if (pct >= 75) return "match-pill high";
     if (pct >= 50) return "match-pill medium";
     return "match-pill low";
   }
 
-  /* ── Shimmer loader ── */
   function shimmerLoader(count = 4) {
     return Array.from({ length: count }, (_, i) => `
       <div class="shimmer-item" style="animation-delay:${i * 0.08}s">
@@ -805,7 +877,6 @@
     ).join("");
   }
 
-  /* ── Empty state ── */
   function emptyBlock(icon, title, sub) {
     return `
       <div class="empty-block">
@@ -815,68 +886,112 @@
       </div>`;
   }
 
-  /* ── Render notification card ── */
-  function renderNotificationHistory(item, index) {
-    const job       = item.job || {};
-    const recruiter = item.recruiter || {};
-    const pct       = item.match_percentage || 0;
-    const isUnread  = !item.is_read;
-    const ago       = timeAgo(item.created_at);
-    const fullDate  = new Date(item.created_at).toLocaleString();
-    const pillClass = matchPillClass(pct);
+  function categoryIcon(type) {
+    const icons = {
+      job_match: "stars",
+      application: "file-earmark-text",
+      interview: "calendar-check",
+      ai_match: "robot",
+      resume: "file-earmark-person",
+      skill_gap: "graph-up-arrow",
+      recruiter: "building",
+      admin: "shield-check",
+      profile: "person-circle",
+      security: "shield-exclamation",
+      system: "gear",
+      message: "chat-dots",
+      company: "building",
+      verification: "check2-circle",
+    };
+    return icons[type] || "bell";
+  }
+
+  function notificationTypeLabel(type) {
+    const labels = {
+      job_match: "Job Match",
+      application: "Application",
+      interview: "Interview",
+      ai_match: "AI Match",
+      resume: "Resume",
+      skill_gap: "Skill Gap",
+      recruiter: "Recruiter",
+      admin: "Admin",
+      profile: "Profile",
+      security: "Security",
+      system: "System",
+      message: "Message",
+      company: "Company",
+      verification: "Verification",
+    };
+    return labels[type] || type || "General";
+  }
+
+  function renderNotificationItem(item, index) {
+    const job = item.job || {};
+    const sender = item.sender || {};
+    const pct = item.match_percentage || 0;
+    const isUnread = !item.is_read;
+    const ago = timeAgo(item.created_at);
+    const fullDate = new Date(item.created_at).toLocaleString();
+    const nType = item.notification_type || "system";
+    const isMatch = nType === "job_match" || nType === "ai_match";
+
+    let metaHtml = "";
+    if (job.title) {
+      metaHtml += `
+        <span class="meta-tag">
+          <i class="bi bi-briefcase"></i> ${escapeHtml(job.title || "")}
+        </span>`;
+    }
+    if (job.company) {
+      metaHtml += `
+        <span class="meta-dot"></span>
+        <i class="bi bi-building"></i> ${escapeHtml(job.company)}`;
+    }
+    if (sender.email && nType !== "system" && nType !== "admin") {
+      metaHtml += `
+        <span class="meta-dot"></span>
+        <i class="bi bi-person"></i> ${escapeHtml(sender.email)}`;
+    }
 
     return `
       <div class="notif-item ${isUnread ? 'unread' : ''}"
-           style="animation-delay:${index * 0.06}s">
-
+           style="animation-delay:${Math.min(index * 0.04, 0.3)}s">
         <div class="notif-dot-wrap">
           <div class="notif-dot ${isUnread ? '' : 'read'}"></div>
         </div>
-
         <div class="notif-body">
           <div class="notif-top">
-            <span class="${pillClass}">
-              <i class="bi bi-check-circle-fill"></i> ${pct}% match
-            </span>
+            ${isMatch ? `<span class="${matchPillClass(pct)}"><i class="bi bi-check-circle-fill"></i> ${pct}% match</span>` : ""}
+            <span class="meta-tag"><i class="bi bi-${categoryIcon(nType)}"></i> ${notificationTypeLabel(nType)}</span>
             <span class="notif-time" title="${escapeHtml(fullDate)}">
               <i class="bi bi-clock"></i> ${escapeHtml(ago)}
             </span>
-            ${isUnread ? `<span class="notif-unread-tag"><i class="bi bi-dot"></i> Unread</span>` : ''}
+            ${isUnread ? `<span class="notif-unread-tag"><i class="bi bi-dot"></i> New</span>` : ""}
           </div>
-
           <div class="notif-title">${escapeHtml(item.title)}</div>
           <div class="notif-msg">${escapeHtml(item.message)}</div>
-
-          <div class="notif-meta">
-            <i class="bi bi-building"></i> ${escapeHtml(job.company || "Company")}
-            <span class="meta-dot"></span>
-            <span class="meta-tag">
-              <i class="bi bi-briefcase" style="font-size:0.6rem;"></i>
-              ${escapeHtml(job.title || "Role")}
-            </span>
-            <span class="meta-dot"></span>
-            <i class="bi bi-person"></i> ${escapeHtml(recruiter.email || "Recruiter not listed")}
-          </div>
-
+          ${metaHtml ? `<div class="notif-meta">${metaHtml}</div>` : ""}
           <div class="notif-actions">
-            <a class="btn-apply-notif"
-               href="{% url 'jobs' %}?role=${encodeURIComponent(job.title || '')}">
-              <i class="bi bi-send"></i> Apply
-            </a>
+            ${isMatch && job.title
+              ? `<a class="btn-apply-notif" href="/jobs/?role=${encodeURIComponent(job.title || '')}">
+                   <i class="bi bi-send"></i> Apply
+                 </a>`
+              : ""}
             ${isUnread
               ? `<button class="btn-mark-read" type="button" onclick="markRead(${item.id})">
                    <i class="bi bi-check2"></i> Mark read
                  </button>`
-              : `<span class="read-badge">
-                   <i class="bi bi-check2-all"></i> Read
-                 </span>`
+              : `<span class="read-badge"><i class="bi bi-check2-all"></i> Read</span>`
             }
+            <button class="btn-delete-notif" type="button" onclick="deleteNotification(${item.id})">
+              <i class="bi bi-trash3"></i>
+            </button>
           </div>
         </div>
       </div>`;
   }
 
-  /* ── Mark as read ── */
   async function markRead(id) {
     const btn = document.querySelector(`[onclick="markRead(${id})"]`);
     if (btn) {
@@ -884,45 +999,117 @@
       btn.disabled = true;
     }
     await api(`/api/notifications/${id}/read/`, { method: "POST" });
-    await loadNotifications();
+    await loadNotifications(true);
     loadNotificationBell();
   }
 
-  /* ── Load notifications ── */
-  async function loadNotifications() {
-    document.getElementById("notificationsList").innerHTML = shimmerLoader(4);
-
-    const notifications = await api("/api/notifications/");
-    const total  = notifications.length;
-    const unread = notifications.filter(n => !n.is_read).length;
-    const topPct = Math.max(0, ...notifications.map(n => n.match_percentage || 0));
-
-    /* Metrics */
-    animateValue("totalNotifications", total);
-    animateValue("unreadNotifications", unread);
-    document.getElementById("topMatchNotification").textContent = topPct + "%";
-
-    /* Unread badge */
-    const unreadBadge = document.getElementById("unreadBadge");
-    const unreadText  = document.getElementById("unreadBadgeText");
-    if (unread > 0) {
-      unreadBadge.style.removeProperty("display");
-      unreadText.textContent = `${unread} unread`;
-    } else {
-      unreadBadge.style.setProperty("display", "none", "important");
+  async function markAllRead() {
+    const btn = document.getElementById("markAllReadBtn");
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>'; }
+    try {
+      const result = await api("/api/notifications/mark-all-read/", { method: "POST" });
+      if (result.marked_read > 0) showToast(`${result.marked_read} marked as read`, "success");
+      await loadNotifications(true);
+      loadNotificationBell();
+    } catch (e) {
+      showToast(e.message, "danger");
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Mark all read'; }
     }
+  }
 
-    /* List */
-    document.getElementById("notificationsList").innerHTML = total
-      ? notifications.map(renderNotificationHistory).join("")
-      : emptyBlock(
-          "bell-slash",
-          "No notifications yet",
-          "Upload a resume in AI Match to start generating job match alerts."
-        );
+  async function deleteNotification(id) {
+    if (!confirm("Delete this notification?")) return;
+    const btn = document.querySelector(`[onclick="deleteNotification(${id})"]`);
+    if (btn) {
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>';
+      btn.disabled = true;
+    }
+    try {
+      await api(`/api/notifications/${id}/delete/`, { method: "DELETE" });
+      await loadNotifications(true);
+      loadNotificationBell();
+    } catch (e) {
+      showToast(e.message, "danger");
+    }
+  }
+
+  function setFilter(filter) {
+    currentFilter = filter;
+    currentPage = 1;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter));
+    loadNotifications(true);
+  }
+
+  function changePage(delta) {
+    if (!paginationData) return;
+    const next = currentPage + delta;
+    if (next < 1 || next > paginationData.total_pages) return;
+    currentPage = next;
+    loadNotifications(true);
+  }
+
+  async function loadNotifications(skipShimmer) {
+    const listEl = document.getElementById("notificationsList");
+    const paginationEl = document.getElementById("paginationBar");
+    if (!skipShimmer) listEl.innerHTML = shimmerLoader(4);
+
+    let url = `/api/notifications/?page=${currentPage}`;
+    if (currentFilter === "unread") url += "&is_read=false";
+
+    try {
+      const data = await api(url);
+      paginationData = data;
+
+      const results = data.results || data;
+      const total = data.count != null ? data.count : results.length;
+      const unread = data.unread_count != null ? data.unread_count : results.filter(n => !n.is_read).length;
+      const topPct = results.length ? Math.max(0, ...results.map(n => n.match_percentage || 0)) : 0;
+
+      animateValue("totalNotifications", total);
+      animateValue("unreadNotifications", unread);
+      document.getElementById("topMatchNotification").textContent = topPct ? topPct + "%" : "–";
+
+      const unreadBadge = document.getElementById("unreadBadge");
+      const unreadText = document.getElementById("unreadBadgeText");
+      if (unread > 0) {
+        unreadBadge.style.removeProperty("display");
+        unreadText.textContent = `${unread} unread`;
+      } else {
+        unreadBadge.style.setProperty("display", "none", "important");
+      }
+
+      listEl.innerHTML = results.length
+        ? results.map(renderNotificationItem).join("")
+        : emptyBlock(
+            "bell-slash",
+            "No notifications yet",
+            "Notifications from your activity will appear here."
+          );
+
+      if (data.count != null && data.total_pages > 1) {
+        paginationEl.style.display = "flex";
+        document.getElementById("prevPage").disabled = currentPage <= 1;
+        document.getElementById("nextPage").disabled = currentPage >= data.total_pages;
+        document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${data.total_pages}`;
+      } else {
+        paginationEl.style.display = "none";
+      }
+
+      const typesData = await api("/api/notifications/types/").catch(() => []);
+      animateValue("typeCount", typesData.length || 0);
+    } catch (e) {
+      listEl.innerHTML = emptyBlock("exclamation-triangle", "Error loading notifications", e.message);
+      paginationEl.style.display = "none";
+    }
   }
 
   loadNotifications();
-  setInterval(loadNotifications, 30000);
+  setInterval(() => {
+    if (typeof notificationWsConnected === "undefined" || !notificationWsConnected) {
+      loadNotifications(true);
+      loadNotificationBell();
+    }
+  }, 60000);
 </script>
 {% endblock %}

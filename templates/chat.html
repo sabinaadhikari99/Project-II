@@ -5,10 +5,10 @@
 {% block content %}
 <style>
   :root {
-    --accent: var(--bs-primary, #4f46e5);
-    --accent-rgb: var(--bs-primary-rgb, 79, 70, 229);
+    --accent: var(--bs-primary, #2563EB);
+    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
     --surface: #fff;
-    --surface-alt: #f8f9fb;
+    --surface-alt: #F8FAFC;
     --txt: rgba(15,23,42,0.88);
     --txt-soft: rgba(15,23,42,0.55);
     --txt-muted: rgba(15,23,42,0.38);
@@ -16,9 +16,9 @@
     --bdr-hover: rgba(15,23,42,0.12);
     --shadow: rgba(15,23,42,0.06);
     --shadow-lg: rgba(15,23,42,0.10);
-    --success: #16a34a;
-    --success-bg: rgba(34,197,94,0.10);
-    --success-bdr: rgba(34,197,94,0.18);
+    --success: #10B981;
+    --success-bg: rgba(16,185,129,0.10);
+    --success-bdr: rgba(16,185,129,0.18);
   }
 
   .chat-page { animation: pageIn 0.6s ease both; }
@@ -48,8 +48,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent);
@@ -69,14 +69,14 @@
   }
 
   .dash-header .page-title {
-    font-size: 1.75rem;
-    font-weight: 800;
+    font-size: 28px;
+    font-weight: 700;
     margin-bottom: 0.2rem;
     color: var(--txt);
   }
 
   .dash-header .page-subtitle {
-    font-size: 0.88rem;
+    font-size: 14px;
     max-width: 530px;
     color: var(--txt-soft);
   }
@@ -113,8 +113,8 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.92rem;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     margin-bottom: 0;
     color: var(--txt);
   }
@@ -127,7 +127,7 @@
     border-radius: 9px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.8rem;
+    font-size: 14px;
     flex-shrink: 0;
   }
 
@@ -137,8 +137,8 @@
     gap: 0.3rem;
     padding: 0.25rem 0.7rem;
     border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
@@ -195,7 +195,7 @@
     border-radius: 18px;
     background: var(--accent);
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 22px;
     margin-bottom: 1rem;
     box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.28);
     animation: avatarBounce 0.6s 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -207,14 +207,14 @@
   }
 
   .chat-initial .ci-title {
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 600;
     color: var(--txt);
     margin-bottom: 0.35rem;
   }
 
   .chat-initial .ci-sub {
-    font-size: 0.82rem;
+    font-size: 14px;
     color: var(--txt-muted);
     max-width: 300px;
     line-height: 1.6;
@@ -235,8 +235,8 @@
     gap: 0.3rem;
     padding: 0.35rem 0.85rem;
     border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     background: rgba(var(--accent-rgb), 0.06);
     color: var(--accent);
     border: 1px solid rgba(var(--accent-rgb), 0.14);
@@ -252,7 +252,7 @@
     box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.12);
   }
 
-  .sug-chip i { font-size: 0.68rem; }
+  .sug-chip i { font-size: 13px; }
 
   /* ── Chat Bubbles ── */
   .chat-msg {
@@ -275,8 +275,8 @@
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     flex-shrink: 0;
     margin-top: 2px;
   }
@@ -295,7 +295,7 @@
     max-width: 75%;
     padding: 0.75rem 1rem;
     border-radius: 16px;
-    font-size: 0.84rem;
+    font-size: 14px;
     line-height: 1.65;
     position: relative;
   }
@@ -315,8 +315,8 @@
   }
 
   .msg-label {
-    font-size: 0.68rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 0.25rem;
@@ -327,7 +327,7 @@
   .msg-ai .msg-label { color: var(--accent); }
 
   .msg-time {
-    font-size: 0.62rem;
+    font-size: 13px;
     margin-top: 0.35rem;
     display: block;
   }
@@ -375,7 +375,7 @@
     border-radius: 14px;
     border: 1.5px solid rgba(15,23,42,0.09);
     background: var(--surface-alt);
-    font-size: 0.88rem;
+    font-size: 14px;
     padding: 0 1rem;
     transition: all 0.25s ease;
     box-shadow: none;
@@ -402,7 +402,7 @@
     border: none;
     background: var(--accent) !important;
     color: #fff !important;
-    font-size: 1rem;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -413,8 +413,8 @@
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
-    font-weight: 700;
-    font-size: 0.84rem;
+    font-weight: 500;
+    font-size: 14px;
   }
 
   .btn-send::before {
@@ -442,8 +442,8 @@
   .interview-panel { animation-delay: 0.12s; }
 
   .interview-panel .form-label {
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 500;
     color: var(--txt-soft);
     margin-bottom: 0.4rem;
     display: flex;
@@ -452,7 +452,7 @@
   }
 
   .interview-panel .form-label i {
-    font-size: 0.72rem;
+    font-size: 13px;
     color: var(--accent);
     opacity: 0.6;
   }
@@ -463,7 +463,7 @@
     position: absolute;
     left: 0.85rem; top: 50%;
     transform: translateY(-50%);
-    font-size: 0.92rem;
+    font-size: 14px;
     color: rgba(15,23,42,0.24);
     pointer-events: none;
     transition: all 0.25s ease;
@@ -481,7 +481,7 @@
     padding-left: 2.5rem;
     border: 1.5px solid rgba(15,23,42,0.09);
     background: var(--surface-alt);
-    font-size: 0.85rem;
+    font-size: 14px;
     transition: all 0.25s ease;
   }
 
@@ -503,8 +503,8 @@
     width: 100%;
     height: 44px;
     border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.84rem;
+    font-weight: 500;
+    font-size: 14px;
     background: transparent !important;
     color: var(--accent) !important;
     border: 1.5px solid rgba(var(--accent-rgb), 0.28) !important;
@@ -563,8 +563,8 @@
     border-radius: 8px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.68rem;
-    font-weight: 800;
+    font-size: 13px;
+    font-weight: 600;
     flex-shrink: 0;
     margin-top: 1px;
     transition: all 0.25s ease;
@@ -577,16 +577,16 @@
   }
 
   .iq-text {
-    font-size: 0.82rem;
+    font-size: 14px;
     color: var(--txt-soft);
     line-height: 1.55;
-    font-weight: 500;
+    font-weight: 400;
   }
 
   /* ── Quick Tips ── */
   .tips-divider {
-    font-size: 0.68rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--txt-muted);
@@ -603,7 +603,7 @@
     background: var(--bdr);
   }
 
-  .tips-divider i { color: var(--accent); opacity: 0.5; font-size: 0.72rem; }
+  .tips-divider i { color: var(--accent); opacity: 0.5; font-size: 13px; }
 
   .tip-mini {
     display: flex;
@@ -611,7 +611,7 @@
     gap: 0.55rem;
     padding: 0.55rem 0.7rem;
     border-radius: 10px;
-    font-size: 0.76rem;
+    font-size: 14px;
     color: var(--txt-soft);
     line-height: 1.45;
     transition: all 0.2s ease;
@@ -635,7 +635,7 @@
     border-radius: 6px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.62rem;
+    font-size: 13px;
     flex-shrink: 0;
     margin-top: 1px;
   }
@@ -658,19 +658,19 @@
     border-radius: 14px;
     background: rgba(var(--accent-rgb), 0.07);
     color: var(--accent);
-    font-size: 1.1rem;
+    font-size: 18px;
     margin-bottom: 0.6rem;
   }
 
   .empty-block .eb-title {
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--txt-soft);
     margin-bottom: 0.15rem;
   }
 
   .empty-block .eb-sub {
-    font-size: 0.72rem;
+    font-size: 13px;
     color: var(--txt-muted);
     max-width: 200px;
     line-height: 1.5;
@@ -683,17 +683,17 @@
 
   @media (max-width: 767.98px) {
     .dash-header { flex-direction: column; gap: 1rem; }
-    .dash-header .page-title { font-size: 1.5rem; }
+    .dash-header .page-title { font-size: 22px; }
     .panel-head { padding: 1rem 1.1rem; }
     .panel-body { padding: 1.1rem; }
     .chat-msg .msg-bubble { max-width: 85%; }
     .suggestion-chips { gap: 0.3rem; }
-    .sug-chip { font-size: 0.7rem; padding: 0.28rem 0.7rem; }
+    .sug-chip { font-size: 13px; padding: 0.28rem 0.7rem; }
   }
 
   @media (max-width: 575.98px) {
     .chat-window { min-height: 260px; }
-    .chat-initial .ci-avatar { width: 50px; height: 50px; font-size: 1.25rem; }
+    .chat-initial .ci-avatar { width: 50px; height: 50px; font-size: 20px; }
     .btn-send { min-width: 42px; padding: 0 0.85rem; }
   }
 </style>
@@ -703,13 +703,9 @@
   <!-- ── Header ── -->
   <div class="dash-header">
     <div>
-      <div class="page-kicker">
-        <span class="pulse-dot"></span>
-        Career assistant
-      </div>
       <h1 class="page-title">Career Chatbot</h1>
       <p class="page-subtitle mb-0">
-        Ask for help with resumes, interviews, learning paths, or role preparation.
+        Ask for help with CVs, interviews, learning paths, or role preparation.
       </p>
     </div>
   </div>
@@ -737,11 +733,11 @@
               <div class="ci-avatar"><i class="bi bi-stars"></i></div>
               <div class="ci-title">Start a conversation</div>
               <div class="ci-sub">
-                Ask me anything about resumes, interview tips, skill building, or career planning.
+                Ask me anything about CVs, interview tips, skill building, or career planning.
               </div>
               <div class="suggestion-chips">
                 <span class="sug-chip" onclick="useSuggestion(this)">
-                  <i class="bi bi-file-text"></i> Review my resume
+                  <i class="bi bi-file-text"></i> Review my CV
                 </span>
                 <span class="sug-chip" onclick="useSuggestion(this)">
                   <i class="bi bi-person-video3"></i> Interview tips
@@ -758,7 +754,7 @@
 
           <!-- Input bar -->
           <form id="chatForm" class="chat-input-bar">
-            <input class="form-control" name="message" placeholder="Ask about resumes, interviews, or skills…" required autocomplete="off">
+            <input class="form-control" name="message" placeholder="Ask about CVs, interviews, or skills…" required autocomplete="off">
             <button class="btn-send" type="submit" id="btnSend">
               <i class="bi bi-send"></i> Send
             </button>
@@ -779,7 +775,7 @@
         </div>
         <div class="panel-body">
 
-          <p style="font-size:0.8rem;color:var(--txt-muted);margin-bottom:1rem;line-height:1.5;">
+          <p style="font-size:14px;color:var(--txt-muted);margin-bottom:1rem;line-height:1.5;">
             Generate quick interview prompts for any target role to practice with.
           </p>
 
@@ -964,9 +960,9 @@
       output.insertAdjacentHTML("beforeend", `
         <div class="chat-msg msg-ai">
           <div class="msg-avatar"><i class="bi bi-stars"></i></div>
-          <div class="msg-bubble" style="border-color:rgba(220,38,38,0.18);background:rgba(220,38,38,0.04);">
-            <span class="msg-label" style="color:#dc2626;">Error</span>
-            <div style="color:#dc2626;">${escapeHtml(error.message)}</div>
+          <div class="msg-bubble" style="border-color:rgba(239,68,68,0.18);background:rgba(239,68,68,0.04);">
+            <span class="msg-label" style="color:#EF4444;">Error</span>
+            <div style="color:#EF4444;">${escapeHtml(error.message)}</div>
           </div>
         </div>`);
     }
@@ -1006,7 +1002,7 @@
     } catch (err) {
       document.getElementById("interviewOutput").innerHTML = `
         <div class="empty-block">
-          <div class="eb-icon" style="background:rgba(220,38,38,0.08);color:#dc2626;">
+          <div class="eb-icon" style="background:rgba(239,68,68,0.08);color:#EF4444;">
             <i class="bi bi-exclamation-circle"></i>
           </div>
           <div class="eb-title">Generation failed</div>

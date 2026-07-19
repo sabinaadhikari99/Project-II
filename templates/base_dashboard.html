@@ -1,12 +1,10 @@
 {% load static %}
-
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#4f46e5">
-
+  <meta name="theme-color" content="#2563EB">
   <title>{% block title %}SkillSync AI{% endblock %}</title>
 
   <script>
@@ -21,101 +19,26 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
   <link href="{% static 'css/app.css' %}" rel="stylesheet">
-
   {% block extra_head %}{% endblock %}
-
-  <style>
-    /* ============================================
-       GLOBAL DASHBOARD LAYOUT – FIXED SIDEBAR
-       ============================================ */
-    :root {
-      --sidebar-width: 300px;
-      --navbar-height: 64px;
-    }
-
-    /* ── Main content offset for fixed sidebar ── */
-    .app-main {
-      margin-left: var(--sidebar-width);
-      padding-top: calc(var(--navbar-height) + 1.5rem);
-      padding-right: 1.5rem;
-      padding-bottom: 2rem;
-      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      min-height: 100vh;
-      max-width: 1480px;
-      background: var(--ss-bg);
-    }
-
-    /* ── Prevent content from breaking layout ── */
-    .app-main *,
-    .app-main *::before,
-    .app-main *::after {
-      min-width: 0;
-      min-height: 0;
-      box-sizing: border-box;
-    }
-
-    .app-main .container-fluid,
-    .app-main .row,
-    .app-main .col,
-    .app-main .col-* {
-      overflow: hidden;
-      word-wrap: break-word;
-      word-break: break-word;
-    }
-
-    body.has-sidebar .app-main {
-      margin-left: var(--sidebar-width);
-    }
-
-    /* ── Responsive: mobile ── */
-    @media (max-width: 991.98px) {
-      .app-main {
-        margin-left: 0 !important;
-        padding-top: calc(var(--navbar-height) + 1rem);
-        padding-right: 1rem;
-        padding-left: 1rem;
-        max-width: 100%;
-      }
-      body.has-sidebar .app-main {
-        margin-left: 0 !important;
-      }
-    }
-
-    @media (max-width: 575.98px) {
-      .app-main {
-        padding-top: calc(var(--navbar-height) + 0.75rem);
-        padding-right: 0.75rem;
-        padding-left: 0.75rem;
-        padding-bottom: 1.25rem;
-      }
-    }
-  </style>
 </head>
 
 <body>
-  <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
+  <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index:1100;"></div>
 
-  {# Only show navbar/sidebar if NOT landing page #}
   {% if request.path != "/" %}
     {% include "includes/dashboard_nav.html" %}
   {% endif %}
 
-  <!-- ============================================
-       MAIN CONTENT
-       ============================================ -->
   <main class="app-main">
     {% block content %}{% endblock %}
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/app.js' %}"></script>
-
   {% block scripts %}{% endblock %}
 
   <script>
@@ -124,35 +47,10 @@
         if (typeof initSidebarToggle === 'function') initSidebarToggle();
       } else {
         document.addEventListener('readystatechange', function() {
-          if (document.readyState === 'complete') {
-            if (typeof initSidebarToggle === 'function') initSidebarToggle();
-          }
+          if (document.readyState === 'complete' && typeof initSidebarToggle === 'function') initSidebarToggle();
         });
       }
-
-      function syncBodyClass() {
-        const sidebar = document.getElementById('appSidebar');
-        if (sidebar) {
-          const isVisible = !sidebar.classList.contains('d-none');
-          document.body.classList.toggle('has-sidebar', isVisible);
-        }
-      }
-
-      setTimeout(syncBodyClass, 100);
-
-      const sidebar = document.getElementById('appSidebar');
-      if (sidebar) {
-        const observer = new MutationObserver(syncBodyClass);
-        observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
-      }
-
-      document.addEventListener('click', function(e) {
-        const sidebar = document.getElementById('appSidebar');
-        if (!sidebar) return;
-        setTimeout(syncBodyClass, 50);
-      });
     })();
   </script>
-
 </body>
 </html>

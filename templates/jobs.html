@@ -5,10 +5,10 @@
 {% block content %}
 <style>
   :root {
-    --accent: var(--bs-primary, #4f46e5);
-    --accent-rgb: var(--bs-primary-rgb, 79, 70, 229);
+    --accent: var(--bs-primary, #2563EB);
+    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
     --surface: #fff;
-    --surface-alt: #f8f9fb;
+    --surface-alt: #F8FAFC;
     --txt: rgba(15,23,42,0.88);
     --txt-soft: rgba(15,23,42,0.55);
     --txt-muted: rgba(15,23,42,0.38);
@@ -16,9 +16,9 @@
     --bdr-hover: rgba(15,23,42,0.12);
     --shadow: rgba(15,23,42,0.06);
     --shadow-lg: rgba(15,23,42,0.10);
-    --success: #16a34a;
-    --success-bg: rgba(34,197,94,0.10);
-    --success-bdr: rgba(34,197,94,0.18);
+    --success: #10B981;
+    --success-bg: rgba(16,185,129,0.10);
+    --success-bdr: rgba(16,185,129,0.18);
   }
 
   .jobs-page { animation: pageIn 0.6s ease both; }
@@ -48,8 +48,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent);
@@ -69,22 +69,22 @@
   }
 
   .dash-header .page-title {
-    font-size: 1.75rem;
-    font-weight: 800;
+    font-size: 30px;
+    font-weight: 700;
     margin-bottom: 0.2rem;
     color: var(--txt);
   }
 
   .dash-header .page-subtitle {
-    font-size: 0.88rem;
+    font-size: 14px;
     max-width: 530px;
     color: var(--txt-soft);
   }
 
   .header-actions .btn {
     border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.82rem;
+    font-weight: 500;
+    font-size: 14px;
     padding: 0.5rem 1.15rem;
     transition: all 0.25s ease;
   }
@@ -160,8 +160,8 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 500;
     margin-bottom: 0;
     color: var(--txt);
   }
@@ -174,7 +174,7 @@
     border-radius: 10px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.85rem;
+    font-size: 14px;
     flex-shrink: 0;
   }
 
@@ -184,8 +184,8 @@
     gap: 0.3rem;
     padding: 0.28rem 0.75rem;
     border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
@@ -204,8 +204,8 @@
   }
 
   .search-panel .form-label {
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--txt-soft);
     margin-bottom: 0.4rem;
     display: flex;
@@ -214,7 +214,7 @@
   }
 
   .search-panel .form-label i {
-    font-size: 0.72rem;
+    font-size: 13px;
     color: var(--accent);
     opacity: 0.6;
   }
@@ -227,7 +227,7 @@
     position: absolute;
     left: 0.85rem; top: 50%;
     transform: translateY(-50%);
-    font-size: 0.92rem;
+    font-size: 15px;
     color: rgba(15,23,42,0.24);
     pointer-events: none;
     transition: all 0.25s ease;
@@ -245,7 +245,7 @@
     border-radius: 12px;
     border: 1.5px solid rgba(15,23,42,0.09);
     background: var(--surface-alt);
-    font-size: 0.85rem;
+    font-size: 14px;
     transition: all 0.25s ease;
     box-shadow: none;
   }
@@ -289,7 +289,7 @@
     background: var(--accent) !important;
     color: #fff !important;
     border: none !important;
-    font-size: 1.05rem;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -360,20 +360,21 @@
   }
 
   .job-item .ji-logo {
-    width: 48px; height: 48px;
-    border-radius: 14px;
-    object-fit: cover;
+    width: 64px; height: 64px;
+    border-radius: 12px;
     border: 1px solid var(--bdr);
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     flex-shrink: 0;
-    background: var(--surface);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
+    font-size: 22px;
     font-weight: 700;
     color: var(--accent);
     transition: all 0.3s ease;
     overflow: hidden;
+    padding: 10px;
   }
 
   .job-item:hover .ji-logo {
@@ -383,12 +384,12 @@
 
   .job-item .ji-logo img {
     width: 100%; height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .job-item .ji-title {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--txt);
     margin-bottom: 0.15rem;
   }
@@ -397,12 +398,12 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.78rem;
+    font-size: 13px;
     color: var(--txt-muted);
     flex-wrap: wrap;
   }
 
-  .job-item .ji-meta i { font-size: 0.7rem; opacity: 0.55; }
+  .job-item .ji-meta i { font-size: 13px; opacity: 0.55; }
 
   .job-item .ji-meta .meta-dot {
     width: 3px; height: 3px;
@@ -423,18 +424,18 @@
     gap: 0.2rem;
     padding: 0.2rem 0.55rem;
     border-radius: 7px;
-    font-size: 0.68rem;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     background: rgba(var(--accent-rgb), 0.06);
     color: var(--accent);
     border: 1px solid rgba(var(--accent-rgb), 0.12);
   }
 
-  .tag-pill i { font-size: 0.6rem; }
+  .tag-pill i { font-size: 13px; }
 
   .job-item .ji-salary {
-    font-size: 0.88rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--txt);
     white-space: nowrap;
     display: flex;
@@ -443,13 +444,13 @@
   }
 
   .job-item .ji-salary i {
-    font-size: 0.75rem;
+    font-size: 13px;
     color: var(--accent);
     opacity: 0.6;
   }
 
   .job-item .ji-desc {
-    font-size: 0.82rem;
+    font-size: 14px;
     color: var(--txt-soft);
     line-height: 1.6;
     margin-bottom: 0.85rem;
@@ -471,8 +472,8 @@
     align-items: center;
     padding: 0.22rem 0.6rem;
     border-radius: 8px;
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     background: rgba(var(--accent-rgb), 0.07);
     color: var(--accent);
     border: 1px solid rgba(var(--accent-rgb), 0.14);
@@ -496,8 +497,8 @@
     height: 34px;
     padding: 0 1rem;
     border-radius: 10px;
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     border: none;
     background: var(--accent) !important;
     color: #fff !important;
@@ -542,8 +543,8 @@
     height: 34px;
     padding: 0 0.85rem;
     border-radius: 10px;
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     transition: all 0.25s ease;
     display: inline-flex;
     align-items: center;
@@ -580,8 +581,8 @@
     height: 34px;
     padding: 0 0.85rem;
     border-radius: 10px;
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: transparent;
     color: var(--txt-soft);
     border: 1.5px solid var(--bdr-hover);
@@ -630,8 +631,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--accent);
     overflow: hidden;
     transition: all 0.25s ease;
@@ -644,12 +645,12 @@
 
   .mini-job .mj-logo img {
     width: 100%; height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .mini-job .mj-title {
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--txt);
     margin-bottom: 0.1rem;
     white-space: nowrap;
@@ -658,14 +659,14 @@
   }
 
   .mini-job .mj-meta {
-    font-size: 0.72rem;
+    font-size: 13px;
     color: var(--txt-muted);
     display: flex;
     align-items: center;
     gap: 0.3rem;
   }
 
-  .mini-job .mj-meta i { font-size: 0.62rem; opacity: 0.5; }
+  .mini-job .mj-meta i { font-size: 13px; opacity: 0.5; }
 
   /* ── Sidebar panels ── */
   .sidebar-panel { margin-bottom: 1rem; }
@@ -689,7 +690,7 @@
     border-radius: 14px;
     background: rgba(var(--accent-rgb), 0.07);
     color: var(--accent);
-    font-size: 1.15rem;
+    font-size: 18px;
     margin-bottom: 0.65rem;
     animation: iconPop 0.5s 0.2s ease both;
   }
@@ -700,14 +701,14 @@
   }
 
   .empty-block .eb-title {
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--txt-soft);
     margin-bottom: 0.15rem;
   }
 
   .empty-block .eb-sub {
-    font-size: 0.74rem;
+    font-size: 13px;
     color: var(--txt-muted);
     max-width: 220px;
     line-height: 1.5;
@@ -720,7 +721,7 @@
 
   @media (max-width: 767.98px) {
     .dash-header { flex-direction: column; gap: 1rem; }
-    .dash-header .page-title { font-size: 1.5rem; }
+    .dash-header .page-title { font-size: 24px; }
     .panel-head { padding: 1rem 1.15rem; }
     .panel-body { padding: 1rem 1.15rem; }
     .job-item .ji-header { flex-direction: column; gap: 0.5rem; }
@@ -729,7 +730,7 @@
 
   @media (max-width: 575.98px) {
     .job-item { padding: 1rem; }
-    .job-item .ji-logo { width: 40px; height: 40px; border-radius: 11px; }
+    .job-item .ji-logo { width: 48px; height: 48px; border-radius: 10px; padding: 6px; font-size: 18px; }
   }
 </style>
 
@@ -738,19 +739,10 @@
   <!-- ── Header ── -->
   <div class="dash-header">
     <div>
-      <div class="page-kicker">
-        <span class="pulse-dot"></span>
-        Opportunity search
-      </div>
       <h1 class="page-title">Jobs for you</h1>
       <p class="page-subtitle mb-0">
         Browse professional openings with filters, bookmarks, and recently viewed roles.
       </p>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-outline-accent" onclick="loadJobs()">
-        <i class="bi bi-arrow-clockwise me-1"></i> Refresh
-      </button>
     </div>
   </div>
 
@@ -897,9 +889,12 @@
     const skills = (job.required_skills || [])
       .map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`).join("");
 
-    const logoHtml = job.company_logo
-      ? `<div class="ji-logo"><img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company)}"></div>`
-      : `<div class="ji-logo">${escapeHtml((job.company || "?")[0].toUpperCase())}</div>`;
+    const logoHtml = (() => {
+      const initial = escapeHtml((job.company || "?")[0].toUpperCase());
+      return job.company_logo
+        ? `<div class="ji-logo"><img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company)} Logo" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='${initial}'"></div>`
+        : `<div class="ji-logo">${initial}</div>`;
+    })();
 
     const isSaved = job.is_saved;
     const saveClass = isSaved ? "btn-save btn-save-active" : "btn-save btn-save-default";
@@ -933,7 +928,7 @@
         <div class="ji-desc">${escapeHtml(job.description)}</div>
 
         <div class="ji-skills">
-          ${skills || '<span style="font-size:0.75rem;color:var(--txt-muted)">No skills listed</span>'}
+          ${skills || '<span style="font-size:13px;color:var(--txt-muted)">No skills listed</span>'}
         </div>
 
         <div class="ji-actions">
@@ -973,9 +968,12 @@
   function renderMiniJob(item, index) {
     const job = item.job || item;
 
-    const logoHtml = job.company_logo
-      ? `<div class="mj-logo"><img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company)}"></div>`
-      : `<div class="mj-logo">${escapeHtml((job.company || "?")[0].toUpperCase())}</div>`;
+    const logoHtml = (() => {
+      const initial = escapeHtml((job.company || "?")[0].toUpperCase());
+      return job.company_logo
+        ? `<div class="mj-logo"><img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company)} Logo" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='${initial}'"></div>`
+        : `<div class="mj-logo">${initial}</div>`;
+    })();
 
     return `
       <div class="mini-job" style="animation-delay:${(index || 0) * 0.05}s">

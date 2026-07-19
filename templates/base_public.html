@@ -2,49 +2,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>{% block title %}SkillSync AI{% endblock %}</title>
-    <script>
-      (function() {
-        const stored = localStorage.getItem('theme');
-        const theme = stored === 'dark' || stored === 'light'
-          ? stored
-          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
-      })();
-    </script>
-
-    <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <!-- Global CSS -->
-    <link rel="stylesheet" href="{% static 'css/app.css' %}">
-
-    {% block extra_head %}{% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SkillSync AI{% endblock %}</title>
+  <script>
+    (function() {
+      const stored = localStorage.getItem('theme');
+      const theme = stored === 'dark' || stored === 'light'
+        ? stored
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
-
-<body>
-    <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
-
-    {% include "includes/public_nav.html" %}
-
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Global App JS (Required) -->
-    <script src="{% static 'js/app.js' %}"></script>
-
-    <!-- Page-specific scripts -->
-    {% block scripts %}{% endblock %}
-
+<body class="lp-root">
+  <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index:1100;"></div>
+  {% include "includes/public_nav.html" %}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/app.js' %}"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

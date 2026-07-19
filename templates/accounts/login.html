@@ -1,585 +1,160 @@
-<!-- file path: templates/accounts/login.html -->
 {% extends "base_auth.html" %}
 {% load static %}
 
 {% block title %}Login | SkillSync AI{% endblock %}
 
 {% block content %}
-<style>
-  .auth-page {
-    min-height: calc(100vh - 64px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* ── Animated Background ── */
-  .auth-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .auth-bg .orb {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(80px);
-    opacity: 0.06;
-    animation: orbFloat 20s ease-in-out infinite alternate;
-  }
-  .auth-bg .orb-1 {
-    width: 500px; height: 500px;
-    background: var(--ss-brand);
-    top: -120px; right: -100px;
-    animation-duration: 22s;
-  }
-  .auth-bg .orb-2 {
-    width: 400px; height: 400px;
-    background: var(--ss-brand);
-    bottom: -100px; left: -80px;
-    animation-duration: 18s;
-    animation-delay: -5s;
-  }
-  @keyframes orbFloat {
-    0% { transform: translate(0,0) scale(1); }
-    33% { transform: translate(40px,-30px) scale(1.08); }
-    66% { transform: translate(-20px,40px) scale(0.95); }
-    100% { transform: translate(30px,-20px) scale(1.03); }
-  }
-  .auth-bg .grid-overlay {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(15,23,42,0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(15,23,42,0.015) 1px, transparent 1px);
-    background-size: 60px 60px;
-    animation: gridPulse 6s ease-in-out infinite alternate;
-  }
-  @keyframes gridPulse {
-    0% { opacity: 0.3; }
-    100% { opacity: 0.6; }
-  }
-  .auth-bg .particle {
-    position: absolute;
-    border-radius: 999px;
-    background: var(--ss-brand);
-    opacity: 0;
-    pointer-events: none;
-    animation: particleRise linear infinite;
-  }
-  @keyframes particleRise {
-    0% { opacity: 0; transform: translateY(100vh) scale(0); }
-    10% { opacity: 0.15; }
-    90% { opacity: 0.05; }
-    100% { opacity: 0; transform: translateY(-20vh) scale(1); }
-  }
-
-  /* ── Auth Card ── */
-  .auth-card {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 1100px;
-    border-radius: var(--ss-radius-2xl);
-    box-shadow: var(--ss-shadow-xl);
-    overflow: hidden;
-    background: var(--ss-surface);
-    animation: cardReveal 0.7s ease both;
-  }
-  @keyframes cardReveal {
-    from { opacity: 0; transform: translateY(40px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  /* ── Brand Panel ── */
-  .auth-brand {
-    background: var(--ss-brand);
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 480px;
-    color: #fff;
-  }
-  .auth-brand::before,
-  .auth-brand::after {
-    content: '';
-    position: absolute;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.06);
-    z-index: 0;
-  }
-  .auth-brand::before {
-    width: 280px; height: 280px;
-    top: -90px; right: -90px;
-    animation: orbFloat 16s ease-in-out infinite alternate;
-  }
-  .auth-brand::after {
-    width: 200px; height: 200px;
-    bottom: -70px; left: -50px;
-    animation: orbFloat 20s ease-in-out infinite alternate-reverse;
-  }
-  .auth-brand > * { position: relative; z-index: 1; }
-
-  .auth-brand .brand-mark {
-    width: 56px; height: 56px;
-    display: inline-grid;
-    place-items: center;
-    border-radius: var(--ss-radius-md);
-    background: #fff;
-    color: var(--ss-brand);
-    font-size: 1.35rem;
-    font-weight: 800;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    animation: brandPop 0.6s 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-  @keyframes brandPop {
-    from { transform: scale(0.4) rotate(-12deg); opacity: 0; }
-    to { transform: scale(1) rotate(0); opacity: 1; }
-  }
-
-  .auth-brand h1 {
-    font-size: clamp(1.4rem, 2.5vw, 2rem);
-    font-weight: 800;
-    line-height: 1.2;
-    margin-top: 1.5rem;
-  }
-  .auth-brand .brand-desc {
-    font-size: 0.9rem;
-    line-height: 1.75;
-    opacity: 0.78;
-    margin-top: 0.25rem;
-  }
-
-  .auth-brand .feature-list {
-    list-style: none;
-    padding: 0; margin: 1.5rem 0 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-  .auth-brand .feature-list li {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0.9;
-  }
-  .auth-brand .feature-list .fi-icon {
-    width: 32px; height: 32px;
-    display: inline-grid;
-    place-items: center;
-    border-radius: var(--ss-radius-sm);
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.15);
-    font-size: 0.85rem;
-    flex-shrink: 0;
-  }
-
-  .auth-brand .brand-stats {
-    display: flex;
-    gap: 0.6rem;
-    margin-top: 1.5rem;
-  }
-  .auth-brand .brand-stats .stat-pill {
-    flex: 1;
-    padding: 0.7rem 1rem;
-    border-radius: var(--ss-radius-lg);
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.15);
-    backdrop-filter: blur(8px);
-    text-align: center;
-    transition: all var(--ss-transition-fast);
-  }
-  .auth-brand .brand-stats .stat-pill:hover {
-    background: rgba(255,255,255,0.18);
-    transform: translateY(-2px);
-  }
-  .auth-brand .brand-stats .stat-pill .val {
-    font-size: 1.15rem;
-    font-weight: 800;
-  }
-  .auth-brand .brand-stats .stat-pill .lbl {
-    font-size: 0.65rem;
-    font-weight: 600;
-    opacity: 0.6;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  /* ── Form Panel ── */
-  .auth-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    background: var(--ss-surface);
-  }
-  .auth-form .form-inner {
-    width: 100%;
-    max-width: 420px;
-  }
-
-  .auth-form .form-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ss-brand);
-    margin-bottom: 0.75rem;
-  }
-  .auth-form .form-kicker .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--ss-brand);
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-  @keyframes pulse-dot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.6); }
-  }
-
-  .auth-form h2 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 0.25rem;
-  }
-  .auth-form .form-sub {
-    font-size: 0.88rem;
-    color: var(--ss-muted);
-    margin-bottom: 1.5rem;
-  }
-
-  /* ── Form Fields ── */
-  .field-group {
-    margin-bottom: 1.1rem;
-  }
-  .field-group label {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-    color: var(--ss-muted);
-  }
-  .field-group label i { font-size: 0.8rem; opacity: 0.4; }
-
-  .input-wrap {
-    position: relative;
-  }
-  .input-wrap .field-icon {
-    position: absolute;
-    left: 1rem; top: 50%;
-    transform: translateY(-50%);
-    font-size: 1rem;
-    color: var(--ss-muted-light);
-    pointer-events: none;
-    transition: all var(--ss-transition-fast);
-    z-index: 2;
-  }
-  .input-wrap:focus-within .field-icon {
-    color: var(--ss-brand);
-    transform: translateY(-50%) scale(1.08);
-  }
-
-  .auth-form .form-control {
-    height: 50px;
-    border-radius: var(--ss-radius-md);
-    padding: 0 1rem 0 2.75rem;
-    border: 1.5px solid var(--ss-border);
-    background: var(--ss-surface-alt);
-    font-size: 0.9rem;
-    transition: all var(--ss-transition-fast);
-    box-shadow: none;
-  }
-  .auth-form .form-control::placeholder {
-    color: var(--ss-muted-light);
-    opacity: 0.6;
-  }
-  .auth-form .form-control:hover {
-    border-color: var(--ss-border-strong);
-    background: var(--ss-surface);
-  }
-  .auth-form .form-control:focus {
-    border-color: var(--ss-brand);
-    box-shadow: 0 0 0 4px rgba(var(--ss-brand-rgb), 0.08);
-    background: var(--ss-surface);
-    outline: none;
-  }
-
-  /* ── Password Toggle ── */
-  .pw-toggle {
-    position: absolute;
-    right: 0.75rem; top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none;
-    padding: 0.35rem;
-    font-size: 1rem;
-    color: var(--ss-muted-light);
-    cursor: pointer;
-    border-radius: var(--ss-radius-sm);
-    transition: all var(--ss-transition-fast);
-    z-index: 2;
-  }
-  .pw-toggle:hover {
-    color: var(--ss-brand);
-    background: rgba(var(--ss-brand-rgb), 0.06);
-  }
-
-  /* ── Submit Button ── */
-  .btn-submit {
-    width: 100%;
-    height: 50px;
-    border-radius: var(--ss-radius-md);
-    font-weight: 700;
-    font-size: 0.92rem;
-    border: none;
-    position: relative;
-    overflow: hidden;
-    transition: all var(--ss-transition);
-    box-shadow: 0 8px 24px rgba(var(--ss-brand-rgb), 0.22);
-  }
-  .btn-submit::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-  .btn-submit:hover::before { transform: translateX(100%); }
-  .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(var(--ss-brand-rgb), 0.3);
-    filter: brightness(1.06);
-  }
-  .btn-submit:active { transform: translateY(0); }
-  .btn-submit i { margin-right: 0.4rem; transition: transform var(--ss-transition-fast); }
-  .btn-submit:hover i { transform: translateX(3px); }
-
-  /* ── Divider ── */
-  .auth-divider {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin: 1.15rem 0;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--ss-muted-light);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .auth-divider::before,
-  .auth-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--ss-border);
-  }
-
-  /* ── Footer Link ── */
-  .auth-footer-link {
-    text-align: center;
-    font-size: 0.88rem;
-    color: var(--ss-muted);
-  }
-  .auth-footer-link a {
-    font-weight: 700;
-    position: relative;
-  }
-  .auth-footer-link a::after {
-    content: '';
-    position: absolute;
-    left: 0; bottom: -2px;
-    width: 0; height: 2px;
-    background: var(--ss-brand);
-    border-radius: var(--ss-radius-full);
-    transition: width var(--ss-transition-fast);
-  }
-  .auth-footer-link a:hover::after { width: 100%; }
-
-  /* ── Trust Row ── */
-  .trust-row {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--ss-border);
-  }
-  .trust-row .trust-item {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--ss-muted);
-  }
-  .trust-row .trust-item i {
-    font-size: 0.8rem;
-    color: rgba(var(--ss-brand-rgb), 0.4);
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 991.98px) {
-    .auth-brand { padding: 2rem 1.75rem; min-height: auto; }
-    .auth-form { padding: 2rem 1.75rem; }
-  }
-  @media (max-width: 767.98px) {
-    .auth-page { padding: 1rem; }
-    .auth-card { border-radius: var(--ss-radius-xl); }
-    .auth-brand { padding: 1.5rem; }
-    .auth-brand .brand-stats { flex-direction: column; }
-    .auth-form { padding: 1.5rem; }
-    .auth-form .form-control { height: 46px; }
-    .btn-submit { height: 46px; }
-  }
-  @media (max-width: 575.98px) {
-    .auth-brand { border-radius: var(--ss-radius-xl) var(--ss-radius-xl) 0 0; }
-    .auth-brand .feature-list li { font-size: 0.8rem; }
-    .auth-form h2 { font-size: 1.3rem; }
-  }
-</style>
-
-<!-- ── Background ── -->
-<div class="auth-bg">
-  <div class="grid-overlay"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-</div>
-
-<div class="auth-page">
-  <div class="container">
-    <div class="auth-card">
-      <div class="row g-0">
-
-        <!-- ═══ Brand Panel ═══ -->
-        <div class="col-lg-5">
-          <div class="auth-brand">
-            <div>
-              <span class="brand-mark">S</span>
-              <h1 class="mb-2">Welcome back to<br>SkillSync AI</h1>
-              <p class="brand-desc">
-                Sign in to manage recommendations, job searches, dashboards,
-                and recruiting workflows.
-              </p>
-              <ul class="feature-list">
-                <li><span class="fi-icon"><i class="bi bi-cpu"></i></span> AI-powered matching</li>
-                <li><span class="fi-icon"><i class="bi bi-clock"></i></span> 24/7 career tools</li>
-                <li><span class="fi-icon"><i class="bi bi-graph-up-arrow"></i></span> Skill analytics</li>
-                <li><span class="fi-icon"><i class="bi bi-shield-check"></i></span> Secure &amp; encrypted</li>
-              </ul>
-            </div>
-            <div class="brand-stats">
-              <div class="stat-pill">
-                <div class="val">AI</div>
-                <div class="lbl">Matching</div>
-              </div>
-              <div class="stat-pill">
-                <div class="val">24/7</div>
-                <div class="lbl">Career Tools</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══ Form Panel ═══ -->
-        <div class="col-lg-7">
-          <div class="auth-form">
-            <div class="form-inner">
-
-              <div class="form-kicker">
-                <span class="dot"></span>
-                Secure access
-              </div>
-              <h2>Login</h2>
-              <p class="form-sub">Use your email and password to continue.</p>
-
-              <form id="loginForm">
-                <div class="field-group">
-                  <label for="email"><i class="bi bi-envelope"></i> Email</label>
-                  <div class="input-wrap">
-                    <i class="bi bi-envelope field-icon"></i>
-                    <input id="email" class="form-control" name="email" type="email"
-                      autocomplete="email" placeholder="you@example.com" required>
-                  </div>
-                </div>
-
-                <div class="field-group">
-                  <label for="password"><i class="bi bi-lock"></i> Password</label>
-                  <div class="input-wrap">
-                    <i class="bi bi-lock field-icon"></i>
-                    <input id="password" class="form-control" name="password" type="password"
-                      autocomplete="current-password" placeholder="Your password" required>
-                    <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password">
-                      <i class="bi bi-eye"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <button class="btn btn-primary btn-submit" type="submit">
-                  <i class="bi bi-box-arrow-in-right"></i> Login
-                </button>
-
-                <div id="message" class="mt-3"></div>
-
-                <div class="auth-divider">or</div>
-
-                <div class="auth-footer-link">
-                  <span>New here?</span>
-                  <a href="{% url 'register' %}">Create an account</a>
-                </div>
-              </form>
-
-              <div class="trust-row">
-                <span class="trust-item"><i class="bi bi-lock-fill"></i> Encrypted</span>
-                <span class="trust-item"><i class="bi bi-patch-check-fill"></i> Verified</span>
-                <span class="trust-item"><i class="bi bi-lightning-charge-fill"></i> Instant</span>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
+<div class="split-auth">
+  <div class="sa-panel">
+    <div class="sa-card">
+      <div class="sa-brand">
+        <div class="sa-logo">S</div>
+        <h1>Welcome back</h1>
+        <p>Sign in to your SkillSync AI account</p>
       </div>
+
+      <form id="loginForm">
+        <div class="field-group">
+          <label for="email"><i class="bi bi-envelope"></i> Email</label>
+          <div class="input-wrap">
+            <i class="bi bi-envelope field-icon"></i>
+            <input id="email" class="form-control" name="email" type="email"
+              autocomplete="email" placeholder="you@example.com" required>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="password"><i class="bi bi-lock"></i> Password</label>
+          <div class="input-wrap">
+            <i class="bi bi-lock field-icon"></i>
+            <input id="password" class="form-control" name="password" type="password"
+              autocomplete="current-password" placeholder="Enter your password" required>
+            <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-submit" type="submit">
+          <i class="bi bi-box-arrow-in-right"></i> Sign in
+        </button>
+
+        <div id="message" class="mt-3"></div>
+
+        <div class="auth-divider">or</div>
+
+        <button type="button" class="btn btn-outline btn-linkedin" id="linkedinLoginBtn">
+          <i class="bi bi-linkedin"></i> Continue with LinkedIn
+        </button>
+
+        <div class="auth-footer">
+          <span>Don't have an account?</span>
+          <a href="{% url 'register' %}">Create one</a>
+        </div>
+
+        <div class="trust-row">
+          <span><i class="bi bi-lock-fill"></i> Encrypted</span>
+          <span><i class="bi bi-patch-check-fill"></i> Secure</span>
+          <span><i class="bi bi-lightning-charge-fill"></i> Fast</span>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<style>
+  .split-auth .field-group { margin-bottom: 1.25rem; }
+  .split-auth .field-group label {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.8125rem; font-weight: 600;
+    color: var(--ss-text); margin-bottom: 0.375rem;
+  }
+  .split-auth .field-group label i { font-size: 0.75rem; color: var(--ss-muted); }
+  .split-auth .input-wrap { position: relative; }
+  .split-auth .input-wrap .field-icon {
+    position: absolute; left: 0.875rem; top: 50%;
+    transform: translateY(-50%); font-size: 0.9375rem;
+    color: var(--ss-muted-light); pointer-events: none;
+    transition: color var(--ss-transition-fast); z-index: 2;
+  }
+  .split-auth .input-wrap:focus-within .field-icon { color: var(--ss-brand); }
+  .split-auth .form-control {
+    height: 44px; border-radius: var(--ss-radius);
+    padding: 0 1rem 0 2.5rem;
+    border: 1.5px solid var(--ss-border);
+    background: var(--ss-surface); font-size: 0.875rem;
+    transition: all var(--ss-transition-fast);
+    color: var(--ss-text);
+  }
+  .split-auth .form-control::placeholder { color: var(--ss-muted-light); }
+  .split-auth .form-control:hover { border-color: var(--ss-border-strong); }
+  .split-auth .form-control:focus {
+    border-color: var(--ss-brand);
+    box-shadow: 0 0 0 3px rgba(var(--ss-brand-rgb), 0.10);
+    outline: none;
+  }
+  .split-auth .pw-toggle {
+    position: absolute; right: 0.75rem; top: 50%;
+    transform: translateY(-50%); background: none; border: none;
+    padding: 0.25rem; font-size: 1rem;
+    color: var(--ss-muted-light); cursor: pointer;
+    border-radius: var(--ss-radius-sm);
+    transition: all var(--ss-transition-fast); z-index: 2;
+  }
+  .split-auth .pw-toggle:hover {
+    color: var(--ss-brand); background: var(--ss-brand-soft);
+  }
+  .split-auth .btn-submit {
+    width: 100%; height: 44px;
+    border-radius: 22px;
+    font-weight: 700; font-size: 0.875rem; margin-top: 0.5rem;
+  }
+  .split-auth .auth-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.25rem 0; font-size: 0.75rem; font-weight: 600;
+    color: var(--ss-muted-light);
+  }
+  .split-auth .auth-divider::before,
+  .split-auth .auth-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--ss-border);
+  }
+  .split-auth .auth-footer {
+    text-align: center; font-size: 0.875rem; color: var(--ss-muted);
+  }
+  .split-auth .auth-footer a { font-weight: 700; }
+  .split-auth .trust-row {
+    display: flex; justify-content: center; gap: 1.5rem;
+    margin-top: 1.25rem; padding-top: 1rem;
+    border-top: 1px solid var(--ss-border);
+  }
+  .split-auth .trust-row span {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.6875rem; font-weight: 600; color: var(--ss-muted-light);
+  }
+  .split-auth .trust-row i { font-size: 0.75rem; color: var(--ss-brand); }
+  #message:not(:empty) {
+    padding: 0.75rem 1rem; border-radius: var(--ss-radius);
+    font-weight: 600; font-size: 0.8125rem; margin-top: 0.75rem;
+  }
+  .btn-linkedin {
+    width: 100%; height: 44px; border-radius: 22px;
+    font-weight: 700; font-size: 0.875rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    border: 1.5px solid var(--ss-border) !important;
+    background: var(--ss-surface) !important; color: var(--ss-text) !important;
+    transition: all var(--ss-transition-fast);
+  }
+  .btn-linkedin:hover {
+    border-color: #0a66c2 !important;
+    color: #0a66c2 !important;
+    background: rgba(10,102,194,0.04) !important;
+  }
+  .btn-linkedin i { font-size: 1.125rem; color: #0a66c2; }
+</style>
 <script>
   (function() {
-    // ── Particles ──
-    const bg = document.querySelector('.auth-bg');
-    if (bg) {
-      for (let i = 0; i < 14; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const s = Math.random() * 4 + 2;
-        p.style.cssText = `
-          width: ${s}px; height: ${s}px;
-          left: ${Math.random() * 100}%;
-          animation-duration: ${Math.random() * 12 + 8}s;
-          animation-delay: ${Math.random() * 8}s;
-        `;
-        bg.appendChild(p);
-      }
-    }
-
-    // ── Password Toggle ──
     document.querySelector('.pw-toggle')?.addEventListener('click', function() {
       const inp = document.getElementById('password');
       const ico = this.querySelector('i');
@@ -592,12 +167,11 @@
       }
     });
 
-    // ── Form Submit ──
     document.getElementById('loginForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       const btn = event.target.querySelector('.btn-submit');
       const orig = btn.innerHTML;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in…';
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in\u2026';
       btn.disabled = true;
       const data = Object.fromEntries(new FormData(event.target));
       try {
@@ -608,6 +182,21 @@
         btn.innerHTML = orig;
         btn.disabled = false;
         showMessage(error.message, 'danger');
+      }
+    });
+
+    document.getElementById('linkedinLoginBtn').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting\u2026';
+      try {
+        const resp = await fetch('/api/auth/linkedin/login/');
+        const data = await resp.json();
+        window.location.href = data.auth_url;
+      } catch (e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-linkedin"></i> Continue with LinkedIn';
+        showMessage('Failed to connect to LinkedIn. Please try again.', 'danger');
       }
     });
   })();
