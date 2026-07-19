@@ -178,19 +178,20 @@
     border-color: rgba(var(--ss-brand-rgb, 79,70,229), 0.15) !important;
   }
 
-  #navAvatar {
+ #navAvatar {
     width: 32px !important;
     height: 32px !important;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
-    color: #fff;
+    border-radius: 50%;                 /* ← perfect circle */
+    background: #f1f5f9;                /* ← neutral, NOT purple */
+    border: 1.5px solid #cbd5e1;        /* ← thin outline */
+    color: #334155;                     /* ← dark initial letter */
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
     font-size: 0.8rem;
     flex-shrink: 0;
-  }
+}
 
   .dropdown-toggle .d-none.d-md-inline {
     line-height: 1.2;
@@ -293,26 +294,28 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.04);
   }
 
-  #sidebarAvatar {
+#sidebarAvatar {
     width: 52px !important;
     height: 52px !important;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
-    color: #fff;
+    border-radius: 50%;                 /* ← perfect circle */
+    background: #f1f5f9;                /* ← neutral, NOT purple */
+    border: 1.5px solid #cbd5e1;        /* ← thin outline */
+    color: #334155;                     /* ← dark initial letter */
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
     font-size: 1.15rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(var(--ss-brand-rgb, 79,70,229), 0.20);
+    box-shadow: none;                   /* ← remove purple glow */
     transition: all 0.3s ease;
-  }
+}
 
   .sidebar-profile:hover #sidebarAvatar {
     transform: scale(1.04);
-    box-shadow: 0 6px 20px rgba(var(--ss-brand-rgb, 79,70,229), 0.30);
-  }
+    box-shadow: none;
+    border-color: #94a3b8;
+}
 
   #sidebarUserName {
     font-weight: 700;
