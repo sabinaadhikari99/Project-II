@@ -25,6 +25,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "email", "username", "password", "role"]
 
+    def validate_role(self, value):
+        if value == "admin":
+            raise serializers.ValidationError("Admin registration is not allowed.")
+        return value
+
     def create(self, validated_data):
         password = validated_data.pop("password")
         user = User.objects.create_user(**validated_data)

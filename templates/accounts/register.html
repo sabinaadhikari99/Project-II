@@ -74,7 +74,6 @@
           <select id="role" class="form-select" name="role" style="display:none;">
             <option value="job_seeker" selected>Job Seeker</option>
             <option value="recruiter">Recruiter</option>
-            <option value="admin">Admin</option>
           </select>
           <div class="role-cards">
             <div class="role-card selected" data-role="job_seeker" tabindex="0">
@@ -86,11 +85,6 @@
               <div class="role-icon"><i class="bi bi-people"></i></div>
               <div class="role-name">Recruiter</div>
               <div class="role-desc">Hire talent</div>
-            </div>
-            <div class="role-card" data-role="admin" tabindex="0">
-              <div class="role-icon"><i class="bi bi-shield-check"></i></div>
-              <div class="role-name">Admin</div>
-              <div class="role-desc">Manage all</div>
             </div>
           </div>
         </div>
@@ -195,7 +189,7 @@
   }
   .role-section { margin-bottom: 1rem; }
   .role-cards {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;
   }
   .role-card {
     position: relative; padding: 0.75rem 0.5rem;
