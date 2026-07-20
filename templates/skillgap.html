@@ -55,22 +55,7 @@
   margin-bottom: 0;
   max-width: 420px;
 }
-.sg-header .sg-refresh {
-  background: transparent;
-  border: 1.5px solid rgba(var(--accent-rgb), 0.25);
-  color: var(--accent);
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 0.78rem;
-  padding: 0.4rem 1rem;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-.sg-header .sg-refresh:hover {
-  background: rgba(var(--accent-rgb), 0.06);
-  border-color: rgba(var(--accent-rgb), 0.35);
-  transform: translateY(-1px);
-}
+
 
 /* ── Stats row ── */
 .sg-stats {
@@ -383,76 +368,6 @@
 .sg-miss-item.amber:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(217,119,6,0.12); }
 .sg-miss-item.gray:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(15,23,42,0.06); }
 
-/* ── Roadmap ── */
-.sg-roadmap { display: flex; flex-direction: column; gap: 0; }
-.sg-road-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-.sg-road-step .sg-road-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 28px;
-}
-.sg-road-step .sg-road-left .sg-road-dot {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.72rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(var(--accent-rgb), 0.2);
-  flex-shrink: 0;
-}
-.sg-road-step .sg-road-left .sg-road-line {
-  width: 2px;
-  flex: 1;
-  min-height: 32px;
-  background: linear-gradient(180deg, var(--accent) 0%, rgba(var(--accent-rgb), 0.12) 100%);
-  border-radius: 1px;
-}
-.sg-road-step:last-child .sg-road-line { display: none; }
-.sg-road-step .sg-road-card {
-  flex: 1;
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius-sm);
-  padding: 0.7rem 0.9rem;
-  margin-bottom: 0.65rem;
-  transition: all 0.2s ease;
-  background: var(--surface-alt);
-}
-.sg-road-step .sg-road-card:hover {
-  border-color: rgba(var(--accent-rgb), 0.12);
-  background: var(--surface);
-  box-shadow: 0 4px 12px var(--shadow);
-  transform: translateY(-2px);
-}
-.sg-road-step .sg-road-card .sg-road-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: 0.2rem;
-}
-.sg-road-step .sg-road-card .sg-road-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-.sg-road-step .sg-road-card .sg-road-chip {
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.15rem 0.5rem;
-  border-radius: 6px;
-  background: rgba(var(--accent-rgb), 0.06);
-  color: var(--accent);
-  border: 1px solid rgba(var(--accent-rgb), 0.10);
-}
-
 /* ── Progress bars ── */
 .sg-progress-track {
   height: 6px;
@@ -496,68 +411,6 @@
   text-align: right;
 }
 
-/* ── Resource cards ── */
-.sg-res-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 0.65rem;
-}
-.sg-res-card {
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius-sm);
-  padding: 0.85rem;
-  background: var(--surface-alt);
-  transition: all 0.25s ease;
-}
-.sg-res-card:hover {
-  border-color: rgba(var(--accent-rgb), 0.12);
-  background: var(--surface);
-  box-shadow: 0 6px 16px var(--shadow-lg);
-  transform: translateY(-3px);
-}
-.sg-res-card .sg-res-skill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.15rem 0.45rem;
-  border-radius: 6px;
-  font-size: 0.62rem;
-  font-weight: 700;
-  background: var(--warn-bg);
-  color: var(--warn);
-  border: 1px solid var(--warn-bdr);
-  margin-bottom: 0.5rem;
-}
-.sg-res-card .sg-res-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: 0.2rem;
-  line-height: 1.35;
-}
-.sg-res-card .sg-res-meta {
-  font-size: 0.66rem;
-  color: var(--txt-muted);
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-.sg-res-card .sg-res-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--accent);
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-.sg-res-card .sg-res-action:hover {
-  gap: 0.45rem;
-  color: #1d4ed8;
-}
-
 /* ── Empty state ── */
 .sg-empty {
   padding: 1.5rem 1rem;
@@ -595,14 +448,13 @@
 /* ── Responsive ── */
 @media (max-width: 991.98px) {
   .sg-stats { grid-template-columns: repeat(3, 1fr); }
-  .sg-res-grid { grid-template-columns: repeat(2, 1fr); }
+  .sg-stats { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 767.98px) {
   .sg-stats { grid-template-columns: 1fr; gap: 0.5rem; }
   .sg-header h1 { font-size: 1.25rem; }
   .sg-ai-box { flex-direction: column; }
   .sg-ai-box .sg-ai-icon { width: 36px; height: 36px; font-size: 0.9rem; }
-  .sg-res-grid { grid-template-columns: 1fr; }
 }
 </style>
 
@@ -614,9 +466,6 @@
       <h1><i class="bi bi-graph-up-arrow" style="color:var(--accent);margin-right:0.35rem;"></i> Skill Gap Dashboard</h1>
       <p>Compare your skills with active job demand and get a focused learning plan.</p>
     </div>
-    <button class="sg-refresh" onclick="loadSkillGap()">
-      <i class="bi bi-arrow-clockwise me-1"></i> Refresh
-    </button>
   </div>
 
   <!-- ── Stats Row ── -->
@@ -688,21 +537,6 @@
     </div>
   </div>
 
-  <!-- ── Learning Roadmap ── -->
-  <div class="sg-card mb-3">
-    <div class="sg-card-head">
-      <div class="sgh-icon purple"><i class="bi bi-signpost-2"></i></div>
-      <div class="sgh-title">Learning Roadmap</div>
-    </div>
-    <div class="sg-card-body" id="sgRoadmap">
-      <div class="sg-shimmer-block">
-        <div class="sg-shimmer h60"></div>
-        <div class="sg-shimmer h60"></div>
-        <div class="sg-shimmer h60"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- ── Missing Skills by Priority ── -->
   <div class="sg-card mb-3">
     <div class="sg-card-head">
@@ -715,22 +549,6 @@
         <div class="sg-shimmer h60"></div>
         <div class="sg-shimmer h60"></div>
         <div class="sg-shimmer h60"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Learning Resources ── -->
-  <div class="sg-card">
-    <div class="sg-card-head">
-      <div class="sgh-icon blue"><i class="bi bi-collection"></i></div>
-      <div class="sgh-title">Learning Resources</div>
-      <span class="sgh-badge blue" id="sgResBadge">0</span>
-    </div>
-    <div class="sg-card-body" id="sgResources">
-      <div class="sg-shimmer-block">
-        <div class="sg-shimmer h80"></div>
-        <div class="sg-shimmer h80"></div>
-        <div class="sg-shimmer h80"></div>
       </div>
     </div>
   </div>
@@ -920,54 +738,6 @@
     </div>`;
   }
 
-  /* ── Render: Roadmap ── */
-  function sgRenderRoadmap(missSkills) {
-    const p = sgPartition(missSkills);
-    const all = [...p.high, ...p.medium, ...p.low];
-    if (!all.length) return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-signpost-2"></i></div>No learning roadmap needed.</div>`;
-
-    const steps = [
-      { label: "Core Fundamentals", skills: all.slice(0, Math.min(3, all.length)) },
-      { label: "Build & Practice",  skills: all.slice(3, Math.min(6, all.length)) },
-      { label: "Deepen Expertise",  skills: all.slice(6, Math.min(9, all.length)) },
-      { label: "Apply & Showcase",  skills: all.slice(9, Math.min(12, all.length)) },
-    ].filter(s => s.skills.length);
-
-    return `<div class="sg-roadmap">
-      ${steps.map((step, i) => `
-        <div class="sg-road-step">
-          <div class="sg-road-left">
-            <div class="sg-road-dot">${i + 1}</div>
-            <div class="sg-road-line"></div>
-          </div>
-          <div class="sg-road-card">
-            <div class="sg-road-title">${step.label}</div>
-            <div class="sg-road-skills">
-              ${step.skills.map(s => `<span class="sg-road-chip">${sgEscape(s)}</span>`).join("")}
-            </div>
-          </div>
-        </div>
-      `).join("")}
-    </div>`;
-  }
-
-  /* ── Render: Resource card ── */
-  function sgRenderResource(r) {
-    const type = (r.type || "").toLowerCase();
-    let icon = "bi-file-text", color = "var(--accent)";
-    if (type === "course" || type === "tutorial") { icon = "bi-mortarboard"; color = "var(--success)"; }
-    else if (type === "video") { icon = "bi-play-circle"; color = "#dc2626"; }
-
-    return `<div class="sg-res-card">
-      <div class="sg-res-skill"><i class="bi bi-exclamation-circle"></i> ${sgEscape(r.skill)}</div>
-      <div class="sg-res-title">${sgEscape(r.title)}</div>
-      <div class="sg-res-meta"><i class="${icon}" style="color:${color};"></i> ${sgEscape(r.type || "Resource")}</div>
-      <a class="sg-res-action" href="${sgEscape(r.url)}" target="_blank" rel="noopener">
-        ${type === "course" || type === "tutorial" ? "Start Learning" : "Open"} <i class="bi bi-arrow-right"></i>
-      </a>
-    </div>`;
-  }
-
   /* ── Main ── */
   async function loadSkillGap() {
     /* Show shimmers */
@@ -975,10 +745,7 @@
       `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div></div>`;
     document.getElementById("sgMissingSkills").innerHTML =
       `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-    document.getElementById("sgRoadmap").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-    document.getElementById("sgResources").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h80"></div><div class="sg-shimmer h80"></div><div class="sg-shimmer h80"></div></div>`;
+
     document.getElementById("sgMatchProgress").innerHTML =
       `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div></div>`;
     document.getElementById("sgAiBody").innerHTML =
@@ -992,10 +759,8 @@
 
     const haveSkills = gap.user_skills || [];
     const missSkills = gap.missing_skills || [];
-    const resources  = gap.recommended_resources || [];
     const haveLen    = haveSkills.length;
     const missLen    = missSkills.length;
-    const resLen     = resources.length;
     const p          = sgPartition(missSkills);
 
     /* Stats */
@@ -1012,7 +777,6 @@
     /* Badges */
     document.getElementById("sgHaveBadge").textContent = haveLen;
     document.getElementById("sgMissBadge").textContent = missLen;
-    document.getElementById("sgResBadge").textContent = resLen;
 
     /* AI Recommendation */
     document.getElementById("sgAiBody").innerHTML = sgRenderAI(haveSkills, missSkills);
@@ -1023,16 +787,8 @@
     /* Match Score Progress */
     document.getElementById("sgMatchProgress").innerHTML = sgRenderMatch(haveSkills, missSkills);
 
-    /* Roadmap */
-    document.getElementById("sgRoadmap").innerHTML = sgRenderRoadmap(missSkills);
-
     /* Missing Skills */
     document.getElementById("sgMissingSkills").innerHTML = sgRenderMissing(p);
-
-    /* Resources */
-    document.getElementById("sgResources").innerHTML = resLen
-      ? resources.map(r => sgRenderResource(r)).join("")
-      : `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-book"></i></div>No resources yet. Resources appear when missing skills match the learning library.</div>`;
   }
 
   loadSkillGap();
