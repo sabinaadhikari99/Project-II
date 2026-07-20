@@ -444,16 +444,69 @@ async function markRecentlyViewed(id) {
    ──────────────────────────────────────────────────────────── */
 async function loadNotificationBell() {
   const badge = document.getElementById("notificationBadge");
-  if (!badge || !token() || localStorage.getItem("role") !== "job_seeker") return;
+  if (!badge || !token()) return;
 
   try {
-    const notifications = await api("/api/notifications/");
-    const unread = notifications.filter(n => !n.is_read).length;
+    const data = await api("/api/notifications/unread-count/");
+    const unread = data.count || 0;
     badge.textContent = unread;
     badge.classList.toggle("d-none", unread === 0);
+    localStorage.setItem("notificationCount", unread);
   } catch (_) {
     badge.classList.add("d-none");
   }
+}
+
+/* ────────────────────────────────────────────────────────────
+   WEBSOCKET NOTIFICATION CONNECTION
+   ──────────────────────────────────────────────────────────── */
+let notificationWsConnected = false;
+
+function connectNotificationWebSocket() {
+  if (!token()) return;
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = `${protocol}//${window.location.host}/ws/notifications/`;
+  let ws = null;
+  let reconnectTimer = null;
+  let pingInterval = null;
+
+  function connect() {
+    try {
+      ws = new WebSocket(wsUrl);
+      ws.onopen = () => {
+        notificationWsConnected = true;
+        if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+        pingInterval = setInterval(() => {
+          try { ws.send(JSON.stringify({ action: "ping" })); } catch (_) {}
+        }, 30000);
+      };
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data && data.id) {
+            loadNotificationBell();
+            if (window.location.pathname === "/notifications/") {
+              if (typeof loadNotifications === "function") loadNotifications(true);
+            }
+          }
+        } catch (_) {}
+      };
+      ws.onclose = (event) => {
+        notificationWsConnected = false;
+        if (pingInterval) { clearInterval(pingInterval); pingInterval = null; }
+        reconnectTimer = setTimeout(connect, 15000);
+      };
+      ws.onerror = () => {
+        notificationWsConnected = false;
+        ws.close();
+      };
+    } catch (_) {
+      notificationWsConnected = false;
+      reconnectTimer = setTimeout(connect, 30000);
+    }
+  }
+
+  connect();
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -519,34 +572,36 @@ function hydrateNavbar() {
     el.classList.toggle("d-none", hasToken);
   });
 
-  document.querySelectorAll("[data-role]").forEach(el => {
+  document.querySelectorAll(".app-sidebar [data-role], .navbar-glass [data-role]").forEach(el => {
     const roles = String(el.dataset.role || "").split(",").map(s => s.trim());
     const show = hasToken && roles.includes(role);
     el.classList.toggle("d-none", !show);
   });
 
-  const nameTarget = document.getElementById("navUserName");
-  const roleTarget = document.getElementById("navUserRole");
   const avatarTarget = document.getElementById("navAvatar");
+  if (avatarTarget) {
+    const rendered = renderAvatar(profilePicture, username, "avatar-round");
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = rendered;
+    const el = wrapper.firstElementChild;
+    if (el) {
+      el.id = "navAvatar";
+      el.style.cssText = "width:36px;height:36px;font-size:14px;display:flex;align-items:center;justify-content:center;";
+      avatarTarget.replaceWith(el);
+    }
+  }
 
-  if (nameTarget) nameTarget.textContent = username;
-  if (roleTarget) roleTarget.textContent = roleLabel(role);
-  if (avatarTarget) avatarTarget.innerHTML = renderAvatar(profilePicture, username, "avatar-sm");
+  const ddName = document.getElementById("ddUserName");
+  const ddEmail = document.getElementById("ddUserEmail");
+  if (ddName) ddName.textContent = username;
+  if (ddEmail) ddEmail.textContent = email || roleLabel(role);
 
-  const sidebarAvatar = document.getElementById("sidebarAvatar");
-  const sidebarName = document.getElementById("sidebarUserName");
-  const sidebarRole = document.getElementById("sidebarUserRole");
-
-  if (sidebarAvatar) sidebarAvatar.innerHTML = renderAvatar(profilePicture, username, "avatar-sm");
-  if (sidebarName) sidebarName.textContent = username;
-  if (sidebarRole) sidebarRole.textContent = roleLabel(role);
-
-  const path = window.location.pathname;
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
   document.querySelectorAll(".navbar .nav-link, .app-sidebar .nav-link").forEach(link => {
     const href = link.getAttribute("href");
     if (!href) return;
-    const isActive = href === "/" ? path === "/" : path.startsWith(href);
-    link.classList.toggle("active", isActive);
+    const normalized = href.replace(/\/+$/, "") || "/";
+    link.classList.toggle("active", normalized === path);
   });
 
   const sidebar = document.getElementById('appSidebar');
@@ -567,11 +622,14 @@ document.addEventListener("DOMContentLoaded", async function() {
   await ensureJWTToken();
   hydrateNavbar();
   loadNotificationBell();
+  connectNotificationWebSocket();
   initSidebarToggle();
 });
 
-// Poll for notification updates every 30 seconds
-setInterval(loadNotificationBell, 30000);
+// Poll for notification updates — longer interval when WebSocket is connected
+setInterval(function() {
+  if (!notificationWsConnected) loadNotificationBell();
+}, 60000);
 
 // If token is removed from localStorage, redirect to login
 window.addEventListener("storage", function(e) {
@@ -579,6 +637,27 @@ window.addEventListener("storage", function(e) {
     window.location.href = "/login/";
   }
 });
+
+/* ────────────────────────────────────────────────────────────
+   SIDEBAR BADGE UPDATE FROM localStorage
+   ──────────────────────────────────────────────────────────── */
+function updateSidebarBadge() {
+  const count = parseInt(localStorage.getItem("notificationCount") || "0", 10);
+  document.querySelectorAll("#sidebarNotifBadge, #sidebarNotifBadgeAdmin").forEach(badge => {
+    if (badge) {
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = "";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+  });
+}
+
+setInterval(function() {
+  if (!notificationWsConnected) updateSidebarBadge();
+}, 30000);
 
 /* ────────────────────────────────────────────────────────────
    EXPOSE GLOBALS (so inline onclick attributes work)
@@ -605,6 +684,8 @@ window.submitJobApplication = submitJobApplication;
 window.toggleSavedJob = toggleSavedJob;
 window.markRecentlyViewed = markRecentlyViewed;
 window.loadNotificationBell = loadNotificationBell;
+window.connectNotificationWebSocket = connectNotificationWebSocket;
+window.updateSidebarBadge = updateSidebarBadge;
 window.hydrateNavbar = hydrateNavbar;
 window.initSidebarToggle = initSidebarToggle;
 window.ensureJWTToken = ensureJWTToken;

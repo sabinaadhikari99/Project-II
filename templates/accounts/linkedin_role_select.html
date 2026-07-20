@@ -1,0 +1,175 @@
+{% extends "base_auth.html" %}
+{% load static %}
+{% block title %}Choose your role | SkillSync AI{% endblock %}
+
+{% block content %}
+<div class="split-auth">
+  <div class="sa-panel">
+    <div class="sa-card">
+      <div class="sa-brand">
+        <div class="sa-logo">S</div>
+        <h1>Almost there!</h1>
+        <p>Choose your account type to get started</p>
+      </div>
+
+      <div class="linkedin-profile">
+        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:var(--ss-radius);border:1px solid var(--ss-border);background:var(--ss-surface-alt);margin-bottom:1.25rem;">
+          {% if linkedin_picture %}
+          <img src="{{ linkedin_picture }}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">
+          {% else %}
+          <div style="width:44px;height:44px;border-radius:50%;background:var(--ss-brand-soft);color:var(--ss-brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;">{{ linkedin_name|first|default:"?" }}</div>
+          {% endif %}
+          <div>
+            <div style="font-weight:700;font-size:0.875rem;">{{ linkedin_name }}</div>
+            <div style="font-size:0.75rem;color:var(--ss-muted);">{{ linkedin_email }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="role-section">
+        <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8125rem;font-weight:600;color:var(--ss-muted);margin-bottom:0.5rem;">
+          <i class="bi bi-briefcase"></i> I want to
+        </label>
+        <div class="role-cards" id="roleCards">
+          <div class="role-card selected" data-role="job_seeker" tabindex="0">
+            <div class="role-icon"><i class="bi bi-search"></i></div>
+            <div class="role-name">Find a Job</div>
+            <div class="role-desc">Job Seeker</div>
+          </div>
+          <div class="role-card" data-role="recruiter" tabindex="0">
+            <div class="role-icon"><i class="bi bi-people"></i></div>
+            <div class="role-name">Hire Talent</div>
+            <div class="role-desc">Recruiter</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-submit" type="button" id="completeBtn" disabled>
+        <span class="spinner-border spinner-border-sm me-2 d-none" id="btnSpinner" role="status"></span>
+        <span id="btnText">Continue</span>
+      </button>
+
+      <div id="message"></div>
+
+      <div class="auth-footer">
+        <span>Already have an account?</span>
+        <a href="{% url 'login' %}">Sign in</a>
+      </div>
+    </div>
+  </div>
+  <div class="sa-visual">
+    <div class="sa-visual-content">
+      <span class="sa-illum">🚀</span>
+      <h2>You're one step away</h2>
+      <p>Select how you'd like to use SkillSync AI and we'll set everything up for you.</p>
+      <div class="sa-features">
+        <div class="sf-item"><i class="bi bi-check-circle-fill"></i> AI-powered job matching</div>
+        <div class="sf-item"><i class="bi bi-check-circle-fill"></i> Smart skill gap analysis</div>
+        <div class="sf-item"><i class="bi bi-check-circle-fill"></i> Personalized recommendations</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .split-auth .role-section { margin-bottom: 1.5rem; }
+  .split-auth .role-cards {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;
+  }
+  .split-auth .role-card {
+    position: relative; padding: 1.25rem 0.75rem;
+    border-radius: var(--ss-radius);
+    border: 1.5px solid var(--ss-border);
+    background: var(--ss-surface); cursor: pointer; text-align: center;
+    transition: all var(--ss-transition-fast); user-select: none;
+  }
+  .split-auth .role-card:hover {
+    border-color: rgba(var(--ss-brand-rgb), 0.25);
+    background: var(--ss-surface-alt);
+  }
+  .split-auth .role-card.selected {
+    border-color: var(--ss-brand);
+    background: var(--ss-brand-soft);
+  }
+  .split-auth .role-card .role-icon {
+    width: 40px; height: 40px; display: inline-flex;
+    align-items: center; justify-content: center;
+    border-radius: var(--ss-radius-sm); font-size: 1.125rem;
+    margin-bottom: 0.5rem; background: var(--ss-brand-soft);
+    color: var(--ss-brand); transition: all var(--ss-transition-fast);
+  }
+  .split-auth .role-card.selected .role-icon {
+    background: var(--ss-brand); color: #fff;
+  }
+  .split-auth .role-card .role-name {
+    font-size: 0.875rem; font-weight: 700; margin-bottom: 0.15rem;
+  }
+  .split-auth .role-card .role-desc {
+    font-size: 0.6875rem; color: var(--ss-muted);
+  }
+  .split-auth .btn-submit {
+    width: 100%; height: 44px;
+    border-radius: 22px;
+    font-weight: 700; font-size: 0.875rem; margin-top: 0.5rem;
+  }
+  .split-auth .auth-footer {
+    text-align: center; font-size: 0.875rem; color: var(--ss-muted); margin-top: 1rem;
+  }
+  .split-auth .auth-footer a { font-weight: 700; }
+  #message:not(:empty) {
+    padding: 0.75rem 1rem; border-radius: var(--ss-radius);
+    font-weight: 600; font-size: 0.8125rem; margin-top: 0.75rem;
+  }
+</style>
+<script>
+  (function() {
+    let selectedRole = 'job_seeker';
+
+    const cards = document.querySelectorAll('.role-card');
+    cards.forEach(function(card) {
+      card.addEventListener('click', function() {
+        cards.forEach(function(c) { c.classList.remove('selected'); });
+        this.classList.add('selected');
+        selectedRole = this.dataset.role;
+        document.getElementById('completeBtn').disabled = false;
+      });
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          cards.forEach(function(c) { c.classList.remove('selected'); });
+          this.classList.add('selected');
+          selectedRole = this.dataset.role;
+          document.getElementById('completeBtn').disabled = false;
+        }
+      });
+    });
+
+    document.getElementById('completeBtn').addEventListener('click', async function() {
+      const btn = this;
+      const spinner = document.getElementById('btnSpinner');
+      const btnText = document.getElementById('btnText');
+      btn.disabled = true;
+      spinner.classList.remove('d-none');
+      btnText.textContent = 'Setting up...';
+
+      try {
+        const result = await window.api('/api/auth/linkedin/role-select/', {
+          method: 'POST',
+          body: JSON.stringify({ role: selectedRole }),
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
+        }, false);
+        window.saveSession(result);
+        window.routeByRole(result.user.role);
+      } catch (error) {
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+        btnText.textContent = 'Continue';
+        window.showMessage(error.message, 'danger');
+      }
+    });
+  })();
+</script>
+{% endblock %}

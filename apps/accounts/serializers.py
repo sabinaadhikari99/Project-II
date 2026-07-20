@@ -35,11 +35,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
     def to_representation(self, instance):
-        refresh = RefreshToken.for_user(instance)
         return {
             "user": UserSerializer(instance).data,
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
+            "message": "Registration successful! Please log in to continue."
         }
 
 

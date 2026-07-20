@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><body style="font-family:sans-serif;padding:20px;max-width:600px;margin:auto;">
+<h2 style="color:#2563EB;">AI Job Match Found</h2>
+<p>Hi {{ user.username }},</p>
+<p>{{ message }}</p>
+<table style="width:100%;border-collapse:collapse;margin:16px 0;">
+  <tr><td style="padding:8px;background:#f1f5f9;"><strong>Company:</strong></td><td style="padding:8px;">{{ job.company }}</td></tr>
+  <tr><td style="padding:8px;background:#f1f5f9;"><strong>Role:</strong></td><td style="padding:8px;">{{ job.title }}</td></tr>
+  <tr><td style="padding:8px;background:#f1f5f9;"><strong>Match:</strong></td><td style="padding:8px;">{{ match_percentage }}%</td></tr>
+  <tr><td style="padding:8px;background:#f1f5f9;"><strong>Skills:</strong></td><td style="padding:8px;">{{ required_skills|join:", " }}</td></tr>
+</table>
+<a href="{{ job.get_absolute_url|default:'/' }}" style="display:inline-block;padding:10px 24px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;">View Job</a>
+<p style="margin-top:24px;color:#64748b;font-size:12px;">SkillSync AI &mdash; Intelligent Career Matching</p>
+</body></html>

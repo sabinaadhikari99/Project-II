@@ -1,0 +1,380 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Post a Job | SkillSync AI{% endblock %}
+
+{% block content %}
+<style>
+  .recruiter-pj {
+    animation: pjFadeIn 0.4s ease both;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  @keyframes pjFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .pj-header {
+    margin-bottom: 1.75rem;
+  }
+  .pj-header .pj-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ss-brand);
+    margin-bottom: 0.25rem;
+  }
+  .pj-header .pj-kicker i { font-size: 0.7rem; }
+  .pj-header .pj-title {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--ss-ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.15rem;
+  }
+  .pj-header .pj-sub {
+    font-size: 0.82rem;
+    color: var(--ss-muted);
+  }
+
+  .dash-panel {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: 20px;
+    box-shadow: var(--ss-shadow-sm);
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--ss-border);
+  }
+  .panel-head .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 0;
+    color: var(--ss-ink);
+  }
+  .panel-head .panel-icon {
+    width: 32px; height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(var(--ss-brand-rgb), 0.08);
+    color: var(--ss-brand);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .panel-body {
+    padding: 1.5rem;
+  }
+
+  .form-section .form-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ss-muted);
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .form-section .form-label i {
+    font-size: 14px;
+    opacity: 0.45;
+    color: var(--ss-brand);
+  }
+  .form-section .input-wrap {
+    position: relative;
+  }
+  .form-section .input-wrap .field-icon {
+    position: absolute;
+    left: 0.9rem; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.95rem;
+    color: var(--ss-muted-light);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 2;
+  }
+  .form-section .input-wrap:focus-within .field-icon {
+    color: var(--ss-brand);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .form-section .form-control,
+  .form-section .form-select {
+    height: 46px;
+    border-radius: 12px;
+    border: 1.5px solid var(--ss-border);
+    background: var(--ss-surface-alt);
+    font-size: 0.88rem;
+    transition: all 0.25s ease;
+    box-shadow: none;
+    color: var(--ss-ink);
+  }
+  .form-section .form-control.has-icon {
+    padding-left: 2.65rem;
+  }
+  .form-section textarea.form-control {
+    height: auto;
+    min-height: 100px;
+    padding-top: 0.75rem;
+    resize: vertical;
+  }
+  .form-section .form-control::placeholder {
+    color: var(--ss-muted-light);
+  }
+  .form-section .form-control:hover,
+  .form-section .form-select:hover {
+    border-color: var(--ss-border-strong);
+    background: var(--ss-surface);
+  }
+  .form-section .form-control:focus,
+  .form-section .form-select:focus {
+    border-color: rgba(var(--ss-brand-rgb), 0.5);
+    box-shadow: 0 0 0 4px rgba(var(--ss-brand-rgb), 0.10);
+    background: var(--ss-surface);
+    outline: none;
+  }
+  .form-section .form-select {
+    padding-left: 2.65rem;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(15,23,42,0.4)' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+  }
+  .field-group { margin-bottom: 0.85rem; }
+  .field-group:last-of-type { margin-bottom: 0; }
+  .form-divider {
+    height: 1px;
+    background: var(--ss-border);
+    margin: 1rem 0;
+  }
+  .form-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ss-muted);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .form-section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--ss-border);
+  }
+
+  .btn-accent {
+    background: linear-gradient(135deg, #2563EB, #1D4ED8) !important;
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-accent::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  .btn-accent:hover::before { transform: translateX(100%); }
+  .btn-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.35);
+    filter: brightness(1.08);
+    color: #fff !important;
+  }
+  .btn-accent:active { transform: translateY(0); }
+  .btn-accent i { transition: transform 0.25s ease; }
+  .btn-accent:hover i { transform: rotate(8deg) scale(1.08); }
+
+  #message:not(:empty) {
+    padding: 0.8rem 1.1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 991.98px) {
+    .recruiter-pj { max-width: 100%; }
+  }
+</style>
+
+<div class="recruiter-pj">
+  <div class="pj-header">
+    <h1 class="pj-title">Post a Job</h1>
+    <p class="pj-sub">Fill in the details below to create a new job posting and activate AI matching.</p>
+  </div>
+
+  <div class="dash-panel">
+    <div class="panel-head">
+      <div class="panel-title">
+        <div class="panel-icon"><i class="bi bi-plus-circle"></i></div>
+        Job details
+      </div>
+    </div>
+    <div class="panel-body">
+      <form id="jobForm" class="form-section">
+
+        <div class="form-section-label">Basic info</div>
+
+        <div class="field-group">
+          <label class="form-label" for="title"><i class="bi bi-briefcase"></i> Job title</label>
+          <div class="input-wrap">
+            <i class="bi bi-briefcase field-icon"></i>
+            <input id="title" class="form-control has-icon" name="title"
+              placeholder="e.g. Machine Learning Engineer" required>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="form-label" for="company"><i class="bi bi-building"></i> Company</label>
+              <div class="input-wrap">
+                <i class="bi bi-building field-icon"></i>
+                <input id="company" class="form-control has-icon" name="company"
+                  placeholder="Company name" required>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="form-label" for="company_logo"><i class="bi bi-image"></i> Logo URL</label>
+              <div class="input-wrap">
+                <i class="bi bi-image field-icon"></i>
+                <input id="company_logo" class="form-control has-icon" name="company_logo"
+                  type="url" placeholder="https://example.com/logo.png">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+        <div class="form-section-label">Work details</div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="form-label" for="location"><i class="bi bi-geo-alt"></i> Location</label>
+              <div class="input-wrap">
+                <i class="bi bi-geo-alt field-icon"></i>
+                <input id="location" class="form-control has-icon" name="location"
+                  placeholder="e.g. Remote, San Francisco, CA">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="form-label" for="work_mode"><i class="bi bi-laptop"></i> Work mode</label>
+              <div class="input-wrap">
+                <i class="bi bi-laptop field-icon"></i>
+                <select id="work_mode" class="form-select" name="work_mode">
+                  <option value="onsite">On-site</option>
+                  <option value="remote">Remote</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="form-label" for="required_skills"><i class="bi bi-tools"></i> Required skills</label>
+          <div class="input-wrap">
+            <i class="bi bi-tools field-icon"></i>
+            <input id="required_skills" class="form-control has-icon" name="required_skills"
+              placeholder="Python, Django, APIs">
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="form-label" for="experience_required"><i class="bi bi-clock-history"></i> Experience (years)</label>
+              <div class="input-wrap">
+                <i class="bi bi-clock-history field-icon"></i>
+                <input id="experience_required" class="form-control has-icon"
+                  name="experience_required" type="number" step="0.5" min="0" placeholder="2">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="field-group">
+              <label class="form-label" for="salary_range"><i class="bi bi-currency-dollar"></i> Salary range</label>
+              <div class="input-wrap">
+                <i class="bi bi-currency-dollar field-icon"></i>
+                <input id="salary_range" class="form-control has-icon" name="salary_range"
+                  placeholder="$90k-$120k">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+        <div class="form-section-label">Description</div>
+
+        <div class="field-group">
+          <label class="form-label" for="description"><i class="bi bi-file-text"></i> Description</label>
+          <textarea id="description" class="form-control" name="description" rows="5"
+            placeholder="Describe the role, responsibilities, team, and what you're looking for in a candidate." required></textarea>
+        </div>
+
+        <button class="btn btn-accent w-100 mt-3" type="submit" id="btnPostJob"
+          style="height:48px;border-radius:12px;font-size:0.88rem;">
+          <i class="bi bi-send me-1"></i> Post job
+        </button>
+      </form>
+      <div id="message" class="mt-3"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  requireRole("recruiter");
+
+  document.getElementById("jobForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const btn = document.getElementById("btnPostJob");
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Posting\u2026';
+    btn.disabled = true;
+
+    const form = Object.fromEntries(new FormData(event.target));
+    form.required_skills = (form.required_skills || "")
+      .split(",").map(s => s.trim()).filter(Boolean);
+    form.experience_required = Number(form.experience_required || 0);
+
+    try {
+      await api("/api/recruiter/jobs/", { method: "POST", body: JSON.stringify(form) });
+      event.target.reset();
+      showMessage("Job posted and indexed for AI matching.", "success");
+    } catch (error) {
+      showMessage(error.message, "danger");
+    } finally {
+      btn.innerHTML = orig;
+      btn.disabled = false;
+    }
+  });
+</script>
+{% endblock %}

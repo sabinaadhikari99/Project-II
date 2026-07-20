@@ -1,1154 +1,2177 @@
 <!-- file path: templates/accounts/profile_settings.html -->
 {% extends "base_dashboard.html" %}
-{% block title %}Profile Settings | SkillSync AI{% endblock %}
+{% block title %}Profile & Settings | SkillSync AI{% endblock %}
 
 {% block content %}
 <style>
-  /* ── Page Container ── */
-  .settings-page {
-    max-width: 880px;
+  .prof-page {
+    max-width: 960px;
     margin: 0 auto;
     padding: 2rem 0 3rem;
-    animation: settingsReveal 0.6s ease both;
+    animation: profReveal 0.6s ease both;
   }
-
-  @keyframes settingsReveal {
+  @keyframes profReveal {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── Page Header ── */
-  .settings-header {
+  .prof-page .page-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     flex-wrap: wrap;
   }
-
-  .settings-header .page-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+  .prof-page .page-header .ph-left { flex: 1; min-width: 0; }
+  .prof-page .page-header .ph-kicker {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2563EB;
     text-transform: uppercase;
-    color: var(--bs-primary);
-    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.4rem;
+  }
+  .prof-page .page-header .ph-title {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.15rem;
+  }
+  .prof-page .page-header .ph-sub {
+    font-size: 15px;
+    font-weight: 400;
+    color: #64748B;
+    margin-bottom: 0;
   }
 
-  .settings-header .page-kicker::before {
-    content: "";
-    width: 24px;
-    height: 2px;
-    border-radius: 999px;
-    background: var(--bs-primary);
-    opacity: 0.4;
-  }
-
-  .settings-header .page-title {
-    font-size: 1.75rem;
-    font-weight: 800;
-    margin-bottom: 0.25rem;
-  }
-
-  .settings-header .page-subtitle {
-    font-size: 0.92rem;
-    max-width: 500px;
-  }
-
-  .settings-header .btn-back {
+  .prof-page .btn-back {
     border-radius: 12px;
     padding: 0.55rem 1.25rem;
-    font-weight: 600;
-    font-size: 0.85rem;
+    font-weight: 500;
+    font-size: 14px;
     transition: all 0.25s ease;
     flex-shrink: 0;
   }
+  .prof-page .btn-back:hover { transform: translateX(-3px); }
+  .prof-page .btn-back i { margin-right: 0.3rem; transition: transform 0.25s ease; }
+  .prof-page .btn-back:hover i { transform: translateX(-3px); }
 
-  .settings-header .btn-back:hover {
-    transform: translateX(-3px);
+  /* ── Tab Navigation ── */
+  .prof-tabs {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 0;
+    background: #F8FAFC;
+    border-radius: 14px;
+    padding: 0.35rem;
   }
-
-  .settings-header .btn-back i {
-    margin-right: 0.3rem;
-    transition: transform 0.25s ease;
+  .prof-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+    background: transparent;
+    text-decoration: none;
   }
-
-  .settings-header .btn-back:hover i {
-    transform: translateX(-3px);
-  }
-
-  /* ── Section Card ── */
-  .settings-card {
+  .prof-tab:hover { color: #0F172A; background: rgba(37,99,235,0.04); }
+  .prof-tab.active {
     background: #fff;
-    border: 1px solid rgba(15, 23, 42, 0.06);
-    border-radius: 24px;
-    box-shadow:
-      0 16px 48px rgba(15, 23, 42, 0.06),
-      0 1px 3px rgba(15, 23, 42, 0.03);
+    color: #2563EB;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+  }
+  .prof-tab i { font-size: 15px; }
+  .prof-tab-content { display: none; }
+  .prof-tab-content.active { display: block; }
+
+  /* ── Settings Card ── */
+  .sc {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(15,23,42,0.04);
     overflow: hidden;
     margin-bottom: 1.25rem;
-    animation: cardSlideUp 0.5s ease both;
+    animation: cardUp 0.5s ease both;
   }
-
-  .settings-card:nth-child(2) { animation-delay: 0.08s; }
-  .settings-card:nth-child(3) { animation-delay: 0.16s; }
-  .settings-card:nth-child(4) { animation-delay: 0.24s; }
-
-  @keyframes cardSlideUp {
-    from { opacity: 0; transform: translateY(20px); }
+  .sc:nth-child(2) { animation-delay: 0.08s; }
+  .sc:nth-child(3) { animation-delay: 0.16s; }
+  @keyframes cardUp {
+    from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── Card Banner ── */
-  .card-banner {
-    height: 110px;
-    background: var(--bs-primary);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card-banner::before,
-  .card-banner::after {
-    content: "";
-    position: absolute;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.07);
-  }
-
-  .card-banner::before {
-    width: 200px; height: 200px;
-    top: -80px; right: -40px;
-    animation: bannerOrb 12s ease-in-out infinite alternate;
-  }
-
-  .card-banner::after {
-    width: 140px; height: 140px;
-    bottom: -60px; left: 40px;
-    animation: bannerOrb 16s ease-in-out infinite alternate-reverse;
-  }
-
-  @keyframes bannerOrb {
-    0%   { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(20px, -15px) scale(1.1); }
-  }
-
-  /* ── Card Body ── */
-  .card-body-section {
-    padding: 0 2.25rem 2.25rem;
-  }
-
-  /* ── Section Header (no banner) ── */
-  .section-header {
+  .sc-hd {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 1.5rem 2.25rem;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #E2E8F0;
   }
-
-  .section-header .sec-icon {
-    width: 40px; height: 40px;
+  .sc-hd .sc-icon {
+    width: 36px; height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    background: rgba(var(--bs-primary-rgb), 0.08);
-    color: var(--bs-primary);
-    font-size: 1.05rem;
+    border-radius: 10px;
+    background: #DBEAFE;
+    color: #2563EB;
+    font-size: 15px;
     flex-shrink: 0;
   }
-
-  .section-header .sec-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 0.1rem;
-  }
-
-  .section-header .sec-desc {
-    font-size: 0.8rem;
-    color: rgba(15, 23, 42, 0.5);
-    margin-bottom: 0;
-  }
-
-  .section-body {
-    padding: 1.5rem 2.25rem 2rem;
-  }
-
-  /* ── Avatar Section ── */
-  .avatar-section {
-    display: flex;
-    align-items: flex-end;
-    gap: 1.75rem;
-    margin-top: -44px;
-    margin-bottom: 1.75rem;
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 2;
-  }
-
-  .avatar-container {
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .avatar-container #settingsProfilePreview .avatar-lg,
-  .avatar-container #settingsProfilePreview img {
-    width: 92px; height: 92px;
-    border-radius: 22px;
-    border: 4px solid #fff;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-    object-fit: cover;
-    transition: all 0.3s ease;
-    background: var(--bs-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .avatar-container:hover #settingsProfilePreview .avatar-lg,
-  .avatar-container:hover #settingsProfilePreview img {
-    transform: scale(1.05);
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
-  }
-
-  .avatar-badge {
-    position: absolute;
-    bottom: -4px; right: -4px;
-    width: 28px; height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9px;
-    background: var(--bs-primary);
-    color: #fff;
-    font-size: 0.7rem;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.3);
-    cursor: pointer;
-    transition: all 0.25s ease;
-    z-index: 3;
-  }
-
-  .avatar-badge:hover {
-    transform: scale(1.15);
-  }
-
-  .avatar-info h2 {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 0.15rem;
-  }
-
-  .avatar-info p {
-    font-size: 0.85rem;
-    margin-bottom: 0;
-  }
-
-  /* ── Upload Area ── */
-  .upload-area {
-    background: rgba(var(--bs-primary-rgb), 0.02);
-    border: 1.5px solid rgba(15, 23, 42, 0.08);
-    border-radius: 18px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .upload-area .form-control {
-    height: 48px;
-    border-radius: 12px;
-    border: 1.5px solid rgba(15, 23, 42, 0.10);
-    background: #fff;
-    font-size: 0.88rem;
-    transition: all 0.25s ease;
-    cursor: pointer;
-  }
-
-  .upload-area .form-control:hover {
-    border-color: rgba(15, 23, 42, 0.18);
-  }
-
-  .upload-area .form-control:focus {
-    border-color: rgba(var(--bs-primary-rgb), 0.5);
-    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.10);
-    outline: none;
-  }
-
-  .upload-area .form-control::file-selector-button {
-    border: none;
-    background: rgba(var(--bs-primary-rgb), 0.08);
-    color: var(--bs-primary);
+  .sc-hd .sc-title {
+    font-size: 16px;
     font-weight: 600;
-    font-size: 0.82rem;
-    padding: 0.35rem 0.9rem;
-    border-radius: 8px;
-    margin-right: 0.75rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
+    margin-bottom: 0.05rem;
   }
-
-  .upload-area .form-control::file-selector-button:hover {
-    background: rgba(var(--bs-primary-rgb), 0.14);
+  .sc-hd .sc-desc {
+    font-size: 14px;
+    font-weight: 400;
+    color: #64748B;
+    margin-bottom: 0;
   }
+  .sc-bd { padding: 1.25rem 1.75rem 1.5rem; }
 
-  .format-badges {
-    display: flex;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    margin-top: 0.75rem;
-  }
-
-  .format-badge {
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: rgba(15, 23, 42, 0.04);
-    color: rgba(15, 23, 42, 0.42);
-    border: 1px solid rgba(15, 23, 42, 0.06);
-  }
-
-  /* ── Button Row ── */
-  .btn-row {
-    display: flex;
-    gap: 0.65rem;
-    flex-wrap: wrap;
-  }
-
-  .btn-action {
-    height: 46px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 0 1.5rem;
-    border: none;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-
-  .btn-action.btn-primary {
-    box-shadow: 0 8px 20px rgba(var(--bs-primary-rgb), 0.20);
-  }
-
-  .btn-action.btn-primary::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-
-  .btn-action.btn-primary:hover::before { transform: translateX(100%); }
-
-  .btn-action:hover {
-    transform: translateY(-2px);
-  }
-
-  .btn-action:active { transform: translateY(0); }
-  .btn-action i { margin-right: 0.35rem; }
-
-  .btn-action.btn-outline-danger {
-    border: 1.5px solid rgba(220, 53, 69, 0.25);
-    color: #dc3545;
-    background: transparent;
-  }
-
-  .btn-action.btn-outline-danger:hover {
-    background: rgba(220, 53, 69, 0.06);
-    border-color: rgba(220, 53, 69, 0.4);
-    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.12);
-  }
-
-  /* ── Setting Row ── */
-  .setting-row {
+  .sr {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1.15rem 0;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+    padding: 1rem 0;
+    border-bottom: 1px solid #E2E8F0;
     flex-wrap: wrap;
   }
+  .sr:last-child { border-bottom: none; padding-bottom: 0; }
+  .sr:first-child { padding-top: 0; }
 
-  .setting-row:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .setting-row:first-child {
-    padding-top: 0;
-  }
-
-  .setting-left {
+  .sr-left {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.75rem;
     flex: 1;
     min-width: 0;
   }
-
-  .setting-icon {
-    width: 38px; height: 38px;
+  .sr-icon {
+    width: 34px; height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 11px;
-    background: rgba(var(--bs-primary-rgb), 0.07);
-    color: var(--bs-primary);
-    font-size: 0.95rem;
+    border-radius: 9px;
+    background: #DBEAFE;
+    color: #64748B;
+    font-size: 14px;
     flex-shrink: 0;
     transition: all 0.25s ease;
   }
-
-  .setting-row:hover .setting-icon {
-    background: rgba(var(--bs-primary-rgb), 0.12);
+  .sr:hover .sr-icon {
+    background: #DBEAFE;
+    color: #2563EB;
     transform: scale(1.05);
   }
+  .sr-label { font-size: 14px; font-weight: 500; color: #0F172A; margin-bottom: 0.05rem; }
+  .sr-desc { font-size: 14px; font-weight: 400; color: #94A3B8; margin-bottom: 0; line-height: 1.4; }
+  .sr-right { flex-shrink: 0; }
 
-  .setting-label {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: rgba(15, 23, 42, 0.8);
-    margin-bottom: 0.1rem;
-  }
-
-  .setting-desc {
-    font-size: 0.78rem;
-    color: rgba(15, 23, 42, 0.42);
-    margin-bottom: 0;
-    line-height: 1.4;
-  }
-
-  .setting-right {
-    flex-shrink: 0;
-  }
-
-  /* Toggle Switch */
-  .toggle-switch {
+  /* Toggle */
+  .tg {
     position: relative;
-    width: 48px; height: 26px;
+    width: 44px; height: 24px;
     display: inline-block;
   }
-
-  .toggle-switch input {
-    opacity: 0;
-    width: 0; height: 0;
-  }
-
-  .toggle-slider {
+  .tg input { opacity: 0; width: 0; height: 0; }
+  .tg-sl {
     position: absolute;
     inset: 0;
-    background: rgba(15, 23, 42, 0.14);
+    background: #CBD5E1;
     border-radius: 999px;
     cursor: pointer;
     transition: all 0.3s ease;
   }
-
-  .toggle-slider::before {
+  .tg-sl::before {
     content: "";
     position: absolute;
     left: 3px; top: 3px;
-    width: 20px; height: 20px;
+    width: 18px; height: 18px;
     border-radius: 999px;
     background: #fff;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 4px rgba(15,23,42,0.12);
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
   }
+  .tg input:checked + .tg-sl { background: #2563EB; }
+  .tg input:checked + .tg-sl::before { transform: translateX(20px); }
 
-  .toggle-switch input:checked + .toggle-slider {
-    background: var(--bs-primary);
-  }
-
-  .toggle-switch input:checked + .toggle-slider::before {
-    transform: translateX(22px);
-  }
-
-  /* Select small */
-  .setting-select {
-    height: 36px;
-    border-radius: 10px;
-    border: 1.5px solid rgba(15, 23, 42, 0.10);
-    background: #f8f9fb;
-    font-size: 0.82rem;
-    font-weight: 600;
+  .sel-sm {
+    height: 34px;
+    border-radius: 8px;
+    border: 1.5px solid #E2E8F0;
+    background: #F8FAFC;
+    font-size: 14px;
+    font-weight: 500;
     padding: 0 2rem 0 0.75rem;
-    color: rgba(15, 23, 42, 0.7);
+    color: #0F172A;
     cursor: pointer;
     transition: all 0.25s ease;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(15,23,42,0.4)' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='%2394a3b8' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.65rem center;
+    background-position: right 0.6rem center;
   }
-
-  .setting-select:hover {
-    border-color: rgba(15, 23, 42, 0.18);
-    background-color: #fff;
-  }
-
-  .setting-select:focus {
-    border-color: rgba(var(--bs-primary-rgb), 0.5);
-    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.10);
+  .sel-sm:hover { border-color: #CBD5E1; background: #fff; }
+  .sel-sm:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
     outline: none;
   }
 
-  /* Color swatches */
-  .color-swatches {
+  /* ── Avatar Section ── */
+  .av-sec {
     display: flex;
-    gap: 0.4rem;
+    align-items: flex-end;
+    gap: 1.5rem;
+    flex-wrap: wrap;
   }
-
-  .color-swatch {
-    width: 28px; height: 28px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.25s ease;
+  .av-wrap {
     position: relative;
+    flex-shrink: 0;
   }
-
-  .color-swatch:hover {
-    transform: scale(1.15);
-  }
-
-  .color-swatch.active {
-    border-color: var(--bs-primary);
-    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.18);
-  }
-
-  .color-swatch.active::after {
-    content: "✓";
-    position: absolute;
-    inset: 0;
+  .av-wrap #profPreview .av-lg,
+  .av-wrap #profPreview img {
+    width: 80px; height: 80px;
+    border-radius: 18px;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 20px rgba(15,23,42,0.10);
+    object-fit: cover;
+    transition: all 0.3s ease;
+    background: #2563EB;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 800;
+    font-size: 28px;
+    font-weight: 700;
     color: #fff;
   }
+  .av-wrap:hover #profPreview .av-lg,
+  .av-wrap:hover #profPreview img {
+    transform: scale(1.04);
+    box-shadow: 0 10px 28px rgba(15,23,42,0.14);
+  }
+  .av-badge {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 26px; height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #2563EB;
+    color: #fff;
+    font-size: 13px;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 10px rgba(37,99,235,0.25);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    z-index: 3;
+  }
+  .av-badge:hover { transform: scale(1.12); }
+  .av-info h2 { font-size: 16px; font-weight: 600; margin-bottom: 0.1rem; }
+  .av-info p { font-size: 14px; font-weight: 400; color: #64748B; margin-bottom: 0; }
 
-  /* ── Message ── */
-  #message:not(:empty) {
-    padding: 0.8rem 1.1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    animation: msgSlideIn 0.35s ease both;
+  .up-area {
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+  .up-area .form-control {
+    height: 44px;
+    border-radius: 10px;
+    border: 1.5px solid #E2E8F0;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .up-area .form-control:hover { border-color: #CBD5E1; }
+  .up-area .form-control:focus {
+    border-color: rgba(37,99,235,0.5);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+    outline: none;
+  }
+  .up-area .form-control::file-selector-button {
+    border: none;
+    background: #DBEAFE;
+    color: #2563EB;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 7px;
+    margin-right: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .up-area .form-control::file-selector-button:hover { background: #DBEAFE; }
+
+  .fmt-badges {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin-top: 0.65rem;
+  }
+  .fmt-badge {
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #DBEAFE;
+    color: #94A3B8;
+    border: 1px solid #E2E8F0;
   }
 
-  @keyframes msgSlideIn {
-    from { opacity: 0; transform: translateY(10px); }
+  .btn-act {
+    height: 42px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 0 1.35rem;
+    border: none;
+    transition: all 0.25s ease;
+  }
+  .btn-act.btn-primary { box-shadow: 0 6px 16px rgba(37,99,235,0.18); }
+  .btn-act:hover { transform: translateY(-1px); }
+  .btn-act:active { transform: translateY(0); }
+  .btn-act i { margin-right: 0.3rem; }
+  .btn-act.btn-outline-danger {
+    border: 1.5px solid rgba(239,68,68,0.2);
+    color: #EF4444;
+    background: transparent;
+  }
+  .btn-act.btn-outline-danger:hover {
+    background: rgba(239,68,68,0.05);
+    border-color: rgba(239,68,68,0.35);
+  }
+  .btn-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+  #msg:not(:empty) {
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    font-weight: 400;
+    font-size: 14px;
+    animation: msgIn 0.35s ease both;
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── Danger Zone ── */
-  .danger-zone {
-    border-color: rgba(220, 53, 69, 0.12) !important;
+  .dz { border-color: rgba(239,68,68,0.12) !important; }
+  .dz .sc-hd {     border-bottom-color: rgba(239,68,68,0.06); }
+  .dz .sc-icon { background: rgba(239,68,68,0.08); color: #EF4444; }
+
+  /* ════════════════════════════════════════════════
+     PROFILE TAB
+     ════════════════════════════════════════════════ */
+  .prof-layout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+  .prof-side {
+    width: 220px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(15,23,42,0.04);
+    overflow: hidden;
+    position: sticky;
+    top: 1.5rem;
+  }
+  .prof-side .ps-head {
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .prof-side .ps-head .ps-pct {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2563EB;
+  }
+  .prof-side .ps-head .ps-pct i { font-size: 16px; }
+  .prof-side .ps-head .ps-bar {
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    background: #E2E8F0;
+    overflow: hidden;
+    margin-top: 0.4rem;
+  }
+  .prof-side .ps-head .ps-bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+  .prof-side .ps-nav { padding: 0.4rem 0; }
+  .prof-side .ps-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748B;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border-left: 3px solid transparent;
+  }
+  .prof-side .ps-nav a:hover {
+    background: #F8FAFC;
+    color: #1E293B;
+  }
+  .prof-side .ps-nav a.active {
+    background: #DBEAFE;
+    color: #2563EB;
+    font-weight: 600;
+    border-left-color: #2563EB;
+  }
+  .prof-side .ps-nav a i { font-size: 14px; width: 18px; text-align: center; }
+
+  .prof-main { flex: 1; min-width: 0; }
+
+  .prof-sec {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(15,23,42,0.04);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.25rem;
+    scroll-margin-top: 1rem;
+  }
+  .prof-sec .ps-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .prof-sec .ps-hd .psh-left {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+  .prof-sec .ps-hd .psh-left .psh-icon {
+    width: 32px; height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #DBEAFE;
+    color: #2563EB;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .prof-sec .ps-hd .psh-left .psh-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+  .prof-sec .ps-hd .psh-right {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .prof-sec .ps-hd .psh-right .btn-sm-icon {
+    width: 30px; height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+  .prof-sec .ps-hd .psh-right .btn-sm-icon:hover {
+    background: #DBEAFE;
+    border-color: #CBD5E1;
+    color: #1E293B;
   }
 
-  .danger-zone .section-header {
-    border-bottom-color: rgba(220, 53, 69, 0.08);
+  /* Suggested */
+  .sug-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+  }
+  .sug-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+  .sug-item:hover { border-color: #E2E8F0; background: #fff; }
+  .sug-item .sug-icon {
+    width: 34px; height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #DBEAFE;
+    color: #2563EB;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .sug-item .sug-text { flex: 1; min-width: 0; }
+  .sug-item .sug-text .sug-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+  .sug-item .sug-text .sug-sub {
+    font-size: 13px;
+    font-weight: 400;
+    color: #94A3B8;
+    margin-bottom: 0;
+  }
+  .sug-item .sug-btn {
+    flex-shrink: 0;
+    height: 30px;
+    padding: 0 0.75rem;
+    border-radius: 7px;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2563EB;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .sug-item .sug-btn:hover { background: #DBEAFE;     border-color: #DBEAFE; }
+  .sug-item.done { opacity: 0.5; }
+  .sug-item.done .sug-btn { opacity: 0; pointer-events: none; }
+
+  /* Personal Info Form */
+  .pf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .pf-grid .pf-full { grid-column: 1 / -1; }
+  .pf-grid label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 0.3rem;
+  }
+  .pf-grid input, .pf-grid select, .pf-grid textarea {
+    width: 100%;
+    height: 40px;
+    border-radius: 9px;
+    border: 1.5px solid #E2E8F0;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 0 0.75rem;
+    color: #0F172A;
+    transition: all 0.2s ease;
+  }
+  .pf-grid input:focus, .pf-grid select:focus, .pf-grid textarea:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+    outline: none;
+  }
+  .pf-grid textarea { height: auto; min-height: 80px; padding: 0.6rem 0.75rem; resize: vertical; }
+
+  /* Education / Experience / Cert Cards */
+  .entry-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    margin-bottom: 0.6rem;
+    transition: all 0.2s ease;
+  }
+  .entry-card:hover { border-color: #E2E8F0; background: #fff; }
+  .entry-card .ec-icon {
+    width: 36px; height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #DBEAFE;
+    color: #2563EB;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .entry-card .ec-body { flex: 1; min-width: 0; }
+  .entry-card .ec-body .ec-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 0.05rem;
+  }
+  .entry-card .ec-body .ec-sub {
+    font-size: 14px;
+    font-weight: 400;
+    color: #64748B;
+    margin-bottom: 0.1rem;
+  }
+  .entry-card .ec-body .ec-meta {
+    font-size: 13px;
+    font-weight: 400;
+    color: #94A3B8;
+  }
+  .entry-card .ec-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: 0.25rem;
+  }
+  .entry-card .ec-actions button {
+    width: 28px; height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+  .entry-card .ec-actions button:hover { background: #DBEAFE; color: #1E293B; }
+  .entry-card .ec-actions .ec-del:hover { color: #EF4444; }
+
+  /* Skills */
+  .skill-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .skill-tag-cat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  .skill-tag-cat .stc-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+  }
+  .skill-tag-cat .stc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .st {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #DBEAFE;
+    color: #2563EB;
+    border: 1px solid rgba(37,99,235,0.12);
+    transition: all 0.2s ease;
+  }
+  .st .st-del {
+    cursor: pointer;
+    opacity: 0.4;
+    font-size: 13px;
+    transition: opacity 0.2s;
+  }
+  .st .st-del:hover { opacity: 1; }
+  .st .st-lvl {
+    font-size: 13px;
+    font-weight: 400;
+    color: #94A3B8;
+    margin-left: 0.15rem;
+  }
+  .st.bg-gray {
+    background: #DBEAFE;
+    color: #64748B;
+    border-color: #E2E8F0;
+    cursor: pointer;
+  }
+  .st.bg-gray:hover { background: #E2E8F0; }
+
+  /* Interests chips */
+  .chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1.5px solid #E2E8F0;
+    background: #fff;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .chip:hover { border-color: #CBD5E1; background: #F8FAFC; }
+  .chip.selected {
+    background: #DBEAFE;
+    border-color: #2563EB;
+    color: #2563EB;
+  }
+  .chip i { font-size: 13px; }
+  .chip.selected i { opacity: 1; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.35);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: #fff;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(15,23,42,0.18);
+    padding: 1.75rem;
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s ease;
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+  .modal-box .mb-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+  .modal-box .mb-hd h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+  .modal-box .mb-hd .mb-close {
+    width: 32px; height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    background: #DBEAFE;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+  .modal-box .mb-hd .mb-close:hover { background: #E2E8F0; color: #1E293B; }
+
+  .modal-box .fm { display: flex; flex-direction: column; gap: 0.9rem; }
+  .modal-box .fm label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 0.25rem;
+  }
+  .modal-box .fm input, .modal-box .fm select, .modal-box .fm textarea {
+    width: 100%;
+    height: 40px;
+    border-radius: 9px;
+    border: 1.5px solid #E2E8F0;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 0 0.75rem;
+    color: #0F172A;
+    transition: all 0.2s ease;
+  }
+  .modal-box .fm input:focus, .modal-box .fm select:focus, .modal-box .fm textarea:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+    outline: none;
+  }
+  .modal-box .fm textarea { height: auto; min-height: 70px; padding: 0.5rem 0.75rem; resize: vertical; }
+  .modal-box .fm .fm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .modal-box .fm .fm-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .modal-box .fm .fm-actions .btn {
+    height: 40px;
+    border-radius: 9px;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 0 1.25rem;
   }
 
-  .danger-zone .sec-icon {
-    background: rgba(220, 53, 69, 0.08);
-    color: #dc3545;
+  /* Responsive */
+  @media (max-width: 991.98px) {
+    .prof-layout { flex-direction: column; }
+    .prof-side {
+      width: 100%;
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .prof-side .ps-head {
+      width: 100%;
+      border-bottom: none;
+      border-right: 1px solid #E2E8F0;
+      flex: 1;
+    }
+    .prof-side .ps-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      padding: 0;
+      flex: 2;
+    }
+    .prof-side .ps-nav a {
+      border-left: none;
+      border-bottom: 2px solid transparent;
+      padding: 0.6rem 0.85rem;
+      font-size: 13px;
+    }
+    .prof-side .ps-nav a.active { border-left: none; border-bottom-color: #2563EB; }
   }
-
-  /* ── Responsive ── */
   @media (max-width: 767.98px) {
-    .settings-page { padding: 1rem 0 2rem; }
-    .settings-header { flex-direction: column; gap: 1rem; }
-    .card-body-section { padding: 0 1.25rem 1.5rem; }
-    .section-body { padding: 1.25rem 1.25rem 1.5rem; }
-    .section-header { padding: 1.25rem; }
-    .avatar-section {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 1rem;
-    }
-    .setting-row { flex-direction: column; align-items: flex-start; gap: 0.65rem; }
-    .setting-right { align-self: flex-end; }
+    .prof-page { padding: 1rem 0 2rem; }
+    .prof-page .page-header { flex-direction: column; gap: 1rem; }
+    .prof-tabs { flex-direction: column; }
+    .sc-bd { padding: 1rem 1.25rem 1.25rem; }
+    .sc-hd { padding: 1rem 1.25rem; }
+    .sr { flex-direction: column; align-items: flex-start; gap: 0.55rem; }
+    .sr-right { align-self: flex-end; }
+    .av-sec { flex-direction: column; align-items: center; text-align: center; }
+    .pf-grid { grid-template-columns: 1fr; }
+    .modal-box .fm .fm-row { grid-template-columns: 1fr; }
+    .sug-grid { grid-template-columns: 1fr; }
+    .prof-sec { padding: 1rem 1.15rem; }
     .btn-row { flex-direction: column; }
-    .btn-action { width: 100%; justify-content: center; }
-  }
-
-  @media (max-width: 575.98px) {
-    .card-body-section { padding: 0 1rem 1.25rem; }
-    .section-body { padding: 1rem; }
-    .section-header { padding: 1rem; }
-    .card-banner { height: 90px; }
-    .avatar-container #settingsProfilePreview .avatar-lg,
-    .avatar-container #settingsProfilePreview img {
-      width: 80px; height: 80px;
-      border-radius: 18px;
-    }
+    .btn-act { width: 100%; justify-content: center; }
   }
 </style>
 
-<div class="settings-page">
+<div class="prof-page">
 
-  <!-- ── Page Header ── -->
-  <div class="settings-header">
-    <div>
-      <div class="page-kicker">Account settings</div>
-      <h1 class="page-title">Profile Settings</h1>
-      <p class="page-subtitle text-muted-strong mb-0">
-        Manage your profile picture, display preferences, and notification settings.
-      </p>
+  <div class="page-header">
+    <div class="ph-left">
+      <h1 class="ph-title">Profile & Settings</h1>
+      <p class="ph-sub">Manage your account settings and professional profile.</p>
     </div>
     <button class="btn btn-outline-primary btn-back" onclick="routeByRole(localStorage.getItem('role'))">
       <i class="bi bi-arrow-left"></i> Dashboard
     </button>
   </div>
 
-  <!-- ════════════════════════════════════════════════
-       CARD 1: Profile Picture
-       ════════════════════════════════════════════════ -->
-  <div class="settings-card">
-    <div class="card-banner"></div>
-    <div class="card-body-section">
+  <div class="prof-tabs">
+    <button class="prof-tab active" data-tab="settings">
+      <i class="bi bi-gear"></i> Settings
+    </button>
+    <button class="prof-tab" data-tab="profile">
+      <i class="bi bi-person-badge"></i> Profile
+    </button>
+  </div>
 
-      <div class="avatar-section">
-        <div class="avatar-container">
-          <span id="settingsProfilePreview"></span>
-          <label for="settings_profile_picture_file" class="avatar-badge" title="Change picture">
-            <i class="bi bi-camera-fill"></i>
-          </label>
-        </div>
-        <div class="avatar-info">
-          <h2>Profile picture</h2>
-          <p class="text-muted-strong">Upload a clear professional image. Square images display best.</p>
+  <!-- ════════════════════════════════════════════════
+       TAB: SETTINGS
+       ════════════════════════════════════════════════ -->
+  <div id="tabSettings" class="prof-tab-content active">
+
+    <div class="sc">
+      <div class="sc-hd">
+        <div class="sc-icon"><i class="bi bi-person-circle"></i></div>
+        <div>
+          <div class="sc-title">Account</div>
+          <p class="sc-desc">Manage your profile picture and personal information.</p>
         </div>
       </div>
+      <div class="sc-bd">
+        <div class="av-sec">
+          <div class="av-wrap">
+            <span id="profPreview"></span>
+            <label for="profPicFile" class="av-badge" title="Change picture">
+              <i class="bi bi-camera-fill"></i>
+            </label>
+          </div>
+          <div class="av-info">
+            <h2 id="profName">Loading...</h2>
+            <p id="profEmail">Loading...</p>
+          </div>
+        </div>
 
-      <div class="upload-area">
-        <form id="profilePictureForm">
-          <div class="file-input-wrap mb-2">
-            <input id="settings_profile_picture_file" class="form-control" type="file" accept="image/*">
+        <div class="up-area">
+          <form id="picForm">
+            <div class="file-input-wrap mb-2">
+              <input id="profPicFile" class="form-control" type="file" accept="image/*">
+            </div>
+            <div class="fmt-badges">
+              <span class="fmt-badge">JPG</span>
+              <span class="fmt-badge">PNG</span>
+              <span class="fmt-badge">WEBP</span>
+              <span class="fmt-badge">Max 5 MB</span>
+            </div>
+            <div class="btn-row mt-3">
+              <button class="btn-act btn btn-primary" type="submit" id="btnSavePic">
+                <i class="bi bi-check-circle"></i> Save picture
+              </button>
+              <button class="btn-act btn btn-outline-danger" type="button" id="btnDelPic">
+                <i class="bi bi-trash3"></i> Delete
+              </button>
+            </div>
+          </form>
+          <div id="msg" class="small mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sc-hd">
+        <div class="sc-icon"><i class="bi bi-bell"></i></div>
+        <div>
+          <div class="sc-title">Notifications</div>
+          <p class="sc-desc">Control how and when you receive alerts.</p>
+        </div>
+      </div>
+      <div class="sc-bd">
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-envelope"></i></div>
+            <div>
+              <div class="sr-label">Email notifications</div>
+              <p class="sr-desc">Receive updates about jobs, matches, and messages.</p>
+            </div>
           </div>
-          <div class="format-badges">
-            <span class="format-badge">JPG</span>
-            <span class="format-badge">PNG</span>
-            <span class="format-badge">WEBP</span>
-            <span class="format-badge">Max 5 MB</span>
+          <div class="sr-right">
+            <label class="tg"><input type="checkbox" id="togEmail"><span class="tg-sl"></span></label>
           </div>
-          <div class="btn-row mt-3">
-            <button class="btn-action btn btn-primary" type="submit" id="btnSavePicture">
-              <i class="bi bi-check-circle"></i> Save picture
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-briefcase"></i></div>
+            <div>
+              <div class="sr-label">Job recommendation alerts</div>
+              <p class="sr-desc">Get notified when AI finds matching opportunities.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <label class="tg"><input type="checkbox" id="togJobs" checked><span class="tg-sl"></span></label>
+          </div>
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-send-check"></i></div>
+            <div>
+              <div class="sr-label">Application updates</div>
+              <p class="sr-desc">Get notified when your applications are viewed or updated.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <label class="tg"><input type="checkbox" id="togApps" checked><span class="tg-sl"></span></label>
+          </div>
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-stars"></i></div>
+            <div>
+              <div class="sr-label">AI match notifications</div>
+              <p class="sr-desc">Receive notifications when your AI match score changes.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <label class="tg"><input type="checkbox" id="togAI" checked><span class="tg-sl"></span></label>
+          </div>
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-megaphone"></i></div>
+            <div>
+              <div class="sr-label">Marketing emails</div>
+              <p class="sr-desc">Tips, product updates, and promotional content.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <label class="tg"><input type="checkbox" id="togMkt"><span class="tg-sl"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sc-hd">
+        <div class="sc-icon"><i class="bi bi-shield-lock"></i></div>
+        <div>
+          <div class="sc-title">Privacy & Security</div>
+          <p class="sc-desc">Control visibility and manage your account security.</p>
+        </div>
+      </div>
+      <div class="sc-bd">
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-eye"></i></div>
+            <div>
+              <div class="sr-label">Profile visibility</div>
+              <p class="sr-desc">Who can see your profile.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <select class="sel-sm" id="selVis">
+              <option value="public">Public</option>
+              <option value="recruiters">Recruiters only</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-at"></i></div>
+            <div>
+              <div class="sr-label">Show email on profile</div>
+              <p class="sr-desc">Display your email address on your public profile.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <label class="tg"><input type="checkbox" id="togShowEmail"><span class="tg-sl"></span></label>
+          </div>
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-circle-fill" style="color:#10B981;font-size:14px;"></i></div>
+            <div>
+              <div class="sr-label">Online activity status</div>
+              <p class="sr-desc">Let others see when you were last active.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <label class="tg"><input type="checkbox" id="togActivity" checked><span class="tg-sl"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sc-hd">
+        <div class="sc-icon"><i class="bi bi-palette"></i></div>
+        <div>
+          <div class="sc-title">Appearance</div>
+          <p class="sc-desc">Choose your interface theme.</p>
+        </div>
+      </div>
+      <div class="sc-bd">
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon"><i class="bi bi-moon-stars"></i></div>
+            <div>
+              <div class="sr-label">Theme</div>
+              <p class="sr-desc">Switch between light, dark, or system preference.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <select class="sel-sm" id="selTheme">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sc dz">
+      <div class="sc-hd">
+        <div class="sc-icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <div>
+          <div class="sc-title">Danger Zone</div>
+          <p class="sc-desc">Irreversible actions — proceed with caution.</p>
+        </div>
+      </div>
+      <div class="sc-bd">
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon" style="background:rgba(239,68,68,0.08);color:#EF4444;">
+              <i class="bi bi-arrow-counterclockwise"></i>
+            </div>
+            <div>
+              <div class="sr-label">Reset all preferences</div>
+              <p class="sr-desc">Restore all display, notification, and privacy settings to defaults.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <button class="btn-act btn btn-outline-danger" type="button" id="btnReset" style="height:36px;font-size:14px;padding:0 1rem;">
+              <i class="bi bi-arrow-counterclockwise"></i> Reset
             </button>
-            <button class="btn-action btn btn-outline-danger" type="button" id="btnDeletePicture">
-              <i class="bi bi-trash3"></i> Delete current picture
+          </div>
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon" style="background:rgba(239,68,68,0.08);color:#EF4444;">
+              <i class="bi bi-trash3"></i>
+            </div>
+            <div>
+              <div class="sr-label">Delete account</div>
+              <p class="sr-desc">Permanently delete your account and all associated data.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <button class="btn-act btn btn-outline-danger" type="button" style="height:36px;font-size:14px;padding:0 1rem;" onclick="alert('Contact support to delete your account.')">
+              <i class="bi bi-trash3"></i> Delete
             </button>
           </div>
-        </form>
-        <div id="message" class="small mt-3"></div>
+        </div>
+        <div class="sr">
+          <div class="sr-left">
+            <div class="sr-icon" style="background:rgba(239,68,68,0.08);color:#EF4444;">
+              <i class="bi bi-download"></i>
+            </div>
+            <div>
+              <div class="sr-label">Download my data</div>
+              <p class="sr-desc">Export all your data in a portable format.</p>
+            </div>
+          </div>
+          <div class="sr-right">
+            <button class="btn-act btn btn-outline-danger" type="button" style="height:36px;font-size:14px;padding:0 1rem;" onclick="alert('Data export will be emailed to you.')">
+              <i class="bi bi-download"></i> Export
+            </button>
+          </div>
+        </div>
       </div>
-
     </div>
+
   </div>
 
   <!-- ════════════════════════════════════════════════
-       CARD 2: Display Preferences
+       TAB: PROFILE
        ════════════════════════════════════════════════ -->
-  <div class="settings-card">
-    <div class="section-header">
-      <div class="sec-icon"><i class="bi bi-palette"></i></div>
-      <div>
-        <div class="sec-title">Display Preferences</div>
-        <p class="sec-desc">Customize how SkillSync AI looks and feels for you.</p>
+  <div id="tabProfile" class="prof-tab-content">
+
+    <div class="prof-layout">
+
+      <div class="prof-side">
+        <div class="ps-head">
+          <div class="ps-pct">
+            <i class="bi bi-pie-chart-fill"></i>
+            <span id="profPctLabel">0% Complete</span>
+          </div>
+          <div class="ps-bar"><span id="profPctBar" style="width:0%;"></span></div>
+        </div>
+        <div class="ps-nav" id="profNav">
+          <a href="#secPersonal" class="active" data-sec="secPersonal"><i class="bi bi-person"></i> Personal Info</a>
+          <a href="#secSuggested" data-sec="secSuggested"><i class="bi bi-magic"></i> Suggested</a>
+          <a href="#secEducation" data-sec="secEducation"><i class="bi bi-book"></i> Education</a>
+          <a href="#secExperience" data-sec="secExperience"><i class="bi bi-briefcase"></i> Experience</a>
+          <a href="#secSkills" data-sec="secSkills"><i class="bi bi-code-slash"></i> Skills</a>
+          <a href="#secInterests" data-sec="secInterests"><i class="bi bi-heart"></i> Interests</a>
+          <a href="#secCertifications" data-sec="secCertifications"><i class="bi bi-patch-check"></i> Certifications</a>
+          <a href="#secProjects" data-sec="secProjects"><i class="bi bi-folder"></i> Projects</a>
+          <a href="#secLanguages" data-sec="secLanguages"><i class="bi bi-translate"></i> Languages</a>
+          <a href="#secResume" data-sec="secResume"><i class="bi bi-file-text"></i> CV</a>
+          <a href="#secPortfolio" data-sec="secPortfolio"><i class="bi bi-link-45deg"></i> Portfolio</a>
+          <a href="#secSocial" data-sec="secSocial"><i class="bi bi-share"></i> Social Links</a>
+          <a href="#secCareer" data-sec="secCareer"><i class="bi bi-compass"></i> Career Prefs</a>
+        </div>
+      </div>
+
+      <div class="prof-main">
+
+        <!-- Personal Info -->
+        <div id="secPersonal" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-person"></i></div>
+              <h3 class="psh-title">Personal Information</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="savePersonalInfo()" title="Save"><i class="bi bi-check-lg"></i></button>
+            </div>
+          </div>
+          <div class="pf-grid">
+            <div><label>Full name</label><input type="text" id="piName" placeholder="John Doe"></div>
+            <div><label>Email</label><input type="email" id="piEmail" placeholder="john@example.com"></div>
+            <div><label>Phone</label><input type="tel" id="piPhone" placeholder="+1 (555) 000-0000"></div>
+            <div><label>Location</label><input type="text" id="piLocation" placeholder="San Francisco, CA"></div>
+            <div><label>Job title</label><input type="text" id="piTitle" placeholder="Software Engineer"></div>
+            <div><label>Years of experience</label><input type="number" id="piExp" placeholder="5" min="0"></div>
+            <div class="pf-full"><label>Professional summary</label><textarea id="piSummary" placeholder="Write a brief professional summary..."></textarea></div>
+          </div>
+        </div>
+
+        <!-- Suggested For You -->
+        <div id="secSuggested" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-magic"></i></div>
+              <h3 class="psh-title">Suggested For You</h3>
+            </div>
+          </div>
+          <div class="sug-grid" id="sugGrid"></div>
+        </div>
+
+        <!-- Education -->
+        <div id="secEducation" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-book"></i></div>
+              <h3 class="psh-title">Education</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="openEduModal()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="eduList"></div>
+          <p id="eduEmpty" class="text-muted small mb-0" style="color:#94A3B8;">No education entries yet. Click + to add.</p>
+        </div>
+
+        <!-- Experience -->
+        <div id="secExperience" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-briefcase"></i></div>
+              <h3 class="psh-title">Experience</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="openExpModal()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="expList"></div>
+          <p id="expEmpty" class="text-muted small mb-0" style="color:#94A3B8;">No experience entries yet. Click + to add.</p>
+        </div>
+
+        <!-- Skills -->
+        <div id="secSkills" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-code-slash"></i></div>
+              <h3 class="psh-title">Skills</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="openSkillModal()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="skillList"></div>
+        </div>
+
+        <!-- Interests -->
+        <div id="secInterests" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-heart"></i></div>
+              <h3 class="psh-title">Interests</h3>
+            </div>
+          </div>
+          <div class="chip-grid" id="interestGrid"></div>
+        </div>
+
+        <!-- Certifications -->
+        <div id="secCertifications" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-patch-check"></i></div>
+              <h3 class="psh-title">Certifications</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="openCertModal()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="certList"></div>
+          <p id="certEmpty" class="text-muted small mb-0" style="color:#94A3B8;">No certifications yet. Click + to add.</p>
+        </div>
+
+        <!-- Projects -->
+        <div id="secProjects" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-folder"></i></div>
+              <h3 class="psh-title">Projects</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="openProjModal()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="projList"></div>
+          <p id="projEmpty" class="text-muted small mb-0" style="color:#94A3B8;">No projects yet. Click + to add.</p>
+        </div>
+
+        <!-- Languages -->
+        <div id="secLanguages" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-translate"></i></div>
+              <h3 class="psh-title">Languages</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="openLangModal()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="langList"></div>
+          <p id="langEmpty" class="text-muted small mb-0" style="color:#94A3B8;">No languages added. Click + to add.</p>
+        </div>
+
+        <!-- Resume -->
+        <div id="secResume" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-file-text"></i></div>
+              <h3 class="psh-title">CV Generator</h3>
+            </div>
+          </div>
+          <div class="up-area" style="margin-top:0;">
+            <input class="form-control" type="file" accept=".pdf,.doc,.docx" id="resumeFile">
+            <div class="fmt-badges">
+              <span class="fmt-badge">PDF</span>
+              <span class="fmt-badge">DOC</span>
+              <span class="fmt-badge">DOCX</span>
+              <span class="fmt-badge">Max 10 MB</span>
+            </div>
+          </div>
+          <div id="resumeInfo" class="small" style="color:#64748B;"></div>
+        </div>
+
+        <!-- Portfolio -->
+        <div id="secPortfolio" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-link-45deg"></i></div>
+              <h3 class="psh-title">Portfolio</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="addPortfolio()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="portList"></div>
+          <p id="portEmpty" class="text-muted small mb-0" style="color:#94A3B8;">No portfolio links yet. Click + to add.</p>
+        </div>
+
+        <!-- Social Links -->
+        <div id="secSocial" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-share"></i></div>
+              <h3 class="psh-title">Social Links</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="openSocialModal()" title="Add"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </div>
+          <div id="socialList"></div>
+          <p id="socialEmpty" class="text-muted small mb-0" style="color:#94A3B8;">No social links yet. Click + to add.</p>
+        </div>
+
+        <!-- Career Preferences -->
+        <div id="secCareer" class="prof-sec">
+          <div class="ps-hd">
+            <div class="psh-left">
+              <div class="psh-icon"><i class="bi bi-compass"></i></div>
+              <h3 class="psh-title">Career Preferences</h3>
+            </div>
+            <div class="psh-right">
+              <button class="btn-sm-icon" onclick="saveCareerPrefs()" title="Save"><i class="bi bi-check-lg"></i></button>
+            </div>
+          </div>
+          <div class="pf-grid">
+            <div><label>Desired role</label><input type="text" id="cpRole" placeholder="Senior Software Engineer"></div>
+            <div><label>Industry</label><input type="text" id="cpIndustry" placeholder="Technology"></div>
+            <div><label>Preferred location</label><input type="text" id="cpLoc" placeholder="Remote / San Francisco"></div>
+            <div><label>Employment type</label>
+              <select id="cpEmpType">
+                <option value="">Select...</option>
+                <option value="full-time">Full-time</option>
+                <option value="part-time">Part-time</option>
+                <option value="contract">Contract</option>
+                <option value="freelance">Freelance</option>
+                <option value="internship">Internship</option>
+              </select>
+            </div>
+            <div><label>Expected salary (USD)</label><input type="text" id="cpSalary" placeholder="$120,000"></div>
+            <div><label>Remote preference</label>
+              <select id="cpRemote">
+                <option value="">Select...</option>
+                <option value="remote">Remote only</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="onsite">On-site</option>
+                <option value="any">Open to any</option>
+              </select>
+            </div>
+            <div class="pf-full"><label>Open to</label>
+              <select id="cpOpenness">
+                <option value="">Select...</option>
+                <option value="actively">Actively looking</option>
+                <option value="passively">Open to opportunities</option>
+                <option value="not">Not looking</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-    <div class="section-body">
 
-      <!-- Theme -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-moon-stars"></i></div>
-          <div>
-            <div class="setting-label">Theme</div>
-            <div class="setting-desc">Choose your preferred interface theme.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <select class="setting-select" id="themeSelect">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="system">System</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Accent Color -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-brush"></i></div>
-          <div>
-            <div class="setting-label">Accent color</div>
-            <div class="setting-desc">Personalize your dashboard highlight color.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <div class="color-swatches" id="colorSwatches">
-            <div class="color-swatch active" data-color="#4f46e5" style="background:#4f46e5;" title="Indigo"></div>
-            <div class="color-swatch" data-color="#2563eb" style="background:#2563eb;" title="Blue"></div>
-            <div class="color-swatch" data-color="#0891b2" style="background:#0891b2;" title="Teal"></div>
-            <div class="color-swatch" data-color="#059669" style="background:#059669;" title="Green"></div>
-            <div class="color-swatch" data-color="#d97706" style="background:#d97706;" title="Amber"></div>
-            <div class="color-swatch" data-color="#dc2626" style="background:#dc2626;" title="Red"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Compact Mode -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-layout-text-sidebar"></i></div>
-          <div>
-            <div class="setting-label">Compact mode</div>
-            <div class="setting-desc">Reduce spacing for denser information display.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="compactToggle">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Animations -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-stars"></i></div>
-          <div>
-            <div class="setting-label">Animations</div>
-            <div class="setting-desc">Enable smooth transitions and motion effects.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="animationToggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════════════════
-       CARD 3: Notification Preferences
-       ════════════════════════════════════════════════ -->
-  <div class="settings-card">
-    <div class="section-header">
-      <div class="sec-icon"><i class="bi bi-bell"></i></div>
-      <div>
-        <div class="sec-title">Notifications</div>
-        <p class="sec-desc">Control how and when you receive alerts.</p>
-      </div>
-    </div>
-    <div class="section-body">
-
-      <!-- Email notifications -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-envelope"></i></div>
-          <div>
-            <div class="setting-label">Email notifications</div>
-            <div class="setting-desc">Receive updates about jobs, matches, and messages via email.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="emailNotifToggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Job alerts -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-briefcase"></i></div>
-          <div>
-            <div class="setting-label">Job recommendation alerts</div>
-            <div class="setting-desc">Get notified when AI finds matching opportunities for you.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="jobAlertToggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Weekly digest -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-calendar-week"></i></div>
-          <div>
-            <div class="setting-label">Weekly digest</div>
-            <div class="setting-desc">Receive a summary of activity and new opportunities each week.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="digestToggle">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Sound -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-volume-up"></i></div>
-          <div>
-            <div class="setting-label">Sound effects</div>
-            <div class="setting-desc">Play subtle sounds on actions and notifications.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="soundToggle">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════════════════
-       CARD 4: Privacy & Data
-       ════════════════════════════════════════════════ -->
-  <div class="settings-card">
-    <div class="section-header">
-      <div class="sec-icon"><i class="bi bi-shield-lock"></i></div>
-      <div>
-        <div class="sec-title">Privacy &amp; Visibility</div>
-        <p class="sec-desc">Control who can see your information.</p>
-      </div>
-    </div>
-    <div class="section-body">
-
-      <!-- Profile visibility -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-eye"></i></div>
-          <div>
-            <div class="setting-label">Profile visibility</div>
-            <div class="setting-desc">Make your profile visible to recruiters and hiring managers.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <select class="setting-select" id="visibilitySelect">
-            <option value="public">Public</option>
-            <option value="recruiters">Recruiters only</option>
-            <option value="private">Private</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Show email -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-at"></i></div>
-          <div>
-            <div class="setting-label">Show email on profile</div>
-            <div class="setting-desc">Display your email address on your public profile.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="showEmailToggle">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Activity status -->
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon"><i class="bi bi-circle-fill" style="font-size:0.6rem;color:#22c55e;"></i></div>
-          <div>
-            <div class="setting-label">Online activity status</div>
-            <div class="setting-desc">Let others see when you were last active.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <label class="toggle-switch">
-            <input type="checkbox" id="activityToggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════════════════
-       CARD 5: Danger Zone
-       ════════════════════════════════════════════════ -->
-  <div class="settings-card danger-zone">
-    <div class="section-header">
-      <div class="sec-icon"><i class="bi bi-exclamation-triangle"></i></div>
-      <div>
-        <div class="sec-title">Danger Zone</div>
-        <p class="sec-desc">Irreversible actions — proceed with caution.</p>
-      </div>
-    </div>
-    <div class="section-body">
-
-      <div class="setting-row">
-        <div class="setting-left">
-          <div class="setting-icon" style="background:rgba(220,53,69,0.08);color:#dc3545;">
-            <i class="bi bi-arrow-counterclockwise"></i>
-          </div>
-          <div>
-            <div class="setting-label">Reset all preferences</div>
-            <div class="setting-desc">Restore all display, notification, and privacy settings to defaults.</div>
-          </div>
-        </div>
-        <div class="setting-right">
-          <button class="btn-action btn btn-outline-danger" type="button" id="btnResetPrefs" style="height:38px;font-size:0.8rem;padding:0 1.1rem;">
-            <i class="bi bi-arrow-counterclockwise"></i> Reset
-          </button>
-        </div>
-      </div>
-
-    </div>
   </div>
 
 </div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="mb-hd">
+      <h3 id="modalTitle">Add Entry</h3>
+      <button class="mb-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="fm" id="modalBody"></div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
   requireAuthenticated();
-  let settingsImageData = "";
+  let imgData = "";
 
   /* ══════════════════════════════════════════
-     Preference Keys (all localStorage-only)
+     Tab switching
      ══════════════════════════════════════════ */
-  const PREFS = {
-    theme:        "pref_theme",
-    accent:       "pref_accent",
-    compact:      "pref_compact",
-    animations:   "pref_animations",
-    emailNotif:   "pref_email_notif",
-    jobAlerts:    "pref_job_alerts",
-    digest:       "pref_digest",
-    sound:        "pref_sound",
-    visibility:   "pref_visibility",
-    showEmail:    "pref_show_email",
-    activity:     "pref_activity"
-  };
+  document.querySelectorAll(".prof-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".prof-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      document.querySelectorAll(".prof-tab-content").forEach(c => c.classList.remove("active"));
+      document.getElementById("tab" + tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)).classList.add("active");
+    });
+  });
 
-  /* ── Load profile from API ── */
-  async function loadSettings() {
-    const user = await api("/api/auth/profile/");
-    saveUser(user);
-    document.getElementById("settingsProfilePreview").innerHTML =
-      renderAvatar(user.profile_picture, user.username || user.email, "avatar-lg");
+  /* ══════════════════════════════════════════
+     Profile sidebar nav
+     ══════════════════════════════════════════ */
+  document.querySelectorAll(".ps-nav a").forEach(a => {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      document.querySelectorAll(".ps-nav a").forEach(l => l.classList.remove("active"));
+      a.classList.add("active");
+      document.getElementById(a.dataset.sec).scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+  document.addEventListener("scroll", () => {
+    const secs = document.querySelectorAll(".prof-sec");
+    let current = "";
+    secs.forEach(s => {
+      if (s.getBoundingClientRect().top <= 120) current = s.id;
+    });
+    document.querySelectorAll(".ps-nav a").forEach(a => {
+      a.classList.toggle("active", a.dataset.sec === current);
+    });
+  });
 
-    // Restore saved preferences
-    restorePreferences();
+  /* ══════════════════════════════════════════
+     Settings: load profile + picture
+     ══════════════════════════════════════════ */
+  async function loadProf() {
+    try {
+      const u = await api("/api/auth/profile/");
+      saveUser(u);
+      document.getElementById("profPreview").innerHTML = renderAvatar(u.profile_picture, u.username || u.email, "av-lg");
+      document.getElementById("profName").textContent = u.username || u.email;
+      document.getElementById("profEmail").textContent = u.email || "";
+      document.getElementById("piName").value = u.username || "";
+      document.getElementById("piEmail").value = u.email || "";
+      restorePrefs();
+      renderAll();
+    } catch (e) {
+      document.getElementById("profName").textContent = "Error loading profile";
+    }
   }
 
-  /* ── File input → preview ── */
-  document.getElementById("settings_profile_picture_file").addEventListener("change", async (event) => {
-    if (!event.target.files[0]) return;
-    settingsImageData = await fileToDataUrl(event.target.files[0]);
-    document.getElementById("settingsProfilePreview").innerHTML =
-      renderAvatar(settingsImageData, localStorage.getItem("username"), "avatar-lg");
+  document.getElementById("profPicFile").addEventListener("change", async e => {
+    if (!e.target.files[0]) return;
+    imgData = await fileToDataUrl(e.target.files[0]);
+    document.getElementById("profPreview").innerHTML = renderAvatar(imgData, localStorage.getItem("username"), "av-lg");
   });
 
-  /* ── Save picture ── */
-  document.getElementById("profilePictureForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!settingsImageData) {
-      showMessage("Choose a new picture first.", "danger");
-      return;
-    }
-
-    const btn = document.getElementById("btnSavePicture");
+  document.getElementById("picForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!imgData) { showMsg("Choose a new picture first.", "danger"); return; }
+    const btn = document.getElementById("btnSavePic");
     const orig = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving…';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
     btn.disabled = true;
-
     try {
-      const current = await api("/api/auth/profile/");
-      const result = await api("/api/auth/profile/", {
+      const cur = await api("/api/auth/profile/");
+      await api("/api/auth/profile/", {
         method: "PUT",
-        body: JSON.stringify({
-          username: current.username,
-          profile_picture: settingsImageData,
-          profile: current.profile || {}
-        })
+        body: JSON.stringify({ username: cur.username, profile_picture: imgData, profile: cur.profile || {} })
       });
-      saveUser(result);
-      showMessage("Profile picture updated successfully.", "success");
+      saveUser(cur);
+      showMsg("Profile picture updated.", "success");
       hydrateNavbar();
-    } catch (error) {
-      showMessage(error.message || "Upload failed.", "danger");
-    } finally {
-      btn.innerHTML = orig;
-      btn.disabled = false;
-    }
+    } catch (err) { showMsg(err.message || "Upload failed.", "danger"); }
+    finally { btn.innerHTML = orig; btn.disabled = false; }
   });
 
-  /* ── Delete picture ── */
-  document.getElementById("btnDeletePicture").addEventListener("click", async () => {
-    if (!confirm("Remove your current profile picture? This will reset it to your initials.")) return;
-
-    const btn = document.getElementById("btnDeletePicture");
+  document.getElementById("btnDelPic").addEventListener("click", async () => {
+    if (!confirm("Remove your profile picture?")) return;
+    const btn = document.getElementById("btnDelPic");
     const orig = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Removing…';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Removing...';
     btn.disabled = true;
-
     try {
-      const current = await api("/api/auth/profile/");
-      const result = await api("/api/auth/profile/", {
+      const cur = await api("/api/auth/profile/");
+      await api("/api/auth/profile/", {
         method: "PUT",
-        body: JSON.stringify({
-          username: current.username,
-          profile_picture: "",
-          profile: current.profile || {}
-        })
+        body: JSON.stringify({ username: cur.username, profile_picture: "", profile: cur.profile || {} })
       });
-      saveUser(result);
-      settingsImageData = "";
-      document.getElementById("settings_profile_picture_file").value = "";
-      document.getElementById("settingsProfilePreview").innerHTML =
-        renderAvatar("", result.username || result.email, "avatar-lg");
-      showMessage("Profile picture removed.", "success");
+      saveUser(cur);
+      imgData = "";
+      document.getElementById("profPicFile").value = "";
+      document.getElementById("profPreview").innerHTML = renderAvatar("", cur.username || cur.email, "av-lg");
+      showMsg("Profile picture removed.", "success");
       hydrateNavbar();
-    } catch (error) {
-      showMessage(error.message || "Failed to remove picture.", "danger");
-    } finally {
-      btn.innerHTML = orig;
-      btn.disabled = false;
-    }
+    } catch (err) { showMsg(err.message || "Failed.", "danger"); }
+    finally { btn.innerHTML = orig; btn.disabled = false; }
   });
 
   /* ══════════════════════════════════════════
-     Frontend-Only Preferences (localStorage)
+     Settings: Prefs keys (localStorage)
      ══════════════════════════════════════════ */
+  const PREFS = {
+    theme: "pref_theme",
+    emailNotif: "pref_email_notif",
+    jobAlerts: "pref_job_alerts",
+    appUpdates: "pref_app_updates",
+    aiMatch: "pref_ai_match",
+    marketing: "pref_marketing",
+    visibility: "pref_visibility",
+    showEmail: "pref_show_email",
+    activity: "pref_activity"
+  };
 
-  // Theme
-  document.getElementById("themeSelect").addEventListener("change", function() {
+  function bindTog(id, key) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("change", () => localStorage.setItem(PREFS[key], el.checked ? "1" : "0"));
+  }
+
+  bindTog("togEmail", "emailNotif");
+  bindTog("togJobs", "jobAlerts");
+  bindTog("togApps", "appUpdates");
+  bindTog("togAI", "aiMatch");
+  bindTog("togMkt", "marketing");
+  bindTog("togShowEmail", "showEmail");
+  bindTog("togActivity", "activity");
+
+  document.getElementById("selVis") && document.getElementById("selVis").addEventListener("change", function() {
+    localStorage.setItem(PREFS.visibility, this.value);
+  });
+
+  document.getElementById("selTheme") && document.getElementById("selTheme").addEventListener("change", function() {
     localStorage.setItem(PREFS.theme, this.value);
     applyTheme(this.value);
   });
 
-  // Accent color swatches
-  document.querySelectorAll(".color-swatch").forEach(swatch => {
-    swatch.addEventListener("click", () => {
-      document.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("active"));
-      swatch.classList.add("active");
-      const color = swatch.dataset.color;
-      localStorage.setItem(PREFS.accent, color);
-      document.documentElement.style.setProperty("--bs-primary", color);
-    });
-  });
-
-  // Toggle helpers
-  function bindToggle(elementId, prefKey) {
-    document.getElementById(elementId).addEventListener("change", function() {
-      localStorage.setItem(PREFS[prefKey], this.checked ? "1" : "0");
-    });
+  function applyTheme(t) {
+    if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    else if (t === "system") {
+      document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } else document.documentElement.removeAttribute("data-theme");
   }
 
-  bindToggle("compactToggle",    "compact");
-  bindToggle("animationToggle",  "animations");
-  bindToggle("emailNotifToggle", "emailNotif");
-  bindToggle("jobAlertToggle",   "jobAlerts");
-  bindToggle("digestToggle",     "digest");
-  bindToggle("soundToggle",      "sound");
-  bindToggle("showEmailToggle",  "showEmail");
-  bindToggle("activityToggle",   "activity");
+  function restorePrefs() {
+    const t = localStorage.getItem(PREFS.theme) || "light";
+    const elTheme = document.getElementById("selTheme");
+    if (elTheme) { elTheme.value = t; applyTheme(t); }
 
-  // Visibility
-  document.getElementById("visibilitySelect").addEventListener("change", function() {
-    localStorage.setItem(PREFS.visibility, this.value);
-  });
-
-  // Apply theme helper
-  function applyTheme(theme) {
-    if (theme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else if (theme === "system") {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
-    } else {
-      document.documentElement.removeAttribute("data-theme");
+    function rt(id, key, def) {
+      const v = localStorage.getItem(PREFS[key]);
+      const el = document.getElementById(id);
+      if (el) el.checked = v !== null ? v === "1" : def;
     }
+    rt("togEmail", "emailNotif", true);
+    rt("togJobs", "jobAlerts", true);
+    rt("togApps", "appUpdates", true);
+    rt("togAI", "aiMatch", true);
+    rt("togMkt", "marketing", false);
+    rt("togShowEmail", "showEmail", false);
+    rt("togActivity", "activity", true);
+
+    const v = localStorage.getItem(PREFS.visibility);
+    const elVis = document.getElementById("selVis");
+    if (elVis) elVis.value = v || "public";
   }
 
-  // Restore all preferences from localStorage
-  function restorePreferences() {
-    // Theme
-    const savedTheme = localStorage.getItem(PREFS.theme) || "light";
-    document.getElementById("themeSelect").value = savedTheme;
-    applyTheme(savedTheme);
-
-    // Accent
-    const savedAccent = localStorage.getItem(PREFS.accent);
-    if (savedAccent) {
-      document.querySelectorAll(".color-swatch").forEach(s => {
-        s.classList.toggle("active", s.dataset.color === savedAccent);
-      });
-      document.documentElement.style.setProperty("--bs-primary", savedAccent);
-    }
-
-    // Toggles
-    function restoreToggle(elementId, prefKey, defaultVal) {
-      const val = localStorage.getItem(PREFS[prefKey]);
-      document.getElementById(elementId).checked = val !== null ? val === "1" : defaultVal;
-    }
-
-    restoreToggle("compactToggle",    "compact",    false);
-    restoreToggle("animationToggle",  "animations", true);
-    restoreToggle("emailNotifToggle", "emailNotif",  true);
-    restoreToggle("jobAlertToggle",   "jobAlerts",   true);
-    restoreToggle("digestToggle",     "digest",      false);
-    restoreToggle("soundToggle",      "sound",       false);
-    restoreToggle("showEmailToggle",  "showEmail",   false);
-    restoreToggle("activityToggle",   "activity",    true);
-
-    // Visibility
-    const savedVis = localStorage.getItem(PREFS.visibility) || "public";
-    document.getElementById("visibilitySelect").value = savedVis;
-  }
-
-  // Reset all preferences
-  document.getElementById("btnResetPrefs").addEventListener("click", () => {
-    if (!confirm("Reset all preferences to default values?")) return;
-
-    Object.values(PREFS).forEach(key => localStorage.removeItem(key));
+  document.getElementById("btnReset").addEventListener("click", () => {
+    if (!confirm("Reset all preferences?")) return;
+    Object.values(PREFS).forEach(k => localStorage.removeItem(k));
     document.documentElement.removeAttribute("data-theme");
-    document.documentElement.style.removeProperty("--bs-primary");
-    restorePreferences();
-    showMessage("All preferences reset to defaults.", "success");
+    restorePrefs();
+    showMsg("Preferences reset.", "success");
   });
 
-  /* ── Init ── */
-  loadSettings();
+  function showMsg(text, type) {
+    const el = document.getElementById("msg");
+    if (!el) return;
+    el.textContent = text;
+    el.className = "small mt-3 alert alert-" + (type === "danger" ? "danger" : "success");
+    setTimeout(() => { el.textContent = ""; el.className = "small mt-3"; }, 4000);
+  }
+
+  /* ══════════════════════════════════════════
+     PROFILE: localStorage keys
+     ══════════════════════════════════════════ */
+  const PK = {
+    personal: "prof_personal",
+    education: "prof_education",
+    experience: "prof_experience",
+    skills: "prof_skills",
+    interests: "prof_interests",
+    certs: "prof_certs",
+    projects: "prof_projects",
+    languages: "prof_languages",
+    portfolio: "prof_portfolio",
+    social: "prof_social",
+    career: "prof_career"
+  };
+
+  const SUGGESTED_ITEMS = [
+    { id: "name", icon: "person", title: "Add your full name", sub: "Helps recruiters identify you", action: "Add", sec: "secPersonal" },
+    { id: "summary", icon: "card-text", title: "Write a professional summary", sub: "Highlights your expertise", action: "Write", sec: "secPersonal" },
+    { id: "education", icon: "book", title: "Add your education", sub: "Show your academic background", action: "Add", sec: "secEducation" },
+    { id: "skills", icon: "code-slash", title: "Add your skills", sub: "Improve AI job matching", action: "Add", sec: "secSkills" },
+    { id: "experience", icon: "briefcase", title: "Add work experience", sub: "Show your career history", action: "Add", sec: "secExperience" },
+    { id: "resume", icon: "file-text", title: "Upload your CV", sub: "Automatically extract skills", action: "Upload", sec: "secResume" },
+    { id: "interests", icon: "heart", title: "Select your interests", sub: "Better job recommendations", action: "Select", sec: "secInterests" },
+    { id: "certs", icon: "patch-check", title: "Add certifications", sub: "Verify your qualifications", action: "Add", sec: "secCertifications" },
+    { id: "projects", icon: "folder", title: "Add portfolio projects", sub: "Showcase your work", action: "Add", sec: "secProjects" },
+    { id: "social", icon: "share", title: "Link your social profiles", sub: "LinkedIn, GitHub, etc.", action: "Link", sec: "secSocial" }
+  ];
+
+  function getData(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
+  }
+  function setData(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+  function getObj(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+  }
+  function setObj(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+  /* ── Personal Info ── */
+  function savePersonalInfo() {
+    const d = {
+      name: document.getElementById("piName").value,
+      email: document.getElementById("piEmail").value,
+      phone: document.getElementById("piPhone").value,
+      location: document.getElementById("piLocation").value,
+      title: document.getElementById("piTitle").value,
+      exp: document.getElementById("piExp").value,
+      summary: document.getElementById("piSummary").value
+    };
+    setObj(PK.personal, d);
+    calcPct();
+    renderSuggestions();
+    alert("Personal information saved locally.");
+  }
+
+  function loadPersonalInfo() {
+    const d = getObj(PK.personal);
+    if (d.name) document.getElementById("piName").value = d.name;
+    if (d.email) document.getElementById("piEmail").value = d.email;
+    if (d.phone) document.getElementById("piPhone").value = d.phone;
+    if (d.location) document.getElementById("piLocation").value = d.location;
+    if (d.title) document.getElementById("piTitle").value = d.title;
+    if (d.exp) document.getElementById("piExp").value = d.exp;
+    if (d.summary) document.getElementById("piSummary").value = d.summary;
+  }
+
+  /* ── Education ── */
+  function getEdu() { return getData(PK.education); }
+  function setEdu(d) { setData(PK.education, d); renderEdu(); }
+  function renderEdu() {
+    const list = document.getElementById("eduList");
+    const empty = document.getElementById("eduEmpty");
+    const items = getEdu();
+    list.innerHTML = items.map((e, i) =>
+      '<div class="entry-card"><div class="ec-icon"><i class="bi bi-book"></i></div><div class="ec-body"><div class="ec-title">' + (e.degree || "Degree") + ' at ' + (e.institution || "") + '</div><div class="ec-sub">' + (e.field || "") + '</div><div class="ec-meta">' + (e.start || "") + ' - ' + (e.end || "") + (e.gpa ? ' &middot; GPA: ' + e.gpa : "") + '</div></div><div class="ec-actions"><button onclick="editEdu(' + i + ')" title="Edit"><i class="bi bi-pencil"></i></button><button class="ec-del" onclick="delEdu(' + i + ')" title="Delete"><i class="bi bi-trash3"></i></button></div></div>'
+    ).join("");
+    empty.style.display = items.length ? "none" : "block";
+    calcPct();
+    renderSuggestions();
+  }
+  function editEdu(i) { const items = getEdu(); openEduModal(i, items[i]); }
+  function delEdu(i) { const items = getEdu(); items.splice(i, 1); setEdu(items); }
+
+  function openEduModal(idx, data) {
+    const editing = idx !== undefined;
+    document.getElementById("modalTitle").textContent = editing ? "Edit Education" : "Add Education";
+    document.getElementById("modalBody").innerHTML =
+      '<div><label>Degree</label><input type="text" id="fEduDegree" placeholder="Bachelor of Science" value="' + (data ? escHtml(data.degree) : "") + '"></div>' +
+      '<div><label>Institution</label><input type="text" id="fEduInst" placeholder="Stanford University" value="' + (data ? escHtml(data.institution) : "") + '"></div>' +
+      '<div><label>Field of study</label><input type="text" id="fEduField" placeholder="Computer Science" value="' + (data ? escHtml(data.field) : "") + '"></div>' +
+      '<div class="fm-row"><div><label>Start date</label><input type="text" id="fEduStart" placeholder="2018" value="' + (data ? escHtml(data.start) : "") + '"></div><div><label>End date</label><input type="text" id="fEduEnd" placeholder="2022" value="' + (data ? escHtml(data.end) : "") + '"></div></div>' +
+      '<div><label>GPA (optional)</label><input type="text" id="fEduGpa" placeholder="3.8" value="' + (data ? escHtml(data.gpa) : "") + '"></div>' +
+      '<div><label>Description (optional)</label><textarea id="fEduDesc" placeholder="Relevant coursework, achievements...">' + (data ? escHtml(data.desc || "") : "") + '</textarea></div>' +
+      '<div class="fm-actions"><button class="btn btn-primary" onclick="saveEdu(' + (editing ? idx : -1) + ')">' + (editing ? "Update" : "Add") + '</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    openModal();
+  }
+  function saveEdu(idx) {
+    const d = {
+      degree: document.getElementById("fEduDegree").value,
+      institution: document.getElementById("fEduInst").value,
+      field: document.getElementById("fEduField").value,
+      start: document.getElementById("fEduStart").value,
+      end: document.getElementById("fEduEnd").value,
+      gpa: document.getElementById("fEduGpa").value,
+      desc: document.getElementById("fEduDesc").value
+    };
+    const items = getEdu();
+    if (idx >= 0) items[idx] = d;
+    else items.push(d);
+    setEdu(items);
+    closeModal();
+  }
+
+  /* ── Experience ── */
+  function getExp() { return getData(PK.experience); }
+  function setExp(d) { setData(PK.experience, d); renderExp(); }
+  function renderExp() {
+    const list = document.getElementById("expList");
+    const empty = document.getElementById("expEmpty");
+    const items = getExp();
+    list.innerHTML = items.map((e, i) =>
+      '<div class="entry-card"><div class="ec-icon"><i class="bi bi-briefcase"></i></div><div class="ec-body"><div class="ec-title">' + escHtml(e.role) + ' at ' + escHtml(e.company) + '</div><div class="ec-sub">' + escHtml(e.location || "") + '</div><div class="ec-meta">' + (e.start || "") + ' - ' + (e.end || "") + (e.current ? " (Current)" : "") + '</div></div><div class="ec-actions"><button onclick="editExp(' + i + ')" title="Edit"><i class="bi bi-pencil"></i></button><button class="ec-del" onclick="delExp(' + i + ')" title="Delete"><i class="bi bi-trash3"></i></button></div></div>'
+    ).join("");
+    empty.style.display = items.length ? "none" : "block";
+    calcPct();
+    renderSuggestions();
+  }
+  function editExp(i) { const items = getExp(); openExpModal(i, items[i]); }
+  function delExp(i) { const items = getExp(); items.splice(i, 1); setExp(items); }
+
+  function openExpModal(idx, data) {
+    const editing = idx !== undefined;
+    document.getElementById("modalTitle").textContent = editing ? "Edit Experience" : "Add Experience";
+    document.getElementById("modalBody").innerHTML =
+      '<div><label>Job title</label><input type="text" id="fExpRole" placeholder="Software Engineer" value="' + (data ? escHtml(data.role) : "") + '"></div>' +
+      '<div><label>Company</label><input type="text" id="fExpCompany" placeholder="Google" value="' + (data ? escHtml(data.company) : "") + '"></div>' +
+      '<div><label>Location</label><input type="text" id="fExpLoc" placeholder="Mountain View, CA" value="' + (data ? escHtml(data.location) : "") + '"></div>' +
+      '<div class="fm-row"><div><label>Start date</label><input type="text" id="fExpStart" placeholder="2020" value="' + (data ? escHtml(data.start) : "") + '"></div><div><label>End date</label><input type="text" id="fExpEnd" placeholder="2023" value="' + (data ? escHtml(data.end) : "") + '"></div></div>' +
+      '<div><label class="d-flex align-items-center gap-2"><input type="checkbox" id="fExpCurrent" ' + (data && data.current ? "checked" : "") + '> Currently working here</label></div>' +
+      '<div><label>Description</label><textarea id="fExpDesc" placeholder="Key responsibilities and achievements...">' + (data ? escHtml(data.desc || "") : "") + '</textarea></div>' +
+      '<div class="fm-actions"><button class="btn btn-primary" onclick="saveExp(' + (editing ? idx : -1) + ')">' + (editing ? "Update" : "Add") + '</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    openModal();
+  }
+  function saveExp(idx) {
+    const d = {
+      role: document.getElementById("fExpRole").value,
+      company: document.getElementById("fExpCompany").value,
+      location: document.getElementById("fExpLoc").value,
+      start: document.getElementById("fExpStart").value,
+      end: document.getElementById("fExpEnd").value,
+      current: document.getElementById("fExpCurrent").checked,
+      desc: document.getElementById("fExpDesc").value
+    };
+    const items = getExp();
+    if (idx >= 0) items[idx] = d;
+    else items.push(d);
+    setExp(items);
+    closeModal();
+  }
+
+  /* ── Skills ── */
+  function getSkills() { return getData(PK.skills); }
+  function setSkills(d) { setData(PK.skills, d); renderSkills(); }
+  function renderSkills() {
+    const el = document.getElementById("skillList");
+    const items = getSkills();
+    const cats = {};
+    items.forEach(s => { const c = s.cat || "Other"; if (!cats[c]) cats[c] = []; cats[c].push(s); });
+    let html = '<div class="skill-grid">';
+    Object.keys(cats).forEach(c => {
+      html += '<div class="skill-tag-cat"><span class="stc-label">' + escHtml(c) + '</span><div class="stc-tags">';
+      cats[c].forEach((s, i) => {
+        const idx = items.indexOf(s);
+        html += '<span class="st">' + escHtml(s.name) + (s.lvl ? ' <span class="st-lvl">(' + escHtml(s.lvl) + ')</span>' : '') + ' <span class="st-del" onclick="delSkill(' + idx + ')">&times;</span></span>';
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+    html += '<div class="mt-2"><span class="st bg-gray" onclick="openSkillModal()"><i class="bi bi-plus-lg"></i> Add skill</span></div>';
+    el.innerHTML = html;
+    calcPct();
+    renderSuggestions();
+  }
+  function delSkill(i) { const items = getSkills(); items.splice(i, 1); setSkills(items); }
+
+  function openSkillModal() {
+    document.getElementById("modalTitle").textContent = "Add Skill";
+    document.getElementById("modalBody").innerHTML =
+      '<div><label>Skill name</label><input type="text" id="fSkillName" placeholder="Python"></div>' +
+      '<div><label>Category</label><select id="fSkillCat"><option value="Programming">Programming</option><option value="Design">Design</option><option value="Data">Data & AI</option><option value="DevOps">DevOps</option><option value="Management">Management</option><option value="Languages">Languages</option><option value="Tools">Tools</option><option value="Other">Other</option></select></div>' +
+      '<div><label>Experience level</label><select id="fSkillLvl"><option value="">Select...</option><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="Expert">Expert</option></select></div>' +
+      '<div><label>Years of experience</label><input type="number" id="fSkillYears" placeholder="3" min="0"></div>' +
+      '<div class="fm-actions"><button class="btn btn-primary" onclick="saveSkill()">Add</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    openModal();
+  }
+  function saveSkill() {
+    const d = {
+      name: document.getElementById("fSkillName").value,
+      cat: document.getElementById("fSkillCat").value,
+      lvl: document.getElementById("fSkillLvl").value,
+      years: document.getElementById("fSkillYears").value
+    };
+    if (!d.name) return;
+    const items = getSkills();
+    items.push(d);
+    setSkills(items);
+    closeModal();
+  }
+
+  /* ── Interests ── */
+  const INTEREST_OPTIONS = [
+    "Artificial Intelligence", "Backend Development", "UI/UX Design", "Cloud Computing",
+    "Data Science", "Cyber Security", "DevOps", "Mobile Development", "Frontend Development",
+    "Machine Learning", "Blockchain", "IoT", "Open Source", "Product Management",
+    "Agile Methodologies", "Technical Writing", "Database Design", "API Development"
+  ];
+  function getInterests() { try { return JSON.parse(localStorage.getItem(PK.interests)) || []; } catch { return []; } }
+  function setInterests(d) { localStorage.setItem(PK.interests, JSON.stringify(d)); renderInterests(); }
+
+  function renderInterests() {
+    const el = document.getElementById("interestGrid");
+    const selected = getInterests();
+    el.innerHTML = INTEREST_OPTIONS.map(o =>
+      '<span class="chip ' + (selected.includes(o) ? "selected" : "") + '" onclick="toggleInterest(\'' + escHtml(o) + '\')"><i class="bi ' + (selected.includes(o) ? "bi-check-circle-fill" : "bi-circle") + '"></i> ' + escHtml(o) + '</span>'
+    ).join("");
+    calcPct();
+    renderSuggestions();
+  }
+  function toggleInterest(o) {
+    const s = getInterests();
+    const i = s.indexOf(o);
+    if (i >= 0) s.splice(i, 1); else s.push(o);
+    setInterests(s);
+  }
+
+  /* ── Certifications ── */
+  function getCerts() { return getData(PK.certs); }
+  function setCerts(d) { setData(PK.certs, d); renderCerts(); }
+  function renderCerts() {
+    const list = document.getElementById("certList");
+    const empty = document.getElementById("certEmpty");
+    const items = getCerts();
+    list.innerHTML = items.map((e, i) =>
+      '<div class="entry-card"><div class="ec-icon"><i class="bi bi-patch-check"></i></div><div class="ec-body"><div class="ec-title">' + escHtml(e.name) + '</div><div class="ec-sub">' + escHtml(e.issuer || "") + '</div><div class="ec-meta">' + (e.date || "") + (e.url ? ' &middot; <a href="' + escHtml(e.url) + '" target="_blank">View</a>' : "") + '</div></div><div class="ec-actions"><button onclick="editCert(' + i + ')" title="Edit"><i class="bi bi-pencil"></i></button><button class="ec-del" onclick="delCert(' + i + ')" title="Delete"><i class="bi bi-trash3"></i></button></div></div>'
+    ).join("");
+    empty.style.display = items.length ? "none" : "block";
+    calcPct();
+    renderSuggestions();
+  }
+  function editCert(i) { const items = getCerts(); openCertModal(i, items[i]); }
+  function delCert(i) { const items = getCerts(); items.splice(i, 1); setCerts(items); }
+
+  function openCertModal(idx, data) {
+    const editing = idx !== undefined;
+    document.getElementById("modalTitle").textContent = editing ? "Edit Certification" : "Add Certification";
+    document.getElementById("modalBody").innerHTML =
+      '<div><label>Certification name</label><input type="text" id="fCertName" placeholder="AWS Solutions Architect" value="' + (data ? escHtml(data.name) : "") + '"></div>' +
+      '<div><label>Issuer</label><input type="text" id="fCertIssuer" placeholder="Amazon Web Services" value="' + (data ? escHtml(data.issuer) : "") + '"></div>' +
+      '<div><label>Date obtained</label><input type="text" id="fCertDate" placeholder="2023" value="' + (data ? escHtml(data.date) : "") + '"></div>' +
+      '<div><label>Credential URL (optional)</label><input type="url" id="fCertUrl" placeholder="https://credential.example.com" value="' + (data ? escHtml(data.url || "") : "") + '"></div>' +
+      '<div class="fm-actions"><button class="btn btn-primary" onclick="saveCert(' + (editing ? idx : -1) + ')">' + (editing ? "Update" : "Add") + '</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    openModal();
+  }
+  function saveCert(idx) {
+    const d = { name: document.getElementById("fCertName").value, issuer: document.getElementById("fCertIssuer").value, date: document.getElementById("fCertDate").value, url: document.getElementById("fCertUrl").value };
+    const items = getCerts();
+    if (idx >= 0) items[idx] = d; else items.push(d);
+    setCerts(items);
+    closeModal();
+  }
+
+  /* ── Projects ── */
+  function getProjs() { return getData(PK.projects); }
+  function setProjs(d) { setData(PK.projects, d); renderProjs(); }
+  function renderProjs() {
+    const list = document.getElementById("projList");
+    const empty = document.getElementById("projEmpty");
+    const items = getProjs();
+    list.innerHTML = items.map((e, i) =>
+      '<div class="entry-card"><div class="ec-icon"><i class="bi bi-folder"></i></div><div class="ec-body"><div class="ec-title">' + escHtml(e.name) + '</div><div class="ec-sub">' + escHtml(e.tech || "") + '</div><div class="ec-meta">' + (e.url ? '<a href="' + escHtml(e.url) + '" target="_blank">View project</a>' : "") + '</div></div><div class="ec-actions"><button onclick="editProj(' + i + ')" title="Edit"><i class="bi bi-pencil"></i></button><button class="ec-del" onclick="delProj(' + i + ')" title="Delete"><i class="bi bi-trash3"></i></button></div></div>'
+    ).join("");
+    empty.style.display = items.length ? "none" : "block";
+    calcPct();
+    renderSuggestions();
+  }
+  function editProj(i) { const items = getProjs(); openProjModal(i, items[i]); }
+  function delProj(i) { const items = getProjs(); items.splice(i, 1); setProjs(items); }
+
+  function openProjModal(idx, data) {
+    const editing = idx !== undefined;
+    document.getElementById("modalTitle").textContent = editing ? "Edit Project" : "Add Project";
+    document.getElementById("modalBody").innerHTML =
+      '<div><label>Project name</label><input type="text" id="fProjName" placeholder="E-commerce Platform" value="' + (data ? escHtml(data.name) : "") + '"></div>' +
+      '<div><label>Technologies used</label><input type="text" id="fProjTech" placeholder="React, Node.js, PostgreSQL" value="' + (data ? escHtml(data.tech) : "") + '"></div>' +
+      '<div><label>URL (optional)</label><input type="url" id="fProjUrl" placeholder="https://github.com/myproject" value="' + (data ? escHtml(data.url || "") : "") + '"></div>' +
+      '<div><label>Description</label><textarea id="fProjDesc" placeholder="Brief description of the project...">' + (data ? escHtml(data.desc || "") : "") + '</textarea></div>' +
+      '<div class="fm-actions"><button class="btn btn-primary" onclick="saveProj(' + (editing ? idx : -1) + ')">' + (editing ? "Update" : "Add") + '</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    openModal();
+  }
+  function saveProj(idx) {
+    const d = { name: document.getElementById("fProjName").value, tech: document.getElementById("fProjTech").value, url: document.getElementById("fProjUrl").value, desc: document.getElementById("fProjDesc").value };
+    const items = getProjs();
+    if (idx >= 0) items[idx] = d; else items.push(d);
+    setProjs(items);
+    closeModal();
+  }
+
+  /* ── Languages ── */
+  function getLangs() { return getData(PK.languages); }
+  function setLangs(d) { setData(PK.languages, d); renderLangs(); }
+  function renderLangs() {
+    const list = document.getElementById("langList");
+    const empty = document.getElementById("langEmpty");
+    const items = getLangs();
+    list.innerHTML = items.map((e, i) =>
+      '<div class="entry-card"><div class="ec-icon"><i class="bi bi-translate"></i></div><div class="ec-body"><div class="ec-title">' + escHtml(e.name) + '</div><div class="ec-sub">' + escHtml(e.proficiency || "") + '</div></div><div class="ec-actions"><button class="ec-del" onclick="delLang(' + i + ')" title="Delete"><i class="bi bi-trash3"></i></button></div></div>'
+    ).join("");
+    empty.style.display = items.length ? "none" : "block";
+    calcPct();
+  }
+  function delLang(i) { const items = getLangs(); items.splice(i, 1); setLangs(items); }
+
+  function openLangModal() {
+    document.getElementById("modalTitle").textContent = "Add Language";
+    document.getElementById("modalBody").innerHTML =
+      '<div><label>Language</label><input type="text" id="fLangName" placeholder="English"></div>' +
+      '<div><label>Proficiency</label><select id="fLangProf"><option value="Native">Native</option><option value="Fluent">Fluent</option><option value="Advanced">Advanced</option><option value="Intermediate">Intermediate</option><option value="Basic">Basic</option></select></div>' +
+      '<div class="fm-actions"><button class="btn btn-primary" onclick="saveLang()">Add</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    openModal();
+  }
+  function saveLang() {
+    const d = { name: document.getElementById("fLangName").value, proficiency: document.getElementById("fLangProf").value };
+    if (!d.name) return;
+    const items = getLangs();
+    items.push(d);
+    setLangs(items);
+    closeModal();
+  }
+
+  /* ── Portfolio ── */
+  function getPort() { return getData(PK.portfolio); }
+  function setPort(d) { setData(PK.portfolio, d); renderPort(); }
+  function renderPort() {
+    const list = document.getElementById("portList");
+    const empty = document.getElementById("portEmpty");
+    const items = getPort();
+    list.innerHTML = items.map((e, i) =>
+      '<div class="entry-card"><div class="ec-icon"><i class="bi bi-link-45deg"></i></div><div class="ec-body"><div class="ec-title"><a href="' + escHtml(e.url) + '" target="_blank">' + escHtml(e.label || e.url) + '</a></div></div><div class="ec-actions"><button class="ec-del" onclick="delPort(' + i + ')" title="Delete"><i class="bi bi-trash3"></i></button></div></div>'
+    ).join("");
+    empty.style.display = items.length ? "none" : "block";
+    calcPct();
+  }
+  function delPort(i) { const items = getPort(); items.splice(i, 1); setPort(items); }
+  function addPortfolio() {
+    const url = prompt("Enter portfolio URL:");
+    if (!url) return;
+    const label = prompt("Label (e.g. My Portfolio):") || url;
+    const items = getPort();
+    items.push({ url, label });
+    setPort(items);
+  }
+
+  /* ── Social Links ── */
+  function getSocial() { return getData(PK.social); }
+  function setSocial(d) { setData(PK.social, d); renderSocial(); }
+  function renderSocial() {
+    const list = document.getElementById("socialList");
+    const empty = document.getElementById("socialEmpty");
+    const items = getSocial();
+    list.innerHTML = items.map((e, i) =>
+      '<div class="entry-card"><div class="ec-icon"><i class="bi bi-' + (e.platform === "github" ? "github" : e.platform === "linkedin" ? "linkedin" : "globe") + '"></i></div><div class="ec-body"><div class="ec-title"><a href="' + escHtml(e.url) + '" target="_blank">' + escHtml(e.platform) + '</a></div></div><div class="ec-actions"><button class="ec-del" onclick="delSocial(' + i + ')" title="Delete"><i class="bi bi-trash3"></i></button></div></div>'
+    ).join("");
+    empty.style.display = items.length ? "none" : "block";
+    calcPct();
+  }
+  function delSocial(i) { const items = getSocial(); items.splice(i, 1); setSocial(items); }
+
+  function openSocialModal() {
+    document.getElementById("modalTitle").textContent = "Add Social Link";
+    document.getElementById("modalBody").innerHTML =
+      '<div><label>Platform</label><select id="fSocPlatform"><option value="linkedin">LinkedIn</option><option value="github">GitHub</option><option value="twitter">Twitter / X</option><option value="dribbble">Dribbble</option><option value="behance">Behance</option><option value="medium">Medium</option><option value="website">Personal Website</option><option value="other">Other</option></select></div>' +
+      '<div><label>URL</label><input type="url" id="fSocUrl" placeholder="https://linkedin.com/in/yourprofile"></div>' +
+      '<div class="fm-actions"><button class="btn btn-primary" onclick="saveSocial()">Add</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    openModal();
+  }
+  function saveSocial() {
+    const d = { platform: document.getElementById("fSocPlatform").value, url: document.getElementById("fSocUrl").value };
+    if (!d.url) return;
+    const items = getSocial();
+    items.push(d);
+    setSocial(items);
+    closeModal();
+  }
+
+  /* ── Career Preferences ── */
+  function loadCareerPrefs() {
+    const d = getObj(PK.career);
+    if (d.role) document.getElementById("cpRole").value = d.role;
+    if (d.industry) document.getElementById("cpIndustry").value = d.industry;
+    if (d.location) document.getElementById("cpLoc").value = d.location;
+    if (d.empType) document.getElementById("cpEmpType").value = d.empType;
+    if (d.salary) document.getElementById("cpSalary").value = d.salary;
+    if (d.remote) document.getElementById("cpRemote").value = d.remote;
+    if (d.openness) document.getElementById("cpOpenness").value = d.openness;
+  }
+  function saveCareerPrefs() {
+    setObj(PK.career, {
+      role: document.getElementById("cpRole").value,
+      industry: document.getElementById("cpIndustry").value,
+      location: document.getElementById("cpLoc").value,
+      empType: document.getElementById("cpEmpType").value,
+      salary: document.getElementById("cpSalary").value,
+      remote: document.getElementById("cpRemote").value,
+      openness: document.getElementById("cpOpenness").value
+    });
+    calcPct();
+    alert("Career preferences saved locally.");
+  }
+
+  /* ── Resume ── */
+  document.getElementById("resumeFile") && document.getElementById("resumeFile").addEventListener("change", function(e) {
+    if (!e.target.files[0]) return;
+    const el = document.getElementById("resumeInfo");
+    el.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> ' + escHtml(e.target.files[0].name) + ' selected.';
+    localStorage.setItem("prof_resume_name", e.target.files[0].name);
+    calcPct();
+  });
+  function loadResume() {
+    const name = localStorage.getItem("prof_resume_name");
+    if (name) document.getElementById("resumeInfo").innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> ' + escHtml(name);
+  }
+
+  /* ── Profile Completion ── */
+  function calcPct() {
+    let total = 0, done = 0;
+    const checks = [
+      () => { const p = getObj(PK.personal); return p.name && p.email ? 1 : 0; },
+      () => { const p = getObj(PK.personal); return p.summary ? 1 : 0; },
+      () => getEdu().length > 0 ? 1 : 0,
+      () => getExp().length > 0 ? 1 : 0,
+      () => getSkills().length > 0 ? 1 : 0,
+      () => getInterests().length > 0 ? 1 : 0,
+      () => getCerts().length > 0 ? 1 : 0,
+      () => getProjs().length > 0 ? 1 : 0,
+      () => localStorage.getItem("prof_resume_name") ? 1 : 0,
+      () => getData(PK.social).length > 0 ? 1 : 0
+    ];
+    checks.forEach(f => { total++; if (f()) done++; });
+    const pct = Math.round((done / total) * 100);
+    document.getElementById("profPctLabel").textContent = pct + "% Complete";
+    document.getElementById("profPctBar").style.width = pct + "%";
+  }
+
+  /* ── Suggested For You ── */
+  function renderSuggestions() {
+    const grid = document.getElementById("sugGrid");
+    if (!grid) return;
+    const personal = getObj(PK.personal);
+    const hasName = personal.name && personal.email;
+    const hasSummary = personal.summary;
+    const hasEdu = getEdu().length > 0;
+    const hasSkills = getSkills().length > 0;
+    const hasExp = getExp().length > 0;
+    const hasResume = !!localStorage.getItem("prof_resume_name");
+    const hasInterests = getInterests().length > 0;
+    const hasCerts = getCerts().length > 0;
+    const hasProjects = getProjs().length > 0;
+    const hasSocial = getData(PK.social).length > 0;
+
+    const stateMap = {
+      name: hasName, summary: hasSummary, education: hasEdu, skills: hasSkills,
+      experience: hasExp, resume: hasResume, interests: hasInterests,
+      certs: hasCerts, projects: hasProjects, social: hasSocial
+    };
+
+    const visible = SUGGESTED_ITEMS.filter(s => !stateMap[s.id]);
+    grid.innerHTML = visible.length ? visible.map(s =>
+      '<div class="sug-item' + (stateMap[s.id] ? " done" : "") + '"><div class="sug-icon"><i class="bi bi-' + s.icon + '"></i></div><div class="sug-text"><div class="sug-title">' + s.title + '</div><div class="sug-sub">' + s.sub + '</div></div><button class="sug-btn" onclick="scrollToSec(\'' + s.sec + '\')">' + s.action + '</button></div>'
+    ).join("") : '<p class="text-muted small mb-0">Great job! All suggestions completed.</p>';
+  }
+
+  function scrollToSec(id) {
+    document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelectorAll(".ps-nav a").forEach(a => a.classList.toggle("active", a.dataset.sec === id));
+  }
+
+  /* ── Modal ── */
+  function openModal() { document.getElementById("modalOverlay").classList.add("open"); }
+  function closeModal() { document.getElementById("modalOverlay").classList.remove("open"); }
+  document.getElementById("modalOverlay").addEventListener("click", function(e) { if (e.target === this) closeModal(); });
+
+  /* ── Helpers ── */
+  function escHtml(s) { if (!s) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  function renderAll() {
+    loadPersonalInfo();
+    renderEdu();
+    renderExp();
+    renderSkills();
+    renderInterests();
+    renderCerts();
+    renderProjs();
+    renderLangs();
+    renderPort();
+    renderSocial();
+    loadCareerPrefs();
+    loadResume();
+    renderSuggestions();
+    calcPct();
+  }
+
+  loadProf();
 </script>
 {% endblock %}

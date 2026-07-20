@@ -29,18 +29,48 @@ class AIMatchAPIView(views.APIView):
     def post(self, request):
         resume = request.FILES.get("resume")
         if not resume:
-            return response.Response({"detail": "Resume PDF is required."}, status=400)
+            return response.Response({"success": False, "message": "Resume PDF is required."}, status=400)
+
         try:
             data = analyze_resume_match(request.user, resume, request=request)
-        except ValueError as error:
-            return response.Response({"detail": str(error)}, status=400)
+        except ValueError as e:
+            return response.Response({"success": False, "message": str(e)}, status=400)
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error("AI Match unexpected error for user %s: %s", request.user.id, e, exc_info=True)
+            return response.Response(
+                {"success": False, "message": "An unexpected error occurred while analyzing your resume. Please try again."},
+                status=500,
+            )
 
-        data["recommended_jobs"] = RecommendedJobSerializer(
-            data["recommended_jobs"],
-            many=True,
-            context={"request": request},
-        ).data
-        return response.Response(data)
+        recommended_jobs = data.get("recommended_jobs", [])
+        serialized_jobs = RecommendedJobSerializer(recommended_jobs, many=True, context={"request": request}).data
+
+        from apps.notifications.services import notify_resume_analysis_complete, notify_skill_gap_complete
+        best_match = data.get("resume_score", 0)
+        notify_resume_analysis_complete(request.user, best_match)
+        notify_skill_gap_complete(request.user)
+
+        result = {
+            "success": True,
+            "count": len(serialized_jobs),
+            "matched_jobs": serialized_jobs,
+            "profession": data.get("profession", ""),
+            "resume_score": best_match,
+            "resume_summary": data.get("resume_summary", ""),
+            "skills_extracted": data.get("skills_extracted", []),
+            "missing_skills": data.get("missing_skills", []),
+            "skill_gap_analysis": data.get("skill_gap_analysis", ""),
+            "recommended_courses": data.get("recommended_courses", []),
+            "match_analytics": data.get("match_analytics", []),
+            "learning_roadmap": data.get("learning_roadmap", []),
+            "resume_insights": data.get("resume_insights", []),
+            "resume_improvement_suggestions": data.get("resume_improvement_suggestions", []),
+        }
+        if len(serialized_jobs) == 0:
+            result["message"] = "No matching jobs found based on your current resume. Try updating your skills or check back later."
+
+        return response.Response(result)
 
 
 class ApplyJobAPIView(views.APIView):

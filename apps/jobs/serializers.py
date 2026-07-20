@@ -15,7 +15,7 @@ class JobPostingSerializer(serializers.ModelSerializer):
         fields = [
             "id", "recruiter", "recruiter_email", "title", "company", "company_logo",
             "location", "work_mode", "description", "required_skills", "experience_required",
-            "salary_range", "is_active", "is_saved", "created_at",
+            "education_required", "salary_range", "job_category", "is_active", "is_saved", "created_at",
         ]
         read_only_fields = ["id", "recruiter", "recruiter_email", "is_saved", "created_at"]
 
@@ -46,6 +46,7 @@ class RecommendedJobSerializer(serializers.Serializer):
     skill_gap_analysis = serializers.CharField()
     career_roadmap = serializers.ListField(child=serializers.CharField())
     recommended_resources = serializers.ListField(child=serializers.DictField())
+    match_explanation = serializers.DictField(child=serializers.IntegerField(), required=False)
 
 
 class SavedJobSerializer(serializers.ModelSerializer):

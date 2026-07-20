@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     "apps.chatbot",
     "apps.quiz",
     "apps.external",
-    "apps.notifications",
+    "apps.notifications.apps.NotificationsConfig",
+    "channels",
     "apps.cvgen",
     "drf_spectacular",
 ]
@@ -69,7 +70,26 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-ASGI_APPLICATION = "config.asgi.application"
+# ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        # InMemoryChannelLayer is for development only.
+        # For production with multiple workers, switch to Redis:
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {"hosts": [os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")]},
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
+AI_MATCH_THRESHOLD = 70
+AI_MATCH_DEBUG = False
+
+AI_WEIGHT_PROFESSION = 35
+AI_WEIGHT_SKILLS = 30
+AI_WEIGHT_EXPERIENCE = 15
+AI_WEIGHT_EDUCATION = 10
+AI_WEIGHT_SEMANTIC = 10
 
 DATABASES = {
     "default": {
@@ -128,6 +148,13 @@ CORS_ALLOW_CREDENTIALS = True
 FASTAPI_URL = os.getenv("FASTAPI_URL", "http://127.0.0.1:8001")
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@skillsync.local")
+
+LINKEDIN_CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID", "")
+LINKEDIN_CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET", "")
+LINKEDIN_REDIRECT_URI = os.getenv(
+    "LINKEDIN_REDIRECT_URI",
+    "http://127.0.0.1:8000/api/auth/linkedin/callback/"
+)
 
 VECTOR_STORE_DIR = BASE_DIR / "vector_store"
 DATA_DIR = BASE_DIR / "data"

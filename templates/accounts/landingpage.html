@@ -1,2189 +1,909 @@
 {% extends "base_public.html" %}
 {% load static %}
 
-{% block title %}SkillSync AI - Smart Career Matching Platform{% endblock %}
+{% block title %}SkillSync AI — Enterprise AI Recruitment Platform{% endblock %}
 
 {% block extra_head %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-    /* ============================================
-       PREMIUM BLUE GRADIENT THEME
-       ============================================ */
-    :root {
-        /* Primary Blue Gradient Palette */
-        --gradient-1: #1a5cff;
-        --gradient-2: #4a7dff;
-        --gradient-3: #7aa5ff;
-        --gradient-4: #b3cfff;
-        
-        --primary-start: #1a5cff;
-        --primary-middle: #4a7dff;
-        --primary-end: #7aa5ff;
-        
-        --gradient-primary: linear-gradient(135deg, #1a5cff 0%, #4a7dff 40%, #7aa5ff 70%, #4a7dff 100%);
-        --gradient-secondary: linear-gradient(135deg, #1a5cff 0%, #7aa5ff 100%);
-        --gradient-soft: linear-gradient(135deg, rgba(26, 92, 255, 0.05) 0%, rgba(74, 125, 255, 0.02) 100%);
-        --gradient-hero: linear-gradient(180deg, #f0f4ff 0%, #e8eeff 40%, #dce4ff 80%, #e8eeff 100%);
-        --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
-        --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%);
-        
-        --fb-blue: #1a5cff;
-        --fb-blue-dark: #0d47e0;
-        --fb-blue-darker: #0a3a9e;
-        --fb-blue-light: #4a7dff;
-        --fb-blue-lighter: #e8eeff;
-        --fb-blue-lightest: #f0f4ff;
-        --fb-blue-bg: #f5f7fc;
-        --fb-white: #FFFFFF;
-        --fb-text: #0a1a2f;
-        --fb-text-secondary: #4a5a72;
-        --fb-border: rgba(26, 92, 255, 0.08);
-        --glass-bg: rgba(255, 255, 255, 0.92);
-        --glass-border: rgba(26, 92, 255, 0.12);
-        --text-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-        --transition-smooth: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        --font-display: 'Space Grotesk', 'Inter', sans-serif;
-        --font-body: 'Inter', sans-serif;
-        --shadow-blue: 0 8px 32px rgba(26, 92, 255, 0.15);
-        --shadow-blue-hover: 0 12px 48px rgba(26, 92, 255, 0.25);
-        --shadow-glass: 0 8px 32px rgba(26, 92, 255, 0.06);
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: var(--font-body);
-        background: var(--fb-blue-bg);
-        color: var(--fb-text);
-        overflow-x: hidden;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    .app-main.container-fluid {
-        padding: 0 !important;
-        max-width: 100%;
-    }
-
-    /* ============================================
-       UTILITY CLASSES
-       ============================================ */
-    .text-gradient {
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        background-size: 200% 200%;
-        animation: gradientShift 4s ease-in-out infinite;
-    }
-
-    .text-gradient-static {
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .bg-gradient-primary {
-        background: var(--gradient-primary);
-        background-size: 200% 200%;
-        animation: gradientMove 6s ease-in-out infinite;
-    }
-
-    .bg-gradient-soft {
-        background: var(--gradient-soft);
-    }
-
-    @keyframes gradientShift {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-    }
-
-    @keyframes gradientMove {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-    }
-
-    .glass-morphism {
-        background: var(--gradient-glass);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: var(--shadow-glass);
-    }
-
-    .section-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.08) 0%, rgba(74, 125, 255, 0.04) 100%);
-        color: var(--fb-blue);
-        padding: 6px 18px 6px 14px;
-        border-radius: 50px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        border: 1px solid rgba(26, 92, 255, 0.08);
-    }
-
-    .section-title {
-        font-family: var(--font-display);
-        font-size: clamp(2rem, 4vw, 3.2rem);
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        margin: 16px 0 8px;
-        color: var(--fb-text);
-    }
-
-    .section-subtitle {
-        color: var(--fb-text-secondary);
-        font-size: 1.05rem;
-        max-width: 500px;
-        margin: 0 auto;
-        font-weight: 400;
-    }
-
-    .section-divider {
-        width: 80px;
-        height: 4px;
-        background: var(--gradient-primary);
-        border-radius: 4px;
-        margin: 16px auto 0;
-        box-shadow: 0 2px 15px rgba(26, 92, 255, 0.2);
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    /* ============================================
-       BUTTONS - GRADIENT ENHANCED
-       ============================================ */
-    .btn-gradient {
-        background: var(--gradient-primary);
-        border: none;
-        color: #fff;
-        padding: 14px 36px;
-        border-radius: 12px;
-        font-weight: 600;
-        transition: var(--transition-bounce);
-        position: relative;
-        overflow: hidden;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        font-family: var(--font-body);
-        box-shadow: 0 4px 25px rgba(26, 92, 255, 0.25);
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    .btn-gradient .btn-shimmer {
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 60%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-        transform: skewX(-25deg);
-        animation: shimmerSlide 4s ease-in-out infinite;
-        z-index: 2;
-    }
-
-    @keyframes shimmerSlide {
-        0% { left: -100%; }
-        100% { left: 200%; }
-    }
-
-    .btn-gradient::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, #0d47e0, #1a5cff, #4a7dff);
-        opacity: 0;
-        transition: opacity 0.4s ease;
-        border-radius: 12px;
-    }
-
-    .btn-gradient:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 40px rgba(26, 92, 255, 0.35);
-        color: #fff;
-        text-decoration: none;
-    }
-
-    .btn-gradient:hover::before {
-        opacity: 1;
-    }
-
-    .btn-gradient span {
-        position: relative;
-        z-index: 1;
-    }
-
-    .btn-outline-gradient {
-        background: transparent;
-        border: 2px solid rgba(26, 92, 255, 0.15);
-        color: var(--fb-blue);
-        padding: 14px 36px;
-        border-radius: 12px;
-        font-weight: 600;
-        transition: var(--transition-bounce);
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        font-family: var(--font-body);
-        font-size: 1rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-outline-gradient:hover {
-        background: var(--gradient-primary);
-        color: #fff;
-        border-color: transparent;
-        transform: translateY(-4px);
-        box-shadow: 0 8px 35px rgba(26, 92, 255, 0.2);
-        text-decoration: none;
-    }
-
-    /* ============================================
-       HERO SECTION - GRADIENT ENHANCED
-       ============================================ */
-    .hero-section {
-        position: relative;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        background: 
-            radial-gradient(ellipse at 20% 40%, rgba(26, 92, 255, 0.08) 0%, transparent 60%),
-            radial-gradient(ellipse at 80% 60%, rgba(74, 125, 255, 0.05) 0%, transparent 50%),
-            radial-gradient(ellipse at 50% 100%, rgba(26, 92, 255, 0.04) 0%, transparent 50%),
-            var(--gradient-hero);
-        overflow: hidden;
-        padding: 80px 0 60px;
-    }
-
-    /* Gradient Orbs */
-    .gradient-orb {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(120px);
-        pointer-events: none;
-        animation: floatOrb 14s ease-in-out infinite;
-    }
-
-    .gradient-orb:nth-child(1) {
-        width: 550px;
-        height: 550px;
-        top: -20%;
-        right: -10%;
-        background: linear-gradient(135deg, #1a5cff, #4a7dff);
-        opacity: 0.15;
-        animation-delay: 0s;
-    }
-
-    .gradient-orb:nth-child(2) {
-        width: 450px;
-        height: 450px;
-        bottom: -25%;
-        left: -10%;
-        background: linear-gradient(135deg, #4a7dff, #7aa5ff);
-        opacity: 0.10;
-        animation-delay: -5s;
-    }
-
-    .gradient-orb:nth-child(3) {
-        width: 300px;
-        height: 300px;
-        top: 40%;
-        left: 40%;
-        background: linear-gradient(135deg, #7aa5ff, #b3cfff);
-        opacity: 0.08;
-        animation-delay: -10s;
-    }
-
-    @keyframes floatOrb {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(60px, -50px) scale(1.15); }
-        66% { transform: translate(-50px, 50px) scale(0.85); }
-    }
-
-    /* Particles with gradient */
-    .hero-particles {
-        position: absolute;
-        inset: 0;
-        overflow: hidden;
-        pointer-events: none;
-    }
-
-    .particle {
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.15), rgba(74, 125, 255, 0.05));
-        border-radius: 50%;
-        animation: floatParticle linear infinite;
-        box-shadow: 0 0 8px rgba(26, 92, 255, 0.05);
-    }
-
-    @keyframes floatParticle {
-        0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
-    }
-
-    /* AI Badge - Gradient Enhanced */
-    .ai-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        background: var(--gradient-glass);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(26, 92, 255, 0.08);
-        border-radius: 100px;
-        padding: 8px 24px 8px 10px;
-        margin-bottom: 32px;
-        transition: var(--transition-smooth);
-        box-shadow: var(--shadow-glass);
-        cursor: default;
-    }
-
-    .ai-badge:hover {
-        transform: scale(1.03);
-        box-shadow: var(--shadow-blue);
-        border-color: rgba(26, 92, 255, 0.15);
-    }
-
-    .ai-badge .dot-live {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #10b981, #34d399);
-        animation: pulseDot 1.5s ease-in-out infinite;
-        flex-shrink: 0;
-        box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
-    }
-
-    @keyframes pulseDot {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(0.6); }
-    }
-
-    .ai-badge .badge-text {
-        color: var(--fb-text);
-        font-size: 0.8rem;
-        font-weight: 600;
-        font-family: var(--font-body);
-    }
-
-    .ai-badge .badge-divider {
-        width: 1px;
-        height: 20px;
-        background: rgba(26, 92, 255, 0.08);
-    }
-
-    .ai-badge .badge-accuracy {
-        color: var(--fb-text-secondary);
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-
-    .ai-badge .badge-accuracy i {
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-right: 4px;
-        font-size: 0.8rem;
-    }
-
-    /* Hero Heading - Gradient Enhanced */
-    .hero-heading {
-        font-family: var(--font-display);
-        font-size: clamp(2.8rem, 5.5vw, 4.8rem);
-        font-weight: 700;
-        line-height: 1.05;
-        color: var(--fb-text);
-        margin-bottom: 24px;
-        letter-spacing: -0.02em;
-    }
-
-    .hero-heading .highlight {
-        background: var(--gradient-primary);
-        background-size: 300% 300%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        position: relative;
-        animation: gradientShift 5s ease-in-out infinite;
-    }
-
-    .hero-heading .highlight::after {
-        content: '';
-        position: absolute;
-        bottom: -6px;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: var(--gradient-primary);
-        border-radius: 4px;
-        opacity: 0.2;
-        box-shadow: 0 0 30px rgba(26, 92, 255, 0.1);
-        animation: underlinePulse 3s ease-in-out infinite;
-        background-size: 200% 200%;
-    }
-
-    @keyframes underlinePulse {
-        0%, 100% { opacity: 0.2; transform: scaleX(1); }
-        50% { opacity: 0.4; transform: scaleX(1.05); }
-    }
-
-    .hero-subtext {
-        font-size: 1.1rem;
-        line-height: 1.8;
-        color: var(--fb-text-secondary);
-        max-width: 520px;
-        margin-bottom: 36px;
-        font-weight: 400;
-    }
-
-    /* Stats - Gradient Enhanced */
-    .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-top: 48px;
-        max-width: 500px;
-    }
-
-    .stat-item {
-        background: var(--gradient-glass);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(26, 92, 255, 0.06);
-        border-radius: 16px;
-        padding: 20px 16px;
-        text-align: center;
-        transition: var(--transition-bounce);
-        cursor: default;
-        box-shadow: var(--shadow-glass);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stat-item::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.02), rgba(74, 125, 255, 0.01));
-        opacity: 0;
-        transition: opacity 0.4s ease;
-    }
-
-    .stat-item:hover {
-        background: rgba(255, 255, 255, 0.95);
-        transform: translateY(-6px) scale(1.03);
-        border-color: rgba(26, 92, 255, 0.12);
-        box-shadow: var(--shadow-blue);
-    }
-
-    .stat-item:hover::before {
-        opacity: 1;
-    }
-
-    .stat-number {
-        font-family: var(--font-display);
-        font-size: 2.2rem;
-        font-weight: 700;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        line-height: 1.2;
-        position: relative;
-        z-index: 1;
-        background-size: 200% 200%;
-        animation: gradientShift 4s ease-in-out infinite;
-    }
-
-    .stat-label {
-        font-size: 0.7rem;
-        color: var(--fb-text-secondary);
-        font-weight: 500;
-        margin-top: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        position: relative;
-        z-index: 1;
-    }
-
-    .stat-progress {
-        width: 100%;
-        height: 3px;
-        background: rgba(26, 92, 255, 0.04);
-        border-radius: 4px;
-        margin-top: 10px;
-        overflow: hidden;
-        position: relative;
-        z-index: 1;
-    }
-
-    .stat-progress .progress-fill {
-        height: 100%;
-        background: var(--gradient-primary);
-        border-radius: 4px;
-        width: 0%;
-        transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 0 15px rgba(26, 92, 255, 0.1);
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    /* Search Card - Gradient Enhanced */
-    .search-card {
-        background: var(--gradient-glass);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border-radius: 20px;
-        border: 1px solid rgba(26, 92, 255, 0.06);
-        padding: 36px 32px;
-        box-shadow: var(--shadow-glass);
-        transition: var(--transition-bounce);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .search-card::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 20px;
-        padding: 1px;
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.08), rgba(74, 125, 255, 0.04));
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        pointer-events: none;
-    }
-
-    .search-card:hover {
-        transform: translateY(-6px);
-        box-shadow: var(--shadow-blue);
-        border-color: rgba(26, 92, 255, 0.06);
-    }
-
-    .search-card-title {
-        color: var(--fb-text);
-        font-family: var(--font-display);
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .search-card-subtitle {
-        color: var(--fb-text-secondary);
-        font-size: 0.85rem;
-        margin: 2px 0 0;
-    }
-
-    .search-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.06), rgba(74, 125, 255, 0.03));
-        border: 1px solid rgba(26, 92, 255, 0.06);
-        border-radius: 50px;
-        padding: 4px 14px 4px 10px;
-        color: var(--fb-blue);
-        font-size: 0.65rem;
-        font-weight: 600;
-    }
-
-    .search-badge i {
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    /* Search Form */
-    .search-form .form-group {
-        margin-bottom: 18px;
-    }
-
-    .search-form .form-label {
-        display: block;
-        color: var(--fb-text-secondary);
-        font-size: 0.7rem;
-        font-weight: 600;
-        margin-bottom: 6px;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
-
-    .search-form .form-control,
-    .search-form .form-select {
-        width: 100%;
-        background: var(--fb-blue-bg);
-        border: 2px solid transparent;
-        border-radius: 10px;
-        padding: 12px 16px;
-        color: var(--fb-text);
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        font-family: var(--font-body);
-    }
-
-    .search-form .form-control::placeholder {
-        color: var(--fb-text-secondary);
-        opacity: 0.5;
-    }
-
-    .search-form .form-control:focus,
-    .search-form .form-select:focus {
-        outline: none;
-        border-color: var(--fb-blue);
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(26, 92, 255, 0.06);
-    }
-
-    .search-form .form-select {
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5a72' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 16px center;
-        padding-right: 40px;
-        cursor: pointer;
-    }
-
-    .btn-search {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        background: var(--gradient-primary);
-        color: #fff;
-        padding: 16px;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: var(--transition-bounce);
-        box-shadow: 0 4px 20px rgba(26, 92, 255, 0.2);
-        position: relative;
-        overflow: hidden;
-        font-family: var(--font-body);
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    .btn-search::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 60%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-        transform: skewX(-25deg);
-        animation: shimmerSlide 3s ease-in-out infinite;
-    }
-
-    .btn-search:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 35px rgba(26, 92, 255, 0.3);
-        color: #fff;
-    }
-
-    .btn-search.loading {
-        pointer-events: none;
-        opacity: 0.85;
-    }
-
-    .btn-search .btn-loader {
-        display: none;
-        width: 22px;
-        height: 22px;
-        border: 2px solid rgba(255,255,255,0.2);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: spin 0.8s ease-in-out infinite;
-        position: absolute;
-    }
-
-    .btn-search.loading .btn-text {
-        visibility: hidden;
-    }
-
-    .btn-search.loading .btn-loader {
-        display: block;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    .trust-indicators {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 24px;
-        margin-top: 18px;
-        padding-top: 18px;
-        border-top: 1px solid rgba(26, 92, 255, 0.06);
-        flex-wrap: wrap;
-    }
-
-    .trust-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--fb-text-secondary);
-        font-size: 0.6rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        opacity: 0.6;
-    }
-
-    .trust-item i {
-        font-size: 0.7rem;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    /* ============================================
-       FEATURES SECTION
-       ============================================ */
-    .features-section {
-        padding: 80px 0;
-        background: var(--fb-white);
-    }
-
-    .feature-card {
-        background: var(--fb-white);
-        border: 1px solid rgba(26, 92, 255, 0.04);
-        border-radius: 20px;
-        padding: 36px 28px;
-        text-align: center;
-        height: 100%;
-        transition: var(--transition-bounce);
-        position: relative;
-        overflow: hidden;
-        box-shadow: var(--shadow-glass);
-    }
-
-    .feature-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: var(--gradient-primary);
-        transform: scaleX(0);
-        transition: transform 0.5s ease;
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    .feature-card:hover::before {
-        transform: scaleX(1);
-    }
-
-    .feature-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-blue);
-        border-color: rgba(26, 92, 255, 0.06);
-    }
-
-    .feature-icon {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--gradient-primary);
-        color: #fff;
-        font-size: 2.2rem;
-        margin: 0 auto 20px;
-        transition: var(--transition-bounce);
-        box-shadow: 0 4px 20px rgba(26, 92, 255, 0.15);
-        background-size: 200% 200%;
-        animation: gradientMove 6s ease-in-out infinite;
-    }
-
-    .feature-card:hover .feature-icon {
-        transform: scale(1.1) rotate(-5deg);
-        box-shadow: 0 8px 30px rgba(26, 92, 255, 0.25);
-    }
-
-    .feature-card h4 {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 1.2rem;
-        margin-bottom: 12px;
-        color: var(--fb-text);
-    }
-
-    .feature-card p {
-        color: var(--fb-text-secondary);
-        font-size: 0.95rem;
-        line-height: 1.7;
-        margin: 0;
-    }
-
-    .feature-tag {
-        display: inline-block;
-        margin-top: 16px;
-        padding: 4px 16px;
-        border-radius: 50px;
-        font-size: 0.65rem;
-        font-weight: 600;
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.06), rgba(74, 125, 255, 0.03));
-        color: var(--fb-blue);
-        border: 1px solid rgba(26, 92, 255, 0.04);
-    }
-
-    /* ============================================
-       HOW IT WORKS SECTION
-       ============================================ */
-    .how-it-works-section {
-        padding: 80px 0;
-        background: var(--fb-blue-lightest);
-    }
-
-    .step-card {
-        background: var(--fb-white);
-        border-radius: 20px;
-        padding: 36px 28px;
-        text-align: center;
-        height: 100%;
-        transition: var(--transition-bounce);
-        border: 1px solid rgba(26, 92, 255, 0.04);
-        position: relative;
-        box-shadow: var(--shadow-glass);
-    }
-
-    .step-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-blue);
-        border-color: rgba(26, 92, 255, 0.06);
-    }
-
-    .step-number {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        background: var(--gradient-primary);
-        color: #fff;
-        font-family: var(--font-display);
-        font-size: 1.6rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px;
-        box-shadow: 0 6px 25px rgba(26, 92, 255, 0.2);
-        transition: var(--transition-bounce);
-        background-size: 200% 200%;
-        animation: gradientMove 6s ease-in-out infinite;
-    }
-
-    .step-card:hover .step-number {
-        transform: scale(1.1) rotate(-5deg);
-        box-shadow: 0 8px 35px rgba(26, 92, 255, 0.3);
-    }
-
-    .step-card h4 {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 1.2rem;
-        margin-bottom: 8px;
-        color: var(--fb-text);
-    }
-
-    .step-card p {
-        color: var(--fb-text-secondary);
-        font-size: 0.95rem;
-        line-height: 1.7;
-        margin: 0;
-    }
-
-    .step-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 16px;
-        color: var(--fb-blue);
-        font-weight: 600;
-        text-decoration: none;
-        font-size: 0.85rem;
-        transition: var(--transition-bounce);
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-family: var(--font-body);
-        padding: 8px 20px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.04), rgba(74, 125, 255, 0.02));
-        border: 1px solid rgba(26, 92, 255, 0.04);
-    }
-
-    .step-link:hover {
-        gap: 14px;
-        color: var(--fb-white);
-        text-decoration: none;
-        background: var(--gradient-primary);
-        border-color: transparent;
-        box-shadow: 0 4px 20px rgba(26, 92, 255, 0.2);
-        transform: translateY(-2px);
-    }
-
-    .step-link i {
-        font-size: 0.85rem;
-    }
-
-    /* ============================================
-       PRICING SECTION
-       ============================================ */
-    .pricing-section {
-        padding: 80px 0;
-        background: var(--fb-white);
-    }
-
-    .pricing-card {
-        background: var(--fb-white);
-        border-radius: 20px;
-        padding: 36px 28px;
-        height: 100%;
-        transition: var(--transition-bounce);
-        border: 2px solid rgba(26, 92, 255, 0.04);
-        position: relative;
-        box-shadow: var(--shadow-glass);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .pricing-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-blue);
-        border-color: rgba(26, 92, 255, 0.06);
-    }
-
-    .pricing-card.popular {
-        border-color: var(--fb-blue);
-        background: linear-gradient(135deg, rgba(26, 92, 255, 0.02), rgba(74, 125, 255, 0.01));
-        box-shadow: var(--shadow-blue);
-    }
-
-    .pricing-badge {
-        position: absolute;
-        top: -14px;
-        right: 24px;
-        background: var(--gradient-primary);
-        color: #fff;
-        padding: 4px 18px;
-        border-radius: 50px;
-        font-size: 0.6rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        box-shadow: 0 4px 20px rgba(26, 92, 255, 0.2);
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    .pricing-card h3 {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 1.4rem;
-        margin-bottom: 4px;
-        color: var(--fb-text);
-    }
-
-    .pricing-card .price-sub {
-        color: var(--fb-text-secondary);
-        font-size: 0.85rem;
-        margin-bottom: 20px;
-    }
-
-    .pricing-card .price {
-        font-family: var(--font-display);
-        font-size: 3.2rem;
-        font-weight: 700;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        line-height: 1;
-        background-size: 200% 200%;
-        animation: gradientShift 4s ease-in-out infinite;
-    }
-
-    .pricing-card .price-period {
-        color: var(--fb-text-secondary);
-        font-size: 1rem;
-        font-weight: 400;
-    }
-
-    .pricing-features {
-        list-style: none;
-        padding: 0;
-        margin: 24px 0 32px;
-        flex-grow: 1;
-    }
-
-    .pricing-features li {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 0;
-        font-size: 0.9rem;
-        color: var(--fb-text);
-        border-bottom: 1px solid rgba(26, 92, 255, 0.04);
-    }
-
-    .pricing-features li:last-child {
-        border-bottom: none;
-    }
-
-    .pricing-features li .pf-icon {
-        flex-shrink: 0;
-        font-size: 1rem;
-    }
-
-    .pricing-features li .pf-icon.success {
-        color: #10b981;
-    }
-
-    .pricing-features li .pf-icon.danger {
-        color: var(--fb-text-secondary);
-    }
-
-    .pricing-features li.is-off {
-        color: var(--fb-text-secondary);
-    }
-
-    .btn-pricing {
-        display: block;
-        width: 100%;
-        padding: 14px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        text-align: center;
-        border: none;
-        cursor: pointer;
-        transition: var(--transition-bounce);
-        text-decoration: none;
-        font-family: var(--font-body);
-    }
-
-    .btn-pricing-primary {
-        background: var(--gradient-primary);
-        color: #fff;
-        box-shadow: 0 4px 20px rgba(26, 92, 255, 0.15);
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    .btn-pricing-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 30px rgba(26, 92, 255, 0.25);
-        color: #fff;
-        text-decoration: none;
-    }
-
-    .btn-pricing-secondary {
-        background: transparent;
-        border: 2px solid rgba(26, 92, 255, 0.15);
-        color: var(--fb-blue);
-    }
-
-    .btn-pricing-secondary:hover {
-        background: var(--gradient-primary);
-        color: #fff;
-        border-color: transparent;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 30px rgba(26, 92, 255, 0.15);
-        text-decoration: none;
-    }
-
-    /* ============================================
-       CTA SECTION - GRADIENT ENHANCED
-       ============================================ */
-    .cta-section {
-        padding: 80px 0;
-        background: 
-            radial-gradient(ellipse at 20% 30%, rgba(26, 92, 255, 0.04) 0%, transparent 60%),
-            radial-gradient(ellipse at 80% 70%, rgba(74, 125, 255, 0.03) 0%, transparent 50%),
-            var(--gradient-hero);
-        position: relative;
-        overflow: hidden;
-        border-top: 1px solid rgba(26, 92, 255, 0.04);
-        border-bottom: 1px solid rgba(26, 92, 255, 0.04);
-    }
-
-    .cta-section .cta-orb {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(120px);
-        pointer-events: none;
-        opacity: 0.08;
-    }
-
-    .cta-section .cta-orb:nth-child(1) {
-        width: 400px;
-        height: 400px;
-        top: -50%;
-        right: -10%;
-        background: linear-gradient(135deg, #1a5cff, #4a7dff);
-    }
-
-    .cta-section .cta-orb:nth-child(2) {
-        width: 300px;
-        height: 300px;
-        bottom: -40%;
-        left: -5%;
-        background: linear-gradient(135deg, #4a7dff, #7aa5ff);
-        animation-delay: -3s;
-    }
-
-    .cta-section h2 {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: clamp(2rem, 3.5vw, 2.8rem);
-        color: var(--fb-text);
-        letter-spacing: -0.02em;
-    }
-
-    .cta-section p {
-        color: var(--fb-text-secondary);
-        font-size: 1.05rem;
-    }
-
-    .cta-section .btn-cta {
-        background: var(--gradient-primary);
-        color: #fff;
-        padding: 16px 44px;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
-        border: none;
-        cursor: pointer;
-        transition: var(--transition-bounce);
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-family: var(--font-body);
-        box-shadow: 0 4px 25px rgba(26, 92, 255, 0.2);
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    .cta-section .btn-cta:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 12px 40px rgba(26, 92, 255, 0.3);
-        color: #fff;
-        text-decoration: none;
-    }
-
-    /* ============================================
-       TOAST NOTIFICATIONS
-       ============================================ */
-    .toast-container {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        max-width: 400px;
-    }
-
-    .toast-custom {
-        background: var(--fb-white);
-        border: 1px solid rgba(26, 92, 255, 0.04);
-        border-radius: 12px;
-        padding: 16px 20px;
-        color: var(--fb-text);
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        animation: slideInRight 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        box-shadow: var(--shadow-blue);
-    }
-
-    .toast-custom.hiding {
-        animation: slideOutRight 0.4s ease forwards;
-    }
-
-    @keyframes slideInRight {
-        from { transform: translateX(120%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(120%); opacity: 0; }
-    }
-
-    .toast-custom .toast-icon {
-        font-size: 1.4rem;
-        flex-shrink: 0;
-    }
-
-    .toast-custom .toast-content {
-        flex: 1;
-    }
-
-    .toast-custom .toast-title {
-        font-weight: 600;
-        font-size: 0.9rem;
-        font-family: var(--font-display);
-        margin-bottom: 2px;
-    }
-
-    .toast-custom .toast-message {
-        font-size: 0.85rem;
-        color: var(--fb-text-secondary);
-    }
-
-    .toast-custom .toast-close {
-        background: none;
-        border: none;
-        color: var(--fb-text-secondary);
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 0 4px;
-        transition: color 0.3s ease;
-    }
-
-    .toast-custom .toast-close:hover {
-        color: var(--fb-text);
-    }
-
-    /* ============================================
-       FLOATING CTA BUTTON
-       ============================================ */
-    .floating-cta {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 1000;
-        background: var(--gradient-primary);
-        color: #fff;
-        border: none;
-        border-radius: 50%;
-        width: 56px;
-        height: 56px;
-        font-size: 1.2rem;
-        box-shadow: 0 4px 25px rgba(26, 92, 255, 0.25);
-        transition: var(--transition-bounce);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    .floating-cta:hover {
-        transform: scale(1.1) rotate(-5deg);
-        box-shadow: 0 8px 35px rgba(26, 92, 255, 0.35);
-    }
-
-    .floating-cta.visible {
-        display: flex;
-    }
-
-    /* ============================================
-       RESPONSIVE DESIGN
-       ============================================ */
-    @media (max-width: 992px) {
-        .hero-section {
-            min-height: auto;
-            padding: 60px 0;
-        }
-        .hero-heading {
-            font-size: clamp(2.2rem, 4vw, 3.2rem);
-        }
-        .stat-grid {
-            max-width: 100%;
-        }
-        .stat-number {
-            font-size: 1.8rem;
-        }
-        .btn-gradient, .btn-outline-gradient {
-            padding: 12px 28px;
-            font-size: 0.95rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .hero-heading {
-            font-size: 2.4rem;
-        }
-        .hero-subtext {
-            font-size: 1rem;
-        }
-        .btn-gradient, .btn-outline-gradient {
-            width: 100%;
-            justify-content: center;
-            padding: 14px 24px;
-        }
-        .search-card {
-            padding: 24px 20px;
-        }
-        .stat-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-        .stat-item {
-            padding: 14px 10px;
-        }
-        .stat-number {
-            font-size: 1.4rem;
-        }
-        .stat-label {
-            font-size: 0.6rem;
-        }
-        .ai-badge {
-            padding: 6px 16px 6px 8px;
-        }
-        .ai-badge .badge-text {
-            font-size: 0.75rem;
-        }
-        .ai-badge .badge-accuracy {
-            font-size: 0.7rem;
-        }
-        .features-section {
-            padding: 60px 0;
-        }
-        .how-it-works-section {
-            padding: 60px 0;
-        }
-        .pricing-section {
-            padding: 60px 0;
-        }
-        .cta-section {
-            padding: 60px 0;
-        }
-        .cta-section h2 {
-            font-size: 1.8rem;
-        }
-        .pricing-card .price {
-            font-size: 2.2rem;
-        }
-        .toast-container {
-            right: 12px;
-            left: 12px;
-            max-width: 100%;
-        }
-        .floating-cta {
-            bottom: 16px;
-            right: 16px;
-            width: 48px;
-            height: 48px;
-            font-size: 1rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .hero-heading {
-            font-size: 1.8rem;
-        }
-        .hero-subtext {
-            font-size: 0.95rem;
-        }
-        .ai-badge {
-            padding: 4px 12px 4px 4px;
-        }
-        .ai-badge .badge-text {
-            font-size: 0.7rem;
-        }
-        .ai-badge .badge-accuracy {
-            font-size: 0.6rem;
-        }
-        .section-title {
-            font-size: 1.6rem;
-        }
-        .stat-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        .stat-item {
-            padding: 12px 8px;
-            border-radius: 12px;
-        }
-        .stat-number {
-            font-size: 1.2rem;
-        }
-        .stat-label {
-            font-size: 0.55rem;
-        }
-        .feature-card {
-            padding: 24px 16px;
-        }
-        .step-card {
-            padding: 24px 16px;
-        }
-        .pricing-card {
-            padding: 24px 16px;
-        }
-        .gradient-orb {
-            opacity: 0.06 !important;
-        }
-    }
-
-    /* ============================================
-       SCROLLBAR STYLING
-       ============================================ */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: var(--fb-blue-bg);
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: var(--gradient-primary);
-        border-radius: 4px;
-        background-size: 200% 200%;
-        animation: gradientMove 4s ease-in-out infinite;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--gradient-secondary);
-    }
-
-    /* ============================================
-       SELECTION STYLING
-       ============================================ */
-    ::selection {
-        background: rgba(26, 92, 255, 0.12);
-        color: var(--fb-text);
-    }
-
-    /* ============================================
-       AOS ANIMATIONS
-       ============================================ */
-    [data-aos] {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    [data-aos].aos-animate {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    [data-aos="fade-right"] {
-        transform: translateX(-30px);
-    }
-
-    [data-aos="fade-right"].aos-animate {
-        transform: translateX(0);
-    }
-
-    [data-aos="fade-left"] {
-        transform: translateX(30px);
-    }
-
-    [data-aos="fade-left"].aos-animate {
-        transform: translateX(0);
-    }
-
-    [data-aos="fade-up"] {
-        transform: translateY(30px);
-    }
-
-    [data-aos="fade-up"].aos-animate {
-        transform: translateY(0);
-    }
+  .lp-hero {
+    position: relative;
+    padding: 5rem 0 4rem;
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    overflow: hidden;
+  }
+  html.theme-dark .lp-hero {
+    background: linear-gradient(135deg, #1D4ED8, #2563EB);
+  }
+  .lp-hero h1 {
+    font-size: clamp(2rem,4.5vw,3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+  .lp-hero h1 span {
+    background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.75));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .lp-hero .hp-sub {
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 520px;
+    margin-bottom: 2rem;
+  }
+  .lp-hero .hp-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+  .lp-hero .hp-actions .btn-primary {
+    height: 44px;
+    padding: 0 1.5rem;
+    font-weight: 500;
+    font-size: 15px;
+    border-radius: 22px;
+  }
+  .lp-hero .hp-actions .btn-outline {
+    height: 44px;
+    padding: 0 1.5rem;
+    font-weight: 500;
+    font-size: 15px;
+    border-radius: 22px;
+  }
+  .lp-hero .hp-stats {
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .lp-hero .hp-stats .hs-item { text-align: center; }
+  .lp-hero .hp-stats .hs-num { font-size: 36px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: #fff; }
+  .lp-hero .hp-stats .hs-label { font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.75); margin-top: 0.15rem; }
+  .search-card {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius-xl);
+    padding: 1.5rem;
+  }
+  .search-card h5 { font-size: 18px; font-weight: 600; margin-bottom: 0.25rem; }
+  .search-card .search-sub { font-size: 15px; font-weight: 400; color: var(--ss-muted); margin-bottom: 1.25rem; }
+  .search-card .form-group { margin-bottom: 0.875rem; }
+  .search-card .form-group label { display: block; font-size: 14px; font-weight: 500; color: var(--ss-muted); margin-bottom: 0.25rem; }
+  .search-card .form-control, .search-card .form-select {
+    height: 42px;
+    border-radius: var(--ss-radius);
+    border: 1.5px solid var(--ss-border);
+    background: var(--ss-surface);
+    font-size: 14px;
+    padding: 0 0.875rem;
+    color: var(--ss-text);
+  }
+  .search-card .form-control:focus, .search-card .form-select:focus {
+    border-color: var(--ss-brand);
+    box-shadow: 0 0 0 3px rgba(var(--ss-brand-rgb), 0.10);
+    outline: none;
+  }
+  .search-card .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748b' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+    padding-right: 2.5rem;
+  }
+  .search-card .search-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    border: none;
+    color: #fff;
+    height: 42px;
+    border-radius: 21px;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 0 1.25rem;
+    width: 100%;
+    cursor: pointer;
+    transition: all var(--ss-transition-fast);
+  }
+  .search-card .search-btn:hover {
+    background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+  }
+  .search-card .trust-row {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 1rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--ss-border);
+    flex-wrap: wrap;
+  }
+  .search-card .trust-row span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ss-muted-light);
+  }
+  .search-card .trust-row i { font-size: 13px; color: #2563EB; }
+
+  .lp-trusted {
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--ss-border);
+    border-bottom: 1px solid var(--ss-border);
+    text-align: center;
+  }
+  .lp-trusted .tp-label {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ss-muted-light);
+    margin-bottom: 1.25rem;
+  }
+  .lp-trusted .tp-logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .lp-trusted .tp-logos span {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ss-border-strong);
+    opacity: 0.6;
+    transition: opacity var(--ss-transition-fast);
+  }
+  .lp-trusted .tp-logos span:hover { opacity: 1; }
+
+  .lp-section { padding: 4rem 0; }
+  .lp-section.alt { background: var(--ss-surface); }
+  html.theme-dark .lp-section.alt { background: var(--ss-surface-alt); }
+
+  .lp-section-title {
+    font-size: clamp(1.75rem,3vw,2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .lp-section-sub {
+    color: var(--ss-muted);
+    font-size: 16px;
+    font-weight: 400;
+    max-width: 540px;
+    margin: 0 auto 2rem;
+    line-height: 1.5;
+  }
+
+  .lp-feature-card {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius-xl);
+    padding: 1.75rem;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+  .lp-feature-card:hover {
+    box-shadow: var(--ss-shadow-lg);
+    border-color: rgba(var(--ss-brand-rgb), 0.15);
+  }
+  .lp-feature-card .fc-icon {
+    width: 44px; height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ss-radius);
+    background: #DBEAFE;
+    color: #2563EB;
+    font-size: 18px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+  }
+  .lp-feature-card:hover .fc-icon {
+    background: #2563EB;
+    color: #fff;
+  }
+  .lp-feature-card h4 { font-size: 18px; font-weight: 600; margin-bottom: 0.5rem; }
+  .lp-feature-card p { font-size: 15px; font-weight: 400; color: var(--ss-muted); line-height: 1.5; margin: 0; }
+
+  .lp-step-card { text-align: center; padding: 1.5rem 1rem; }
+  .lp-step-card .sc-num {
+    width: 52px; height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ss-primary), var(--ss-brand));
+    color: #fff;
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 1rem;
+  }
+  .lp-step-card h4 { font-size: 18px; font-weight: 600; margin-bottom: 0.35rem; }
+  .lp-step-card p { font-size: 15px; font-weight: 400; color: var(--ss-muted); line-height: 1.5; margin: 0; }
+
+  .lp-ai-section {
+    padding: 4rem 0;
+    background: var(--ss-dark);
+    color: var(--ss-dark-text);
+    position: relative;
+    overflow: hidden;
+  }
+  html.theme-dark .lp-ai-section { background: var(--ss-dark-surface); }
+  .lp-ai-section::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37,99,235,0.08), transparent 70%);
+    top: -200px; right: -100px;
+    pointer-events: none;
+  }
+  .lp-ai-section h2 {
+    font-size: clamp(1.5rem,2.5vw,2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    color: var(--ss-dark-text);
+  }
+  .lp-ai-section .ai-sub {
+    color: var(--ss-dark-muted);
+    font-size: 16px;
+    font-weight: 400;
+    max-width: 520px;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+  .lp-ai-section .ai-features { display: grid; gap: 0.75rem; }
+  .lp-ai-section .ai-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--ss-radius);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all var(--ss-transition);
+  }
+  .lp-ai-section .ai-feature-item:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateX(4px);
+  }
+  .lp-ai-section .ai-feature-item .ai-icon {
+    width: 40px; height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ss-radius);
+    background: rgba(37, 99, 235, 0.15);
+    color: #2563EB;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .lp-ai-section .ai-feature-item h4 { font-size: 16px; font-weight: 600; color: var(--ss-dark-text); margin-bottom: 0.15rem; }
+  .lp-ai-section .ai-feature-item p { font-size: 14px; font-weight: 400; color: var(--ss-dark-muted); margin: 0; line-height: 1.5; }
+
+  .lp-testimonial {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius-xl);
+    padding: 1.5rem;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+  .lp-testimonial:hover { box-shadow: var(--ss-shadow-md); }
+  .lp-testimonial .tm-stars { display: flex; gap: 0.2rem; color: #F59E0B; font-size: 14px; margin-bottom: 0.75rem; }
+  .lp-testimonial .tm-text { font-size: 15px; font-weight: 400; line-height: 1.5; color: var(--ss-muted); margin-bottom: 1rem; }
+  .lp-testimonial .tm-author { display: flex; align-items: center; gap: 0.75rem; }
+  .lp-testimonial .tm-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(29,78,216,0.08), rgba(37,99,235,0.08));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--ss-brand);
+  }
+  .lp-testimonial .tm-name { font-size: 14px; font-weight: 600; }
+  .lp-testimonial .tm-role { font-size: 13px; color: var(--ss-muted); }
+
+  .lp-pricing {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius-xl);
+    padding: 1.75rem;
+    height: 100%;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .lp-pricing:hover { box-shadow: var(--ss-shadow-lg); }
+  .lp-pricing.popular { border-color: var(--ss-brand); }
+  .lp-pricing .pc-popular-badge {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    padding: 0.2rem 0.875rem;
+    border-radius: 12px;
+    background: var(--ss-brand);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .lp-pricing .pc-name { font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ss-muted); margin-bottom: 0.5rem; }
+  .lp-pricing .pc-price { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.25rem; }
+  .lp-pricing .pc-price span { font-size: 15px; font-weight: 500; color: var(--ss-muted); }
+  .lp-pricing .pc-desc { font-size: 14px; color: var(--ss-muted); margin-bottom: 1.25rem; }
+  .lp-pricing .pc-features { list-style: none; padding: 0; margin: 0 0 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .lp-pricing .pc-features li { display: flex; align-items: center; gap: 0.5rem; font-size: 14px; color: var(--ss-text); }
+  .lp-pricing .pc-features li i { color: var(--ss-success); font-size: 13px; }
+
+  .lp-faq { border-bottom: 1px solid var(--ss-border); }
+  .lp-faq:last-child { border-bottom: none; }
+  .lp-faq .faq-q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ss-text);
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    transition: color var(--ss-transition-fast);
+  }
+  .lp-faq .faq-q:hover { color: var(--ss-brand); }
+  .lp-faq .faq-q i { font-size: 13px; color: var(--ss-muted-light); transition: transform var(--ss-transition-fast); flex-shrink: 0; }
+  .lp-faq .faq-q[aria-expanded="true"] i { transform: rotate(180deg); }
+  .lp-faq .faq-a { padding: 0 0 1rem; font-size: 14px; color: var(--ss-muted); line-height: 1.7; }
+
+  .lp-cta {
+    padding: 4rem 0;
+    background: var(--ss-dark);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  html.theme-dark .lp-cta { background: var(--ss-dark-surface); }
+  .lp-cta h2 { font-size: clamp(1.5rem,2.5vw,2rem); font-weight: 700; margin-bottom: 0.5rem; color: var(--ss-dark-text); letter-spacing: -0.02em; }
+  .lp-cta p { color: var(--ss-dark-muted); font-size: 15px; max-width: 520px; margin: 0 auto 1.5rem; }
+  .lp-cta .btn-primary {
+    height: 44px;
+    padding: 0 2rem;
+    font-weight: 500;
+    border-radius: 22px;
+  }
+  .lp-cta .btn-primary:hover {
+    background: var(--ss-primary-hover) !important;
+    border-color: var(--ss-primary-hover) !important;
+  }
+
+  .lp-footer {
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--ss-border);
+    background: var(--ss-surface);
+  }
+  html.theme-dark .lp-footer { background: var(--ss-surface-alt); }
+  .lp-footer .fw-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .lp-footer .fw-brand .fw-icon {
+    width: 28px; height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ss-radius);
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    color: #fff;
+    font-size: 13px;
+  }
+  .lp-footer p { font-size: 14px; color: var(--ss-muted); }
+  .lp-footer h5 { font-size: 13px; font-weight: 500; color: var(--ss-muted); margin-bottom: 0.75rem; }
+  .lp-footer a { display: block; font-size: 14px; color: var(--ss-muted); padding: 0.2rem 0; transition: color var(--ss-transition-fast); text-decoration: none; }
+  .lp-footer a:hover { color: var(--ss-text); }
+  .lp-footer .fw-bottom {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ss-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 13px;
+    color: var(--ss-muted-light);
+  }
+
+  [data-aos] { opacity: 0; transform: translateY(20px); transition: all 0.5s ease; }
+  [data-aos].aos-animate { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 991.98px) { .lp-hero { padding: 3rem 0; } .lp-section { padding: 2.5rem 0; } }
+  @media (max-width: 767.98px) { .lp-hero .hp-actions .btn { flex: 1; justify-content: center; } }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- ============================================
-     HERO SECTION - GRADIENT ENHANCED
-     ============================================ -->
-<section class="hero-section" id="home">
-    <!-- Gradient Orbs -->
-    <div class="gradient-orb"></div>
-    <div class="gradient-orb"></div>
-    <div class="gradient-orb"></div>
-
-    <!-- Particles -->
-    <div class="hero-particles" id="particles"></div>
-
-    <div class="container position-relative">
-        <div class="row align-items-center g-5">
-            <!-- Left Content -->
-            <div class="col-lg-7" data-aos="fade-right">
-                <!-- AI Badge -->
-                <div class="ai-badge">
-                    <span class="dot-live"></span>
-                    <span class="badge-text">Powered by AI</span>
-                    <span class="badge-divider"></span>
-                    <span class="badge-accuracy">
-                        <i class="bi bi-check-circle-fill"></i> 98% Accuracy
-                    </span>
-                    <span class="badge-divider"></span>
-                    <span class="badge-accuracy" style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                        <i class="bi bi-graph-up-arrow" style="-webkit-text-fill-color: transparent;"></i> 12K+ Matches
-                    </span>
-                </div>
-
-                <!-- Heading -->
-                <h1 class="hero-heading">
-                    Launch Your Career with<br>
-                    <span class="highlight">Smarter Job Matches</span>
-                </h1>
-
-                <p class="hero-subtext">
-                    SkillSync AI uses advanced machine learning, resume optimization, 
-                    and skill gap analysis to help you land the right opportunities faster.
-                </p>
-
-                <!-- Buttons -->
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="{% url 'register' %}" class="btn-gradient">
-                        <span class="btn-shimmer"></span>
-                        <span><i class="bi bi-rocket-takeoff me-2"></i>Join Free</span>
-                    </a>
-                    <a href="#how-it-works" class="btn-outline-gradient">
-                        <i class="bi bi-play-circle me-2"></i>See How It Works
-                    </a>
-                </div>
-
-                <!-- Stats -->
-                <div class="stat-grid">
-                    <div class="stat-item" data-count="10000">
-                        <div class="stat-number counter">0</div>
-                        <div class="stat-label">Active Jobs</div>
-                        <div class="stat-progress">
-                            <div class="progress-fill" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="stat-item" data-count="50000">
-                        <div class="stat-number counter">0</div>
-                        <div class="stat-label">Happy Users</div>
-                        <div class="stat-progress">
-                            <div class="progress-fill" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="stat-item" data-count="95">
-                        <div class="stat-number counter">0</div>
-                        <div class="stat-label">Match Accuracy</div>
-                        <div class="stat-progress">
-                            <div class="progress-fill" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Content - Search Card -->
-            <div class="col-lg-5" data-aos="fade-left" data-aos-delay="200">
-                <div class="search-card">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div>
-                            <h5 class="search-card-title">Quick Job Search</h5>
-                            <p class="search-card-subtitle">Find your ideal role instantly</p>
-                        </div>
-                        <span class="search-badge">
-                            <i class="bi bi-lightning-fill"></i> Fast
-                        </span>
-                    </div>
-
-                    <form id="quick-job-search" class="search-form" novalidate>
-                        <div class="form-group">
-                            <label class="form-label" for="job-title">
-                                <i class="bi bi-briefcase me-1" style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i> Job Title / Keyword
-                            </label>
-                            <input type="text" id="job-title" class="form-control" 
-                                   placeholder="e.g., Software Engineer" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="job-location">
-                                <i class="bi bi-geo-alt me-1" style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i> Location
-                            </label>
-                            <input type="text" id="job-location" class="form-control" 
-                                   placeholder="e.g., Remote, New York">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="experience-level">
-                                <i class="bi bi-mortarboard me-1" style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i> Experience Level
-                            </label>
-                            <select id="experience-level" class="form-select">
-                                <option value="entry">Entry Level (0-2 years)</option>
-                                <option value="mid" selected>Mid Level (3-5 years)</option>
-                                <option value="senior">Senior Level (6+ years)</option>
-                                <option value="lead">Lead / Manager (10+ years)</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn-search" id="search-btn">
-                            <span class="btn-text"><i class="bi bi-search me-2"></i>Search Jobs</span>
-                            <span class="btn-loader"></span>
-                        </button>
-                    </form>
-
-                    <!-- Trust indicators -->
-                    <div class="trust-indicators">
-                        <span class="trust-item">
-                            <i class="bi bi-shield-check"></i> Secure
-                        </span>
-                        <span class="trust-item">
-                            <i class="bi bi-person-check"></i> 50K+ Users
-                        </span>
-                        <span class="trust-item">
-                            <i class="bi bi-star-fill"></i> 4.9/5 Rating
-                        </span>
-                        <span class="trust-item">
-                            <i class="bi bi-clock"></i> Real-time
-                        </span>
-                    </div>
-                </div>
-            </div>
+<!-- ═══ HERO ═══ -->
+<section class="lp-hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7" data-aos>
+        <div class="hp-badge">
+          <span class="hp-dot"></span>
+          AI-Powered Matching
         </div>
+        <h1>
+          Find your next career with<br>
+          <span>smarter job matching</span>
+        </h1>
+        <p class="hp-sub">
+          SkillSync AI uses machine learning to match your skills with the right opportunities.
+          Analyze, improve, and land your dream role.
+        </p>
+        <div class="hp-actions">
+          <a href="{% url 'register' %}" class="btn btn-primary">
+            <i class="bi bi-rocket-takeoff"></i> Get started free
+          </a>
+          <a href="#how-it-works" class="btn btn-outline">
+            <i class="bi bi-play-circle"></i> How it works
+          </a>
+        </div>
+        <div class="hp-stats">
+          <div class="hs-item">
+            <div class="hs-num">10K+</div>
+            <div class="hs-label">Active Jobs</div>
+          </div>
+          <div class="hs-item">
+            <div class="hs-num">50K+</div>
+            <div class="hs-label">Users</div>
+          </div>
+          <div class="hs-item">
+            <div class="hs-num">98%</div>
+            <div class="hs-label">Accuracy</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5" data-aos>
+        <div class="search-card">
+          <h5>Quick job search</h5>
+          <p class="search-sub">Find your ideal role in seconds</p>
+          <form id="quick-job-search">
+            <div class="form-group">
+              <label for="job-title">Job title</label>
+              <input type="text" id="job-title" class="form-control" placeholder="e.g. Software Engineer" required>
+            </div>
+            <div class="form-group">
+              <label for="job-location">Location</label>
+              <input type="text" id="job-location" class="form-control" placeholder="e.g. Remote, New York">
+            </div>
+            <div class="form-group">
+              <label for="experience-level">Experience</label>
+              <select id="experience-level" class="form-select">
+                <option value="entry">Entry Level (0-2 years)</option>
+                <option value="mid" selected>Mid Level (3-5 years)</option>
+                <option value="senior">Senior Level (6+ years)</option>
+                <option value="lead">Lead / Manager (10+ years)</option>
+              </select>
+            </div>
+            <button type="submit" class="search-btn" id="search-btn">
+              <i class="bi bi-search"></i> Search jobs
+            </button>
+          </form>
+          <div class="trust-row">
+            <span><i class="bi bi-shield-check"></i> Secure</span>
+            <span><i class="bi bi-person-check"></i> 50K+ users</span>
+            <span><i class="bi bi-star-fill"></i> 4.9/5 rating</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- ============================================
-     FEATURES SECTION
-     ============================================ -->
-<section class="features-section" id="features">
-    <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <span class="section-badge">
-                <i class="bi bi-trophy"></i> Features
-            </span>
-            <h2 class="section-title">Why Choose <span class="text-gradient">SkillSync AI</span>?</h2>
-            <p class="section-subtitle">Discover the power of AI-driven career development</p>
-            <div class="section-divider"></div>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-cpu"></i>
-                    </div>
-                    <h4>AI-Powered Matching</h4>
-                    <p>Our advanced neural networks analyze your skills and experience to find the perfect job matches with 98% accuracy.</p>
-                    <span class="feature-tag">98% Accurate</span>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #4a7dff, #7aa5ff);">
-                        <i class="bi bi-graph-up-arrow"></i>
-                    </div>
-                    <h4>Skill Gap Analysis</h4>
-                    <p>Identify missing skills and get personalized learning recommendations to advance your career trajectory.</p>
-                    <span class="feature-tag">Smart Insights</span>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #0d47e0, #1a5cff);">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
-                    <h4>Smart Resume Builder</h4>
-                    <p>Create ATS-optimized resumes with AI suggestions and professional templates that stand out to recruiters.</p>
-                    <span class="feature-tag">ATS Optimized</span>
-                </div>
-            </div>
-        </div>
+<!-- ═══ TRUSTED COMPANIES ═══ -->
+<section class="lp-trusted">
+  <div class="container">
+    <div class="tp-label">Trusted by industry-leading companies</div>
+    <div class="tp-logos">
+      <span>TechCorp</span>
+      <span>DataFlow</span>
+      <span>CloudBase</span>
+      <span>NexGen</span>
+      <span>Pinnacle</span>
+      <span>Quantum</span>
     </div>
+  </div>
 </section>
 
-<!-- ============================================
-     HOW IT WORKS SECTION
-     ============================================ -->
-<section class="how-it-works-section" id="how-it-works">
-    <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <span class="section-badge">
-                <i class="bi bi-diagram-3"></i> Process
-            </span>
-            <h2 class="section-title">How It <span class="text-gradient">Works</span></h2>
-            <p class="section-subtitle">Simple 3-step process to land your dream job</p>
-            <div class="section-divider"></div>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="step-card">
-                    <div class="step-number">01</div>
-                    <h4>Create Your Profile</h4>
-                    <p>Sign up for free and complete your profile with your skills, experience, and career preferences.</p>
-                    <a href="{% url 'register' %}" class="step-link">
-                        Get Started <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="step-card">
-                    <div class="step-number" style="background: linear-gradient(135deg, #4a7dff, #7aa5ff);">
-                        02
-                    </div>
-                    <h4>Upload Your Resume</h4>
-                    <p>Upload your resume and let our AI analyze your skills, experience, and career trajectory.</p>
-                    <a href="{% url 'register' %}" class="step-link">
-                        <i class="bi bi-cloud-upload"></i> Upload Now
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="step-card">
-                    <div class="step-number" style="background: linear-gradient(135deg, #0d47e0, #1a5cff);">
-                        03
-                    </div>
-                    <h4>Get Matched</h4>
-                    <p>Receive personalized job recommendations and start applying to positions that match your profile.</p>
-                    <a href="{% url 'register' %}" class="step-link">
-                        <i class="bi bi-magic"></i> Find Matches
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="{% url 'register' %}" class="btn-gradient btn-lg">
-                <span><i class="bi bi-rocket-takeoff me-2"></i>Start Your Journey Now</span>
-            </a>
-        </div>
+<!-- ═══ FEATURES ═══ -->
+<section class="lp-section alt" id="features">
+  <div class="container">
+    <div class="text-center" data-aos>
+      <div class="lp-section-label"><i class="bi bi-trophy"></i> Features</div>
+      <h2 class="lp-section-title">Why choose SkillSync AI?</h2>
+      <p class="lp-section-sub">AI-powered tools to accelerate your career journey</p>
     </div>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos>
+        <div class="lp-feature-card">
+          <div class="fc-icon"><i class="bi bi-cpu"></i></div>
+          <h4>AI-Powered Matching</h4>
+          <p>Advanced neural networks analyze your skills and experience to find the perfect job matches with 98% accuracy.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos>
+        <div class="lp-feature-card">
+          <div class="fc-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h4>Skill Gap Analysis</h4>
+          <p>Identify missing skills and get personalized learning recommendations to advance your career.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos>
+        <div class="lp-feature-card">
+          <div class="fc-icon"><i class="bi bi-file-earmark-text"></i></div>
+          <h4>Smart CV Generator</h4>
+          <p>Create ATS-optimized CVs with AI suggestions and professional templates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- ============================================
-     PRICING SECTION
-     ============================================ -->
-<section class="pricing-section" id="pricing">
-    <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <span class="section-badge">
-                <i class="bi bi-tags"></i> Pricing
-            </span>
-            <h2 class="section-title">Simple, <span class="text-gradient">Transparent</span> Pricing</h2>
-            <p class="section-subtitle">Choose the plan that works for you</p>
-            <div class="section-divider"></div>
-        </div>
-
-        <div class="row g-4 align-items-stretch">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="pricing-card">
-                    <h3>Free</h3>
-                    <p class="price-sub">Perfect for getting started</p>
-                    <div>
-                        <span class="price">$0</span>
-                        <span class="price-period">/month</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> 5 job applications/month</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Basic resume analysis</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Limited job matches</li>
-                        <li class="is-off"><span class="pf-icon danger"><i class="bi bi-x-circle-fill"></i></span> AI interview coach</li>
-                        <li class="is-off"><span class="pf-icon danger"><i class="bi bi-x-circle-fill"></i></span> Priority support</li>
-                    </ul>
-                    <a href="{% url 'register' %}" class="btn-pricing btn-pricing-secondary">Get Started</a>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="pricing-card popular">
-                    <span class="pricing-badge"><i class="bi bi-star-fill me-1"></i>Popular</span>
-                    <h3>Pro</h3>
-                    <p class="price-sub">Best for active job seekers</p>
-                    <div>
-                        <span class="price">$19</span>
-                        <span class="price-period">/month</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Unlimited job applications</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Advanced AI resume analysis</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Personalized job matches</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> AI interview coach</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Email support</li>
-                    </ul>
-                    <a href="{% url 'register' %}?plan=pro" class="btn-pricing btn-pricing-primary">Start Free Trial</a>
-                </div>
-            </div>
-
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="pricing-card">
-                    <h3>Enterprise</h3>
-                    <p class="price-sub">For companies & recruiters</p>
-                    <div>
-                        <span class="price" style="font-size: 2rem;">Custom</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Custom job posting limits</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Advanced candidate filtering</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> Team collaboration tools</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> API access</li>
-                        <li><span class="pf-icon success"><i class="bi bi-check-circle-fill"></i></span> 24/7 priority support</li>
-                    </ul>
-                    <a href="#" class="btn-pricing btn-pricing-secondary">Contact Sales</a>
-                </div>
-            </div>
-        </div>
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="lp-section" id="how-it-works">
+  <div class="container">
+    <div class="text-center" data-aos>
+      <div class="lp-section-label"><i class="bi bi-diagram-3"></i> Process</div>
+      <h2 class="lp-section-title">How it works</h2>
+      <p class="lp-section-sub">Three simple steps to your next opportunity</p>
     </div>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos>
+        <div class="lp-step-card">
+          <div class="sc-num">1</div>
+          <h4>Create your profile</h4>
+          <p>Sign up for free and complete your profile with your skills and career preferences.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos>
+        <div class="lp-step-card">
+          <div class="sc-num">2</div>
+          <h4>Upload your CV</h4>
+          <p>Let our AI analyze your experience and identify the best career paths for you.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos>
+        <div class="lp-step-card">
+          <div class="sc-num">3</div>
+          <h4>Get matched</h4>
+          <p>Receive personalized job recommendations and apply to positions that match your profile.</p>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4" data-aos>
+      <a href="{% url 'register' %}" class="btn btn-primary" style="background:var(--ss-primary);border:none;border-radius:22px;font-weight:600;height:44px;padding:0 1.75rem;">
+        Start your journey
+      </a>
+    </div>
+  </div>
 </section>
 
-<!-- ============================================
-     CTA SECTION
-     ============================================ -->
-<section class="cta-section">
-    <div class="cta-orb"></div>
-    <div class="cta-orb"></div>
-    
-    <div class="container position-relative">
-        <div class="row align-items-center">
-            <div class="col-lg-8" data-aos="fade-right">
-                <span class="section-badge" style="background: linear-gradient(135deg, rgba(26,92,255,0.08), rgba(74,125,255,0.04)); color: #1a5cff; border-color: rgba(26,92,255,0.06);">
-                    <i class="bi bi-graph-up" style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i> Join 50,000+ Users
-                </span>
-                <h2>Ready to <span class="text-gradient">Transform</span> Your Career?</h2>
-                <p>Join thousands of successful job seekers who found their dream jobs with SkillSync AI</p>
+<!-- ═══ AI MATCHING ═══ -->
+<section class="lp-ai-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6" data-aos>
+        <div class="ai-label"><i class="bi bi-stars"></i> AI Technology</div>
+        <h2>Powered by advanced machine learning</h2>
+        <p class="ai-sub">Our neural network analyzes millions of data points to find your perfect match.</p>
+        <div class="ai-features">
+          <div class="ai-feature-item">
+            <div class="ai-icon"><i class="bi bi-brain"></i></div>
+            <div>
+              <h4>Deep Skill Analysis</h4>
+              <p>Extracts and analyzes skills from your CV with 98% accuracy using NLP.</p>
             </div>
-            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0" data-aos="fade-left">
-                <a href="{% url 'register' %}" class="btn-cta">
-                    <i class="bi bi-arrow-right"></i> Get Started Now
-                </a>
+          </div>
+          <div class="ai-feature-item">
+            <div class="ai-icon"><i class="bi bi-graph-up"></i></div>
+            <div>
+              <h4>Predictive Matching</h4>
+              <p>Predicts job fit scores based on your unique skill profile and career trajectory.</p>
             </div>
+          </div>
+          <div class="ai-feature-item">
+            <div class="ai-icon"><i class="bi bi-lightning-charge"></i></div>
+            <div>
+              <h4>Real-time Insights</h4>
+              <p>Get instant feedback on market demand for your skills and salary benchmarks.</p>
+            </div>
+          </div>
         </div>
+      </div>
+      <div class="col-lg-6" data-aos>
+        <div class="search-card" style="max-width:480px;margin:0 auto;">
+          <h5>AI Match Score</h5>
+          <p class="search-sub">See how well your profile matches top jobs</p>
+          <div style="text-align:center;padding:1.5rem 0;">
+            <div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--ss-brand) 0deg 300deg, var(--ss-border) 300deg 360deg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+              <div style="width:90px;height:90px;border-radius:50%;background:var(--ss-surface);display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                <span style="font-size:1.75rem;font-weight:700;color:var(--ss-brand);line-height:1;">94%</span>
+                <span style="font-size:0.625rem;font-weight:500;color:var(--ss-muted-light);">Match</span>
+              </div>
+            </div>
+            <p style="font-size:14px;color:var(--ss-muted);max-width:300px;margin:0 auto;">Based on your skills, experience, and market demand analysis</p>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- ============================================
-     TOAST CONTAINER
-     ============================================ -->
-<div id="toast-container" class="toast-container"></div>
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="lp-section alt">
+  <div class="container">
+    <div class="text-center" data-aos>
+      <div class="lp-section-label"><i class="bi bi-chat-quote"></i> Testimonials</div>
+      <h2 class="lp-section-title">Trusted by professionals</h2>
+      <p class="lp-section-sub">Hear from users who found their dream roles</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos>
+        <div class="lp-testimonial">
+          <div class="tm-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+          <p class="tm-text">"SkillSync AI completely transformed my job search. The AI matching found opportunities I would have never discovered on my own."</p>
+          <div class="tm-author">
+            <div class="tm-avatar">SK</div>
+            <div>
+              <div class="tm-name">Sarah Kim</div>
+              <div class="tm-role">Software Engineer at TechCorp</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos>
+        <div class="lp-testimonial">
+          <div class="tm-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+          <p class="tm-text">"The skill gap analysis was eye-opening. I identified exactly what certifications I needed and landed a promotion within 3 months."</p>
+          <div class="tm-author">
+            <div class="tm-avatar">MJ</div>
+            <div>
+              <div class="tm-name">Marcus Johnson</div>
+              <div class="tm-role">Data Scientist at DataFlow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos>
+        <div class="lp-testimonial">
+          <div class="tm-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+          <p class="tm-text">"As a recruiter, this platform saved me hundreds of hours. The AI screening is incredibly accurate at finding the right candidates."</p>
+          <div class="tm-author">
+            <div class="tm-avatar">EP</div>
+            <div>
+              <div class="tm-name">Emily Park</div>
+              <div class="tm-role">Talent Lead at CloudBase</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<!-- ============================================
-     FLOATING CTA BUTTON
-     ============================================ -->
-<button class="floating-cta" id="floatingCta" aria-label="Back to top">
-    <i class="bi bi-arrow-up"></i>
-</button>
+<!-- ═══ PRICING ═══ -->
+<section class="lp-section" id="pricing">
+  <div class="container">
+    <div class="text-center" data-aos>
+      <div class="lp-section-label"><i class="bi bi-currency-dollar"></i> Pricing</div>
+      <h2 class="lp-section-title">Simple, transparent pricing</h2>
+      <p class="lp-section-sub">Start free, upgrade when you need more power</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-4 col-md-6" data-aos>
+        <div class="lp-pricing">
+          <div class="pc-name">Starter</div>
+          <div class="pc-price">$0 <span>/month</span></div>
+          <p class="pc-desc">Perfect for getting started with basic job matching.</p>
+          <ul class="pc-features">
+            <li><i class="bi bi-check-circle-fill"></i> AI job matching</li>
+            <li><i class="bi bi-check-circle-fill"></i> Basic skill analysis</li>
+            <li><i class="bi bi-check-circle-fill"></i> 10 job applications/month</li>
+            <li><i class="bi bi-check-circle-fill"></i> Email support</li>
+          </ul>
+          <a href="{% url 'register' %}" class="btn btn-outline w-100">Get started free</a>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos>
+        <div class="lp-pricing popular">
+          <div class="pc-popular-badge">Most popular</div>
+          <div class="pc-name">Professional</div>
+          <div class="pc-price">$29 <span>/month</span></div>
+          <p class="pc-desc">For serious job seekers who want every advantage.</p>
+          <ul class="pc-features">
+            <li><i class="bi bi-check-circle-fill"></i> Everything in Starter</li>
+            <li><i class="bi bi-check-circle-fill"></i> Advanced skill gap analysis</li>
+            <li><i class="bi bi-check-circle-fill"></i> Unlimited applications</li>
+            <li><i class="bi bi-check-circle-fill"></i> ATS CV builder</li>
+            <li><i class="bi bi-check-circle-fill"></i> Priority support</li>
+          </ul>
+          <a href="{% url 'register' %}" class="btn btn-primary w-100">Start free trial</a>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos>
+        <div class="lp-pricing">
+          <div class="pc-name">Enterprise</div>
+          <div class="pc-price">$99 <span>/month</span></div>
+          <p class="pc-desc">For teams and organizations hiring at scale.</p>
+          <ul class="pc-features">
+            <li><i class="bi bi-check-circle-fill"></i> Everything in Professional</li>
+            <li><i class="bi bi-check-circle-fill"></i> Team collaboration</li>
+            <li><i class="bi bi-check-circle-fill"></i> API access</li>
+            <li><i class="bi bi-check-circle-fill"></i> Custom integrations</li>
+            <li><i class="bi bi-check-circle-fill"></i> Dedicated account manager</li>
+          </ul>
+          <a href="{% url 'register' %}" class="btn btn-outline w-100">Contact sales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="lp-section alt" id="faq">
+  <div class="container" style="max-width:720px;">
+    <div class="text-center" data-aos>
+      <div class="lp-section-label"><i class="bi bi-question-circle"></i> FAQ</div>
+      <h2 class="lp-section-title">Frequently asked questions</h2>
+      <p class="lp-section-sub">Everything you need to know about SkillSync AI</p>
+    </div>
+    <div data-aos>
+      <div class="lp-faq">
+        <button class="faq-q" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true">
+          How does the AI matching work? <i class="bi bi-chevron-down"></i>
+        </button>
+        <div id="faq1" class="collapse show">
+          <div class="faq-a">Our AI analyzes your CV, skills, and career preferences against millions of job postings to find the best matches. It uses advanced NLP to understand your unique profile and recommend opportunities that align with your career goals.</div>
+        </div>
+      </div>
+      <div class="lp-faq">
+        <button class="faq-q collapsed" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false">
+          Is my data secure? <i class="bi bi-chevron-down"></i>
+        </button>
+        <div id="faq2" class="collapse">
+          <div class="faq-a">Yes. All data is encrypted at rest and in transit. We follow industry best practices for security and never share your personal information with third parties without your explicit consent.</div>
+        </div>
+      </div>
+      <div class="lp-faq">
+        <button class="faq-q collapsed" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false">
+          Can I change my role later? <i class="bi bi-chevron-down"></i>
+        </button>
+        <div id="faq3" class="collapse">
+          <div class="faq-a">Absolutely. You can update your role and preferences at any time from your profile settings. Your dashboard and recommendations will adjust accordingly.</div>
+        </div>
+      </div>
+      <div class="lp-faq">
+        <button class="faq-q collapsed" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false">
+          Is there a free tier available? <i class="bi bi-chevron-down"></i>
+        </button>
+        <div id="faq4" class="collapse">
+          <div class="faq-a">Yes! Our Starter plan is completely free and includes AI job matching, basic skill analysis, and up to 10 job applications per month. No credit card required.</div>
+        </div>
+      </div>
+      <div class="lp-faq">
+        <button class="faq-q collapsed" data-bs-toggle="collapse" data-bs-target="#faq5" aria-expanded="false">
+          How accurate is the skill gap analysis? <i class="bi bi-chevron-down"></i>
+        </button>
+        <div id="faq5" class="collapse">
+          <div class="faq-a">Our skill gap analysis has 94% accuracy. It compares your current skills against market demand and provides personalized recommendations for certifications and courses to fill identified gaps.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="lp-cta">
+  <div class="container">
+    <div data-aos>
+      <h2>Ready to transform your career?</h2>
+      <p>Join thousands of successful professionals who found their dream roles with SkillSync AI</p>
+      <a href="{% url 'register' %}" class="btn btn-primary">
+        Get started now
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="lp-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="fw-brand">
+          <span class="fw-icon">S</span>
+          SkillSync AI
+        </div>
+        <p>AI-powered career matching platform connecting talent with opportunity.</p>
+      </div>
+      <div class="col-6 col-md-3 col-lg-2 offset-lg-2">
+        <h5>Product</h5>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="{% url 'register' %}">Sign up</a>
+        <a href="{% url 'login' %}">Login</a>
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <h5>Legal</h5>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Security</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+    <div class="fw-bottom">
+      <span>&copy; 2026 SkillSync AI. All rights reserved.</span>
+      <span>Made with <i class="bi bi-heart-fill" style="color:#2563EB;"></i> for career growth</span>
+    </div>
+  </div>
+</footer>
 
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // ============================================================
-    // TOAST NOTIFICATION SYSTEM
-    // ============================================================
-    function showToast(message, type = 'info', title = '') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-        
-        const icons = {
-            success: '✅',
-            error: '❌',
-            warning: '⚠️',
-            info: 'ℹ️'
-        };
-        
-        const titles = {
-            success: 'Success!',
-            error: 'Error!',
-            warning: 'Warning!',
-            info: 'Information'
-        };
-        
-        const toast = document.createElement('div');
-        toast.className = 'toast-custom';
-        toast.innerHTML = `
-            <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
-            <div class="toast-content">
-                <div class="toast-title">${title || titles[type] || 'Info'}</div>
-                <div class="toast-message">${message}</div>
-            </div>
-            <button class="toast-close" onclick="this.closest('.toast-custom').remove()">×</button>
-        `;
-        
-        container.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.classList.add('hiding');
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.remove();
-                    }
-                }, 400);
-            }
-        }, 5000);
-        
-        toast.addEventListener('click', function(e) {
-            if (!e.target.closest('.toast-close')) {
-                this.classList.add('hiding');
-                setTimeout(() => {
-                    if (this.parentNode) {
-                        this.remove();
-                    }
-                }, 400);
-            }
-        });
+  function initAOS() {
+    const els = document.querySelectorAll('[data-aos]');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('aos-animate'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(el => obs.observe(el));
+  }
+
+  document.getElementById('quick-job-search')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const title = document.getElementById('job-title')?.value.trim();
+    if (!title) {
+      document.getElementById('job-title')?.focus();
+      return showMessage('Please enter a job title', 'warning', 'Required');
     }
+    showMessage(`Searching for "${title}" positions...`, 'info', 'Search');
+    setTimeout(() => { window.location.href = "{% url 'register' %}"; }, 600);
+  });
 
-    // ============================================================
-    // COUNTER ANIMATION
-    // ============================================================
-    function animateCounters() {
-        const counters = document.querySelectorAll('.counter');
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const statItem = entry.target;
-                    const counter = statItem.querySelector('.counter');
-                    const progressFill = statItem.querySelector('.progress-fill');
-                    const target = parseInt(statItem.dataset.count);
-                    
-                    if (counter && !counter.dataset.animated) {
-                        counter.dataset.animated = 'true';
-                        
-                        let current = 0;
-                        const duration = 2000;
-                        const step = target / (duration / 16);
-                        
-                        const updateCounter = () => {
-                            current += step;
-                            if (current < target) {
-                                counter.textContent = Math.floor(current).toLocaleString();
-                                requestAnimationFrame(updateCounter);
-                            } else {
-                                counter.textContent = target.toLocaleString() + (target === 95 ? '%' : '+');
-                            }
-                        };
-                        updateCounter();
-                    }
-                    
-                    if (progressFill) {
-                        const width = progressFill.style.width;
-                        progressFill.style.width = '0%';
-                        setTimeout(() => {
-                            progressFill.style.width = width;
-                        }, 100);
-                    }
-                    
-                    observer.unobserve(statItem);
-                }
-            });
-        }, {
-            threshold: 0.3,
-            rootMargin: '0px 0px -50px 0px'
-        });
-        
-        document.querySelectorAll('.stat-item').forEach(item => {
-            observer.observe(item);
-        });
-    }
-
-    // ============================================================
-    // AOS ANIMATIONS
-    // ============================================================
-    function initAOS() {
-        const elements = document.querySelectorAll('[data-aos]');
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const delay = parseInt(entry.target.dataset.aosDelay) || 0;
-                    setTimeout(() => {
-                        entry.target.classList.add('aos-animate');
-                    }, delay);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        });
-        
-        elements.forEach(el => observer.observe(el));
-    }
-
-    // ============================================================
-    // QUICK JOB SEARCH - REDIRECTS TO REGISTER
-    // ============================================================
-    document.getElementById('quick-job-search')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const btn = document.getElementById('search-btn');
-        const title = document.getElementById('job-title')?.value.trim();
-        
-        if (!title) {
-            showToast('Please enter a job title or keyword', 'warning', 'Required Field');
-            document.getElementById('job-title')?.focus();
-            return;
-        }
-        
-        btn.classList.add('loading');
-        
-        setTimeout(() => {
-            btn.classList.remove('loading');
-            showToast(`Searching for "${title}" positions... Redirecting to registration.`, 'info', 'Search Initiated');
-            setTimeout(() => {
-                window.location.href = "{% url 'register' %}";
-            }, 800);
-        }, 1200);
-    });
-
-    // ============================================================
-    // GENERATE PARTICLES
-    // ============================================================
-    function generateParticles() {
-        const container = document.getElementById('particles');
-        if (!container) return;
-        
-        for (let i = 0; i < 30; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.width = (Math.random() * 4 + 2) + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
-            particle.style.animationDelay = (Math.random() * 10) + 's';
-            particle.style.opacity = Math.random() * 0.3 + 0.1;
-            container.appendChild(particle);
-        }
-    }
-
-    // ============================================================
-    // FLOATING CTA BUTTON
-    // ============================================================
-    function initFloatingCta() {
-        const floatingCta = document.getElementById('floatingCta');
-        if (!floatingCta) return;
-        
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 600) {
-                floatingCta.classList.add('visible');
-            } else {
-                floatingCta.classList.remove('visible');
-            }
-        });
-        
-        floatingCta.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
-
-    // ============================================================
-    // KEYBOARD SHORTCUTS
-    // ============================================================
-    document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            const searchInput = document.getElementById('job-title');
-            if (searchInput) {
-                searchInput.focus();
-                searchInput.select();
-                showToast('Start typing your job search...', 'info', 'Search Mode');
-            }
-        }
-        
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.toast-custom').forEach(toast => {
-                toast.classList.add('hiding');
-                setTimeout(() => toast.remove(), 400);
-            });
-        }
-    });
-
-    // ============================================================
-    // FORM VALIDATION
-    // ============================================================
-    document.querySelectorAll('.form-control, .form-select').forEach(field => {
-        field.addEventListener('blur', function() {
-            if (this.hasAttribute('required') && !this.value.trim()) {
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else if (this.hasAttribute('required')) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            }
-        });
-        
-        field.addEventListener('input', function() {
-            if (this.value.trim()) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            } else {
-                this.classList.remove('is-valid');
-            }
-        });
-    });
-
-    // ============================================================
-    // SMOOTH SCROLL
-    // ============================================================
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            if (href === '#') return;
-            
-            const target = document.querySelector(href);
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
-    // ============================================================
-    // INITIALIZE ALL
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        animateCounters();
-        generateParticles();
-        initFloatingCta();
-        initAOS();
-        
-        setTimeout(() => {
-            showToast('Welcome to SkillSync AI! 🚀 Find your perfect career match.', 'info', 'Welcome!');
-        }, 1500);
-    });
-
-    window.showToast = showToast;
+  document.addEventListener('DOMContentLoaded', function() {
+    initAOS();
+    setTimeout(() => { showMessage('Welcome to SkillSync AI!', 'info', 'Welcome'); }, 1000);
+  });
 </script>
 {% endblock %}

@@ -1,1042 +1,390 @@
-<!-- file path: templates/accounts/register.html -->
 {% extends "base_auth.html" %}
 {% block title %}Register | SkillSync AI{% endblock %}
 
 {% block content %}
-<style>
-  .auth-landing {
-    min-height: calc(100vh - 80px);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    padding: 1.5rem 0;
-  }
-
-  /* ── Animated Background ── */
-  .auth-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .auth-bg .orb {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(80px);
-    opacity: 0.08;
-    animation: orbFloat 18s ease-in-out infinite alternate;
-  }
-
-  .auth-bg .orb-1 {
-    width: 500px; height: 500px;
-    background: var(--bs-primary);
-    top: -120px; left: -100px;
-    animation-duration: 20s;
-  }
-
-  .auth-bg .orb-2 {
-    width: 400px; height: 400px;
-    background: var(--bs-primary);
-    bottom: -100px; right: -80px;
-    animation-duration: 16s;
-    animation-delay: -4s;
-  }
-
-  @keyframes orbFloat {
-    0%   { transform: translate(0,0) scale(1); }
-    33%  { transform: translate(40px,-30px) scale(1.08); }
-    66%  { transform: translate(-20px,40px) scale(0.95); }
-    100% { transform: translate(30px,-20px) scale(1.03); }
-  }
-
-  .auth-bg .grid-overlay {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(15,23,42,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(15,23,42,0.02) 1px, transparent 1px);
-    background-size: 60px 60px;
-    animation: gridPulse 4s ease-in-out infinite alternate;
-  }
-
-  @keyframes gridPulse {
-    0%   { opacity: 0.4; }
-    100% { opacity: 0.8; }
-  }
-
-  .particle {
-    position: absolute;
-    border-radius: 999px;
-    background: var(--bs-primary);
-    opacity: 0;
-    pointer-events: none;
-    animation: particleRise linear infinite;
-  }
-
-  @keyframes particleRise {
-    0%   { opacity: 0; transform: translateY(100vh) scale(0); }
-    10%  { opacity: 0.25; }
-    90%  { opacity: 0.08; }
-    100% { opacity: 0; transform: translateY(-20vh) scale(1); }
-  }
-
-  /* ── Main Split Card ── */
-  .auth-split {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    border-radius: 32px;
-    box-shadow:
-      0 32px 80px rgba(15,23,42,0.10),
-      0 1px 3px rgba(15,23,42,0.06);
-    overflow: hidden;
-    animation: cardReveal 0.8s ease both;
-  }
-
-  @keyframes cardReveal {
-    from { opacity: 0; transform: translateY(40px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  /* ══════════════════════════════════════════
-     LEFT PANEL — PRIMARY BACKGROUND (BLUE)
-     ══════════════════════════════════════════ */
-  .auth-info {
-    background: var(--bs-primary);
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 3rem;
-    min-height: 650px;
-  }
-
-  .auth-info::before,
-  .auth-info::after {
-    content: "";
-    position: absolute;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.08);
-    z-index: 0;
-  }
-
-  .auth-info::before {
-    width: 280px; height: 280px;
-    top: -90px; right: -90px;
-    animation: orbFloat 14s ease-in-out infinite alternate;
-  }
-
-  .auth-info::after {
-    width: 200px; height: 200px;
-    bottom: -70px; left: -50px;
-    animation: orbFloat 18s ease-in-out infinite alternate-reverse;
-  }
-
-  .auth-info * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .auth-info .brand-mark {
-    width: 56px; height: 56px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-    font-size: 1.35rem;
-    font-weight: 800;
-    background: #fff;
-    color: var(--bs-primary);
-    box-shadow: 0 10px 28px rgba(0,0,0,0.15);
-    animation: brandPop 0.7s 0.3s ease both;
-  }
-
-  @keyframes brandPop {
-    from { transform: scale(0.4) rotate(-12deg); opacity: 0; }
-    to   { transform: scale(1) rotate(0); opacity: 1; }
-  }
-
-  .auth-info h1 {
-    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
-    font-weight: 800;
-    line-height: 1.2;
-    color: #fff;
-    animation: fadeRight 0.6s 0.2s ease both;
-  }
-
-  .auth-info .info-desc {
-    font-size: 0.9rem;
-    line-height: 1.75;
-    color: rgba(255,255,255,0.78);
-    animation: fadeRight 0.6s 0.3s ease both;
-  }
-
-  @keyframes fadeRight {
-    from { opacity: 0; transform: translateX(-20px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  /* Feature list */
-  .feature-list {
-    list-style: none;
-    padding: 0; margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-  }
-
-  .feature-list li {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: rgba(255,255,255,0.88);
-    animation: fadeRight 0.5s ease both;
-  }
-
-  .feature-list li:nth-child(1) { animation-delay: 0.4s; }
-  .feature-list li:nth-child(2) { animation-delay: 0.5s; }
-  .feature-list li:nth-child(3) { animation-delay: 0.6s; }
-  .feature-list li:nth-child(4) { animation-delay: 0.7s; }
-
-  .feature-list .feat-icon {
-    width: 34px; height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.14);
-    border: 1px solid rgba(255,255,255,0.18);
-    font-size: 0.9rem;
-    color: #fff;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-  }
-
-  .feature-list li:hover .feat-icon {
-    background: rgba(255,255,255,0.22);
-    transform: scale(1.08);
-  }
-
-  /* Info stat box */
-  .info-stat-box {
-    padding: 1rem 1.15rem;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.18);
-    backdrop-filter: blur(8px);
-    animation: fadeRight 0.5s 0.8s ease both;
-    transition: all 0.3s ease;
-  }
-
-  .info-stat-box:hover {
-    background: rgba(255,255,255,0.18);
-    transform: translateY(-2px);
-  }
-
-  .info-stat-box .val {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #fff;
-  }
-
-  .info-stat-box .lbl {
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.5;
-  }
-
-  /* ══════════════════════════════════════════
-     RIGHT PANEL — WHITE FORM AREA
-     ══════════════════════════════════════════ */
-  .auth-form-side {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2.5rem 3rem;
-    background: #fff;
-  }
-
-  .form-inner {
-    width: 100%;
-    max-width: 460px;
-  }
-
-  .form-inner .page-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--bs-primary);
-    margin-bottom: 0.75rem;
-    animation: fadeSlideDown 0.5s 0.3s ease both;
-  }
-
-  .form-inner .page-kicker .pulse-dot {
-    width: 7px; height: 7px;
-    border-radius: 999px;
-    background: var(--bs-primary);
-    animation: pulseDot 2s ease-in-out infinite;
-  }
-
-  @keyframes pulseDot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50%     { opacity: 0.4; transform: scale(0.6); }
-  }
-
-  .form-inner h2 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 0.25rem;
-    animation: fadeSlideDown 0.5s 0.35s ease both;
-  }
-
-  .form-inner .form-sub {
-    font-size: 0.88rem;
-    margin-bottom: 1.5rem;
-    animation: fadeSlideDown 0.5s 0.4s ease both;
-  }
-
-  @keyframes fadeSlideDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── Form Fields ── */
-  .field-group {
-    margin-bottom: 1rem;
-  }
-
-  .field-group label {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.82rem;
-    font-weight: 700;
-    margin-bottom: 0.45rem;
-    color: rgba(15,23,42,0.7);
-  }
-
-  .field-group label i { font-size: 0.82rem; opacity: 0.5; }
-
-  .input-wrap {
-    position: relative;
-  }
-
-  .input-wrap .field-icon {
-    position: absolute;
-    left: 1rem; top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.05rem;
-    color: rgba(15,23,42,0.28);
-    pointer-events: none;
-    transition: all 0.25s ease;
-    z-index: 2;
-  }
-
-  .input-wrap:focus-within .field-icon {
-    color: var(--bs-primary);
-    transform: translateY(-50%) scale(1.1);
-  }
-
-  .form-inner .form-control,
-  .form-inner .form-select {
-    height: 50px;
-    border-radius: 14px;
-    border: 1.5px solid rgba(15,23,42,0.10);
-    background: #f8f9fb;
-    font-size: 0.92rem;
-    transition: all 0.25s ease;
-    box-shadow: none;
-  }
-
-  .form-inner .form-control {
-    padding: 0 1rem 0 2.85rem;
-  }
-
-  .form-inner .form-select {
-    padding: 0 2.5rem 0 2.85rem;
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(15,23,42,0.5)' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-  }
-
-  .form-inner .form-control::placeholder {
-    color: rgba(15,23,42,0.30);
-  }
-
-  .form-inner .form-control:hover,
-  .form-inner .form-select:hover {
-    border-color: rgba(15,23,42,0.18);
-    background: #fff;
-  }
-
-  .form-inner .form-control:focus,
-  .form-inner .form-select:focus {
-    border-color: rgba(var(--bs-primary-rgb), 0.5);
-    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.10);
-    background: #fff;
-    outline: none;
-  }
-
-  /* Password toggle */
-  .pw-toggle {
-    position: absolute;
-    right: 0.75rem; top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none;
-    padding: 0.35rem;
-    font-size: 1rem;
-    color: rgba(15,23,42,0.30);
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    z-index: 2;
-  }
-
-  .pw-toggle:hover {
-    color: var(--bs-primary);
-    background: rgba(var(--bs-primary-rgb), 0.06);
-  }
-
-  /* ── Password Strength ── */
-  .pw-strength {
-    display: flex;
-    gap: 4px;
-    margin-top: 0.45rem;
-  }
-
-  .pw-bar {
-    flex: 1;
-    height: 3px;
-    border-radius: 999px;
-    background: rgba(15,23,42,0.08);
-    transition: background 0.3s ease;
-    overflow: hidden;
-  }
-
-  .pw-bar.active { animation: barFill 0.3s ease both; }
-  .pw-bar.weak   { background: #ef4444; }
-  .pw-bar.medium { background: #f59e0b; }
-  .pw-bar.strong { background: #22c55e; }
-
-  @keyframes barFill {
-    from { transform: scaleX(0); transform-origin: left; }
-    to   { transform: scaleX(1); transform-origin: left; }
-  }
-
-  .pw-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin-top: 0.2rem;
-    text-align: right;
-    min-height: 0.9rem;
-    transition: color 0.3s ease;
-  }
-
-  /* ── Role Section ── */
-  .role-section {
-    margin-bottom: 1.25rem;
-  }
-
-  .role-section .role-heading {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.82rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: rgba(15,23,42,0.7);
-  }
-
-  .role-section .role-heading i { font-size: 0.82rem; opacity: 0.5; }
-
-  /* Visible dropdown */
-  .role-select-wrap {
-    position: relative;
-    margin-bottom: 0.6rem;
-  }
-
-  .role-select-wrap .field-icon {
-    position: absolute;
-    left: 1rem; top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.05rem;
-    color: rgba(15,23,42,0.28);
-    pointer-events: none;
-    transition: all 0.25s ease;
-    z-index: 2;
-  }
-
-  .role-select-wrap:focus-within .field-icon {
-    color: var(--bs-primary);
-    transform: translateY(-50%) scale(1.1);
-  }
-
-  /* Quick-pick visual cards */
-  .role-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.55rem;
-  }
-
-  .role-card {
-    position: relative;
-    padding: 0.75rem 0.4rem;
-    border-radius: 14px;
-    border: 1.5px solid rgba(15,23,42,0.08);
-    background: #f8f9fb;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    overflow: hidden;
-    user-select: none;
-  }
-
-  .role-card:hover {
-    border-color: rgba(var(--bs-primary-rgb), 0.20);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(15,23,42,0.06);
-    background: #fff;
-  }
-
-  .role-card.selected {
-    border-color: var(--bs-primary);
-    background: rgba(var(--bs-primary-rgb), 0.04);
-    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.10);
-    transform: translateY(-2px);
-  }
-
-  .role-card .role-icon {
-    width: 36px; height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    margin-bottom: 0.35rem;
-    background: rgba(var(--bs-primary-rgb), 0.08);
-    color: var(--bs-primary);
-    transition: all 0.3s ease;
-  }
-
-  .role-card.selected .role-icon {
-    background: var(--bs-primary);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.3);
-    transform: scale(1.08);
-  }
-
-  .role-card .role-name {
-    font-size: 0.72rem;
-    font-weight: 700;
-    margin-bottom: 0.05rem;
-  }
-
-  .role-card .role-desc {
-    font-size: 0.62rem;
-    color: rgba(15,23,42,0.40);
-    line-height: 1.3;
-  }
-
-  .role-card .check-mark {
-    position: absolute;
-    top: 0.35rem; right: 0.35rem;
-    width: 16px; height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    font-size: 0.55rem;
-    background: var(--bs-primary);
-    color: #fff;
-    transform: scale(0);
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .role-card.selected .check-mark {
-    transform: scale(1);
-  }
-
-  /* ── Submit Button ── */
-  .btn-submit {
-    width: 100%;
-    height: 52px;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 0.92rem;
-    border: none;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 24px rgba(var(--bs-primary-rgb), 0.22);
-  }
-
-  .btn-submit::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-
-  .btn-submit:hover::before { transform: translateX(100%); }
-
-  .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 32px rgba(var(--bs-primary-rgb), 0.28);
-  }
-
-  .btn-submit:active { transform: translateY(0); }
-  .btn-submit i { margin-right: 0.4rem; transition: transform 0.25s ease; }
-  .btn-submit:hover i { transform: translateX(3px); }
-
-  /* ── Divider ── */
-  .auth-divider {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin: 1rem 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: rgba(15,23,42,0.25);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .auth-divider::before,
-  .auth-divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: rgba(15,23,42,0.08);
-  }
-
-  /* ── Footer link ── */
-  .auth-link-footer {
-    text-align: center;
-    font-size: 0.88rem;
-  }
-
-  .auth-link-footer a {
-    text-decoration: none;
-    font-weight: 700;
-    position: relative;
-  }
-
-  .auth-link-footer a::after {
-    content: "";
-    position: absolute;
-    left: 0; bottom: -2px;
-    width: 0; height: 2px;
-    background: var(--bs-primary);
-    border-radius: 999px;
-    transition: width 0.25s ease;
-  }
-
-  .auth-link-footer a:hover::after { width: 100%; }
-
-  /* ── Trust Badges ── */
-  .trust-row {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 1.15rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid rgba(15,23,42,0.06);
-  }
-
-  .trust-item {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: rgba(15,23,42,0.35);
-  }
-
-  .trust-item i {
-    font-size: 0.85rem;
-    color: rgba(var(--bs-primary-rgb), 0.45);
-  }
-
-  /* Message */
-  #message:not(:empty) {
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    animation: fadeSlideUp 0.3s ease both;
-  }
-
-  @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Stagger */
-  .field-group:nth-child(1) { animation: fadeSlideUp 0.5s 0.40s ease both; }
-  .field-group:nth-child(2) { animation: fadeSlideUp 0.5s 0.48s ease both; }
-  .field-group:nth-child(3) { animation: fadeSlideUp 0.5s 0.56s ease both; }
-  .role-section              { animation: fadeSlideUp 0.5s 0.64s ease both; }
-  .btn-submit               { animation: fadeSlideUp 0.5s 0.72s ease both; }
-
-  /* ── Responsive ── */
-  @media (max-width: 991.98px) {
-    .auth-landing { padding: 1rem 0; }
-    .auth-split   { border-radius: 24px; }
-    .auth-info    { padding: 2rem 1.75rem; min-height: auto; }
-    .auth-form-side { padding: 2rem 1.75rem; }
-  }
-
-  @media (max-width: 575.98px) {
-    .auth-info { padding: 1.5rem; }
-    .auth-form-side { padding: 1.5rem; }
-    .role-cards {
-      grid-template-columns: 1fr;
-      gap: 0.4rem;
-    }
-    .role-card {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      text-align: left;
-      padding: 0.65rem 0.85rem;
-    }
-    .role-card .role-icon { margin-bottom: 0; flex-shrink: 0; }
-    .form-inner .form-control,
-    .form-inner .form-select { height: 48px; }
-    .btn-submit { height: 48px; }
-  }
-</style>
-
-<!-- Background -->
-<div class="auth-bg">
-  <div class="grid-overlay"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-</div>
-
-<div class="auth-landing">
-  <div class="container">
-    <div class="auth-split">
-      <div class="row g-0">
-
-        <!-- ══════ LEFT: Blue Info Panel ══════ -->
-        <div class="col-lg-5">
-          <div class="auth-info h-100">
-            <div>
-              <div class="brand-mark mb-3">S</div>
-              <h1 class="mb-3">Start Your Professional Journey with SkillSync AI</h1>
-              <p class="info-desc mb-4">
-                An AI-powered career platform that connects talent, recruiters,
-                and opportunities through intelligent recommendations, skill
-                analytics, and career insights.
-              </p>
-              <ul class="feature-list">
-                <li>
-                  <span class="feat-icon"><i class="bi bi-cpu"></i></span>
-                  Intelligent recommendations
-                </li>
-                <li>
-                  <span class="feat-icon"><i class="bi bi-bar-chart-line"></i></span>
-                  Skill analytics
-                </li>
-                <li>
-                  <span class="feat-icon"><i class="bi bi-lightning-charge"></i></span>
-                  Instant onboarding
-                </li>
-                <li>
-                  <span class="feat-icon"><i class="bi bi-layers"></i></span>
-                  4 fields — quick setup
-                </li>
-              </ul>
-            </div>
-
-            <div class="info-stat-box mt-4">
-              <div class="val">4 fields</div>
-              <div class="lbl">Username, email, password, and role keep setup focused.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ RIGHT: White Form Panel ══════ -->
-        <div class="col-lg-7">
-          <div class="auth-form-side h-100">
-            <div class="form-inner">
-
-              <div class="page-kicker">
-                <span class="pulse-dot"></span>
-                Account setup
-              </div>
-              <h2>Register</h2>
-              <p class="form-sub text-muted-strong">
-                Create your account first. You will complete your profile after login.
-              </p>
-
-              <form id="registerForm">
-
-                <!-- Username + Email row -->
-                <div class="row g-3 mb-0">
-                  <div class="col-sm-6">
-                    <div class="field-group">
-                      <label for="username"><i class="bi bi-person"></i> Username</label>
-                      <div class="input-wrap">
-                        <i class="bi bi-person field-icon"></i>
-                        <input id="username" class="form-control" name="username"
-                          autocomplete="username" placeholder="Your name" required>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="field-group">
-                      <label for="email"><i class="bi bi-envelope"></i> Email</label>
-                      <div class="input-wrap">
-                        <i class="bi bi-envelope field-icon"></i>
-                        <input id="email" class="form-control" name="email" type="email"
-                          autocomplete="email" placeholder="you@example.com" required>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Password -->
-                <div class="field-group">
-                  <label for="password"><i class="bi bi-lock"></i> Password</label>
-                  <div class="input-wrap">
-                    <i class="bi bi-lock field-icon"></i>
-                    <input id="password" class="form-control" name="password" type="password"
-                      autocomplete="new-password" placeholder="At least 8 characters" required>
-                    <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password">
-                      <i class="bi bi-eye"></i>
-                    </button>
-                  </div>
-                  </div>
-
-                  <div class="field-group">
-                  <label for="passwordConfirm"><i class="bi bi-shield-lock"></i> Confirm Password</label>
-                  <div class="input-wrap">
-                    <i class="bi bi-shield-lock field-icon"></i>
-                    <input id="passwordConfirm" class="form-control" name="password_confirm" type="password"
-                      autocomplete="new-password" placeholder="Re-enter your password" required>
-                    <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password">
-                      <i class="bi bi-eye"></i>
-                    </button>
-                  </div>
-                  </div>
-
-                  <div class="pw-strength">
-                    <div class="pw-bar" id="bar1"></div>
-                    <div class="pw-bar" id="bar2"></div>
-                    <div class="pw-bar" id="bar3"></div>
-                    <div class="pw-bar" id="bar4"></div>
-                  </div>
-                  <div class="pw-label" id="pwLabel"></div>
- 
-                <!-- Role: Dropdown + Visual Cards -->
-                <div class="role-section">
-                  <div class="role-heading"><i class="bi bi-briefcase"></i> Role</div>
-
-                  <!-- Actual working dropdown -->
-                  <div class="role-select-wrap">
-                    <i class="bi bi-briefcase field-icon"></i>
-                    <select id="role" class="form-select" name="role">
-                      <option value="job_seeker" selected>Job Seeker</option>
-                      <option value="recruiter">Recruiter</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </div>
-
-                  <!-- Visual quick-pick cards (synced with dropdown) -->
-                  <div class="role-cards">
-                    <div class="role-card selected" data-role="job_seeker" tabindex="0">
-                      <div class="check-mark"><i class="bi bi-check2"></i></div>
-                      <div class="role-icon"><i class="bi bi-search"></i></div>
-                      <div class="role-name">Job Seeker</div>
-                      <div class="role-desc">Find jobs</div>
-                    </div>
-                    <div class="role-card" data-role="recruiter" tabindex="0">
-                      <div class="check-mark"><i class="bi bi-check2"></i></div>
-                      <div class="role-icon"><i class="bi bi-people"></i></div>
-                      <div class="role-name">Recruiter</div>
-                      <div class="role-desc">Hire talent</div>
-                    </div>
-                    <div class="role-card" data-role="admin" tabindex="0">
-                      <div class="check-mark"><i class="bi bi-check2"></i></div>
-                      <div class="role-icon"><i class="bi bi-shield-check"></i></div>
-                      <div class="role-name">Admin</div>
-                      <div class="role-desc">Manage all</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Submit -->
-                <button class="btn btn-primary btn-submit" type="submit">
-                  <i class="bi bi-person-plus"></i> Register
-                </button>
-
-                <div id="message" class="small mt-3"></div>
-
-                <div class="auth-divider">or</div>
-
-                <div class="auth-link-footer">
-                  <span class="text-muted-strong">Already registered?</span>
-                  <a href="{% url 'login' %}">Login</a>
-                </div>
-              </form>
-
-              <div class="trust-row">
-                <div class="trust-item"><i class="bi bi-lock-fill"></i> Encrypted</div>
-                <div class="trust-item"><i class="bi bi-patch-check-fill"></i> Verified</div>
-                <div class="trust-item"><i class="bi bi-lightning-charge-fill"></i> Instant</div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
+<div class="split-auth">
+  <div class="sa-panel">
+    <div class="sa-card">
+      <div class="sa-brand">
+        <div class="sa-logo">S</div>
+        <h1>Create your account</h1>
+        <p>Start your career journey with SkillSync AI</p>
       </div>
+
+      <form id="registerForm">
+        <div class="row g-3 mb-0">
+          <div class="col-sm-6">
+            <div class="field-group">
+              <label for="username"><i class="bi bi-person"></i> Username</label>
+              <div class="input-wrap">
+                <i class="bi bi-person field-icon"></i>
+                <input id="username" class="form-control" name="username"
+                  autocomplete="username" placeholder="Your name" required>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="field-group">
+              <label for="email"><i class="bi bi-envelope"></i> Email</label>
+              <div class="input-wrap">
+                <i class="bi bi-envelope field-icon"></i>
+                <input id="email" class="form-control" name="email" type="email"
+                  autocomplete="email" placeholder="you@example.com" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="password"><i class="bi bi-lock"></i> Password</label>
+          <div class="input-wrap">
+            <i class="bi bi-lock field-icon"></i>
+            <input id="password" class="form-control" name="password" type="password"
+              autocomplete="new-password" placeholder="At least 8 characters" required>
+            <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="passwordConfirm"><i class="bi bi-shield-lock"></i> Confirm password</label>
+          <div class="input-wrap">
+            <i class="bi bi-shield-lock field-icon"></i>
+            <input id="passwordConfirm" class="form-control" name="password_confirm" type="password"
+              autocomplete="new-password" placeholder="Re-enter your password" required>
+            <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="pw-strength">
+          <div class="pw-bar" id="bar1"></div>
+          <div class="pw-bar" id="bar2"></div>
+          <div class="pw-bar" id="bar3"></div>
+          <div class="pw-bar" id="bar4"></div>
+        </div>
+        <div class="pw-label" id="pwLabel"></div>
+
+        <div class="role-section">
+          <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8125rem;font-weight:600;color:var(--ss-muted,#64748B);margin-bottom:0.5rem;">
+            <i class="bi bi-briefcase"></i> Role
+          </label>
+          <select id="role" class="form-select" name="role" style="display:none;">
+            <option value="job_seeker" selected>Job Seeker</option>
+            <option value="recruiter">Recruiter</option>
+            <option value="admin">Admin</option>
+          </select>
+          <div class="role-cards">
+            <div class="role-card selected" data-role="job_seeker" tabindex="0">
+              <div class="role-icon"><i class="bi bi-search"></i></div>
+              <div class="role-name">Job Seeker</div>
+              <div class="role-desc">Find jobs</div>
+            </div>
+            <div class="role-card" data-role="recruiter" tabindex="0">
+              <div class="role-icon"><i class="bi bi-people"></i></div>
+              <div class="role-name">Recruiter</div>
+              <div class="role-desc">Hire talent</div>
+            </div>
+            <div class="role-card" data-role="admin" tabindex="0">
+              <div class="role-icon"><i class="bi bi-shield-check"></i></div>
+              <div class="role-name">Admin</div>
+              <div class="role-desc">Manage all</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-submit" type="submit">
+          <i class="bi bi-person-plus"></i> Create account
+        </button>
+
+        <div id="message"></div>
+
+        <div class="auth-divider">or</div>
+
+        <button type="button" class="btn btn-outline btn-linkedin" id="linkedinRegisterBtn">
+          <i class="bi bi-linkedin"></i> Sign up with LinkedIn
+        </button>
+
+        <div class="auth-footer">
+          <span>Already have an account?</span>
+          <a href="{% url 'login' %}">Sign in</a>
+        </div>
+
+        <div class="trust-row">
+          <span><i class="bi bi-lock-fill"></i> Encrypted</span>
+          <span><i class="bi bi-patch-check-fill"></i> Secure</span>
+          <span><i class="bi bi-lightning-charge-fill"></i> Fast</span>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<style>
+  .split-auth .field-group { margin-bottom: 1rem; }
+  .split-auth .field-group label {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.8125rem; font-weight: 600;
+    color: var(--ss-muted); margin-bottom: 0.375rem;
+  }
+  .split-auth .field-group label i { font-size: 0.75rem; }
+  .split-auth .input-wrap { position: relative; }
+  .split-auth .input-wrap .field-icon {
+    position: absolute; left: 0.875rem; top: 50%;
+    transform: translateY(-50%); font-size: 0.9375rem;
+    color: var(--ss-muted-light); pointer-events: none;
+    transition: color var(--ss-transition-fast); z-index: 2;
+  }
+  .split-auth .input-wrap:focus-within .field-icon { color: var(--ss-brand); }
+  .split-auth .form-control, .split-auth .form-select {
+    height: 44px; border-radius: var(--ss-radius);
+    padding: 0 1rem 0 2.5rem;
+    border: 1.5px solid var(--ss-border);
+    background: var(--ss-surface); font-size: 0.875rem;
+    transition: all var(--ss-transition-fast);
+    box-shadow: none; color: var(--ss-text);
+  }
+  .split-auth .form-select {
+    padding-right: 2.5rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748B' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+  }
+  .split-auth .form-control::placeholder { color: var(--ss-muted-light); opacity: 0.6; }
+  .split-auth .form-control:hover, .split-auth .form-select:hover { border-color: var(--ss-border-strong); }
+  .split-auth .form-control:focus, .split-auth .form-select:focus {
+    border-color: var(--ss-brand);
+    box-shadow: 0 0 0 3px rgba(var(--ss-brand-rgb), 0.10);
+    outline: none;
+  }
+  .split-auth .pw-toggle {
+    position: absolute; right: 0.75rem; top: 50%;
+    transform: translateY(-50%); background: none; border: none;
+    padding: 0.25rem; font-size: 1rem;
+    color: var(--ss-muted-light); cursor: pointer;
+    border-radius: var(--ss-radius-sm);
+    transition: all var(--ss-transition-fast); z-index: 2;
+  }
+  .split-auth .pw-toggle:hover {
+    color: var(--ss-brand); background: var(--ss-brand-soft);
+  }
+  .pw-strength {
+    display: flex; gap: 4px; margin-top: 0.35rem;
+  }
+  .pw-bar {
+    flex: 1; height: 3px; border-radius: var(--ss-radius-full);
+    background: var(--ss-border);
+    transition: background var(--ss-transition-fast);
+  }
+  .pw-bar.active { animation: barFill 0.3s ease both; }
+  .pw-bar.weak   { background: #EF4444; }
+  .pw-bar.medium { background: #F59E0B; }
+  .pw-bar.strong { background: #10B981; }
+  @keyframes barFill {
+    from { transform: scaleX(0); transform-origin: left; }
+    to   { transform: scaleX(1); transform-origin: left; }
+  }
+  .pw-label {
+    font-size: 0.6875rem; font-weight: 600;
+    margin-top: 0.15rem; text-align: right; min-height: 0.875rem;
+  }
+  .role-section { margin-bottom: 1rem; }
+  .role-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+  }
+  .role-card {
+    position: relative; padding: 0.75rem 0.5rem;
+    border-radius: var(--ss-radius);
+    border: 1.5px solid var(--ss-border);
+    background: var(--ss-surface); cursor: pointer; text-align: center;
+    transition: all var(--ss-transition-fast); user-select: none;
+  }
+  .role-card:hover {
+    border-color: rgba(var(--ss-brand-rgb), 0.25);
+    background: var(--ss-surface-alt);
+  }
+  .role-card.selected {
+    border-color: var(--ss-brand);
+    background: var(--ss-brand-soft);
+  }
+  .role-card .role-icon {
+    width: 32px; height: 32px; display: inline-flex;
+    align-items: center; justify-content: center;
+    border-radius: var(--ss-radius-sm); font-size: 0.875rem;
+    margin-bottom: 0.25rem; background: var(--ss-brand-soft);
+    color: var(--ss-brand);
+    transition: all var(--ss-transition-fast);
+  }
+  .role-card.selected .role-icon {
+    background: var(--ss-brand); color: #fff;
+  }
+  .role-card .role-name {
+    font-size: 0.75rem; font-weight: 700; margin-bottom: 0.05rem;
+  }
+  .role-card .role-desc {
+    font-size: 0.625rem; color: var(--ss-muted);
+  }
+  .split-auth .btn-submit {
+    width: 100%; height: 44px;
+    border-radius: 22px;
+    font-weight: 700; font-size: 0.875rem; margin-top: 0.5rem;
+  }
+  .split-auth .auth-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1rem 0; font-size: 0.75rem; font-weight: 600;
+    color: var(--ss-muted-light);
+  }
+  .split-auth .auth-divider::before,
+  .split-auth .auth-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--ss-border);
+  }
+  .split-auth .auth-footer {
+    text-align: center; font-size: 0.875rem; color: var(--ss-muted);
+  }
+  .split-auth .auth-footer a { font-weight: 700; }
+  .split-auth .trust-row {
+    display: flex; justify-content: center; gap: 1.5rem;
+    margin-top: 1.25rem; padding-top: 1rem;
+    border-top: 1px solid var(--ss-border);
+  }
+  .split-auth .trust-row span {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.6875rem; font-weight: 600; color: var(--ss-muted-light);
+  }
+  .split-auth .trust-row i { font-size: 0.75rem; color: var(--ss-brand); }
+  #message:not(:empty) {
+    padding: 0.75rem 1rem; border-radius: var(--ss-radius);
+    font-weight: 600; font-size: 0.8125rem; margin-top: 0.75rem;
+  }
+  .btn-linkedin {
+    width: 100%; height: 44px; border-radius: 22px;
+    font-weight: 700; font-size: 0.875rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    border: 1.5px solid var(--ss-border) !important;
+    background: var(--ss-surface) !important; color: var(--ss-text) !important;
+    transition: all var(--ss-transition-fast);
+  }
+  .btn-linkedin:hover {
+    border-color: #0a66c2 !important;
+    color: #0a66c2 !important;
+    background: rgba(10,102,194,0.04) !important;
+  }
+  .btn-linkedin i { font-size: 1.125rem; color: #0a66c2; }
+  @media (max-width: 575.98px) {
+    .role-cards { grid-template-columns: 1fr; }
+    .role-card { display: flex; align-items: center; gap: 0.65rem; text-align: left; padding: 0.65rem 0.75rem; }
+    .role-card .role-icon { margin-bottom: 0; flex-shrink: 0; }
+  }
+</style>
 <script>
-  /* ── Particles ── */
   (function() {
-    const bg = document.querySelector('.auth-bg');
-    if (!bg) return;
-    for (let i = 0; i < 14; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const s = Math.random() * 4 + 2;
-      p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*8}s;`;
-      bg.appendChild(p);
+    document.querySelectorAll('.pw-toggle').forEach(function(button) {
+      button.addEventListener('click', function() {
+        const wrapper = this.closest('.input-wrap');
+        const inp = wrapper ? wrapper.querySelector('input[type="password"]') : document.getElementById('password');
+        const ico = this.querySelector('i');
+        if (!inp) return;
+        if (inp.type === 'password') {
+          inp.type = 'text';
+          ico.className = 'bi bi-eye-slash';
+        } else {
+          inp.type = 'password';
+          ico.className = 'bi bi-eye';
+        }
+      });
+    });
+
+    document.getElementById('password').addEventListener('input', function() {
+      const val = this.value;
+      const bars = ['bar1','bar2','bar3','bar4'].map(id => document.getElementById(id));
+      const label = document.getElementById('pwLabel');
+      let score = 0;
+      if (val.length >= 4) score++;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = ['', 'Weak', 'Fair', 'Strong', 'Very strong'];
+      const colors = ['', 'weak', 'medium', 'strong', 'strong'];
+      bars.forEach((bar, i) => {
+        bar.className = 'pw-bar';
+        if (i < score) bar.classList.add('active', colors[score]);
+      });
+      label.textContent = val.length ? levels[score] || '' : '';
+      label.style.color = score <= 1 ? '#EF4444' : score === 2 ? '#F59E0B' : '#10B981';
+    });
+
+    const roleSelect = document.getElementById('role');
+    const roleCards = document.querySelectorAll('.role-card');
+
+    function syncRoleCards(selectedValue) {
+      roleCards.forEach(c => c.classList.toggle('selected', c.dataset.role === selectedValue));
     }
-  })();
 
-  /* ── Password Toggle ── */
-  document.querySelectorAll('.pw-toggle').forEach(function(button) {
-    button.addEventListener('click', function() {
-      const wrapper = this.closest('.input-wrap');
-      const inp = wrapper ? wrapper.querySelector('input[type="password"]') : document.getElementById('password');
-      const ico = this.querySelector('i');
-      if (!inp) return;
-      if (inp.type === 'password') {
-        inp.type = 'text';
-        ico.className = 'bi bi-eye-slash';
-      } else {
-        inp.type = 'password';
-        ico.className = 'bi bi-eye';
-      }
-    });
-  });
+    function syncRoleDropdown(selectedValue) {
+      roleSelect.value = selectedValue;
+    }
 
-  /* ── Password Strength ── */
-  document.getElementById('password').addEventListener('input', function() {
-    const val = this.value;
-    const bars = ['bar1','bar2','bar3','bar4'].map(id => document.getElementById(id));
-    const label = document.getElementById('pwLabel');
-    let score = 0;
-
-    if (val.length >= 4) score++;
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-
-    const levels = ['', 'Weak', 'Fair', 'Strong', 'Very strong'];
-    const colors = ['', 'weak', 'medium', 'strong', 'strong'];
-
-    bars.forEach((bar, i) => {
-      bar.className = 'pw-bar';
-      if (i < score) bar.classList.add('active', colors[score]);
-    });
-
-    label.textContent = val.length ? levels[score] || '' : '';
-    label.style.color = score <= 1 ? '#ef4444' : score === 2 ? '#f59e0b' : '#22c55e';
-  });
-
-  /* ── Role: Sync dropdown ↔ cards (both ways) ── */
-  const roleSelect = document.getElementById('role');
-  const roleCards  = document.querySelectorAll('.role-card');
-
-  function syncRoleCards(selectedValue) {
-    roleCards.forEach(c => {
-      c.classList.toggle('selected', c.dataset.role === selectedValue);
-    });
-  }
-
-  function syncRoleDropdown(selectedValue) {
-    roleSelect.value = selectedValue;
-  }
-
-  // Card click → update dropdown + highlight
-  roleCards.forEach(card => {
-    card.addEventListener('click', () => {
-      syncRoleDropdown(card.dataset.role);
-      syncRoleCards(card.dataset.role);
-    });
-
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
+    roleCards.forEach(card => {
+      card.addEventListener('click', () => {
         syncRoleDropdown(card.dataset.role);
         syncRoleCards(card.dataset.role);
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          syncRoleDropdown(card.dataset.role);
+          syncRoleCards(card.dataset.role);
+        }
+      });
+    });
+
+    roleSelect.addEventListener('change', () => {
+      syncRoleCards(roleSelect.value);
+    });
+
+    document.getElementById("registerForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const btn = event.target.querySelector('.btn-submit');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Creating account\u2026';
+      btn.disabled = true;
+      const form = Object.fromEntries(new FormData(event.target));
+      if (form.password !== form.password_confirm) {
+        btn.innerHTML = orig;
+        btn.disabled = false;
+        return showMessage('Passwords do not match.', 'danger');
+      }
+      const payload = { email: form.email, username: form.username, password: form.password, role: form.role };
+      try {
+        await api("/api/auth/register/", {method:"POST", body:JSON.stringify(payload)}, false);
+        showMessage('Registration successful! Please log in to continue.', 'success');
+        setTimeout(() => { window.location.href = '/login/'; }, 2000);
+      } catch (error) {
+        btn.innerHTML = orig;
+        btn.disabled = false;
+        showMessage(error.message, "danger");
       }
     });
-  });
 
-  // Dropdown change → update cards
-  roleSelect.addEventListener('change', () => {
-    syncRoleCards(roleSelect.value);
-  });
-
-  /* ── Form Submit ── */
-  document.getElementById("registerForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const btn = event.target.querySelector('.btn-submit');
-    const orig = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Creating account…';
-    btn.disabled = true;
-
-    const form = Object.fromEntries(new FormData(event.target));
-    if (form.password !== form.password_confirm) {
-      btn.innerHTML = orig;
-      btn.disabled = false;
-      return showMessage('Passwords do not match. Please confirm your password.', 'danger');
-    }
-
-    const payload = {
-      email:    form.email,
-      username: form.username,
-      password: form.password,
-      role:     form.role
-    };
-
-    try {
-      const result = await api("/api/auth/register/", {method:"POST", body:JSON.stringify(payload)}, false);
-      saveSession(result);
-      routeByRole(result.user.role);
-    } catch (error) {
-      btn.innerHTML = orig;
-      btn.disabled = false;
-      showMessage(error.message, "danger");
-    }
-  });
+    document.getElementById('linkedinRegisterBtn').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting\u2026';
+      try {
+        const resp = await fetch('/api/auth/linkedin/login/');
+        const data = await resp.json();
+        window.location.href = data.auth_url;
+      } catch (e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-linkedin"></i> Sign up with LinkedIn';
+        showMessage('Failed to connect to LinkedIn. Please try again.', 'danger');
+      }
+    });
+  })();
 </script>
 {% endblock %}

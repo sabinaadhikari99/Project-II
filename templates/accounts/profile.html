@@ -1,0 +1,278 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<style>
+.prof-wrap { max-width: 960px; margin: 0 auto; }
+.prof-sec + .prof-sec { margin-top: 2rem; }
+.pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.pf-full { grid-column: 1 / -1; }
+.pf-grid label { display: block; font-size: 0.813rem; font-weight: 600; color: var(--ss-text, #374151); margin-bottom: 0.375rem; }
+.pf-grid input, .pf-grid select, .pf-grid textarea {
+  width: 100%; padding: 0.625rem 0.875rem; border: 1px solid var(--ss-border, #d1d5db);
+  border-radius: var(--ss-radius, 8px); font-size: 0.875rem; background: var(--ss-bg, #fff);
+  color: var(--ss-text, #111827); transition: border-color .15s; box-sizing: border-box;
+}
+.pf-grid input:focus, .pf-grid select:focus, .pf-grid textarea:focus {
+  outline: none; border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.pf-grid textarea { resize: vertical; min-height: 80px; }
+.pf-grid input.bg-light { background: #f9fafb; }
+.prof-photo-area { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+.prof-photo-preview { width: 96px; height: 96px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; border: 3px solid var(--ss-border, #e5e7eb); }
+.prof-photo-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+.skill-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.st { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem; border-radius: 999px; background: #eef2ff; color: #1e40af; font-size: 0.813rem; font-weight: 500; cursor: default; }
+.st.bg-gray { background: #f3f4f6; color: #374151; cursor: pointer; }
+.st-del { cursor: pointer; font-size: 1rem; line-height: 1; opacity: 0.6; margin-left: 0.25rem; }
+.st-del:hover { opacity: 1; }
+.resume-upload-area { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; }
+.prof-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--ss-border, #e5e7eb); }
+</style>
+
+<div class="prof-wrap">
+
+  <div class="prof-sec" id="secPersonal">
+    <div class="sc-hd">
+      <div class="sc-icon"><i class="bi bi-person"></i></div>
+      <div>
+        <div class="sc-title">Personal Information</div>
+        <p class="sc-desc">Your basic details and contact information.</p>
+      </div>
+    </div>
+    <div class="sc-bd">
+      <div class="prof-photo-area">
+        <div class="prof-photo-preview" id="profPhotoPreview"><span style="font-size:40px;font-weight:700;color:#2563EB;">U</span></div>
+        <div class="prof-photo-actions">
+          <input type="file" id="profPhotoFile" accept="image/jpeg,image/png,image/webp" style="display:none;">
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('profPhotoFile').click()"><i class="bi bi-camera"></i> Change Photo</button>
+          <button class="btn btn-outline btn-sm" id="btnProfSavePhoto" style="display:none;"><i class="bi bi-check-lg"></i> Save Photo</button>
+          <button class="btn btn-outline btn-sm text-danger" id="btnProfDelPhoto" style="display:none;"><i class="bi bi-trash3"></i> Remove</button>
+          <p class="small text-muted mb-0" id="profPhotoMsg"></p>
+        </div>
+      </div>
+      <div class="pf-grid">
+        <div><label>Full Name</label><input type="text" id="piName" placeholder="John Doe"></div>
+        <div><label>Email Address</label><input type="email" id="piEmail" placeholder="john@example.com" readonly class="bg-light"></div>
+        <div><label>Phone Number</label><input type="tel" id="piPhone" placeholder="+1 (555) 000-0000"></div>
+        <div><label>Location</label><input type="text" id="piLocation" placeholder="New York, USA"></div>
+        <div><label>Professional Headline</label><input type="text" id="piTitle" placeholder="Senior Software Engineer"></div>
+        <div><label>Years of Experience</label>
+          <select id="piExp">
+            <option value="">Select...</option>
+            <option value="0-1">Less than 1 year</option>
+            <option value="1-2">1-2 years</option>
+            <option value="3-5">3-5 years</option>
+            <option value="5-10">5-10 years</option>
+            <option value="10+">10+ years</option>
+          </select>
+        </div>
+        <div class="pf-full"><label>Short Bio / About Me</label><textarea id="piSummary" placeholder="Brief professional summary..."></textarea></div>
+      </div>
+      <div class="prof-actions">
+        <button class="btn btn-primary" onclick="savePersonalInfo()"><i class="bi bi-check-lg"></i> Save Changes</button>
+        <button class="btn btn-outline-secondary" onclick="location.reload()"><i class="bi bi-x-lg"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="prof-sec" id="secProfessional">
+    <div class="sc-hd">
+      <div class="sc-icon"><i class="bi bi-briefcase"></i></div>
+      <div>
+        <div class="sc-title">Professional Information</div>
+        <p class="sc-desc">Skills, resume, and online profiles.</p>
+      </div>
+    </div>
+    <div class="sc-bd">
+      <div class="mb-4">
+        <div class="fw-semibold mb-2" style="font-size:0.875rem;">Skills</div>
+        <div id="skillList"><p class="text-muted small mb-0">No skills added yet.</p></div>
+      </div>
+      <div class="mb-4">
+        <div class="fw-semibold mb-2" style="font-size:0.875rem;">Resume / CV</div>
+        <div class="resume-upload-area">
+          <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
+          <span id="resumeInfo" class="small text-muted"></span>
+        </div>
+      </div>
+      <div>
+        <div class="fw-semibold mb-2" style="font-size:0.875rem;">Online Profiles</div>
+        <div class="pf-grid">
+          <div><label>Portfolio Website</label><input type="url" id="portUrl" placeholder="https://yourportfolio.com"></div>
+          <div><label>LinkedIn Profile</label><input type="url" id="linkedinUrl" placeholder="https://linkedin.com/in/yourprofile"></div>
+          <div><label>GitHub Profile</label><input type="url" id="githubUrl" placeholder="https://github.com/yourhandle"></div>
+        </div>
+      </div>
+      <div class="prof-actions">
+        <button class="btn btn-primary" onclick="saveProfessionalInfo()"><i class="bi bi-check-lg"></i> Save Changes</button>
+        <button class="btn btn-outline-secondary" onclick="location.reload()"><i class="bi bi-x-lg"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="mb-hd">
+      <h3 id="modalTitle">Add Skill</h3>
+      <button class="mb-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="fm" id="modalBody"></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+requireAuthenticated();
+
+const PK = { personal: "prof_personal", skills: "prof_skills", links: "prof_links" };
+
+function getData(k) { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } }
+function setData(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+function getObj(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch { return {}; } }
+function setObj(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+function savePersonalInfo() {
+  setObj(PK.personal, {
+    name: document.getElementById("piName").value,
+    email: document.getElementById("piEmail").value,
+    phone: document.getElementById("piPhone").value,
+    location: document.getElementById("piLocation").value,
+    title: document.getElementById("piTitle").value,
+    exp: document.getElementById("piExp").value,
+    summary: document.getElementById("piSummary").value
+  });
+  alert("Personal information saved locally.");
+}
+
+function loadPersonalInfo() {
+  const d = getObj(PK.personal);
+  if (d.name) document.getElementById("piName").value = d.name;
+  if (d.email) document.getElementById("piEmail").value = d.email;
+  if (d.phone) document.getElementById("piPhone").value = d.phone;
+  if (d.location) document.getElementById("piLocation").value = d.location;
+  if (d.title) document.getElementById("piTitle").value = d.title;
+  if (d.exp) document.getElementById("piExp").value = d.exp;
+  if (d.summary) document.getElementById("piSummary").value = d.summary;
+}
+
+function loadProfPhoto() {
+  const pp = localStorage.getItem('profile_picture');
+  const name = localStorage.getItem('username') || 'U';
+  const preview = document.getElementById('profPhotoPreview');
+  if (!preview) return;
+  if (pp) {
+    preview.innerHTML = '<img src="' + esc(pp) + '" alt="" style="width:100%;height:100%;object-fit:cover;">';
+  } else {
+    preview.innerHTML = '<span style="font-size:40px;font-weight:700;color:#2563EB;">' + esc(name.charAt(0).toUpperCase()) + '</span>';
+  }
+}
+
+let profImgData = "";
+document.getElementById("profPhotoFile") && document.getElementById("profPhotoFile").addEventListener("change", async function(e) {
+  if (!e.target.files[0]) return;
+  const file = e.target.files[0];
+  if (file.size > 5 * 1024 * 1024) { document.getElementById("profPhotoMsg").textContent = "File too large. Max 5 MB."; return; }
+  if (!["image/jpeg","image/png","image/webp"].includes(file.type)) { document.getElementById("profPhotoMsg").textContent = "Unsupported format. Use JPG, PNG, or WEBP."; return; }
+  profImgData = await fileToDataUrl(file);
+  document.getElementById("profPhotoPreview").innerHTML = '<img src="' + esc(profImgData) + '" alt="" style="width:100%;height:100%;object-fit:cover;">';
+  document.getElementById("btnProfSavePhoto").style.display = "";
+  document.getElementById("btnProfDelPhoto").style.display = "";
+  document.getElementById("profPhotoMsg").textContent = "";
+});
+
+document.getElementById("btnProfSavePhoto") && document.getElementById("btnProfSavePhoto").addEventListener("click", async function() {
+  if (!profImgData) return;
+  const btn = this; const orig = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...'; btn.disabled = true;
+  try {
+    const cur = await api("/api/auth/profile/");
+    await api("/api/auth/profile/", { method: "PUT", body: JSON.stringify({ username: cur.username, profile_picture: profImgData, profile: cur.profile || {} }) });
+    localStorage.setItem("profile_picture", profImgData);
+    document.getElementById("profPhotoMsg").textContent = "Photo saved.";
+    document.getElementById("profPhotoMsg").className = "small text-success";
+    hydrateNavbar();
+  } catch (err) { document.getElementById("profPhotoMsg").textContent = err.message || "Upload failed."; document.getElementById("profPhotoMsg").className = "small text-danger"; }
+  finally { btn.innerHTML = orig; btn.disabled = false; }
+});
+
+document.getElementById("btnProfDelPhoto") && document.getElementById("btnProfDelPhoto").addEventListener("click", async function() {
+  if (!confirm("Remove profile photo?")) return;
+  const btn = this; const orig = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Removing...'; btn.disabled = true;
+  try {
+    const cur = await api("/api/auth/profile/");
+    await api("/api/auth/profile/", { method: "PUT", body: JSON.stringify({ username: cur.username, profile_picture: "", profile: cur.profile || {} }) });
+    localStorage.setItem("profile_picture", ""); profImgData = "";
+    document.getElementById("profPhotoFile").value = ""; loadProfPhoto();
+    document.getElementById("btnProfSavePhoto").style.display = "none";
+    document.getElementById("btnProfDelPhoto").style.display = "none";
+    document.getElementById("profPhotoMsg").textContent = "Photo removed."; document.getElementById("profPhotoMsg").className = "small text-success";
+    hydrateNavbar();
+  } catch (err) { document.getElementById("profPhotoMsg").textContent = err.message || "Failed."; document.getElementById("profPhotoMsg").className = "small text-danger"; }
+  finally { btn.innerHTML = orig; btn.disabled = false; }
+});
+
+function getSkills() { return getData(PK.skills); }
+function setSkills(d) { setData(PK.skills, d); renderSkills(); }
+function renderSkills() {
+  const items = getSkills();
+  let html = '<div class="skill-grid">';
+  items.forEach((s, i) => { html += '<span class="st">' + esc(s.name) + ' <span class="st-del" onclick="delSkill(' + i + ')">&times;</span></span>'; });
+  html += '<span class="st bg-gray" onclick="openSkillModal()"><i class="bi bi-plus-lg"></i> Add skill</span></div>';
+  document.getElementById("skillList").innerHTML = html || '<p class="text-muted small mb-0">No skills added yet.</p>';
+}
+function delSkill(i) { const d = getSkills(); d.splice(i, 1); setSkills(d); }
+function openSkillModal() {
+  document.getElementById("modalTitle").textContent = "Add Skill";
+  document.getElementById("modalBody").innerHTML =
+    '<div><label style="font-size:0.813rem;font-weight:600;color:var(--ss-text,#374151);">Skill name</label><input type="text" id="fSkillName" placeholder="Python" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--ss-border,#d1d5db);border-radius:var(--ss-radius,8px);font-size:0.875rem;"></div>' +
+    '<div class="mt-2"><label style="font-size:0.813rem;font-weight:600;color:var(--ss-text,#374151);">Experience level</label><select id="fSkillLvl" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--ss-border,#d1d5db);border-radius:var(--ss-radius,8px);font-size:0.875rem;"><option value="">Select...</option><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="Expert">Expert</option></select></div>' +
+    '<div class="mt-3 d-flex gap-2"><button class="btn btn-primary" onclick="saveSkill()">Add</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+  openModal();
+}
+function saveSkill() {
+  const d = { name: document.getElementById("fSkillName").value, lvl: document.getElementById("fSkillLvl").value };
+  if (!d.name) return;
+  const items = getSkills(); items.push(d); setSkills(items); closeModal();
+}
+
+document.getElementById("resumeFile") && document.getElementById("resumeFile").addEventListener("change", function(e) {
+  if (!e.target.files[0]) return;
+  document.getElementById("resumeInfo").innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> ' + esc(e.target.files[0].name) + ' selected.';
+  localStorage.setItem("prof_resume_name", e.target.files[0].name);
+});
+function loadResume() {
+  const name = localStorage.getItem("prof_resume_name");
+  if (name) document.getElementById("resumeInfo").innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> ' + esc(name);
+}
+
+function saveProfessionalInfo() {
+  setObj(PK.links, { portfolio: document.getElementById("portUrl").value, linkedin: document.getElementById("linkedinUrl").value, github: document.getElementById("githubUrl").value });
+  alert("Professional information saved locally.");
+}
+function loadProfessionalInfo() {
+  const d = getObj(PK.links);
+  if (d.portfolio) document.getElementById("portUrl").value = d.portfolio;
+  if (d.linkedin) document.getElementById("linkedinUrl").value = d.linkedin;
+  if (d.github) document.getElementById("githubUrl").value = d.github;
+}
+
+function openModal() { document.getElementById("modalOverlay").classList.add("open"); }
+function closeModal() { document.getElementById("modalOverlay").classList.remove("open"); }
+document.getElementById("modalOverlay").addEventListener("click", function(e) { if (e.target === this) closeModal(); });
+
+function esc(s) { if (!s) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+loadProfPhoto();
+loadPersonalInfo();
+renderSkills();
+loadResume();
+loadProfessionalInfo();
+</script>
+{% endblock %}

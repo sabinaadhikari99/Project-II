@@ -1,176 +1,175 @@
-<!-- file path: templates/includes/dashboard_nav.html -->
 <style>
-  /* ============================================
-     FIXED LAYOUT – TOP NAV + SIDE SIDEBAR
-     ============================================ */
-
-  /* ── Reset & Base ── */
-  .app-sidebar,
-  .navbar,
-  .app-main {
-    box-sizing: border-box;
-  }
-
-  /* ── TOP NAVBAR (fixed, full width) ── */
-  .navbar {
+  .navbar-glass {
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;
+    left: var(--sidebar-width, 260px) !important;
     right: 0 !important;
-    height: 64px !important;
-    background: rgba(255, 255, 255, 0.88) !important;
-    backdrop-filter: blur(18px) saturate(180%);
-    -webkit-backdrop-filter: blur(18px) saturate(180%);
-    border-bottom: 1px solid rgba(var(--ss-brand-rgb, 79,70,229), 0.08);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
-    transition: all 0.3s ease;
-    padding: 0 1.5rem !important;
+    height: var(--navbar-height, 60px) !important;
     z-index: 1040 !important;
+    background: var(--ss-glass-bg) !important;
+    backdrop-filter: blur(16px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
+    border-bottom: 1px solid var(--ss-glass-border) !important;
     display: flex !important;
     align-items: center !important;
+    padding: 0 1rem !important;
+    gap: 0.5rem !important;
+    transition: left var(--ss-transition), background var(--ss-transition) !important;
   }
 
-  .navbar .container {
-    max-width: 100% !important;
-    padding: 0 !important;
+  .navbar-glass .ng-left {
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
+    gap: 0.5rem !important;
+    flex: 1 !important;
+    min-width: 0 !important;
   }
 
-  /* ── Logo (far left) ── */
-  .navbar-brand {
+  .navbar-glass .ng-right {
     display: flex !important;
     align-items: center !important;
-    gap: 14px !important;
-    font-weight: 800 !important;
-    font-size: 1.25rem !important;
-    color: var(--ss-ink, #0f172a) !important;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    gap: 0.5rem !important;
     flex-shrink: 0 !important;
   }
 
-  .navbar-brand-mark {
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
-    display: flex;
+  .ng-toggle {
+    display: none !important;
+    width: 30px; height: 30px;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-weight: 800;
-    font-size: 1.1rem;
-    box-shadow: 0 6px 20px rgba(var(--ss-brand-rgb, 79,70,229), 0.30);
+    border: none;
+    background: none;
+    color: var(--ss-muted);
+    border-radius: var(--ss-radius);
+    cursor: pointer;
+    font-size: 1.125rem;
+    transition: all var(--ss-transition-fast);
     flex-shrink: 0;
   }
 
-  /* ── Right side: functions ── */
-  .navbar-nav {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    margin: 0 !important;
-    margin-left: auto !important;
+  .ng-toggle:hover {
+    background: var(--ss-brand-soft);
+    color: var(--ss-brand);
   }
 
-  .navbar-nav .nav-link {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #475569 !important;
-    padding: 10px 22px !important;
-    border-radius: 999px;
+  @media (max-width: 991.98px) {
+    .navbar-glass { left: 0 !important; }
+    .ng-toggle { display: inline-flex !important; }
   }
 
-  .navbar-nav .nav-link:hover {
-    color: var(--ss-brand, #4f46e5) !important;
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.08);
-  }
-
-  .btn-outline-primary {
-    border: 1.5px solid rgba(var(--ss-brand-rgb, 79,70,229), 0.25) !important;
-    color: var(--ss-brand, #4f46e5) !important;
-    padding: 8px 22px !important;
-    border-radius: 999px !important;
-    font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.05) !important;
-    transition: all 0.25s ease !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    height: 40px !important;
-    line-height: 1 !important;
-  }
-
-  .btn-outline-primary:hover {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.10) !important;
-    transform: translateY(-1px);
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8) !important;
-    border: none !important;
-    color: #fff !important;
-    padding: 8px 24px !important;
-    border-radius: 999px !important;
-    font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    box-shadow: 0 4px 14px rgba(var(--ss-brand-rgb, 79,70,229), 0.25) !important;
-    transition: all 0.25s ease !important;
-    height: 40px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    line-height: 1 !important;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(var(--ss-brand-rgb, 79,70,229), 0.35) !important;
-  }
-
-  .notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #EF4444;
-    color: #fff;
-    font-size: 0.6rem;
-    font-weight: 800;
-    min-width: 20px;
-    height: 20px;
-    border-radius: 50%;
+  .ng-breadcrumb {
     display: flex;
     align-items: center;
+    gap: 0.25rem;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ss-muted);
+    min-width: 0;
+  }
+
+  .ng-breadcrumb a {
+    color: var(--ss-muted);
+    white-space: nowrap;
+    text-decoration: none;
+    transition: color var(--ss-transition-fast);
+  }
+
+  .ng-breadcrumb a:hover { color: var(--ss-brand); }
+
+  .ng-breadcrumb .bc-sep {
+    color: var(--ss-border-strong);
+    font-size: 0.75rem;
+  }
+
+  .ng-breadcrumb .bc-current {
+    color: var(--ss-text);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ng-search {
+    position: relative;
+    flex: 1;
+    max-width: 680px;
+    min-width: 160px;
+  }
+
+  @media (max-width: 1199.98px) {
+    .ng-search { max-width: 460px; }
+  }
+
+  @media (max-width: 767.98px) {
+    .ng-search { max-width: 160px; }
+  }
+
+  .ng-search .gs-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ss-muted-light);
+    font-size: 0.9375rem;
+    pointer-events: none;
+  }
+
+  .ng-search input {
+    width: 100%;
+    height: 36px;
+    padding: 0 0.75rem 0 2.25rem;
+    border: 1px solid #E2E8F0;
+    border-radius: var(--ss-radius);
+    background: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ss-body);
+    outline: none;
+    transition: all var(--ss-transition-fast);
+  }
+
+  .ng-search input::placeholder { color: var(--ss-muted-light); }
+  .ng-search input:hover { border-color: var(--ss-border-strong); }
+
+  .ng-search input:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.20);
+  }
+
+  .ng-search .gs-hint {
+    position: absolute;
+    right: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ss-muted-light);
+    background: var(--ss-surface-alt);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    border: 1px solid var(--ss-border);
+    pointer-events: none;
+  }
+
+  .ng-icon-btn {
+    position: relative;
+    width: 32px; height: 32px;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 10px rgba(239,68,68,0.35);
+    border: none;
+    background: transparent;
+    color: var(--ss-muted);
+    border-radius: var(--ss-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all var(--ss-transition-fast);
   }
 
-  .btn-outline-primary.position-relative {
-    width: 40px;
-    height: 40px;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 999px !important;
-    font-size: 1.1rem !important;
-  }
-
-  .dropdown-toggle.btn-outline-primary {
-    padding: 4px 16px 4px 4px !important;
-    gap: 10px !important;
-    height: 40px !important;
-    border-radius: 999px !important;
-    display: flex !important;
-    align-items: center !important;
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.04) !important;
-    border-color: rgba(var(--ss-brand-rgb, 79,70,229), 0.08) !important;
+  .ng-icon-btn:hover {
+    background: var(--ss-brand-soft);
+    color: var(--ss-brand);
   }
 
   .dropdown-toggle.btn-outline-primary:hover {
@@ -178,20 +177,19 @@
     border-color: rgba(var(--ss-brand-rgb, 79,70,229), 0.15) !important;
   }
 
- #navAvatar {
+  #navAvatar {
     width: 32px !important;
     height: 32px !important;
-    border-radius: 50%;                 /* ← perfect circle */
-    background: #f1f5f9;                /* ← neutral, NOT purple */
-    border: 1.5px solid #cbd5e1;        /* ← thin outline */
-    color: #334155;                     /* ← dark initial letter */
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
     font-size: 0.8rem;
     flex-shrink: 0;
-}
+  }
 
   .dropdown-toggle .d-none.d-md-inline {
     line-height: 1.2;
@@ -218,69 +216,48 @@
     gap: 12px !important;
   }
 
-  .dropdown-item:hover {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.06) !important;
-    color: var(--ss-brand, #4f46e5) !important;
+  .ng-quick:hover {
+    background: linear-gradient(135deg, #1D4ED8, #1E40AF) !important;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    transform: translateY(-1px);
+    color: #fff !important;
   }
 
-  .dropdown-item.text-danger:hover {
-    background: rgba(220,38,38,0.08) !important;
-    color: #dc2626 !important;
-  }
+  .ng-user { display: none !important; }
+  .nu-avatar, .nu-info, .nu-name, .nu-role { display: none !important; }
 
-  /* ============================================
-     SIDEBAR – ENHANCED & STYLISH
-     ============================================ */
   .app-sidebar {
     position: fixed;
-    top: 64px !important;
-    left: 0;
-    bottom: 0;
-    width: 300px !important;
-    background: #ffffff;
-    border-right: 1px solid rgba(var(--ss-brand-rgb, 79,70,229), 0.06);
-    padding: 0;
-    overflow-y: auto;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1030 !important;
-    box-shadow: 4px 0 40px rgba(0,0,0,0.02);
+    top: 0; left: 0;
+    width: var(--sidebar-width, 260px);
+    height: 100vh;
+    z-index: 1050;
+    background: var(--ss-surface);
+    border-right: 1px solid var(--ss-border);
     display: flex;
     flex-direction: column;
-  }
-
-  .app-sidebar::-webkit-scrollbar { width: 5px; }
-  .app-sidebar::-webkit-scrollbar-track { background: transparent; }
-  .app-sidebar::-webkit-scrollbar-thumb {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.15);
-    border-radius: 6px;
-  }
-  .app-sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.25);
-  }
-
-  /* ── Sidebar Profile Card ── */
-  .sidebar-profile {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 1.5rem 1.25rem !important;
-    margin: 16px 18px 12px !important;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border: 1px solid rgba(var(--ss-brand-rgb, 79,70,229), 0.06);
-    transition: all 0.3s ease;
-    position: relative;
+    transition: transform var(--ss-transition);
     overflow: hidden;
   }
 
-  .sidebar-profile::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(var(--ss-brand-rgb, 79,70,229), 0.04), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+  @media (max-width: 991.98px) {
+    .app-sidebar {
+      transform: translateX(-100%);
+      z-index: 1060;
+      width: 280px !important;
+    }
+    .app-sidebar.mobile-open { transform: translateX(0); box-shadow: 0 0 40px rgba(0,0,0,0.08); }
+  }
+
+  .sb-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid var(--ss-border);
+    flex-shrink: 0;
+    height: var(--navbar-height, 52px);
+    text-decoration: none;
   }
 
   .sidebar-profile:hover::after {
@@ -294,91 +271,144 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.04);
   }
 
-#sidebarAvatar {
+  #sidebarAvatar {
     width: 52px !important;
     height: 52px !important;
-    border-radius: 50%;                 /* ← perfect circle */
-    background: #f1f5f9;                /* ← neutral, NOT purple */
-    border: 1.5px solid #cbd5e1;        /* ← thin outline */
-    color: #334155;                     /* ← dark initial letter */
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-size: 1.15rem;
+    font-size: 14px;
+    font-weight: 700;
     flex-shrink: 0;
-    box-shadow: none;                   /* ← remove purple glow */
+    box-shadow: 0 4px 14px rgba(var(--ss-brand-rgb, 79,70,229), 0.20);
     transition: all 0.3s ease;
-}
+  }
 
   .sidebar-profile:hover #sidebarAvatar {
     transform: scale(1.04);
-    box-shadow: none;
-    border-color: #94a3b8;
-}
+    box-shadow: 0 6px 20px rgba(var(--ss-brand-rgb, 79,70,229), 0.30);
+  }
 
   #sidebarUserName {
     font-weight: 700;
-    font-size: 0.95rem;
-    color: #0F172A;
-    display: block;
+    letter-spacing: -0.02em;
+    color: var(--ss-text);
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: color 0.3s ease;
   }
 
-  .sidebar-profile:hover #sidebarUserName {
-    color: var(--ss-brand, #4f46e5);
-  }
+  .sb-brand .sb-text span { color: #2563EB; }
 
-  #sidebarUserRole {
-    font-size: 0.7rem;
-    color: #64748B;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    display: block;
-    font-weight: 600;
-  }
+  .sb-profile { display: none !important; }
+  .sp-avatar, .sp-info, .sp-name, .sp-role { display: none !important; }
 
-  /* ── Sidebar Navigation ── */
-  .app-sidebar .nav {
-    padding: 0 16px 24px;
-    gap: 2px;
+  .sidebar-nav {
+    padding: 0 0.625rem;
     flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.0625rem;
   }
 
-  .app-sidebar .nav-label {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #94a3b8;
-    padding: 0.75rem 0.85rem 0.4rem;
-    margin-top: 0.5rem;
-    opacity: 0.7;
-    user-select: none;
-  }
-
-  .app-sidebar .nav-label:first-of-type {
-    margin-top: 0;
-  }
-
-  .app-sidebar .nav-link {
+  .sidebar-nav .sn-label {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 16px !important;
-    border-radius: 12px;
-    color: #475569;
+    padding: 0.4rem 0.5rem 0.25rem;
+    font-size: 12px;
     font-weight: 600;
-    font-size: 0.88rem !important;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: #94A3B8;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    color: #64748B;
+    font-weight: 500;
+    font-size: 14px;
     text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
     position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  }
+
+  .sidebar-nav .nav-link i {
+    font-size: 0.875rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    color: #64748B;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-nav .nav-link:hover {
+    background: #DBEAFE;
+    color: #2563EB;
+  }
+
+  .sidebar-nav .nav-link:hover i { color: #2563EB; }
+
+  .sidebar-nav .nav-link.active {
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    color: #fff;
+  }
+
+  .sidebar-nav .nav-link.active i { color: #fff; }
+
+  .sidebar-nav .nav-link .sn-badge {
+    margin-left: auto;
+    min-width: 18px; height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ss-radius-full);
+    background: rgba(37, 99, 235, 0.10);
+    color: #2563EB;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 0.25rem;
+  }
+
+  .sidebar-nav .nav-link.active .sn-badge {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+  }
+
+  .sidebar-nav .nav-divider {
+    height: 1px;
+    background: var(--ss-border);
+    margin: 0.15rem 0.625rem;
+  }
+
+  .sidebar-footer {
+    padding: 0.5rem 0.625rem;
+    border-top: 1px solid var(--ss-border);
+    flex-shrink: 0;
+  }
+
+  .sidebar-footer .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.35rem 0.625rem;
+    border-radius: 6px;
+    color: var(--ss-danger);
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all var(--ss-transition-fast);
     cursor: pointer;
     border: none;
     background: transparent;
@@ -386,363 +416,244 @@
     text-align: left;
   }
 
-  .app-sidebar .nav-link i {
-    font-size: 1.2rem !important;
-    width: 28px;
-    color: #94a3b8;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
+  .sidebar-footer .logout-btn:hover { background: var(--ss-danger-bg); }
+
+  .sidebar-footer .logout-btn i {
+    font-size: 0.875rem;
+    width: 18px;
     text-align: center;
   }
 
-  .app-sidebar .nav-link:hover {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.07);
-    color: var(--ss-brand, #4f46e5);
-    transform: translateX(4px);
-  }
-
-  .app-sidebar .nav-link:hover i {
-    color: var(--ss-brand, #4f46e5);
-    transform: scale(1.1);
-  }
-
-  .app-sidebar .nav-link.active {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.10);
-    color: var(--ss-brand, #4f46e5);
-    font-weight: 700;
-    box-shadow: inset 0 0 0 1px rgba(var(--ss-brand-rgb, 79,70,229), 0.08);
-  }
-
-  .app-sidebar .nav-link.active i {
-    color: var(--ss-brand, #4f46e5);
-  }
-
-  .app-sidebar .nav-link.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 28px;
-    background: var(--ss-brand, #4f46e5);
-    border-radius: 0 6px 6px 0;
-    box-shadow: 0 0 12px rgba(var(--ss-brand-rgb, 79,70,229), 0.30);
-  }
-
-  .app-sidebar .nav-divider {
-    height: 1px;
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.06);
-    margin: 0.6rem 0.85rem;
-  }
-
-  /* ── Mobile off-canvas ── */
   .sidebar-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.35);
-    backdrop-filter: blur(6px);
-    z-index: 1025;
-    display: none;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
+    z-index: 1055;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    visibility: hidden;
+    transition: all var(--ss-transition);
   }
 
-  .sidebar-overlay.show {
-    display: block;
+  .sidebar-overlay.open {
     opacity: 1;
-  }
-
-  .sidebar-toggle {
-    display: none;
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    z-index: 1041;
-    width: 60px !important;
-    height: 60px !important;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
-    color: #fff;
-    border: none;
-    box-shadow: 0 8px 30px rgba(var(--ss-brand-rgb, 79,70,229), 0.40);
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .sidebar-toggle:hover {
-    transform: scale(1.06);
-    box-shadow: 0 10px 40px rgba(var(--ss-brand-rgb, 79,70,229), 0.50);
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 991.98px) {
-    .app-sidebar {
-      transform: translateX(-100%);
-      box-shadow: none;
-      width: 320px !important;
-      top: 0 !important;
-    }
-    .app-sidebar.mobile-open {
-      transform: translateX(0);
-      box-shadow: 0 0 60px rgba(0,0,0,0.10);
-    }
-    .sidebar-overlay.show { display: block; opacity: 1; }
-    .sidebar-toggle { display: flex !important; }
-    .navbar .container { padding: 0 0.75rem !important; }
-    .navbar-nav .nav-link { padding: 8px 14px !important; }
+    visibility: visible;
   }
 
   @media (max-width: 575.98px) {
-    .app-sidebar { width: 100% !important; max-width: 340px; }
-    .sidebar-toggle { width: 52px !important; height: 52px !important; bottom: 20px; right: 20px; font-size: 1.2rem; }
-    .navbar-brand { font-size: 1.1rem !important; }
-    .navbar-brand-mark { width: 38px !important; height: 38px !important; font-size: 0.9rem; }
-    .dropdown-toggle .d-none.d-md-inline { display: none !important; }
-    .sidebar-profile { padding: 1.2rem 1rem !important; margin: 12px 14px 8px !important; }
-    #sidebarAvatar { width: 44px !important; height: 44px !important; font-size: 1rem; }
-    .app-sidebar .nav-link { padding: 10px 14px !important; font-size: 0.85rem !important; }
+    .app-sidebar { width: 100% !important; max-width: 320px; }
+    .navbar-glass { padding: 0 0.75rem !important; }
+    .ng-user .nu-info { display: none !important; }
   }
 
-  @media (min-width: 992px) {
-    .sidebar-toggle,
-    .sidebar-overlay { display: none !important; }
+  html.theme-dark .navbar-glass {
+    background: rgba(var(--ss-surface-rgb, 15,23,42), 0.72) !important;
+    border-bottom-color: var(--ss-glass-border) !important;
   }
+  html.theme-dark .sb-profile { background: var(--ss-surface-alt, #0F172A) !important; }
+  html.theme-dark .sb-profile:hover { background: var(--ss-surface-hover, #1E293B) !important; }
+  html.theme-dark .sidebar-nav .nav-link { color: var(--ss-muted, #94A3B8) !important; }
+  html.theme-dark .sidebar-nav .nav-link i { color: var(--ss-muted-light, #94A3B8) !important; }
+  html.theme-dark .sidebar-nav .nav-link:hover,
+  html.theme-dark .sidebar-nav .nav-link.active {
+    background: rgba(var(--ss-brand-rgb, 37, 99, 235), 0.15) !important;
+    color: var(--ss-brand, #2563EB) !important;
+  }
+  html.theme-dark .sidebar-nav .nav-link:hover i,
+  html.theme-dark .sidebar-nav .nav-link.active i { color: var(--ss-brand, #2563EB) !important; }
 
-  /* ── Dark Theme Overrides ── */
-  html.theme-dark .app-sidebar {
-    background: var(--ss-surface, #111827) !important;
-    border-right-color: var(--ss-border, #334155) !important;
-  }
-
-  html.theme-dark .sidebar-profile {
-    background: var(--ss-surface-alt, #0f172a) !important;
-    border-color: var(--ss-border, #334155) !important;
-  }
-
-  html.theme-dark .sidebar-profile:hover {
-    background: rgba(255,255,255,0.04) !important;
-    border-color: rgba(var(--ss-brand-rgb, 79,70,229), 0.15) !important;
-  }
-
-  html.theme-dark #sidebarUserName {
-    color: var(--ss-text, #f8fafc) !important;
-  }
-
-  html.theme-dark #sidebarUserRole {
-    color: var(--ss-muted, #94a3b8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-label {
-    color: var(--ss-muted-light, #94a3b8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-link {
-    color: var(--ss-muted, #94a3b8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-link i {
-    color: var(--ss-muted-light, #94a3b8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-link:hover {
-    background: rgba(255,255,255,0.06) !important;
-    color: var(--ss-brand, #818cf8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-link:hover i {
-    color: var(--ss-brand, #818cf8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-link.active {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.15) !important;
-    color: var(--ss-brand, #818cf8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-link.active i {
-    color: var(--ss-brand, #818cf8) !important;
-  }
-
-  html.theme-dark .app-sidebar .nav-divider {
-    background: var(--ss-border, #334155) !important;
-  }
+  /* Force d-none on role-gated elements so Bootstrap responsive utilities
+     (d-sm-inline-flex etc.) cannot override it */
+  .app-sidebar [data-role].d-none,
+  .navbar-glass [data-role].d-none { display: none !important; }
 </style>
 
-<!-- Sidebar Overlay (mobile) -->
+<!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-<!-- Sidebar Toggle Button (mobile) -->
-<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-  <i class="bi bi-list"></i>
-</button>
-
-<!-- ============================================
-     TOP NAVBAR (fixed, full width)
-     ============================================ -->
-<nav class="navbar navbar-expand-xl bg-white navbar-light" id="mainNav">
-  <div class="container">
-    <!-- Logo: far left -->
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{% url 'landing-page' %}">
-      <span class="navbar-brand-mark">S</span>
-      <span>SkillSync AI</span>
-    </a>
-
-    <!-- Navbar toggler (mobile) -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
+<!-- ═══ GLASS TOP NAVBAR ═══ -->
+<nav class="navbar-glass" id="mainNav">
+  <div class="ng-left">
+    <button class="ng-toggle" id="sidebarTrigger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <i class="bi bi-list"></i>
     </button>
 
-    <!-- Right side: functions (far right) -->
-    <div id="nav" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-center gap-1 gap-xl-2">
+    <div class="ng-breadcrumb d-none d-md-flex" data-auth-only>
+      <a href="#">SkillSync</a>
+      <span class="bc-sep"><i class="bi bi-chevron-right"></i></span>
+      <span class="bc-current" id="bcCurrent">Dashboard</span>
+    </div>
 
-        <!-- Mobile-only role links (visible inside collapsed menu) -->
-        <li class="nav-item d-xl-none d-none" data-role="job_seeker"><a class="nav-link" href="{% url 'seeker-dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-        <li class="nav-item d-xl-none d-none" data-role="job_seeker"><a class="nav-link" href="{% url 'cvgen:cvgen_home' %}"><i class="bi bi-file-earmark-person me-2"></i>CV Generator</a></li>
-        <li class="nav-item d-xl-none d-none" data-role="job_seeker"><a class="nav-link" href="{% url 'jobs' %}"><i class="bi bi-briefcase me-2"></i>Jobs</a></li>
-        <li class="nav-item d-xl-none d-none" data-role="job_seeker"><a class="nav-link" href="{% url 'ai-match' %}"><i class="bi bi-stars me-2"></i>AI Match</a></li>
-        <li class="nav-item d-xl-none d-none" data-role="job_seeker"><a class="nav-link" href="{% url 'skillgap' %}"><i class="bi bi-graph-up-arrow me-2"></i>Skill Gap</a></li>
-        <li class="nav-item d-xl-none d-none" data-role="job_seeker"><a class="nav-link" href="{% url 'chat' %}"><i class="bi bi-chat-dots me-2"></i>Career Chat</a></li>
-        <li class="nav-item d-xl-none d-none" data-role="recruiter"><a class="nav-link" href="{% url 'recruiter-dashboard' %}"><i class="bi bi-building me-2"></i>Recruiter Dashboard</a></li>
-        <li class="nav-item d-xl-none d-none" data-role="admin"><a class="nav-link" href="{% url 'admin-dashboard' %}"><i class="bi bi-shield-check me-2"></i>Admin Dashboard</a></li>
+    <div class="ng-search d-none" data-auth-only data-role="job_seeker,recruiter">
+      <i class="bi bi-search gs-icon"></i>
+      <input type="text" id="ngSearchInput" placeholder="Search jobs, skills, people..." aria-label="Search">
+      <span class="gs-hint">Ctrl+K</span>
+    </div>
+  </div>
 
-        <!-- Guest links -->
-        <li class="nav-item ms-xl-2" data-guest-only><a class="btn btn-outline-primary" href="{% url 'login' %}">Login</a></li>
-        <li class="nav-item" data-guest-only><a class="btn btn-primary" href="{% url 'register' %}">Register</a></li>
+  <div class="ng-right">
+    <span data-guest-only style="display:flex;gap:0.5rem;">
+      <a class="btn btn-outline btn-sm" href="{% url 'login' %}" style="border-radius:20px;">Login</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'register' %}" style="border-radius:20px;">Get Started</a>
+    </span>
 
-        <!-- Notification Bell -->
-        <li class="nav-item d-none" data-role="job_seeker">
-          <a class="btn btn-outline-primary position-relative" href="{% url 'notifications' %}" aria-label="Notifications">
-            <i class="bi bi-bell"></i>
-            <span id="notificationBadge" class="notification-badge d-none">0</span>
-          </a>
+    <a class="ng-quick d-none d-sm-inline-flex" data-role="job_seeker" href="{% url 'jobs' %}">
+      <i class="bi bi-plus-lg"></i> Find Jobs
+    </a>
+    <a class="ng-quick d-none d-sm-inline-flex" data-role="recruiter" href="{% url 'recruiter-post-job' %}">
+      <i class="bi bi-plus-lg"></i> Post Job
+    </a>
+
+    <a class="ng-icon-btn d-none" data-role="job_seeker,recruiter,admin" href="{% url 'notifications' %}" aria-label="Notifications">
+      <i class="bi bi-bell"></i>
+      <span id="notificationBadge" class="badge-count d-none">0</span>
+    </a>
+
+    <div class="dropdown d-none" data-auth-only id="userDropdown">
+      <button class="ng-user-avatar" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu" style="border:none;background:none;padding:0;border-radius:50%;overflow:hidden;cursor:pointer;transition:all 0.2s ease;">
+        <span id="navAvatar" style="display:flex;align-items:center;justify-content:center;">U</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" style="min-width:240px;padding:0.5rem;">
+        <li style="padding:0.5rem 0.75rem 0.35rem;border-bottom:1px solid var(--ss-border);margin-bottom:0.375rem;">
+          <div style="font-weight:600;font-size:14px;color:var(--ss-text);" id="ddUserName">Account</div>
+          <div style="font-size:13px;color:var(--ss-muted);" id="ddUserEmail"></div>
         </li>
-
-        <!-- User Dropdown -->
-        <li class="nav-item dropdown d-none" data-auth-only>
-          <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span id="navAvatar">U</span>
-            <span class="text-start lh-sm d-none d-md-inline">
-              <span id="navUserName" class="d-block small fw-bold">Account</span>
-              <span id="navUserRole" class="d-block small text-muted-strong">Role</span>
-            </span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-            <li><button class="dropdown-item" type="button" onclick="routeByRole(localStorage.getItem('role'))"><i class="bi bi-speedometer2 me-2"></i>Dashboard</button></li>
-            <li><a class="dropdown-item" href="{% url 'profile-settings' %}"><i class="bi bi-person-gear me-2"></i>Profile Settings</a></li>
-            <li><hr class="dropdown-divider my-1"></li>
-            <li><button class="dropdown-item text-danger" type="button" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
-          </ul>
+        <li data-role="recruiter"><a class="dropdown-item" href="{% url 'company-profile' %}"><i class="bi bi-building"></i> Company Profile</a></li>
+        <li data-role="job_seeker,admin"><a class="dropdown-item" href="{% url 'notifications' %}"><i class="bi bi-bell"></i> Notifications</a></li>
+        <li style="border-top:1px solid var(--ss-border);margin-top:0.375rem;padding-top:0.375rem;">
+          <button class="dropdown-item text-danger" type="button" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
-<!-- ============================================
-     SIDEBAR (fixed left, below navbar) – STYLISH
-     ============================================ -->
+<!-- ═══ SIDEBAR ═══ -->
 <aside class="app-sidebar d-none" data-auth-only id="appSidebar">
-  <!-- Profile Card -->
-  <div class="sidebar-profile">
-    <span id="sidebarAvatar">U</span>
-    <div>
-      <div id="sidebarUserName" class="fw-bold">Account</div>
-      <div id="sidebarUserRole" class="small text-muted-strong">Role</div>
+  <a class="sb-brand" href="{% url 'landing-page' %}">
+    <span class="sb-icon"><i class="bi bi-lightning-charge-fill"></i></span>
+    <span class="sb-text">SkillSync <span>AI</span></span>
+  </a>
+
+  
+
+  <nav class="sidebar-nav">
+    <!-- ═══ JOB SEEKER NAV ═══ -->
+    <div data-role="job_seeker">
+      <div class="sn-label">Main</div>
+      <a class="nav-link" href="{% url 'seeker-dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="{% url 'jobs' %}"><i class="bi bi-search"></i> Search Jobs</a>
+      <a class="nav-link" href="{% url 'cvgen:cvgen_home' %}"><i class="bi bi-file-earmark-person"></i> CV Generator</a>
     </div>
-  </div>
 
-  <!-- Navigation -->
-  <nav class="nav flex-column">
+    <div class="nav-divider" data-role="job_seeker"></div>
 
-    <!-- Main Section -->
-    <div class="nav-label">Main</div>
+    <div data-role="job_seeker">
+      <div class="sn-label">AI Tools</div>
+      <a class="nav-link" href="{% url 'ai-match' %}"><i class="bi bi-stars"></i> AI Job Match</a>
+      <a class="nav-link" href="{% url 'skillgap' %}"><i class="bi bi-graph-up-arrow"></i> Skill Gap Analysis</a>
+    </div>
 
-    <a class="nav-link" data-role="job_seeker" href="{% url 'seeker-dashboard' %}">
-      <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
-    <a class="nav-link" data-role="job_seeker" href="{% url 'cvgen:cvgen_home' %}">
-      <i class="bi bi-file-earmark-person"></i> CV Generator
-    </a>
-    <a class="nav-link" data-role="job_seeker" href="{% url 'jobs' %}">
-      <i class="bi bi-briefcase"></i> Jobs
-    </a>
-    <a class="nav-link" data-role="job_seeker" href="{% url 'ai-match' %}">
-      <i class="bi bi-stars"></i> AI Match
-    </a>
-    <a class="nav-link" data-role="job_seeker" href="{% url 'skillgap' %}">
-      <i class="bi bi-graph-up-arrow"></i> Skill Gap
-    </a>
-    <a class="nav-link" data-role="job_seeker" href="{% url 'linkedin' %}">
-      <i class="bi bi-linkedin"></i> LinkedIn
-    </a>
+    <div class="nav-divider" data-role="job_seeker"></div>
 
-    <div class="nav-divider"></div>
+    <div data-role="job_seeker">
+      <div class="sn-label">Communication</div>
+      <a class="nav-link" href="{% url 'chat' %}"><i class="bi bi-chat-dots"></i> Messages</a>
+      <a class="nav-link" href="{% url 'notifications' %}">
+        <i class="bi bi-bell"></i> Notifications
+        <span class="sn-badge" id="sidebarNotifBadge" style="display:none">0</span>
+      </a>
+      <a class="nav-link" href="{% url 'linkedin' %}"><i class="bi bi-linkedin"></i> External Integration</a>
+    </div>
 
-    <!-- Tools Section -->
-    <div class="nav-label">Tools</div>
+    <div class="nav-divider" data-role="job_seeker"></div>
 
-    <a class="nav-link" data-role="job_seeker" href="{% url 'chat' %}">
-      <i class="bi bi-chat-dots"></i> Career Chat
-    </a>
-    <a class="nav-link" data-role="job_seeker" href="{% url 'quiz' %}">
-      <i class="bi bi-ui-checks-grid"></i> Quiz
-    </a>
-    <a class="nav-link" data-role="job_seeker" href="{% url 'notifications' %}">
-      <i class="bi bi-bell"></i> Notifications
-    </a>
+    <div data-role="job_seeker">
+      <div class="sn-label">Account</div>
+      <a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person-circle"></i> My Profile</a>
+      <a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Settings</a>
+    </div>
 
-    <div class="nav-divider"></div>
+    <div class="nav-divider" data-role="job_seeker"></div>
 
-    <!-- Role-specific Dashboards -->
-    <div class="nav-label">Other Roles</div>
+    <!-- ═══ RECRUITER NAV ═══ -->
+    <div data-role="recruiter">
+      <div class="sn-label">Recruiting</div>
+      <a class="nav-link" href="{% url 'recruiter-dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="{% url 'recruiter-post-job' %}"><i class="bi bi-plus-circle"></i> Post Job</a>
+      <a class="nav-link" href="{% url 'company-profile' %}"><i class="bi bi-building"></i> Company Profile</a>
+    </div>
 
-    <a class="nav-link" data-role="recruiter" href="{% url 'recruiter-dashboard' %}">
-      <i class="bi bi-building"></i> Recruiter Dashboard
-    </a>
-    <a class="nav-link" data-role="admin" href="{% url 'admin-dashboard' %}">
-      <i class="bi bi-shield-check"></i> Admin Dashboard
-    </a>
+    <div class="nav-divider" data-role="recruiter"></div>
 
-    <div class="nav-divider"></div>
+    <div data-role="recruiter">
+      <div class="sn-label">Communication</div>
+      <a class="nav-link" href="{% url 'notifications' %}">
+        <i class="bi bi-bell"></i> Notifications
+        <span class="sn-badge" id="sidebarNotifBadge" style="display:none">0</span>
+      </a>
+    </div>
 
-    <!-- Settings -->
-    <div class="nav-label">Settings</div>
+    <div class="nav-divider" data-role="recruiter"></div>
 
-    <a class="nav-link" href="{% url 'profile-settings' %}">
-      <i class="bi bi-person-gear"></i> Profile Settings
-    </a>
+    <div data-role="recruiter">
+      <div class="sn-label">Account</div>
+      <a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Settings</a>
+    </div>
+
+    <div class="nav-divider" data-role="recruiter"></div>
+
+    <!-- ═══ ADMIN NAV (simplified) ═══ -->
+    <div data-role="admin">
+      <a class="nav-link" href="{% url 'admin-dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    </div>
+
+    <div class="nav-divider" data-role="admin"></div>
+
+    <div data-role="admin">
+      <a class="nav-link" href="{% url 'notifications' %}">
+        <i class="bi bi-bell"></i> Notifications
+        <span class="sn-badge" id="sidebarNotifBadge" style="display:none">0</span>
+      </a>
+      <a class="nav-link" href="{% url 'linkedin' %}"><i class="bi bi-linkedin"></i> External Integration</a>
+    </div>
+
+    <div class="nav-divider" data-role="admin"></div>
+
+    <div data-role="admin">
+      <a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Settings</a>
+    </div>
+
   </nav>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" type="button" onclick="logout()">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </div>
 </aside>
 
 <script>
-  // ── Sidebar toggle logic ──
   function toggleSidebar() {
     const sidebar = document.getElementById('appSidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    const toggleBtn = document.getElementById('sidebarToggle');
-
+    const trigger = document.getElementById('sidebarTrigger');
+    if (!sidebar) return;
     if (sidebar.classList.contains('mobile-open')) {
       sidebar.classList.remove('mobile-open');
-      overlay.classList.remove('show');
-      toggleBtn.innerHTML = '<i class="bi bi-list"></i>';
+      overlay.classList.remove('open');
+      if (trigger) trigger.innerHTML = '<i class="bi bi-list"></i>';
     } else {
       sidebar.classList.add('mobile-open');
-      overlay.classList.add('show');
-      toggleBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+      overlay.classList.add('open');
+      if (trigger) trigger.innerHTML = '<i class="bi bi-x-lg"></i>';
     }
   }
 
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('appSidebar').classList.contains('mobile-open')) {
-      toggleSidebar();
+    if (e.key === 'Escape') {
+      const sidebar = document.getElementById('appSidebar');
+      if (sidebar && sidebar.classList.contains('mobile-open')) toggleSidebar();
     }
   });
 
@@ -750,20 +661,13 @@
     if (window.innerWidth > 991.98) {
       const sidebar = document.getElementById('appSidebar');
       const overlay = document.getElementById('sidebarOverlay');
-      const toggleBtn = document.getElementById('sidebarToggle');
-      if (sidebar.classList.contains('mobile-open')) {
+      const trigger = document.getElementById('sidebarTrigger');
+      if (sidebar && sidebar.classList.contains('mobile-open')) {
         sidebar.classList.remove('mobile-open');
-        overlay.classList.remove('show');
-        toggleBtn.innerHTML = '<i class="bi bi-list"></i>';
+        overlay.classList.remove('open');
+        if (trigger) trigger.innerHTML = '<i class="bi bi-list"></i>';
       }
     }
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const navbar = document.getElementById('mainNav');
-    window.addEventListener('scroll', function() {
-      navbar.classList.toggle('scrolled', window.scrollY > 20);
-    });
   });
 
   function updateSidebarState() {
@@ -781,27 +685,17 @@
       guestElements.forEach(el => el.classList.add('d-none'));
       authElements.forEach(el => el.classList.remove('d-none'));
       roleElements.forEach(el => {
-        const requiredRole = el.dataset.role;
-        if (requiredRole === role || requiredRole === 'all') {
-          el.classList.remove('d-none');
-        } else {
-          el.classList.add('d-none');
-        }
+        const roles = String(el.dataset.role || "").split(",").map(s => s.trim());
+        const show = roles.includes(role) || roles.includes('all');
+        el.classList.toggle('d-none', !show);
       });
 
       if (username) {
-        const initial = username.charAt(0).toUpperCase();
-        document.getElementById('navUserName').textContent = username;
-        document.getElementById('sidebarUserName').textContent = username;
-        document.getElementById('navAvatar').textContent = initial;
-        document.getElementById('sidebarAvatar').textContent = initial;
-
         const roleNames = { job_seeker: 'Job Seeker', recruiter: 'Recruiter', admin: 'Admin' };
         const roleLabel = roleNames[role] || role || '';
-        document.getElementById('navUserRole').textContent = roleLabel;
-        document.getElementById('sidebarUserRole').textContent = roleLabel;
       }
       updateNotificationBadge();
+      updateSearchPlaceholder();
     } else {
       if (sidebar) sidebar.classList.add('d-none');
       guestElements.forEach(el => el.classList.remove('d-none'));
@@ -812,6 +706,7 @@
 
   function updateNotificationBadge() {
     const badge = document.getElementById('notificationBadge');
+    const sideBadge = document.getElementById('sidebarNotifBadge');
     const count = parseInt(localStorage.getItem('notificationCount') || '0', 10);
     if (count > 0 && badge) {
       badge.textContent = count;
@@ -819,23 +714,48 @@
     } else if (badge) {
       badge.classList.add('d-none');
     }
+    if (count > 0 && sideBadge) {
+      sideBadge.textContent = count;
+      sideBadge.style.display = '';
+    } else if (sideBadge) {
+      sideBadge.style.display = 'none';
+    }
   }
 
   function highlightActiveLink() {
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.app-sidebar .nav-link').forEach(link => {
+    const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+    let matched = false;
+    document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
       const href = link.getAttribute('href');
-      if (href && currentPath === href) {
+      if (!href) { link.classList.remove('active'); return; }
+      const normalized = href.replace(/\/+$/, '') || '/';
+      if (normalized === currentPath) {
         link.classList.add('active');
+        matched = true;
       } else {
         link.classList.remove('active');
       }
     });
+    return matched;
+  }
+
+  window.addEventListener('popstate', highlightActiveLink);
+
+  function updateSearchPlaceholder() {
+    const role = localStorage.getItem('role');
+    const input = document.getElementById('ngSearchInput');
+    if (!input) return;
+    if (role === 'recruiter') {
+      input.placeholder = 'Search jobs, candidates, applicants, skills...';
+    } else {
+      input.placeholder = 'Search jobs, skills, people...';
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
     updateSidebarState();
     highlightActiveLink();
+    updateSearchPlaceholder();
     setInterval(updateNotificationBadge, 30000);
   });
 

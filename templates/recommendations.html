@@ -5,10 +5,10 @@
 {% block content %}
 <style>
   :root {
-    --accent: var(--bs-primary, #4f46e5);
-    --accent-rgb: var(--bs-primary-rgb, 79, 70, 229);
+    --accent: var(--bs-primary, #2563EB);
+    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
     --surface: #fff;
-    --surface-alt: #f8f9fb;
+    --surface-alt: #F8FAFC;
     --txt: rgba(15,23,42,0.88);
     --txt-soft: rgba(15,23,42,0.55);
     --txt-muted: rgba(15,23,42,0.38);
@@ -16,14 +16,14 @@
     --bdr-hover: rgba(15,23,42,0.12);
     --shadow: rgba(15,23,42,0.06);
     --shadow-lg: rgba(15,23,42,0.10);
-    --success: #16a34a;
-    --success-bg: rgba(34,197,94,0.10);
-    --success-bdr: rgba(34,197,94,0.18);
-    --warn: #d97706;
-    --warn-bg: rgba(217,119,6,0.10);
-    --warn-bdr: rgba(217,119,6,0.18);
-    --danger: #dc2626;
-    --danger-bg: rgba(220,38,38,0.08);
+    --success: #10B981;
+    --success-bg: rgba(16,185,129,0.10);
+    --success-bdr: rgba(16,185,129,0.18);
+    --warn: #F59E0B;
+    --warn-bg: rgba(245,158,11,0.10);
+    --warn-bdr: rgba(245,158,11,0.18);
+    --danger: #EF4444;
+    --danger-bg: rgba(239,68,68,0.08);
   }
 
   .ai-match-page { animation: pageIn 0.6s ease both; }
@@ -39,7 +39,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.25rem;
     flex-wrap: wrap;
     animation: fadeDown 0.5s ease both;
   }
@@ -53,8 +53,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent);
@@ -74,16 +74,17 @@
   }
 
   .dash-header .page-title {
-    font-size: 1.75rem;
-    font-weight: 800;
-    margin-bottom: 0.2rem;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
     color: var(--txt);
   }
 
   .dash-header .page-subtitle {
-    font-size: 0.88rem;
-    max-width: 560px;
+    font-size: 15px;
     color: var(--txt-soft);
+    line-height: 1.6;
   }
 
   .btn-outline-accent {
@@ -92,7 +93,7 @@
     color: var(--accent) !important;
     border-radius: 12px;
     font-weight: 600;
-    font-size: 0.82rem;
+    font-size: 14px;
     padding: 0.5rem 1.15rem;
     transition: all 0.25s ease;
   }
@@ -108,10 +109,15 @@
   .dash-panel {
     background: var(--surface);
     border: 1px solid var(--bdr);
-    border-radius: 20px;
-    box-shadow: 0 4px 14px var(--shadow);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px var(--shadow);
     overflow: hidden;
     animation: fadeUp 0.5s ease both;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .dash-panel:hover {
+    box-shadow: 0 10px 30px var(--shadow-lg);
+    border-color: var(--bdr-hover);
   }
 
   @keyframes fadeUp {
@@ -124,29 +130,29 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1.15rem 1.5rem;
+    padding: 1.35rem 1.75rem;
     border-bottom: 1px solid var(--bdr);
   }
 
   .panel-head .panel-title {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    font-size: 0.92rem;
-    font-weight: 700;
+    gap: 0.65rem;
+    font-size: 16px;
+    font-weight: 600;
     margin-bottom: 0;
     color: var(--txt);
   }
 
   .panel-head .panel-icon {
-    width: 30px; height: 30px;
+    width: 32px; height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9px;
+    border-radius: 10px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.8rem;
+    font-size: 15px;
     flex-shrink: 0;
   }
 
@@ -154,40 +160,40 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.25rem 0.7rem;
+    padding: 0.3rem 0.8rem;
     border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
   }
 
-  .panel-body { padding: 1.35rem 1.5rem; }
+  .panel-body { padding: 1.5rem 1.75rem; }
 
   /* ── Placeholder Text ── */
   .placeholder-hint {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    padding: 1rem 1.15rem;
+    gap: 0.85rem;
+    padding: 1.15rem 1.25rem;
     border-radius: 14px;
     border: 1px dashed rgba(var(--accent-rgb), 0.15);
     background: transparent;
     color: var(--txt-muted);
-    font-size: 0.84rem;
+    font-size: 14px;
     line-height: 1.6;
   }
 
   .placeholder-hint .ph-icon {
-    width: 34px; height: 34px;
+    width: 36px; height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
     background: rgba(var(--accent-rgb), 0.06);
     color: var(--accent);
-    font-size: 0.88rem;
+    font-size: 15px;
     flex-shrink: 0;
     opacity: 0.7;
   }
@@ -198,9 +204,9 @@
 
   /* Filled content text (after analysis) */
   .content-text {
-    font-size: 0.85rem;
+    font-size: 15px;
     color: var(--txt-soft);
-    line-height: 1.75;
+    line-height: 1.8;
     background: transparent;
     padding: 0;
   }
@@ -210,21 +216,85 @@
     font-weight: 500;
   }
 
+  /* ── Placeholder Block ── */
+  .placeholder-block {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1.15rem 1.25rem;
+    border-radius: 14px;
+    border: 1px dashed rgba(var(--accent-rgb), 0.15);
+    color: var(--txt-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .placeholder-block .ph-icon {
+    width: 36px; height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(var(--accent-rgb), 0.06);
+    color: var(--accent);
+    font-size: 15px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+  .placeholder-block .ph-text {
+    padding-top: 0.15rem;
+  }
+
+  /* ── Loading Skeleton ── */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .skeleton-line {
+    height: 14px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    margin-bottom: 0.5rem;
+  }
+  .skeleton-line:last-child { margin-bottom: 0; }
+  .skeleton-line.w60 { width: 60%; }
+  .skeleton-line.w80 { width: 80%; }
+  .skeleton-line.w40 { width: 40%; }
+  .skeleton-block {
+    height: 120px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
   /* ── Upload Panel ── */
   .upload-panel { animation-delay: 0.06s; }
 
   .upload-area {
-    padding: 1.5rem;
-    border-radius: 16px;
+    padding: 1.75rem;
+    border-radius: 14px;
     border: 2px dashed rgba(var(--accent-rgb), 0.18);
     background: rgba(var(--accent-rgb), 0.02);
     transition: all 0.3s ease;
     text-align: center;
   }
 
-  .upload-area:hover {
+  .upload-area:hover,
+  .upload-area.drag-over {
     border-color: rgba(var(--accent-rgb), 0.30);
     background: rgba(var(--accent-rgb), 0.04);
+  }
+  .upload-area.drag-over {
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.08);
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.10);
+  }
+  .upload-area.drag-over .upload-icon {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.08);
   }
 
   .upload-area .upload-icon {
@@ -235,7 +305,7 @@
     border-radius: 16px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 1.4rem;
+    font-size: 22px;
     margin-bottom: 0.85rem;
     transition: all 0.3s ease;
   }
@@ -248,16 +318,16 @@
   }
 
   .upload-area .upload-title {
-    font-size: 0.92rem;
+    font-size: 20px;
     font-weight: 700;
     color: var(--txt);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
   }
 
   .upload-area .upload-sub {
-    font-size: 0.78rem;
+    font-size: 14px;
     color: var(--txt-muted);
-    margin-bottom: 1rem;
+    margin-bottom: 1.15rem;
   }
 
   .upload-area .form-control {
@@ -265,7 +335,7 @@
     border-radius: 12px;
     border: 1.5px solid rgba(15,23,42,0.09);
     background: var(--surface);
-    font-size: 0.85rem;
+    font-size: 14px;
     transition: all 0.25s ease;
     cursor: pointer;
   }
@@ -275,7 +345,7 @@
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 14px;
     padding: 0.35rem 0.85rem;
     border-radius: 8px;
     margin-right: 0.65rem;
@@ -296,15 +366,15 @@
   .format-pills {
     display: flex;
     justify-content: center;
-    gap: 0.35rem;
-    margin-top: 0.65rem;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
   }
 
   .format-pill {
-    padding: 0.15rem 0.5rem;
+    padding: 0.2rem 0.55rem;
     border-radius: 6px;
-    font-size: 0.63rem;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
     text-transform: uppercase;
     background: rgba(15,23,42,0.04);
     color: var(--txt-muted);
@@ -313,10 +383,10 @@
 
   .btn-analyze {
     width: 100%;
-    height: 48px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.88rem;
+    height: 50px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 15px;
     border: none;
     background: var(--accent) !important;
     color: #fff !important;
@@ -324,11 +394,11 @@
     overflow: hidden;
     transition: all 0.3s ease;
     box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.25);
-    margin-top: 1rem;
+    margin-top: 1.15rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
   }
 
   .btn-analyze::before {
@@ -356,14 +426,19 @@
   .metric-card {
     background: var(--surface);
     border: 1px solid var(--bdr);
-    border-radius: 18px;
-    padding: 1.15rem;
+    border-radius: 14px;
+    padding: 1.5rem 1.25rem;
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 14px var(--shadow);
+    box-shadow: 0 4px 20px var(--shadow);
     height: 100%;
     animation: fadeUp 0.5s ease both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 
   .mc-idx-1 { animation-delay: 0.10s; }
@@ -391,15 +466,15 @@
   }
 
   .metric-card .mc-icon {
-    width: 36px; height: 36px;
+    width: 44px; height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 11px;
+    border-radius: 13px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.95rem;
-    margin-bottom: 0.75rem;
+    font-size: 18px;
+    margin-bottom: 0.7rem;
     transition: all 0.3s ease;
   }
 
@@ -411,18 +486,19 @@
   }
 
   .metric-card .mc-value {
-    font-size: 1.65rem;
+    font-size: 32px;
     font-weight: 800;
     line-height: 1;
     color: var(--txt);
     margin-bottom: 0.2rem;
     transition: color 0.3s ease;
+    letter-spacing: -0.02em;
   }
 
   .metric-card:hover .mc-value { color: var(--accent); }
 
   .metric-card .mc-label {
-    font-size: 0.72rem;
+    font-size: 13px;
     font-weight: 600;
     color: var(--txt-muted);
     text-transform: uppercase;
@@ -433,22 +509,22 @@
   .chip-wrap {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.45rem;
   }
 
   .skill-chip-modern {
     display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
-    padding: 0.25rem 0.65rem;
-    border-radius: 8px;
-    font-size: 0.72rem;
+    gap: 0.25rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9px;
+    font-size: 13px;
     font-weight: 600;
     transition: all 0.2s ease;
     cursor: default;
   }
 
-  .skill-chip-modern i { font-size: 0.6rem; }
+  .skill-chip-modern i { font-size: 13px; }
 
   .chip-success {
     background: var(--success-bg);
@@ -456,7 +532,7 @@
     border: 1px solid var(--success-bdr);
   }
 
-  .chip-success:hover { background: rgba(34,197,94,0.16); transform: translateY(-1px); }
+  .chip-success:hover { background: rgba(16,185,129,0.16); transform: translateY(-1px); }
 
   .chip-warn {
     background: var(--warn-bg);
@@ -464,12 +540,12 @@
     border: 1px solid var(--warn-bdr);
   }
 
-  .chip-warn:hover { background: rgba(217,119,6,0.16); transform: translateY(-1px); }
+  .chip-warn:hover { background: rgba(245,158,11,0.16); transform: translateY(-1px); }
 
   /* ── Chart ── */
   .chart-wrap {
     position: relative;
-    height: 220px;
+    height: 260px;
     width: 100%;
   }
 
@@ -484,15 +560,15 @@
   .modern-list li {
     display: flex;
     align-items: flex-start;
-    gap: 0.7rem;
-    padding: 0.65rem 0.75rem;
+    gap: 0.75rem;
+    padding: 0.8rem 0.9rem;
     border-radius: 12px;
     background: var(--surface-alt);
     border: 1px solid var(--bdr);
-    margin-bottom: 0.45rem;
-    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
     color: var(--txt-soft);
-    line-height: 1.55;
+    line-height: 1.6;
     transition: all 0.2s ease;
     animation: itemSlide 0.35s ease both;
     counter-increment: listCounter;
@@ -520,8 +596,8 @@
     border-radius: 8px;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.68rem;
-    font-weight: 800;
+    font-size: 13px;
+    font-weight: 600;
     flex-shrink: 0;
     margin-top: 1px;
   }
@@ -539,12 +615,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.75rem 0.85rem;
-    border-radius: 13px;
+    gap: 0.85rem;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
     border: 1px solid var(--bdr);
     background: var(--surface-alt);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.55rem;
     transition: all 0.25s ease;
     animation: itemSlide 0.35s ease both;
   }
@@ -561,24 +637,24 @@
   .course-item .ci-info { min-width: 0; }
 
   .course-item .ci-title {
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--txt);
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.15rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .course-item .ci-meta {
-    font-size: 0.72rem;
+    font-size: 13px;
     color: var(--txt-muted);
     display: flex;
     align-items: center;
     gap: 0.3rem;
   }
 
-  .course-item .ci-meta i { font-size: 0.62rem; opacity: 0.5; }
+  .course-item .ci-meta i { font-size: 13px; opacity: 0.5; }
 
   .btn-course-link {
     width: 32px; height: 32px;
@@ -589,7 +665,7 @@
     border: 1.5px solid rgba(var(--accent-rgb), 0.22);
     background: transparent;
     color: var(--accent);
-    font-size: 0.78rem;
+    font-size: 14px;
     transition: all 0.2s ease;
     flex-shrink: 0;
     text-decoration: none;
@@ -604,8 +680,8 @@
 
   /* ── Recommended Job Card ── */
   .rec-job {
-    padding: 1.15rem;
-    border-radius: 16px;
+    padding: 1.35rem 1.35rem;
+    border-radius: 14px;
     border: 1px solid var(--bdr);
     background: var(--surface-alt);
     margin-bottom: 0.85rem;
@@ -627,7 +703,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.75rem;
     flex-wrap: wrap;
   }
 
@@ -638,19 +714,21 @@
   }
 
   .rec-job .rj-logo {
-    width: 44px; height: 44px;
+    width: 64px; height: 64px;
     border-radius: 12px;
     border: 1px solid var(--bdr);
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     flex-shrink: 0;
-    background: var(--surface);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 22px;
     font-weight: 700;
     color: var(--accent);
     overflow: hidden;
     transition: all 0.3s ease;
+    padding: 10px;
   }
 
   .rec-job:hover .rj-logo {
@@ -658,17 +736,17 @@
     box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.10);
   }
 
-  .rec-job .rj-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .rec-job .rj-logo img { width: 100%; height: 100%; object-fit: contain; }
 
   .rec-job .rj-title {
-    font-size: 0.9rem;
+    font-size: 18px;
     font-weight: 700;
     color: var(--txt);
-    margin-bottom: 0.12rem;
+    margin-bottom: 0.15rem;
   }
 
   .rec-job .rj-meta {
-    font-size: 0.75rem;
+    font-size: 13px;
     color: var(--txt-muted);
     display: flex;
     align-items: center;
@@ -676,29 +754,85 @@
     flex-wrap: wrap;
   }
 
-  .rec-job .rj-meta i { font-size: 0.66rem; opacity: 0.5; }
+  .rec-job .rj-meta i { font-size: 13px; opacity: 0.5; }
 
   .match-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.22rem 0.65rem;
+    gap: 0.3rem;
+    padding: 0.3rem 0.75rem;
     border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
     flex-shrink: 0;
   }
 
-  .match-badge i { font-size: 0.6rem; }
+  .match-badge i { font-size: 13px; }
+
+  .exp-bar-wrap {
+    padding: 1.1rem 1.35rem;
+    background: var(--surface-alt, #F8FAFC);
+    border-radius: 12px;
+    margin: 0.85rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .exp-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .exp-label {
+    width: 80px;
+    font-weight: 600;
+    color: var(--txt-soft);
+    flex-shrink: 0;
+  }
+  .exp-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(15,23,42,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .exp-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
+  }
+  .exp-val {
+    width: 36px;
+    text-align: right;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--txt);
+    flex-shrink: 0;
+  }
+
+  .badge-profession {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.35rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .badge-profession i { font-size: 15px; }
 
   .rec-job .rj-desc {
-    font-size: 0.8rem;
+    font-size: 14px;
     color: var(--txt-soft);
-    line-height: 1.55;
-    margin-bottom: 0.75rem;
+    line-height: 1.6;
+    margin-bottom: 0.85rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -708,34 +842,34 @@
   .rec-job .rj-skills-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
   }
 
   .skill-col-label {
-    font-size: 0.7rem;
+    font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.45rem;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.3rem;
   }
 
   .skill-col-label.matched { color: var(--success); }
   .skill-col-label.missing { color: var(--warn); }
-  .skill-col-label i { font-size: 0.65rem; }
+  .skill-col-label i { font-size: 13px; }
 
   .rec-job .rj-insight {
-    font-size: 0.78rem;
+    font-size: 14px;
     color: var(--txt-soft);
-    padding: 0.65rem 0.85rem;
+    padding: 0.75rem 0.95rem;
     border-radius: 10px;
     background: rgba(var(--accent-rgb), 0.03);
     border: 1px solid rgba(var(--accent-rgb), 0.08);
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
+    margin-bottom: 0.85rem;
+    line-height: 1.55;
   }
 
   .rec-job .rj-actions {
@@ -745,11 +879,11 @@
   }
 
   .btn-apply-job {
-    height: 32px;
-    padding: 0 0.9rem;
-    border-radius: 9px;
-    font-size: 0.76rem;
-    font-weight: 700;
+    height: 36px;
+    padding: 0 1rem;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
     border: none;
     background: var(--accent) !important;
     color: #fff !important;
@@ -759,7 +893,7 @@
     box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.20);
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
   }
 
   .btn-apply-job::before {
@@ -781,18 +915,18 @@
   }
 
   .btn-bookmark {
-    height: 32px;
-    padding: 0 0.85rem;
-    border-radius: 9px;
-    font-size: 0.76rem;
-    font-weight: 700;
+    height: 36px;
+    padding: 0 1rem;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
     background: transparent;
     color: var(--accent);
     border: 1.5px solid rgba(var(--accent-rgb), 0.22);
     transition: all 0.25s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
   }
 
   .btn-bookmark:hover {
@@ -802,113 +936,39 @@
     color: var(--accent);
   }
 
-  /* ── Notification Items ── */
-  .notif-mini {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.65rem;
-    padding: 0.7rem 0.85rem;
-    border-radius: 12px;
-    border: 1px solid var(--bdr);
-    background: var(--surface-alt);
-    margin-bottom: 0.5rem;
-    transition: all 0.2s ease;
-    animation: itemSlide 0.35s ease both;
-  }
-
-  .notif-mini:last-child { margin-bottom: 0; }
-
-  .notif-mini:hover {
-    background: var(--surface);
-    border-color: rgba(var(--accent-rgb), 0.12);
-  }
-
-  .notif-mini.unread {
-    background: rgba(var(--accent-rgb), 0.025);
-    border-left: 3px solid var(--accent);
-  }
-
-  .notif-mini .nm-dot {
-    width: 7px; height: 7px;
-    border-radius: 999px;
-    background: var(--accent);
-    flex-shrink: 0;
-    margin-top: 5px;
-    animation: pulseDot 2s ease-in-out infinite;
-  }
-
-  .notif-mini .nm-dot.read {
-    background: rgba(15,23,42,0.12);
-    animation: none;
-  }
-
-  .notif-mini .nm-title {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--txt);
-    margin-bottom: 0.1rem;
-  }
-
-  .notif-mini .nm-msg {
-    font-size: 0.72rem;
-    color: var(--txt-muted);
-    line-height: 1.4;
-  }
-
-  .btn-mark-read {
-    height: 26px;
-    padding: 0 0.6rem;
-    border-radius: 7px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    background: transparent;
-    color: var(--accent);
-    border: 1px solid rgba(var(--accent-rgb), 0.22);
-    transition: all 0.2s ease;
-    margin-top: 0.35rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-  }
-
-  .btn-mark-read:hover {
-    background: rgba(var(--accent-rgb), 0.06);
-    border-color: rgba(var(--accent-rgb), 0.4);
-  }
-
   /* ── Empty State ── */
   .empty-block {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 2.25rem 1.25rem;
     text-align: center;
   }
 
   .empty-block .eb-icon {
-    width: 44px; height: 44px;
+    width: 48px; height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 14px;
     background: rgba(var(--accent-rgb), 0.07);
     color: var(--accent);
-    font-size: 1.1rem;
-    margin-bottom: 0.6rem;
+    font-size: 20px;
+    margin-bottom: 0.7rem;
   }
 
   .empty-block .eb-title {
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--txt-soft);
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.2rem;
   }
 
   .empty-block .eb-sub {
-    font-size: 0.72rem;
+    font-size: 13px;
     color: var(--txt-muted);
-    max-width: 200px;
+    max-width: 220px;
     line-height: 1.5;
   }
 
@@ -917,310 +977,320 @@
     padding: 0.8rem 1rem;
     border-radius: 12px;
     font-weight: 600;
-    font-size: 0.84rem;
+    font-size: 14px;
     animation: fadeUp 0.3s ease both;
+  }
+
+  /* ── Row-based Layout ── */
+  .match-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    align-items: stretch;
+  }
+
+  .match-row.row-1 {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .match-row.row-1 .dash-panel {
+    height: 100%;
+  }
+
+  .match-row.full-width {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 991.98px) {
+    .match-row { gap: 1.25rem; margin-bottom: 1.25rem; }
+  }
+
+  @media (max-width: 767.98px) {
+    .match-row { grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .match-row.row-1 { grid-template-columns: 1fr; }
   }
 
   /* ── Responsive ── */
   @media (max-width: 1199.98px) {
     .rec-job .rj-skills-row { grid-template-columns: 1fr; }
+    .panel-body { padding: 1.35rem 1.25rem; }
+    .panel-head { padding: 1.2rem 1.25rem; }
+  }
+
+  @media (max-width: 991.98px) {
+    .panel-body { padding: 1.25rem 1.15rem; }
+    .panel-head { padding: 1.1rem 1.15rem; }
   }
 
   @media (max-width: 767.98px) {
     .dash-header { flex-direction: column; gap: 1rem; }
-    .dash-header .page-title { font-size: 1.5rem; }
+    .dash-header .page-title { font-size: 24px; }
     .panel-head { padding: 1rem 1.1rem; }
-    .panel-body { padding: 1.1rem; }
+    .panel-body { padding: 1.15rem; }
+    .rec-job { padding: 1.1rem; }
     .rec-job .rj-header { flex-direction: column; gap: 0.5rem; }
+    .metric-card { padding: 1.15rem; }
   }
 
   @media (max-width: 575.98px) {
-    .metric-card { padding: 0.95rem; }
-    .metric-card .mc-value { font-size: 1.4rem; }
+    .metric-card { padding: 1rem 0.85rem; }
+    .metric-card .mc-value { font-size: 22px; }
     .upload-area { padding: 1rem; }
+    .upload-area .upload-icon { width: 44px; height: 44px; font-size: 18px; }
+    .dash-header .page-title { font-size: 22px; }
+    .panel-body { padding: 1rem; }
+    .panel-head { padding: 0.9rem 1rem; }
   }
 </style>
 
 <div class="ai-match-page">
 
-  <!-- ── Header ── -->
   <div class="dash-header">
     <div>
-      <div class="page-kicker">
-        <span class="pulse-dot"></span>
-        AI Match
-      </div>
       <h1 class="page-title">AI Match Dashboard</h1>
       <p class="page-subtitle mb-0">
-        Upload a resume PDF to generate resume insights, skill gaps, match analytics, and recommended jobs.
+        Upload a CV PDF to generate insights, skill gaps, match analytics, and recommended jobs.
       </p>
     </div>
-    <div>
-      <button class="btn-outline-accent" onclick="loadNotificationsPanel()">
-        <i class="bi bi-arrow-clockwise me-1"></i> Refresh
-      </button>
+  </div>
+
+  <!-- Row 1: Upload (2fr) + Match Score (1fr) -->
+  <div class="match-row row-1">
+    <div class="dash-panel upload-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+          Upload Your CV
+        </div>
+      </div>
+      <div class="panel-body">
+        <form id="aiMatchForm">
+          <div class="upload-area">
+            <div class="upload-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+            <div class="upload-title">Upload your CV</div>
+            <div class="upload-sub">PDF format only — analyzed by AI instantly</div>
+            <input id="resume_pdf" class="form-control" name="resume" type="file" accept="application/pdf" required>
+            <div class="format-pills">
+              <span class="format-pill">PDF</span>
+              <span class="format-pill">Max 10 MB</span>
+              <span class="format-pill">AI Powered</span>
+            </div>
+          </div>
+          <button id="analyzeButton" class="btn-analyze" type="submit">
+            <i class="bi bi-stars"></i> Analyze CV
+          </button>
+        </form>
+        <div id="message" class="mt-3"></div>
+        <div id="detectedProfession" class="mt-2"></div>
+      </div>
+    </div>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-speedometer2"></i></div>
+          Match Score
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="metric-card mc-idx-1">
+              <div class="mc-icon"><i class="bi bi-speedometer2"></i></div>
+              <div id="resumeScore" class="mc-value">--</div>
+              <div class="mc-label">CV Score</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="metric-card mc-idx-2">
+              <div class="mc-icon"><i class="bi bi-tools"></i></div>
+              <div id="skillCount" class="mc-value">0</div>
+              <div class="mc-label">Skills Extracted</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="metric-card mc-idx-3">
+              <div class="mc-icon"><i class="bi bi-exclamation-triangle"></i></div>
+              <div id="missingCount" class="mc-value">0</div>
+              <div class="mc-label">Missing Skills</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="metric-card mc-idx-4">
+              <div class="mc-icon"><i class="bi bi-briefcase"></i></div>
+              <div id="jobCount" class="mc-value">0</div>
+              <div class="mc-label">Job Matches</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ── Upload + Metrics ── -->
-  <div class="row g-4 mb-4">
-    <div class="col-lg-4">
-      <div class="dash-panel upload-panel h-100">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-            Resume Upload
-          </div>
-        </div>
-        <div class="panel-body">
-          <form id="aiMatchForm">
-            <div class="upload-area">
-              <div class="upload-icon"><i class="bi bi-file-earmark-pdf"></i></div>
-              <div class="upload-title">Upload your resume</div>
-              <div class="upload-sub">PDF format only — analyzed by AI instantly</div>
-              <input id="resume_pdf" class="form-control" name="resume" type="file" accept="application/pdf" required>
-              <div class="format-pills">
-                <span class="format-pill">PDF</span>
-                <span class="format-pill">Max 10 MB</span>
-                <span class="format-pill">AI Powered</span>
-              </div>
-            </div>
-            <button id="analyzeButton" class="btn-analyze" type="submit">
-              <i class="bi bi-stars"></i> Analyze Resume
-            </button>
-          </form>
-          <div id="message" class="mt-3"></div>
+  <!-- Row 2: Match Analytics + Skills Extracted -->
+  <div class="match-row">
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-bar-chart-line"></i></div>
+          Match Analytics
         </div>
       </div>
+      <div class="panel-body">
+        <div class="chart-wrap"><canvas id="matchChart"></canvas></div>
+      </div>
     </div>
-    <div class="col-lg-8">
-      <div class="row g-3 h-100">
-        <div class="col-6 col-md-3">
-          <div class="metric-card mc-idx-1">
-            <div class="mc-icon"><i class="bi bi-speedometer2"></i></div>
-            <div id="resumeScore" class="mc-value">--</div>
-            <div class="mc-label">Resume Score</div>
-          </div>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-check-circle"></i></div>
+          Skills Extracted
         </div>
-        <div class="col-6 col-md-3">
-          <div class="metric-card mc-idx-2">
-            <div class="mc-icon"><i class="bi bi-tools"></i></div>
-            <div id="skillCount" class="mc-value">0</div>
-            <div class="mc-label">Skills Extracted</div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="metric-card mc-idx-3">
-            <div class="mc-icon"><i class="bi bi-exclamation-triangle"></i></div>
-            <div id="missingCount" class="mc-value">0</div>
-            <div class="mc-label">Missing Skills</div>
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <div class="metric-card mc-idx-4">
-            <div class="mc-icon"><i class="bi bi-briefcase"></i></div>
-            <div id="jobCount" class="mc-value">0</div>
-            <div class="mc-label">Job Matches</div>
+      </div>
+      <div class="panel-body">
+        <div id="skillsExtracted" class="chip-wrap">
+          <div class="empty-block w-100">
+            <div class="eb-icon"><i class="bi bi-tools"></i></div>
+            <div class="eb-title">No skills yet</div>
+            <div class="eb-sub">Skills appear after CV analysis.</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Main Content ── -->
-  <div class="row g-4">
-
-    <!-- Left Column -->
-    <div class="col-xl-7">
-
-      <!-- Resume Summary -->
-      <div class="dash-panel mb-4" style="animation-delay:0.12s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-file-text"></i></div>
-            Resume Summary
+  <!-- Row 3: Missing Skills + Recommended Jobs -->
+  <div class="match-row">
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon" style="background:var(--warn-bg);color:var(--warn);">
+            <i class="bi bi-exclamation-triangle"></i>
           </div>
-          <span class="badge-count"><i class="bi bi-cpu"></i> AI Generated</span>
-        </div>
-        <div class="panel-body" id="resumeSummaryWrap">
-          <div class="placeholder-hint">
-            <div class="ph-icon"><i class="bi bi-file-earmark-text"></i></div>
-            <div class="ph-text">Upload a resume to generate a professional summary powered by AI analysis.</div>
-          </div>
+          Missing Skills
         </div>
       </div>
-
-      <!-- Match Analytics -->
-      <div class="dash-panel mb-4" style="animation-delay:0.18s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-bar-chart-line"></i></div>
-            Match Analytics
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="chart-wrap"><canvas id="matchChart"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Recommended Jobs -->
-      <div class="dash-panel" style="animation-delay:0.24s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-stars"></i></div>
-            Recommended Jobs
-          </div>
-          <span id="recommendedCount" class="badge-count"><i class="bi bi-briefcase"></i> 0 roles</span>
-        </div>
-        <div class="panel-body" id="recommendedJobs">
-          <div class="empty-block">
-            <div class="eb-icon"><i class="bi bi-briefcase"></i></div>
-            <div class="eb-title">No recommendations yet</div>
-            <div class="eb-sub">Upload a resume to get AI-matched jobs.</div>
+      <div class="panel-body">
+        <div id="missingSkills" class="chip-wrap">
+          <div class="empty-block w-100">
+            <div class="eb-icon" style="background:var(--warn-bg);color:var(--warn);">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="eb-title">No gaps found</div>
+            <div class="eb-sub">Upload a CV to analyze gaps.</div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Right Column -->
-    <div class="col-xl-5">
-
-      <!-- Skills Extracted -->
-      <div class="dash-panel mb-4" style="animation-delay:0.14s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-check-circle"></i></div>
-            Skills Extracted
-          </div>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-stars"></i></div>
+          Recommended Jobs
         </div>
-        <div class="panel-body">
-          <div id="skillsExtracted" class="chip-wrap">
-            <div class="empty-block w-100">
-              <div class="eb-icon"><i class="bi bi-tools"></i></div>
-              <div class="eb-title">No skills yet</div>
-              <div class="eb-sub">Skills appear after resume analysis.</div>
-            </div>
-          </div>
+        <span id="recommendedCount" class="badge-count"><i class="bi bi-briefcase"></i> 0 roles</span>
+      </div>
+      <div class="panel-body" id="recommendedJobs">
+        <div class="empty-block">
+          <div class="eb-icon"><i class="bi bi-briefcase"></i></div>
+          <div class="eb-title">No recommendations yet</div>
+          <div class="eb-sub">Upload a CV to get AI-matched jobs.</div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Missing Skills -->
-      <div class="dash-panel mb-4" style="animation-delay:0.18s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon" style="background:var(--warn-bg);color:var(--warn);">
-              <i class="bi bi-exclamation-triangle"></i>
-            </div>
-            Missing Skills
-          </div>
-        </div>
-        <div class="panel-body">
-          <div id="missingSkills" class="chip-wrap">
-            <div class="empty-block w-100">
-              <div class="eb-icon" style="background:var(--warn-bg);color:var(--warn);">
-                <i class="bi bi-shield-check"></i>
-              </div>
-              <div class="eb-title">No gaps found</div>
-              <div class="eb-sub">Upload a resume to analyze gaps.</div>
-            </div>
-          </div>
+  <!-- Row 4: Skill Gap Analysis + Recommended Courses -->
+  <div class="match-row">
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-lightning-charge"></i></div>
+          Skill Gap Analysis
         </div>
       </div>
-
-      <!-- Skill Gap Analysis -->
-      <div class="dash-panel mb-4" style="animation-delay:0.22s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-lightning-charge"></i></div>
-            Skill Gap Analysis
-          </div>
-        </div>
-        <div class="panel-body" id="skillGapWrap">
-          <div class="placeholder-hint">
-            <div class="ph-icon"><i class="bi bi-lightning-charge"></i></div>
-            <div class="ph-text">Upload a resume to compare your skills against active job requirements.</div>
-          </div>
+      <div class="panel-body" id="skillGapWrap">
+        <div class="placeholder-hint">
+          <div class="ph-icon"><i class="bi bi-lightning-charge"></i></div>
+          <div class="ph-text">Upload a CV to compare your skills against active job requirements.</div>
         </div>
       </div>
-
-      <!-- Recommended Courses -->
-      <div class="dash-panel mb-4" style="animation-delay:0.26s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-book"></i></div>
-            Recommended Courses
-          </div>
-        </div>
-        <div class="panel-body" id="recommendedCourses">
-          <div class="empty-block">
-            <div class="eb-icon"><i class="bi bi-book"></i></div>
-            <div class="eb-title">No courses yet</div>
-            <div class="eb-sub">Courses appear when missing skills match resources.</div>
-          </div>
+    </div>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-book"></i></div>
+          Recommended Courses
         </div>
       </div>
-
-      <!-- Learning Roadmap -->
-      <div class="dash-panel mb-4" style="animation-delay:0.30s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-signpost-split"></i></div>
-            Learning Roadmap
-          </div>
-        </div>
-        <div class="panel-body">
-          <ol id="learningRoadmap" class="modern-list mb-0"></ol>
+      <div class="panel-body" id="recommendedCourses">
+        <div class="empty-block">
+          <div class="eb-icon"><i class="bi bi-book"></i></div>
+          <div class="eb-title">No courses yet</div>
+          <div class="eb-sub">Courses appear when missing skills match resources.</div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Resume Insights -->
-      <div class="dash-panel mb-4" style="animation-delay:0.34s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-lightbulb"></i></div>
-            Resume Insights
-          </div>
-        </div>
-        <div class="panel-body">
-          <ul id="resumeInsights" class="modern-list bullet-list mb-0"></ul>
+  <!-- Row 5: Learning Roadmap + CV Insights -->
+  <div class="match-row">
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-signpost-split"></i></div>
+          Learning Roadmap
         </div>
       </div>
-
-      <!-- Resume Suggestions -->
-      <div class="dash-panel mb-4" style="animation-delay:0.38s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon" style="background:var(--warn-bg);color:var(--warn);">
-              <i class="bi bi-pencil-square"></i>
-            </div>
-            Improvement Suggestions
-          </div>
-        </div>
-        <div class="panel-body">
-          <ul id="resumeSuggestions" class="modern-list bullet-list mb-0"></ul>
+      <div class="panel-body">
+        <ol id="learningRoadmap" class="modern-list mb-0"></ol>
+      </div>
+    </div>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-lightbulb"></i></div>
+          CV Insights
         </div>
       </div>
+      <div class="panel-body">
+        <ul id="resumeInsights" class="modern-list bullet-list mb-0"></ul>
+      </div>
+    </div>
+  </div>
 
-      <!-- Notifications Panel -->
-      <div class="dash-panel" style="animation-delay:0.42s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-bell"></i></div>
-            Notifications
+  <!-- Row 6: Improvement Suggestions (full width) -->
+  <div class="match-row full-width">
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon" style="background:var(--warn-bg);color:var(--warn);">
+            <i class="bi bi-pencil-square"></i>
           </div>
-          <span id="panelNotificationCount" class="badge-count">
-            <i class="bi bi-bell"></i> 0 unread
-          </span>
-        </div>
-        <div class="panel-body" id="notificationsPanel">
-          <div class="empty-block">
-            <div class="eb-icon"><i class="bi bi-bell-slash"></i></div>
-            <div class="eb-title">No alerts</div>
-            <div class="eb-sub">Match alerts appear here.</div>
-          </div>
+          Improvement Suggestions
         </div>
       </div>
+      <div class="panel-body">
+        <ul id="resumeSuggestions" class="modern-list bullet-list mb-0"></ul>
+      </div>
+    </div>
+  </div>
 
+  <!-- Row 7: CV Summary (full width, always last) -->
+  <div class="match-row full-width">
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-card-text"></i></div>
+          CV Summary
+        </div>
+      </div>
+      <div class="panel-body" id="resumeSummaryWrap">
+        <div class="placeholder-block">
+          <div class="ph-icon"><i class="bi bi-file-earmark-text"></i></div>
+          <div class="ph-text">Upload a CV to generate a professional summary powered by AI analysis.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1297,12 +1367,39 @@
     </div>`;
   }
 
+  /* ── Match explanation bar ── */
+  function renderMatchExplanation(exp) {
+    if (!exp || !exp.final_score) return "";
+    const bars = [
+      { key: "profession_match", label: "Profession", color: "#6366f1" },
+      { key: "skills_match", label: "Skills", color: "#10B981" },
+      { key: "experience_match", label: "Experience", color: "#F59E0B" },
+      { key: "education_match", label: "Education", color: "#3B82F6" },
+      { key: "semantic_similarity", label: "Semantic", color: "#8B5CF6" },
+    ];
+    return `<div class="exp-bar-wrap">
+      ${bars.map(b => {
+        const val = Math.min(100, Math.max(0, parseInt(exp[b.key]) || 0));
+        return `<div class="exp-row">
+          <span class="exp-label">${b.label}</span>
+          <div class="exp-track">
+            <div class="exp-fill" style="width:${val}%;background:${b.color};"></div>
+          </div>
+          <span class="exp-val">${val}%</span>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
   /* ── Recommended job card ── */
   function renderRecommendedJob(item, index) {
     const job = item.job;
-    const logoHtml = job.company_logo
-      ? `<div class="rj-logo"><img src="${escapeHtml(job.company_logo)}" alt=""></div>`
-      : `<div class="rj-logo">${escapeHtml((job.company || "?")[0].toUpperCase())}</div>`;
+    const logoHtml = (() => {
+      const initial = escapeHtml((job.company || "?")[0].toUpperCase());
+      return job.company_logo
+        ? `<div class="rj-logo"><img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company)} Logo" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='${initial}'"></div>`
+        : `<div class="rj-logo">${initial}</div>`;
+    })();
 
     const matched = (item.matched_skills || [])
       .map(s => `<span class="skill-chip-modern chip-success"><i class="bi bi-check-lg"></i> ${escapeHtml(s)}</span>`).join("");
@@ -1326,20 +1423,21 @@
         </div>
         <div style="text-align:right;">
           <span class="match-badge"><i class="bi bi-check-circle-fill"></i> ${item.match_percentage}%</span>
-          <div style="font-size:0.72rem;color:var(--txt-muted);margin-top:0.3rem;">
+          <div style="font-size:13px;color:var(--txt-muted);margin-top:0.3rem;">
             ${escapeHtml(job.salary_range || "Salary not listed")}
           </div>
         </div>
       </div>
       <div class="rj-desc">${escapeHtml(job.description)}</div>
+      ${renderMatchExplanation(item.match_explanation)}
       <div class="rj-skills-row">
         <div>
           <div class="skill-col-label matched"><i class="bi bi-check-circle"></i> Matched</div>
-          <div class="chip-wrap">${matched || '<span style="font-size:0.72rem;color:var(--txt-muted)">None</span>'}</div>
+          <div class="chip-wrap">${matched || '<span style="font-size:13px;color:var(--txt-muted)">None</span>'}</div>
         </div>
         <div>
           <div class="skill-col-label missing"><i class="bi bi-exclamation-circle"></i> Missing</div>
-          <div class="chip-wrap">${missing || '<span style="font-size:0.72rem;color:var(--txt-muted)">None</span>'}</div>
+          <div class="chip-wrap">${missing || '<span style="font-size:13px;color:var(--txt-muted)">None</span>'}</div>
         </div>
       </div>
       <div class="rj-insight">${escapeHtml(item.skill_gap_analysis || "")}</div>
@@ -1358,7 +1456,7 @@
   function renderChart(rows) {
     const canvas = document.getElementById("matchChart");
     if (matchChart) matchChart.destroy();
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#4f46e5';
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#2563EB';
 
     matchChart = new Chart(canvas, {
       type: "bar",
@@ -1405,52 +1503,29 @@
     });
   }
 
-  /* ── Notification panel ── */
-  function renderNotificationPanel(n, i) {
-    return `<div class="notif-mini ${n.is_read ? '' : 'unread'}" style="animation-delay:${i * 0.05}s">
-      <div class="nm-dot ${n.is_read ? 'read' : ''}"></div>
-      <div style="flex:1;min-width:0;">
-        <div class="nm-title">${escapeHtml(n.title)}</div>
-        <div class="nm-msg">${escapeHtml(n.message)}</div>
-        ${n.is_read ? '' : `<button class="btn-mark-read" onclick="markNotificationRead(${n.id})"><i class="bi bi-check2"></i> Read</button>`}
-      </div>
-    </div>`;
-  }
-
-  async function loadNotificationsPanel() {
-    const notifications = await api("/api/notifications/");
-    const unread = notifications.filter(n => !n.is_read).length;
-    document.getElementById("panelNotificationCount").innerHTML =
-      `<i class="bi bi-bell"></i> ${unread} unread`;
-    document.getElementById("notificationsPanel").innerHTML = notifications.length
-      ? notifications.slice(0, 4).map(renderNotificationPanel).join("")
-      : emptyBlock("bell-slash", "No alerts", "Match alerts will appear here.");
-  }
-
-  async function markNotificationRead(id) {
-    await api(`/api/notifications/${id}/read/`, { method: "POST" });
-    loadNotificationsPanel();
-    loadNotificationBell();
-  }
-
   /* ── Apply analysis data ── */
   function applyAnalysis(data) {
     animateValue("resumeScore", data.resume_score || 0, "%");
+    const professionEl = document.getElementById("detectedProfession");
+    if (data.profession && professionEl) {
+      professionEl.innerHTML = `<span class="badge-profession"><i class="bi bi-person-badge"></i> ${escapeHtml(data.profession)}</span>`;
+    }
     animateValue("skillCount", (data.skills_extracted || []).length);
     animateValue("missingCount", (data.missing_skills || []).length);
-    animateValue("jobCount", (data.recommended_jobs || []).length);
+    const jobsList = data.matched_jobs || data.recommended_jobs || [];
+    animateValue("jobCount", jobsList.length);
 
     document.getElementById("recommendedCount").innerHTML =
-      `<i class="bi bi-briefcase"></i> ${(data.recommended_jobs || []).length} roles`;
+      `<i class="bi bi-briefcase"></i> ${jobsList.length} roles`;
 
-    /* Resume Summary */
+    /* CV Summary */
     const summaryWrap = document.getElementById("resumeSummaryWrap");
     if (data.resume_summary) {
       summaryWrap.innerHTML = `<p class="content-text filled mb-0">${escapeHtml(data.resume_summary)}</p>`;
     } else {
       summaryWrap.innerHTML = `<div class="placeholder-hint">
         <div class="ph-icon"><i class="bi bi-file-earmark-text"></i></div>
-        <div class="ph-text">No summary was returned. Try uploading a more detailed resume.</div>
+        <div class="ph-text">No summary was returned. Try uploading a more detailed CV.</div>
       </div>`;
     }
 
@@ -1461,7 +1536,7 @@
     } else {
       gapWrap.innerHTML = `<div class="placeholder-hint">
         <div class="ph-icon"><i class="bi bi-lightning-charge"></i></div>
-        <div class="ph-text">No skill gap analysis was returned. Upload a resume with more skill details.</div>
+        <div class="ph-text">No skill gap analysis was returned. Upload a CV with more skill details.</div>
       </div>`;
     }
 
@@ -1478,7 +1553,7 @@
 
     document.getElementById("learningRoadmap").innerHTML =
       (data.learning_roadmap || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")
-      || `<li style="opacity:0.45;border-style:dashed;">Upload a resume to generate your roadmap.</li>`;
+      || `<li style="opacity:0.45;border-style:dashed;">Upload a CV to generate your roadmap.</li>`;
 
     document.getElementById("resumeInsights").innerHTML =
       (data.resume_insights || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")
@@ -1489,12 +1564,47 @@
       || `<li style="opacity:0.45;border-style:dashed;">Suggestions will appear after analysis.</li>`;
 
     document.getElementById("recommendedJobs").innerHTML =
-      (data.recommended_jobs || []).length
-        ? (data.recommended_jobs || []).map(renderRecommendedJob).join("")
-        : emptyBlock("briefcase", "No jobs matched", "Try uploading a more detailed resume.");
+      jobsList.length
+        ? jobsList.map(renderRecommendedJob).join("")
+        : emptyBlock("briefcase", "No matching jobs found", "Try updating your skills or check back later.");
 
     renderChart(data.match_analytics || []);
-    loadNotificationsPanel();
+  }
+
+  /* ── Upload area drag-and-drop ── */
+  const uploadArea = document.querySelector(".upload-area");
+  const fileInput = document.getElementById("resume_pdf");
+  if (uploadArea && fileInput) {
+    uploadArea.addEventListener("dragover", (e) => { e.preventDefault(); uploadArea.classList.add("drag-over"); });
+    uploadArea.addEventListener("dragleave", () => uploadArea.classList.remove("drag-over"));
+    uploadArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove("drag-over");
+      if (e.dataTransfer.files.length) fileInput.files = e.dataTransfer.files;
+    });
+    uploadArea.addEventListener("click", (e) => { if (e.target !== fileInput) fileInput.click(); });
+  }
+
+  /* ── Loading skeletons ── */
+  function showSkeletons() {
+    document.getElementById("resumeSummaryWrap").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div><div class="skeleton-line w60"></div></div>`;
+    document.getElementById("skillGapWrap").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div><div class="skeleton-line w40"></div></div>`;
+    document.getElementById("skillsExtracted").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
+    document.getElementById("missingSkills").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
+    document.getElementById("recommendedJobs").innerHTML =
+      `<div><div class="skeleton-block"></div><div style="height:0.85rem"></div><div class="skeleton-block"></div></div>`;
+    document.getElementById("learningRoadmap").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div><div class="skeleton-line w60"></div></div>`;
+    document.getElementById("resumeInsights").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
+    document.getElementById("resumeSuggestions").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
+    document.getElementById("recommendedCourses").innerHTML =
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
   }
 
   /* ── Form submit ── */
@@ -1506,13 +1616,14 @@
     const button = document.getElementById("analyzeButton");
     const orig = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Analyzing…';
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Analyzing\u2026';
+    showSkeletons();
 
     try {
       const formData = new FormData();
       formData.append("resume", file);
       const data = await api("/api/jobs/ai-match/", { method: "POST", body: formData });
-      showMessage("Resume analyzed successfully.", "success");
+      showMessage("CV analyzed successfully.", "success");
       applyAnalysis(data);
     } catch (error) {
       showMessage(error.message, "danger");
@@ -1523,6 +1634,5 @@
   });
 
   renderChart([]);
-  loadNotificationsPanel();
 </script>
 {% endblock %}

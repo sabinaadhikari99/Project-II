@@ -1,0 +1,41 @@
+{% extends "base_public.html" %}
+{% block title %}Signing in... | SkillSync AI{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:2rem;">
+  <div>
+    <div class="spinner-border text-primary mb-3" role="status" style="width:3rem;height:3rem;"></div>
+    <p style="color:var(--ss-muted);font-size:0.9375rem;">Signing you in...</p>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const access = params.get('access');
+    const refresh = params.get('refresh');
+    if (access && refresh) {
+      localStorage.setItem('access', access);
+      localStorage.setItem('refresh', refresh);
+      (async function() {
+        try {
+          const resp = await fetch('/api/auth/profile/', {
+            headers: { 'Authorization': 'Bearer ' + access }
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            window.saveUser(data);
+            window.routeByRole(data.role);
+          } else {
+            window.location.href = '/login/';
+          }
+        } catch (e) {
+          window.location.href = '/login/';
+        }
+      })();
+    } else {
+      window.location.href = '/login/';
+    }
+  })();
+</script>
+{% endblock %}
