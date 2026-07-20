@@ -503,7 +503,6 @@
     <a class="ng-quick d-none d-sm-inline-flex" data-role="recruiter" href="{% url 'recruiter-post-job' %}">
       <i class="bi bi-plus-lg"></i> Post Job
     </a>
-
     <a class="ng-icon-btn d-none" data-role="job_seeker,recruiter,admin" href="{% url 'notifications' %}" aria-label="Notifications">
       <i class="bi bi-bell"></i>
       <span id="notificationBadge" class="badge-count d-none">0</span>
@@ -552,6 +551,7 @@
       <div class="sn-label">AI Tools</div>
       <a class="nav-link" href="{% url 'ai-match' %}"><i class="bi bi-stars"></i> AI Job Match</a>
       <a class="nav-link" href="{% url 'skillgap' %}"><i class="bi bi-graph-up-arrow"></i> Skill Gap Analysis</a>
+      <a class="nav-link" href="{% url 'quiz' %}"><i class="bi bi-puzzle"></i> Quiz</a>
     </div>
 
     <div class="nav-divider" data-role="job_seeker"></div>
@@ -582,6 +582,7 @@
       <a class="nav-link" href="{% url 'recruiter-dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
       <a class="nav-link" href="{% url 'recruiter-post-job' %}"><i class="bi bi-plus-circle"></i> Post Job</a>
       <a class="nav-link" href="{% url 'company-profile' %}"><i class="bi bi-building"></i> Company Profile</a>
+      <a class="nav-link" href="{% url 'quiz' %}"><i class="bi bi-puzzle"></i> Quiz</a>
     </div>
 
     <div class="nav-divider" data-role="recruiter"></div>
