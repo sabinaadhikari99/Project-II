@@ -190,7 +190,10 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting\u2026';
       try {
-        const resp = await fetch('/api/auth/linkedin/login/');
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role');
+        const url = role ? '/api/auth/linkedin/login/?role=' + encodeURIComponent(role) : '/api/auth/linkedin/login/';
+        const resp = await fetch(url);
         const data = await resp.json();
         window.location.href = data.auth_url;
       } catch (e) {

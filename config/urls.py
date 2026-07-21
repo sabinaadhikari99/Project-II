@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from apps.accounts.views import LinkedInRoleSelectPageView
+from apps.accounts.views import LinkedInConflictPageView, LinkedInRoleSelectPageView
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
@@ -43,6 +43,7 @@ urlpatterns = [
     path("linkedin/", DashboardTemplateView.as_view(template_name="linkedin.html"), name="linkedin"),
     path("linkedin/success/", TemplateView.as_view(template_name="accounts/linkedin_success.html"), name="linkedin-success"),
     path("linkedin/role-select/", LinkedInRoleSelectPageView.as_view(), name="linkedin-role-select"),
+    path("linkedin/conflict/", LinkedInConflictPageView.as_view(), name="linkedin-conflict"),
     path("api/auth/", include("apps.accounts.urls")),
     path("api/jobs/", include("apps.jobs.urls")),
     path("api/skillgap/", include("apps.skillgap.urls")),

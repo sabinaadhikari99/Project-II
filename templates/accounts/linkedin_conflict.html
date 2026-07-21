@@ -1,0 +1,349 @@
+{% extends "base_auth.html" %}
+{% load static %}
+{% block title %}Account Conflict | SkillSync AI{% endblock %}
+
+{% block content %}
+<div class="split-auth">
+  <div class="sa-panel">
+    <div class="sa-card">
+      <div class="sa-brand">
+        <div class="sa-logo">S</div>
+        <h1>Account Already<br>Linked to SkillSync AI</h1>
+        <p>We found an existing SkillSync AI account associated with your LinkedIn profile. Continue with your existing account to securely access your dashboard and saved data.</p>
+      </div>
+
+      <div class="conflict-profile">
+        {% if linkedin_picture %}
+        <img src="{{ linkedin_picture }}" alt="{{ linkedin_name }}" class="cp-avatar">
+        {% else %}
+        <div class="cp-avatar cp-avatar-fallback">{{ linkedin_name|first|default:"?" }}</div>
+        {% endif %}
+        <div class="cp-body">
+          <div class="cp-name">{{ linkedin_name }}</div>
+          <div class="cp-email">{{ conflict_email }}</div>
+          <div class="cp-badges">
+            <span class="cp-role-badge">{{ existing_role_label }} Account</span>
+            <span class="cp-linkedin-badge"><i class="bi bi-linkedin"></i> LinkedIn Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="conflict-alert">
+        <div class="ca-icon"><i class="bi bi-shield-exclamation"></i></div>
+        <div class="ca-body">
+          <div class="ca-title">Account Role Mismatch</div>
+          <div class="ca-text">
+            Your LinkedIn profile is already associated with a <strong>{{ existing_role_label }}</strong> account. You attempted to access the platform as a <strong>{{ requested_role_label }}</strong>. To protect your existing profile and data, please continue with your registered account.
+          </div>
+        </div>
+      </div>
+
+      <ul class="benefits-list">
+        <li><i class="bi bi-check-circle-fill"></i> Your dashboard and profile will remain unchanged</li>
+        <li><i class="bi bi-check-circle-fill"></i> AI Match history will be preserved</li>
+        <li><i class="bi bi-check-circle-fill"></i> Saved jobs and applications remain available</li>
+        <li><i class="bi bi-check-circle-fill"></i> Secure LinkedIn authentication</li>
+        <li><i class="bi bi-check-circle-fill"></i> No data loss</li>
+        <li><i class="bi bi-check-circle-fill"></i> Continue without creating a duplicate account</li>
+      </ul>
+
+      <button class="btn btn-primary btn-submit" type="button" id="continueBtn">
+        <i class="bi bi-box-arrow-in-right"></i> Continue with Existing {{ existing_role_label }} Account
+      </button>
+
+      <div id="message" class="mt-3"></div>
+
+      <div class="auth-divider">Need a different account?</div>
+
+      <div class="conflict-secondary">
+        <a href="{% url 'login' %}" class="cs-link">
+          <i class="bi bi-envelope"></i> Sign in with a Different Email Address
+        </a>
+        <a href="{% url 'login' %}" class="cs-link cs-back">
+          <i class="bi bi-arrow-left"></i> Return to Sign In
+        </a>
+      </div>
+
+      <div class="trust-row">
+        <span><i class="bi bi-lock-fill"></i> Encrypted</span>
+        <span><i class="bi bi-patch-check-fill"></i> Secure</span>
+        <span><i class="bi bi-lightning-charge-fill"></i> Fast</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .conflict-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem;
+    border-radius: var(--ss-radius);
+    border: 1px solid var(--ss-border);
+    background: var(--ss-surface-alt, #F8FAFC);
+    margin-bottom: 1rem;
+  }
+
+  .cp-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .cp-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ss-brand-soft);
+    color: var(--ss-brand);
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+
+  .cp-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cp-name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--ss-text, #0F172A);
+    margin-bottom: 0.1rem;
+  }
+
+  .cp-email {
+    font-size: 0.8125rem;
+    color: var(--ss-muted, #64748B);
+    margin-bottom: 0.35rem;
+  }
+
+  .cp-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .cp-role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.08);
+    color: var(--ss-brand, #2563EB);
+  }
+
+  .cp-linkedin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    background: rgba(10,102,194,0.08);
+    color: #0a66c2;
+  }
+
+  .conflict-alert {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--ss-radius);
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.18);
+    margin-bottom: 1rem;
+  }
+
+  .ca-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ss-radius-sm, 6px);
+    background: rgba(245,158,11,0.12);
+    color: #D97706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  .ca-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ca-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #92400E;
+    margin-bottom: 0.2rem;
+  }
+
+  .ca-text {
+    font-size: 0.8125rem;
+    color: #A16207;
+    line-height: 1.5;
+  }
+
+  .benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1rem;
+  }
+
+  .benefits-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ss-muted, #64748B);
+  }
+
+  .benefits-list li i {
+    font-size: 0.75rem;
+    color: var(--ss-brand, #2563EB);
+    flex-shrink: 0;
+  }
+
+  .conflict-secondary {
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .cs-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ss-brand, #2563EB);
+    text-decoration: none;
+    padding: 0.4rem 0.5rem;
+    border-radius: var(--ss-radius-sm, 6px);
+    transition: background var(--ss-transition-fast, 0.15s ease);
+  }
+
+  .cs-link:hover {
+    background: var(--ss-brand-soft);
+    color: var(--ss-brand, #2563EB);
+  }
+
+  .cs-back {
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: var(--ss-muted, #64748B);
+  }
+
+  .cs-back:hover {
+    color: var(--ss-text, #0F172A);
+    background: none;
+  }
+
+  .split-auth .btn-submit {
+    width: 100%; height: 44px;
+    border-radius: 22px;
+    font-weight: 700; font-size: 0.875rem; margin-top: 0.5rem;
+  }
+
+  .split-auth .auth-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.25rem 0; font-size: 0.75rem; font-weight: 600;
+    color: var(--ss-muted-light, #94A3B8);
+  }
+
+  .split-auth .auth-divider::before,
+  .split-auth .auth-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--ss-border, #E2E8F0);
+  }
+
+  .split-auth .auth-footer {
+    text-align: center; font-size: 0.875rem; color: var(--ss-muted, #64748B);
+  }
+
+  .split-auth .auth-footer a { font-weight: 700; }
+
+  .split-auth .trust-row {
+    display: flex; justify-content: center; gap: 1.5rem;
+    margin-top: 1.25rem; padding-top: 1rem;
+    border-top: 1px solid var(--ss-border, #E2E8F0);
+  }
+
+  .split-auth .trust-row span {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.6875rem; font-weight: 600; color: var(--ss-muted-light, #94A3B8);
+  }
+
+  .split-auth .trust-row i { font-size: 0.75rem; color: var(--ss-brand, #2563EB); }
+
+  #message:not(:empty) {
+    padding: 0.75rem 1rem; border-radius: var(--ss-radius);
+    font-weight: 600; font-size: 0.8125rem; margin-top: 0.75rem;
+  }
+
+  /* Dark theme overrides */
+  html.theme-dark .conflict-profile {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.06);
+  }
+
+  html.theme-dark .cp-name { color: #F1F5F9; }
+  html.theme-dark .cp-email { color: #94A3B8; }
+
+  html.theme-dark .cp-role-badge {
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.15);
+  }
+
+  html.theme-dark .conflict-alert {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.12);
+  }
+
+  html.theme-dark .ca-title { color: #FBBF24; }
+  html.theme-dark .ca-text { color: #D97706; }
+
+  html.theme-dark .benefits-list li { color: #94A3B8; }
+
+  @media (max-width: 575.98px) {
+    .benefits-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+<script>
+  (function() {
+    document.getElementById('continueBtn').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in\u2026';
+
+      try {
+        const result = await window.api('/api/auth/linkedin/conflict-resolve/', {
+          method: 'POST',
+          body: JSON.stringify({}),
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
+        }, false);
+        window.saveSession(result);
+        window.routeByRole(result.user.role);
+      } catch (error) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Continue with Existing {{ existing_role_label }} Account';
+        window.showMessage(error.message, 'danger');
+      }
+    });
+  })();
+</script>
+{% endblock %}

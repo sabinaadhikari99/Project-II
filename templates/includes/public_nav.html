@@ -171,13 +171,21 @@
 
 <nav class="navbar-public">
   <div class="container">
-    <a class="brand" href="{% url 'landing-page' %}">
+    {% if request.path == '/' or request.path == '/login/' or request.path == '/register/' %}
+    <div class="brand">
+    {% else %}
+    <a class="brand" href="{% if user.is_authenticated %}{% if user.role == 'recruiter' %}{% url 'recruiter-dashboard' %}{% elif user.role == 'job_seeker' %}{% url 'seeker-dashboard' %}{% elif user.role == 'admin' %}{% url 'admin-dashboard' %}{% else %}{% url 'landing-page' %}{% endif %}{% else %}{% url 'landing-page' %}{% endif %}">
+    {% endif %}
       <span class="brand-mark">S</span>
       SkillSync AI
+    {% if request.path == '/' or request.path == '/login/' or request.path == '/register/' %}
+    </div>
+    {% else %}
     </a>
+    {% endif %}
 
     <div class="d-none d-lg-flex nav-actions">
-      {% if request.path != '/login/' and request.path != '/register/' %}
+      {% if request.path != '/login/' and request.path != '/register/' and request.path != '/linkedin/conflict/' %}
       <a class="btn-login" href="{% url 'login' %}">Login</a>
       <a class="btn-register" href="{% url 'register' %}">Register</a>
       {% endif %}
@@ -195,7 +203,7 @@
 
   <div class="collapse d-lg-none" id="publicNav">
     <div class="mobile-nav">
-      {% if request.path != '/login/' and request.path != '/register/' %}
+      {% if request.path != '/login/' and request.path != '/register/' and request.path != '/linkedin/conflict/' %}
       <a class="btn-login" href="{% url 'login' %}">Login</a>
       <a class="btn-register" href="{% url 'register' %}">Register</a>
       {% endif %}

@@ -128,11 +128,21 @@ class LinkedInLoginAPIView(views.APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
+        role = request.GET.get("role")
+        if role and role not in ("job_seeker", "recruiter"):
+            return response.Response(
+                {"detail": "Invalid role specified."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        stored_role = role or "job_seeker"
+
         client_id = settings.LINKEDIN_CLIENT_ID
         redirect_uri = settings.LINKEDIN_REDIRECT_URI
         state = os.urandom(16).hex()
 
         request.session["linkedin_oauth_state"] = state
+        request.session["linkedin_oauth_role"] = stored_role
 
         params = urllib.parse.urlencode({
             "response_type": "code",
@@ -153,6 +163,7 @@ class LinkedInCallbackAPIView(views.APIView):
         state = request.GET.get("state")
         error = request.GET.get("error")
         stored_state = request.session.pop("linkedin_oauth_state", None)
+        role = request.session.pop("linkedin_oauth_role", "job_seeker")
 
         if error:
             return redirect(f"/login/?error=linkedin_{error}")
@@ -176,22 +187,41 @@ class LinkedInCallbackAPIView(views.APIView):
 
         try:
             user = User.objects.get(email=email)
-            refresh = RefreshToken.for_user(user)
-            tokens = {
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-            }
-            return redirect(
-                f"/linkedin/success/?access={tokens['access']}&refresh={tokens['refresh']}"
-            )
+            if user.role == role:
+                refresh = RefreshToken.for_user(user)
+                return redirect(
+                    f"/linkedin/success/?access={str(refresh.access_token)}&refresh={str(refresh)}"
+                )
+            else:
+                request.session["linkedin_conflict_data"] = {
+                    "email": email,
+                    "existing_role": user.role,
+                    "requested_role": role,
+                    "name": name,
+                    "profile_picture": picture,
+                }
+                return redirect("/linkedin/conflict/")
         except User.DoesNotExist:
-            request.session["linkedin_data"] = {
-                "email": email,
-                "username": name.replace(" ", "_").lower()[:30],
-                "profile_picture": picture,
-                "name": name,
-            }
-            return redirect("/linkedin/role-select/")
+            base_username = name.replace(" ", "_").lower()[:30]
+            username = base_username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}_{counter}"
+                counter += 1
+
+            user = User.objects.create_user(
+                email=email,
+                username=username,
+                password=os.urandom(32).hex(),
+                role=role,
+                profile_picture=picture,
+            )
+            UserProfile.objects.create(user=user)
+
+            refresh = RefreshToken.for_user(user)
+            return redirect(
+                f"/linkedin/success/?access={str(refresh.access_token)}&refresh={str(refresh)}"
+            )
 
     def _exchange_code(self, code):
         try:
@@ -258,11 +288,20 @@ class LinkedInRoleSelectAPIView(views.APIView):
             )
 
         email = linkedin_data["email"]
-        if User.objects.filter(email=email).exists():
-            return response.Response(
-                {"detail": "An account with this email already exists. Please log in."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        try:
+            user = User.objects.get(email=email, role=role)
+            refresh = RefreshToken.for_user(user)
+            return response.Response({
+                "user": UserSerializer(user).data,
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            })
+        except User.DoesNotExist:
+            if User.objects.filter(email=email).exists():
+                return response.Response(
+                    {"detail": "This LinkedIn account is already associated with a different profile on SkillSync AI."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         base_username = linkedin_data.get("username", email.split("@")[0])
         username = base_username
@@ -286,6 +325,52 @@ class LinkedInRoleSelectAPIView(views.APIView):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         })
+
+
+class LinkedInConflictPageView(views.APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        conflict_data = request.session.get("linkedin_conflict_data")
+        if not conflict_data:
+            return redirect("/login/")
+        labels = {"job_seeker": "Job Seeker", "recruiter": "Recruiter", "admin": "Admin"}
+        return render(request, "accounts/linkedin_conflict.html", {
+            "conflict_email": conflict_data.get("email", ""),
+            "existing_role": conflict_data.get("existing_role", ""),
+            "existing_role_label": labels.get(conflict_data.get("existing_role", ""), "User"),
+            "requested_role": conflict_data.get("requested_role", ""),
+            "requested_role_label": labels.get(conflict_data.get("requested_role", ""), "User"),
+            "linkedin_name": conflict_data.get("name", ""),
+            "linkedin_picture": conflict_data.get("profile_picture", ""),
+        })
+
+
+class LinkedInConflictResolveAPIView(views.APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        conflict_data = request.session.pop("linkedin_conflict_data", None)
+        if not conflict_data:
+            return response.Response(
+                {"detail": "No conflict data found. Please sign in with LinkedIn again."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        email = conflict_data.get("email")
+        try:
+            user = User.objects.get(email=email)
+            refresh = RefreshToken.for_user(user)
+            return response.Response({
+                "user": UserSerializer(user).data,
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            })
+        except User.DoesNotExist:
+            return response.Response(
+                {"detail": "Account not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 def _extract_known_skills(text):

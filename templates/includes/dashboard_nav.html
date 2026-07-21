@@ -466,6 +466,274 @@
      (d-sm-inline-flex etc.) cannot override it */
   .app-sidebar [data-role].d-none,
   .navbar-glass [data-role].d-none { display: none !important; }
+
+  /* ─── Notification bell badge ─── */
+  #notificationBadge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #EF4444;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    line-height: 1;
+    box-shadow: 0 2px 4px rgba(239,68,68,0.3);
+    z-index: 1;
+  }
+
+  /* ─── Notification Dropdown ─── */
+  .notification-dropdown {
+    width: 400px;
+    max-height: 480px;
+    padding: 0 !important;
+    overflow: hidden;
+    border-radius: 16px !important;
+  }
+
+  .notif-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--ss-border, #E2E8F0);
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 2;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .notif-dropdown-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ss-text, #0F172A);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .notif-dropdown-title .notif-unread-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--ss-brand, #2563EB);
+    padding: 1px 7px;
+    border-radius: 999px;
+    min-width: 20px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .notif-mark-all-btn {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ss-brand, #2563EB);
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .notif-mark-all-btn:hover {
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.08);
+  }
+
+  .notif-list-scroll {
+    max-height: 360px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .notif-dropdown-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .notif-dropdown-item:hover {
+    background: rgba(0,0,0,0.02);
+  }
+
+  .notif-dropdown-item.unread {
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.03);
+    border-left-color: var(--ss-brand, #2563EB);
+  }
+
+  .notif-dropdown-item.unread:hover {
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.06);
+  }
+
+  .notif-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+  }
+
+  .notif-icon-application { background: rgba(37,99,235,0.10); color: #2563EB; }
+  .notif-icon-interview { background: rgba(16,185,129,0.10); color: #10B981; }
+  .notif-icon-match { background: rgba(139,92,246,0.10); color: #8B5CF6; }
+  .notif-icon-system { background: rgba(100,116,139,0.10); color: #64748B; }
+  .notif-icon-message { background: rgba(249,115,22,0.10); color: #F97316; }
+  .notif-icon-resume { background: rgba(6,182,212,0.10); color: #06B6D4; }
+  .notif-icon-profile { background: rgba(236,72,153,0.10); color: #EC4899; }
+  .notif-icon-alert { background: rgba(239,68,68,0.10); color: #EF4444; }
+
+  .notif-content-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .notif-content-wrap .notif-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ss-text, #0F172A);
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .notif-dropdown-item.unread .notif-title {
+    font-weight: 700;
+  }
+
+  .notif-content-wrap .notif-msg {
+    font-size: 13px;
+    color: var(--ss-muted, #64748B);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .notif-time-row {
+    font-size: 12px;
+    color: var(--ss-muted-light, #94A3B8);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .notif-unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ss-brand, #2563EB);
+    flex-shrink: 0;
+    margin-top: 14px;
+  }
+
+  .notif-dropdown-footer {
+    padding: 12px 18px;
+    border-top: 1px solid var(--ss-border, #E2E8F0);
+    text-align: center;
+    position: sticky;
+    bottom: 0;
+    background: inherit;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .notif-dropdown-footer a {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ss-brand, #2563EB);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+  }
+
+  .notif-dropdown-footer a:hover {
+    opacity: 0.8;
+  }
+
+  /* Empty state */
+  .notif-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 20px;
+    text-align: center;
+  }
+
+  .notif-empty-state .nes-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.06);
+    color: var(--ss-brand, #2563EB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .notif-empty-state .nes-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ss-text, #0F172A);
+    margin-bottom: 4px;
+  }
+
+  .notif-empty-state .nes-sub {
+    font-size: 13px;
+    color: var(--ss-muted, #64748B);
+  }
+
+  /* Dark theme overrides */
+  html.theme-dark .notification-dropdown {
+    background: rgba(var(--ss-surface-rgb, 15,23,42), 0.96) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+  }
+
+  html.theme-dark .notif-dropdown-header {
+    border-bottom-color: rgba(255,255,255,0.06);
+  }
+
+  html.theme-dark .notif-dropdown-item:hover {
+    background: rgba(255,255,255,0.04);
+  }
+
+  html.theme-dark .notif-dropdown-item.unread {
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.10);
+  }
+
+  html.theme-dark .notif-dropdown-item.unread:hover {
+    background: rgba(var(--ss-brand-rgb, 37,99,235), 0.15);
+  }
+
+  html.theme-dark .notif-dropdown-footer {
+    border-top-color: rgba(255,255,255,0.06);
+  }
+
+  html.theme-dark #notificationBadge {
+    box-shadow: 0 2px 4px rgba(239,68,68,0.4);
+  }
 </style>
 
 <!-- Sidebar Overlay -->
@@ -503,10 +771,31 @@
     <a class="ng-quick d-none d-sm-inline-flex" data-role="recruiter" href="{% url 'recruiter-post-job' %}">
       <i class="bi bi-plus-lg"></i> Post Job
     </a>
-    <a class="ng-icon-btn d-none" data-role="job_seeker,recruiter,admin" href="{% url 'notifications' %}" aria-label="Notifications">
-      <i class="bi bi-bell"></i>
-      <span id="notificationBadge" class="badge-count d-none">0</span>
-    </a>
+    <div class="dropdown d-none" data-role="job_seeker,recruiter,admin" id="notificationDropdown">
+      <button class="ng-icon-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" id="notificationDropdownToggle">
+        <i class="bi bi-bell"></i>
+        <span id="notificationBadge" class="d-none">0</span>
+      </button>
+      <div class="dropdown-menu dropdown-menu-end notification-dropdown" data-bs-auto-close="outside" id="notificationDropdownMenu">
+        <div class="notif-dropdown-header">
+          <span class="notif-dropdown-title">
+            Notifications
+            <span class="notif-unread-badge" id="dropdownUnreadBadge" style="display:none">0</span>
+          </span>
+          <button class="notif-mark-all-btn" type="button" onclick="markAllReadFromDropdown()" id="markAllReadDropdownBtn">Mark all as read</button>
+        </div>
+        <div class="notif-list-scroll" id="notificationList">
+          <div class="notif-empty-state">
+            <div class="nes-icon"><i class="bi bi-bell"></i></div>
+            <div class="nes-title">No notifications</div>
+            <div class="nes-sub">Loading...</div>
+          </div>
+        </div>
+        <div class="notif-dropdown-footer">
+          <a href="{% url 'notifications' %}">View All Notifications <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
 
     <div class="dropdown d-none" data-auth-only id="userDropdown">
       <button class="ng-user-avatar" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu" style="border:none;background:none;padding:0;border-radius:50%;overflow:hidden;cursor:pointer;transition:all 0.2s ease;">
@@ -529,7 +818,7 @@
 
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="app-sidebar d-none" data-auth-only id="appSidebar">
-  <a class="sb-brand" href="{% url 'landing-page' %}">
+  <a class="sb-brand" href="{% if user.role == 'recruiter' %}{% url 'recruiter-dashboard' %}{% elif user.role == 'job_seeker' %}{% url 'seeker-dashboard' %}{% elif user.role == 'admin' %}{% url 'admin-dashboard' %}{% else %}{% url 'landing-page' %}{% endif %}">
     <span class="sb-icon"><i class="bi bi-lightning-charge-fill"></i></span>
     <span class="sb-text">SkillSync <span>AI</span></span>
   </a>
@@ -759,6 +1048,130 @@
     setInterval(updateNotificationBadge, 30000);
   });
 
+  /* ─── Notification Dropdown ─── */
+  const NOTIF_ICONS = {
+    job_match: { icon: 'stars', css: 'match' },
+    application: { icon: 'file-earmark-text', css: 'application' },
+    interview: { icon: 'calendar-check', css: 'interview' },
+    ai_match: { icon: 'robot', css: 'match' },
+    resume: { icon: 'file-earmark-person', css: 'resume' },
+    skill_gap: { icon: 'graph-up-arrow', css: 'system' },
+    recruiter: { icon: 'building', css: 'system' },
+    admin: { icon: 'shield-check', css: 'system' },
+    profile: { icon: 'person-circle', css: 'profile' },
+    security: { icon: 'shield-exclamation', css: 'alert' },
+    system: { icon: 'gear', css: 'system' },
+    message: { icon: 'chat-dots', css: 'message' },
+    company: { icon: 'building', css: 'system' },
+    verification: { icon: 'check2-circle', css: 'interview' },
+  };
+
+  function notifIconInfo(type) {
+    return NOTIF_ICONS[type] || { icon: 'bell', css: 'system' };
+  }
+
+  function notifDropdownItem(n) {
+    var info = notifIconInfo(n.notification_type || 'system');
+    var isUnread = !n.is_read;
+    var ago = n.time_ago || '';
+    return '<div class="notif-dropdown-item' + (isUnread ? ' unread' : '') + '" onclick="handleNotifClick(' + n.id + ',' + (n.is_read ? 'true' : 'false') + ')" data-notif-id="' + n.id + '">'
+      + '<div class="notif-icon-wrap notif-icon-' + info.css + '"><i class="bi bi-' + info.icon + '"></i></div>'
+      + '<div class="notif-content-wrap">'
+        + '<div class="notif-title">' + escapeHtml(n.title) + '</div>'
+        + '<div class="notif-msg">' + escapeHtml(n.message) + '</div>'
+        + '<div class="notif-time-row">' + escapeHtml(ago) + (isUnread ? '' : ' \u00b7 Read') + '</div>'
+      + '</div>'
+      + (isUnread ? '<div class="notif-unread-dot"></div>' : '')
+    + '</div>';
+  }
+
+  function notifEmptyState() {
+    return '<div class="notif-empty-state">'
+      + '<div class="nes-icon"><i class="bi bi-bell-slash"></i></div>'
+      + '<div class="nes-title">You\'re all caught up!</div>'
+      + '<div class="nes-sub">No new notifications.</div>'
+    + '</div>';
+  }
+
+  function notifLoadingState() {
+    return '<div class="notif-empty-state">'
+      + '<div class="spinner-border text-primary spinner-border-sm mb-3" role="status"></div>'
+      + '<div class="nes-sub">Loading notifications...</div>'
+    + '</div>';
+  }
+
+  function notifErrorState() {
+    return '<div class="notif-empty-state">'
+      + '<div class="nes-icon"><i class="bi bi-exclamation-triangle"></i></div>'
+      + '<div class="nes-title">Failed to load</div>'
+      + '<div class="nes-sub">Please try again.</div>'
+    + '</div>';
+  }
+
+  async function loadNotificationDropdown() {
+    var list = document.getElementById('notificationList');
+    if (!list) return;
+    list.innerHTML = notifLoadingState();
+    try {
+      var data = await api('/api/notifications/?page_size=5');
+      var results = data.results || [];
+      var unreadCount = data.unread_count != null ? data.unread_count : results.filter(function(n) { return !n.is_read; }).length;
+      if (results.length === 0) {
+        list.innerHTML = notifEmptyState();
+      } else {
+        list.innerHTML = results.map(function(n) { return notifDropdownItem(n); }).join('');
+      }
+      var badge = document.getElementById('dropdownUnreadBadge');
+      if (badge) {
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.style.display = '';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    } catch (e) {
+      list.innerHTML = notifErrorState();
+    }
+  }
+
+  function handleNotifClick(id, isRead) {
+    if (!isRead) {
+      api('/api/notifications/' + id + '/read/', { method: 'POST' }).then(function() {
+        loadNotificationBell();
+        updateSidebarBadge();
+        loadNotificationDropdown();
+      }).catch(function() {});
+    }
+  }
+
+  function markAllReadFromDropdown() {
+    var btn = document.getElementById('markAllReadDropdownBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Marking...'; }
+    api('/api/notifications/mark-all-read/', { method: 'POST' }).then(function(result) {
+      if (result.marked_read > 0 && typeof showToast === 'function') {
+        showToast(result.marked_read + ' marked as read', 'success');
+      }
+      loadNotificationBell();
+      updateSidebarBadge();
+      loadNotificationDropdown();
+    }).catch(function(e) {
+      if (typeof showToast === 'function') showToast(e.message, 'danger');
+    }).finally(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Mark all as read'; }
+    });
+  }
+
+  var notifDropdownEl = document.getElementById('notificationDropdown');
+  if (notifDropdownEl) {
+    notifDropdownEl.addEventListener('shown.bs.dropdown', function() {
+      loadNotificationDropdown();
+    });
+  }
+
+  window.loadNotificationDropdown = loadNotificationDropdown;
+  window.handleNotifClick = handleNotifClick;
+  window.markAllReadFromDropdown = markAllReadFromDropdown;
   window.updateSidebarState = updateSidebarState;
   window.toggleSidebar = toggleSidebar;
 </script>
