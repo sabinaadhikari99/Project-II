@@ -68,7 +68,7 @@
         <div class="pw-label" id="pwLabel"></div>
 
         <div class="role-section">
-          <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8125rem;font-weight:600;color:var(--ss-muted,#64748B);margin-bottom:0.5rem;">
+          <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8125rem;font-weight:600;color:var(--ss-text,#0F172A);margin-bottom:0.4rem;">
             <i class="bi bi-briefcase"></i> Role
           </label>
           <select id="role" class="form-select" name="role" style="display:none;">
@@ -119,59 +119,11 @@
 
 {% block scripts %}
 <style>
-  .split-auth .field-group { margin-bottom: 1rem; }
-  .split-auth .field-group label {
-    display: flex; align-items: center; gap: 0.3rem;
-    font-size: 0.8125rem; font-weight: 600;
-    color: var(--ss-muted); margin-bottom: 0.375rem;
-  }
-  .split-auth .field-group label i { font-size: 0.75rem; }
-  .split-auth .input-wrap { position: relative; }
-  .split-auth .input-wrap .field-icon {
-    position: absolute; left: 0.875rem; top: 50%;
-    transform: translateY(-50%); font-size: 0.9375rem;
-    color: var(--ss-muted-light); pointer-events: none;
-    transition: color var(--ss-transition-fast); z-index: 2;
-  }
-  .split-auth .input-wrap:focus-within .field-icon { color: var(--ss-brand); }
-  .split-auth .form-control, .split-auth .form-select {
-    height: 44px; border-radius: var(--ss-radius);
-    padding: 0 1rem 0 2.5rem;
-    border: 1.5px solid var(--ss-border);
-    background: var(--ss-surface); font-size: 0.875rem;
-    transition: all var(--ss-transition-fast);
-    box-shadow: none; color: var(--ss-text);
-  }
-  .split-auth .form-select {
-    padding-right: 2.5rem;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748B' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.875rem center;
-  }
-  .split-auth .form-control::placeholder { color: var(--ss-muted-light); opacity: 0.6; }
-  .split-auth .form-control:hover, .split-auth .form-select:hover { border-color: var(--ss-border-strong); }
-  .split-auth .form-control:focus, .split-auth .form-select:focus {
-    border-color: var(--ss-brand);
-    box-shadow: 0 0 0 3px rgba(var(--ss-brand-rgb), 0.10);
-    outline: none;
-  }
-  .split-auth .pw-toggle {
-    position: absolute; right: 0.75rem; top: 50%;
-    transform: translateY(-50%); background: none; border: none;
-    padding: 0.25rem; font-size: 1rem;
-    color: var(--ss-muted-light); cursor: pointer;
-    border-radius: var(--ss-radius-sm);
-    transition: all var(--ss-transition-fast); z-index: 2;
-  }
-  .split-auth .pw-toggle:hover {
-    color: var(--ss-brand); background: var(--ss-brand-soft);
-  }
   .pw-strength {
-    display: flex; gap: 4px; margin-top: 0.35rem;
+    display: flex; gap: 5px; margin-top: 0.5rem; margin-bottom: 1.25rem;
   }
   .pw-bar {
-    flex: 1; height: 3px; border-radius: var(--ss-radius-full);
+    flex: 1; height: 4px; border-radius: var(--ss-radius-full);
     background: var(--ss-border);
     transition: background var(--ss-transition-fast);
   }
@@ -185,32 +137,36 @@
   }
   .pw-label {
     font-size: 0.6875rem; font-weight: 600;
-    margin-top: 0.15rem; text-align: right; min-height: 0.875rem;
+    margin-top: 0.2rem; text-align: right; min-height: 0.875rem;
   }
-  .role-section { margin-bottom: 1rem; }
+  .role-section { margin-bottom: 1.25rem; }
   .role-cards {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.625rem;
   }
   .role-card {
-    position: relative; padding: 0.75rem 0.5rem;
-    border-radius: var(--ss-radius);
+    position: relative; padding: 0.875rem 0.5rem;
+    border-radius: var(--ss-radius-md);
     border: 1.5px solid var(--ss-border);
-    background: var(--ss-surface); cursor: pointer; text-align: center;
-    transition: all var(--ss-transition-fast); user-select: none;
+    background: var(--ss-surface);
+    cursor: pointer;
+    text-align: center;
+    transition: all var(--ss-transition-fast);
+    user-select: none;
   }
   .role-card:hover {
     border-color: rgba(var(--ss-brand-rgb), 0.25);
     background: var(--ss-surface-alt);
+    transform: translateY(-1px);
   }
   .role-card.selected {
     border-color: var(--ss-brand);
     background: var(--ss-brand-soft);
   }
   .role-card .role-icon {
-    width: 32px; height: 32px; display: inline-flex;
+    width: 36px; height: 36px; display: inline-flex;
     align-items: center; justify-content: center;
-    border-radius: var(--ss-radius-sm); font-size: 0.875rem;
-    margin-bottom: 0.25rem; background: var(--ss-brand-soft);
+    border-radius: var(--ss-radius-sm); font-size: 1rem;
+    margin-bottom: 0.375rem; background: var(--ss-brand-soft);
     color: var(--ss-brand);
     transition: all var(--ss-transition-fast);
   }
@@ -218,60 +174,14 @@
     background: var(--ss-brand); color: #fff;
   }
   .role-card .role-name {
-    font-size: 0.75rem; font-weight: 700; margin-bottom: 0.05rem;
+    font-size: 0.8125rem; font-weight: 700; margin-bottom: 0.1rem;
   }
   .role-card .role-desc {
-    font-size: 0.625rem; color: var(--ss-muted);
+    font-size: 0.6875rem; color: var(--ss-muted);
   }
-  .split-auth .btn-submit {
-    width: 100%; height: 44px;
-    border-radius: 22px;
-    font-weight: 700; font-size: 0.875rem; margin-top: 0.5rem;
-  }
-  .split-auth .auth-divider {
-    display: flex; align-items: center; gap: 1rem;
-    margin: 1rem 0; font-size: 0.75rem; font-weight: 600;
-    color: var(--ss-muted-light);
-  }
-  .split-auth .auth-divider::before,
-  .split-auth .auth-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--ss-border);
-  }
-  .split-auth .auth-footer {
-    text-align: center; font-size: 0.875rem; color: var(--ss-muted);
-  }
-  .split-auth .auth-footer a { font-weight: 700; }
-  .split-auth .trust-row {
-    display: flex; justify-content: center; gap: 1.5rem;
-    margin-top: 1.25rem; padding-top: 1rem;
-    border-top: 1px solid var(--ss-border);
-  }
-  .split-auth .trust-row span {
-    display: flex; align-items: center; gap: 0.3rem;
-    font-size: 0.6875rem; font-weight: 600; color: var(--ss-muted-light);
-  }
-  .split-auth .trust-row i { font-size: 0.75rem; color: var(--ss-brand); }
-  #message:not(:empty) {
-    padding: 0.75rem 1rem; border-radius: var(--ss-radius);
-    font-weight: 600; font-size: 0.8125rem; margin-top: 0.75rem;
-  }
-  .btn-linkedin {
-    width: 100%; height: 44px; border-radius: 22px;
-    font-weight: 700; font-size: 0.875rem;
-    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    border: 1.5px solid var(--ss-border) !important;
-    background: var(--ss-surface) !important; color: var(--ss-text) !important;
-    transition: all var(--ss-transition-fast);
-  }
-  .btn-linkedin:hover {
-    border-color: #0a66c2 !important;
-    color: #0a66c2 !important;
-    background: rgba(10,102,194,0.04) !important;
-  }
-  .btn-linkedin i { font-size: 1.125rem; color: #0a66c2; }
   @media (max-width: 575.98px) {
     .role-cards { grid-template-columns: 1fr; }
-    .role-card { display: flex; align-items: center; gap: 0.65rem; text-align: left; padding: 0.65rem 0.75rem; }
+    .role-card { display: flex; align-items: center; gap: 0.75rem; text-align: left; padding: 0.75rem 1rem; }
     .role-card .role-icon { margin-bottom: 0; flex-shrink: 0; }
   }
 </style>
