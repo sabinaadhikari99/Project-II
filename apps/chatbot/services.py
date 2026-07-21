@@ -3,10 +3,16 @@ from django.conf import settings
 
 
 def _local_chat_response(text: str) -> str:
+    if any(greeting in text for greeting in ["how are you", "how's it going", "how do you do", "are you there", "what's up"]):
+        return (
+            "I’m doing great, thanks for asking! I’m here to support your career journey. "
+            "Would you like help with your resume, interview prep, skill-building, or job search strategy?"
+        )
     if any(greeting in text for greeting in ["hello", "hi", "hey", "hiya", "good morning", "good afternoon", "good evening", "greetings"]):
         return (
-            "Hi there! I’m SkillSync AI, your career coach. "
-            "I can help with resumes, interviews, skills, or career planning — what would you like to discuss today?"
+            "Hi there! I’m SkillSync AI. "
+            "I can give you practical career advice on resumes, interviews, skills, or finding the right role. "
+            "What would you like to talk about?"
         )
     if "resume" in text or "cv" in text or "cover letter" in text:
         return (
@@ -36,8 +42,8 @@ def _local_chat_response(text: str) -> str:
             "Research market ranges for your role and location, then frame compensation conversations around the value you bring."
         )
     return (
-        "That sounds interesting. Tell me a little more about what you want help with — for example, resume advice, interview prep, "
-        "skill development, or career planning — and I’ll give you a practical answer."
+        "I’m glad you reached out. Could you tell me a bit more about what you want help with? "
+        "For example, I can help you improve your resume, get interview-ready, build skills, or plan your next career move."
     )
 
 
