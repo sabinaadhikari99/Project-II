@@ -157,7 +157,7 @@ html.theme-dark {
 
 body {
   font-family: var(--ss-font-sans);
-  background: var(--ss-bg) !important;
+  background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 24%), var(--ss-bg) !important;
   color: var(--ss-body) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -168,6 +168,19 @@ body {
   line-height: 1.5;
   letter-spacing: 0;
   transition: background var(--ss-transition), color var(--ss-transition);
+}
+
+main, .app-main, .split-auth, .lp-root {
+  background: transparent;
+}
+
+button, .btn, .form-control, .form-select, .input-group-text {
+  transition: all var(--ss-transition-fast);
+}
+
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+  background-color: rgba(37, 99, 235, 0.06) !important;
+  color: var(--ss-text) !important;
 }
 
 /* ── Typography ── */
@@ -1278,8 +1291,159 @@ a:hover { color: var(--ss-brand-hover); }
 }
 
 .panel-body { padding: 1.25rem; }
+.table-wrap {
+  border-radius: var(--ss-radius-2xl);
+  transition: transform var(--ss-transition), box-shadow var(--ss-transition), background var(--ss-transition);
+}
 
-/* ═══════════════════════════════════════════
+.card,
+.panel,
+.metric-card,
+.sa-card,
+.search-card,
+.table-wrap {
+  border: 1px solid var(--ss-border);
+  background: var(--ss-surface);
+}
+
+.card:hover,
+.metric-card:hover,
+.sa-card:hover,
+.search-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+}
+
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-success,
+.btn-warning,
+.btn-danger,
+.btn-ghost {
+  border-radius: var(--ss-radius-full);
+  min-height: 44px;
+  padding: 0.75rem 1.4rem;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  border-color: rgba(var(--ss-brand-rgb), 0.18) !important;
+}
+
+.btn-outline:hover {
+  background: rgba(var(--ss-brand-rgb), 0.08) !important;
+}
+
+.form-control,
+.form-select,
+.form-input,
+.form-textarea,
+.input-group-text {
+  border-radius: var(--ss-radius-lg);
+  border: 1px solid var(--ss-border);
+  background: var(--ss-surface);
+  transition: border-color var(--ss-transition-fast), box-shadow var(--ss-transition-fast), background var(--ss-transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--ss-brand);
+  box-shadow: 0 0 0 4px rgba(var(--ss-brand-rgb), 0.14);
+}
+
+.panel-head,
+.card-header,
+.sa-brand,
+.search-card,
+.lp-hero,
+.dash-hero {
+  border-radius: var(--ss-radius-2xl);
+}
+
+.navbar-public,
+.navbar-glass {
+  border-radius: 0 0 var(--ss-radius-2xl) var(--ss-radius-2xl);
+}
+
+.navbar-public .brand,
+.sb-brand,
+.sa-logo,
+.lp-hero .hp-badge,
+.dash-hero .dh-accent-bar {
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.12);
+}
+
+.sidebar-nav .nav-link {
+  transition: all var(--ss-transition-fast);
+}
+
+.sidebar-nav .nav-link.active {
+  box-shadow: inset 4px 0 0 var(--ss-brand);
+  background: rgba(var(--ss-brand-rgb), 0.12);
+  color: var(--ss-brand);
+}
+
+.sidebar-nav .nav-link:hover {
+  background: rgba(var(--ss-brand-rgb), 0.10);
+}
+
+.toast {
+  border: 1px solid rgba(var(--ss-brand-rgb), 0.12);
+  border-radius: var(--ss-radius-lg);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.table-wrap {
+  border-radius: var(--ss-radius-xl);
+  overflow: hidden;
+}
+
+.table thead th {
+  background: var(--ss-surface-alt);
+}
+
+.table tbody tr:hover {
+  background: rgba(var(--ss-brand-rgb), 0.06);
+}
+
+.progress {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--ss-border);
+}
+
+.progress-bar {
+  border-radius: 999px;
+}
+
+@media (max-width: 767.98px) {
+  .navbar-public .container,
+  .navbar-glass {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .dash-hero,
+  .lp-hero,
+  .sa-card,
+  .search-card,
+  .panel {
+    border-radius: var(--ss-radius-xl);
+  }
+}
+
+/* ═══════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════ */
    COMPONENTS — Page Animations
    ═══════════════════════════════════════════ */
 
