@@ -15,6 +15,7 @@ from .services import (
     notify_applicant_status_change,
     notify_job_matched_candidates,
     notify_new_application,
+    notify_new_job_posting,
 )
 
 logger = logging.getLogger(__name__)
@@ -49,6 +50,7 @@ def handle_job_posting_notifications(sender, instance, created, **kwargs):
     if not created:
         return
     try:
+        notify_new_job_posting(instance)
         notify_job_matched_candidates(instance)
         notify_admin_new_user(
             instance.recruiter,

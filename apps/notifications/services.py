@@ -207,6 +207,36 @@ def notify_job_matched_candidates(job):
             )
 
 
+def notify_new_job_posting(job):
+    from apps.shared.constants import ROLE_JOB_SEEKER
+
+    seekers = User.objects.filter(role=ROLE_JOB_SEEKER, is_active=True).only("id", "email")
+    if not seekers.exists():
+        logger.info("No active job seekers to notify about new job %s", job.id)
+        return
+
+    notifications = []
+    for seeker in seekers:
+        notifications.append(Notification(
+            user=seeker,
+            sender=job.recruiter,
+            recruiter=job.recruiter,
+            job=job,
+            notification_type=Notification.NotificationType.JOB_MATCH,
+            title=f"New Job: {job.title} at {job.company}",
+            message=(
+                f"A new position '{job.title}' has been posted at {job.company}. "
+                f"{'Location: ' + job.location + '. ' if job.location else ''}"
+                f"{'Skills: ' + ', '.join(job.required_skills or []) + '.' if job.required_skills else ''}"
+            ),
+            priority=Notification.Priority.MEDIUM,
+            metadata={"required_skills": job.required_skills or []},
+        ))
+
+    batch = Notification.objects.bulk_create(notifications, ignore_conflicts=True)
+    logger.info("New job posting: %d notifications created for job %s", len(batch), job.id)
+
+
 def notify_job_match(user, job, match_percentage, required_skills, message=None):
     recruiter_name = job.recruiter.username or job.recruiter.email
     title = f"{match_percentage}% match: {job.title}"

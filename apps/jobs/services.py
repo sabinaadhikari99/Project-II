@@ -19,6 +19,7 @@ from apps.shared.profession_classifier import (
     SKILL_SYNONYMS,
     PROFESSION_CONFIGS,
 )
+from apps.shared.skill_normalizer import normalize_skill as norm_skill, normalize_skill_set
 from apps.shared.vector_db import get_vector_manager
 
 from .models import Application, JobPosting
@@ -194,8 +195,8 @@ def _compute_weighted_score(user_skills, user_profession, profile, job, vector_s
         profession_match = 0.7
     profession_score = round(profession_match * 100)
 
-    required = _normalize_skills(job.required_skills or [])
-    user_skills_norm = _normalize_skills(user_skills)
+    required = normalize_skill_set(job.required_skills or [])
+    user_skills_norm = normalize_skill_set(user_skills)
     if required:
         matched_skills = user_skills_norm & required
         skills_pct = len(matched_skills) / len(required)
@@ -388,16 +389,16 @@ def extract_resume_skills(resume_text):
         if re.search(pattern, lowered):
             extracted_set.add(normalized)
 
-    return sorted(extracted_set, key=str.lower)
+    return sorted({norm_skill(s) for s in extracted_set}, key=str.lower)
 
 
 def _build_recommendation(user, profile, job, vector_score, match_explanation=None, request=None):
-    user_skills = _normalize_skills(profile.skills or [])
+    user_skills = normalize_skill_set(profile.skills or [])
     required_skills = list(job.required_skills or [])
-    required_lookup = _normalize_skills(required_skills)
+    required_lookup = normalize_skill_set(required_skills)
     matched_lookup = user_skills & required_lookup
-    matched_skills = [skill for skill in required_skills if skill.lower() in matched_lookup]
-    missing_skills = [skill for skill in required_skills if skill.lower() not in matched_lookup]
+    matched_skills = [skill for skill in required_skills if norm_skill(skill) in matched_lookup]
+    missing_skills = [skill for skill in required_skills if norm_skill(skill) not in matched_lookup]
 
     exp = getattr(profile, "experience_years", 0) or 0
     gap = ""
@@ -424,15 +425,11 @@ def _build_recommendation(user, profile, job, vector_score, match_explanation=No
     }
 
 
-def _normalize_skills(skills):
-    return {str(skill).strip().lower() for skill in skills if str(skill).strip()}
-
-
 def _resources_for_skills(skills):
     resources_path = settings.DATA_DIR / "learning_resources.json"
     resources = json.loads(resources_path.read_text(encoding="utf-8")) if resources_path.exists() else []
-    missing = _normalize_skills(skills)
-    return [item for item in resources if item.get("skill", "").lower() in missing]
+    missing = normalize_skill_set(skills)
+    return [item for item in resources if norm_skill(item.get("skill", "")) in missing]
 
 
 def _gemini_resume_insights(resume_text, skills, missing_skills, recommendations):

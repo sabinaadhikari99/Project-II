@@ -624,7 +624,7 @@
   /* ── Render: Current Skills (categorized) ── */
   function sgRenderCurrent(categorized) {
     const keys = Object.keys(categorized);
-    if (!keys.length) return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-check-circle"></i></div>No skills added yet. Upload your resume on AI Match.</div>`;
+    if (!keys.length) return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-check-circle"></i></div>Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
 
     return keys.map(cat => {
       const items = categorized[cat];
@@ -660,7 +660,11 @@
   };
 
   /* ── Render: Missing Skills (3 priority groups) ── */
-  function sgRenderMissing(partitioned) {
+  function sgRenderMissing(haveSkills, partitioned) {
+    if (!haveSkills.length) {
+      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-upload"></i></div>Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
+    }
+
     const groups = [
       { key: "high",   stars: "⭐⭐⭐", label: "Critical Skills",  chip: "red" },
       { key: "medium", stars: "⭐⭐",   label: "Recommended Skills", chip: "amber" },
@@ -688,6 +692,11 @@
 
   /* ── Render: AI Recommendation ── */
   function sgRenderAI(haveSkills, missSkills) {
+    if (!haveSkills.length) {
+      return `<div class="sg-ai-head"><i class="bi bi-upload" style="margin-right:0.25rem;"></i> No resume uploaded</div>
+        <div class="sg-ai-text">Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
+    }
+
     const p = sgPartition(missSkills);
     const top5 = [...p.high, ...p.medium, ...p.low].slice(0, 5);
     const total = haveSkills.length + missSkills.length || 1;
@@ -713,6 +722,9 @@
 
   /* ── Render: Match Score Progress ── */
   function sgRenderMatch(haveSkills, missSkills) {
+    if (!haveSkills.length) {
+      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-upload"></i></div>Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
+    }
     const total = haveSkills.length + missSkills.length || 1;
     const havePct = Math.round((haveSkills.length / total) * 100);
     const p = sgPartition(missSkills);
@@ -788,7 +800,7 @@
     document.getElementById("sgMatchProgress").innerHTML = sgRenderMatch(haveSkills, missSkills);
 
     /* Missing Skills */
-    document.getElementById("sgMissingSkills").innerHTML = sgRenderMissing(p);
+    document.getElementById("sgMissingSkills").innerHTML = sgRenderMissing(haveSkills, p);
   }
 
   loadSkillGap();
