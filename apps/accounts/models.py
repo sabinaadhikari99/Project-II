@@ -23,11 +23,18 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name="profile")
+    phone = models.CharField(max_length=20, blank=True, default="")
     skills = models.JSONField(default=list, blank=True)
     resume_text = models.TextField(blank=True)
     cv_url = models.URLField(blank=True)
     experience_years = models.FloatField(default=0)
     education = models.TextField(blank=True)
+    location = models.CharField(max_length=255, blank=True, default="")
+    bio = models.TextField(blank=True, default="")
+    headline = models.CharField(max_length=255, blank=True, default="")
+    linkedin_url = models.URLField(blank=True, default="")
+    github_url = models.URLField(blank=True, default="")
+    portfolio_url = models.URLField(blank=True, default="")
 
     class Meta:
         verbose_name = "User Profile"

@@ -783,6 +783,12 @@
   let totalQuestions = 0;
   let answeredSet = new Set();
 
+  /* ── Frontend Performance Measurement ── */
+  const perfLog = (label, start) => {
+    const elapsed = (performance.now() - start).toFixed(1);
+    console.log(`[Perf] ${label}: ${elapsed} ms`);
+  };
+
   /* ── Apply accent color ── */
   (function applyAccentColor() {
     const saved = localStorage.getItem("pref_accent");
@@ -829,6 +835,9 @@
 
   /* ── Load quiz ── */
   async function loadQuiz() {
+    const tStart = performance.now();
+    console.log("[Perf] Quiz: Request Started");
+
     document.getElementById("quizForm").innerHTML = shimmerLoader(3);
     document.getElementById("qBadge").innerHTML = '<i class="bi bi-hourglass-split"></i> Loading…';
 
@@ -847,6 +856,7 @@
     let data;
     try {
       data = await api("/api/quiz/");
+      perfLog("Quiz Response Received", tStart);
     } catch (error) {
       const message = error.message || "Unable to load quiz questions.";
       
@@ -929,7 +939,11 @@
         <i class="bi bi-check2-circle"></i> Submit quiz
       </button>`;
 
+    perfLog("Quiz DOM Render Complete", performance.now());
     updateProgress();
+
+    const total = (performance.now() - tStart).toFixed(1);
+    console.log(`[Perf] ===== Quiz Frontend Total: ${total} ms =====`);
   }
 
   /* ── Select option ── */
@@ -953,6 +967,9 @@
   document.getElementById("quizForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    const tStart = performance.now();
+    console.log("[Perf] Quiz Submit: Button Click");
+
     const btn = document.getElementById("btnSubmitQuiz");
     if (!btn) return;
 
@@ -963,10 +980,14 @@
     const answers = Object.fromEntries(new FormData(event.target));
 
     try {
+      perfLog("Quiz Submit: Request Started", tStart);
+
       const result = await api("/api/quiz/submit/", {
         method: "POST",
         body: JSON.stringify({ answers })
       });
+
+      perfLog("Quiz Submit: Response Received", tStart);
 
       const pct = result.percentage || 0;
 
@@ -995,15 +1016,18 @@
         ring.style.boxShadow = "0 0 0 6px rgba(239,68,68,0.10), 0 8px 24px rgba(239,68,68,0.18)";
       }
 
-      const emoji = pct >= 80 ? "🎉" : pct >= 50 ? "👍" : "📚";
       showMessage(
-        `${emoji} Score: ${result.score}/${result.total} (${pct}%)`,
+        `Score: ${result.score}/${result.total} (${pct}%)`,
         pct >= 50 ? "success" : "danger"
       );
 
       btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Submitted!';
       btn.style.background = "var(--success) !important";
       btn.style.boxShadow  = "0 8px 22px rgba(16,185,129,0.25)";
+
+      perfLog("Quiz Submit: DOM Render Complete", tStart);
+      const total = (performance.now() - tStart).toFixed(1);
+      console.log(`[Perf] ===== Quiz Submit Frontend Total: ${total} ms =====`);
 
     } catch (error) {
       const message = error.message || "Submission failed.";

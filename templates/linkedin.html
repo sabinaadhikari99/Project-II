@@ -676,6 +676,12 @@
 <script>
   requireRole("job_seeker");
 
+  /* ── Frontend Performance Measurement ── */
+  const perfLog = (label, start) => {
+    const elapsed = (performance.now() - start).toFixed(1);
+    console.log(`[Perf] ${label}: ${elapsed} ms`);
+  };
+
   /* ── Apply accent color ── */
   (function applyAccentColor() {
     const saved = localStorage.getItem("pref_accent");
@@ -750,6 +756,10 @@
   document.getElementById("linkedinForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    const tStart = performance.now();
+    const tClick = performance.now();
+    console.log("[Perf] Button Click");
+
     const btn = document.getElementById("btnSearch");
     const orig = btn.innerHTML;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Searching…';
@@ -763,9 +773,16 @@
     const form = Object.fromEntries(new FormData(event.target));
 
     try {
+      perfLog("Request Started", tClick);
+      const tReqStart = performance.now();
+
       const data = await api(
         `/api/external/linkedin/?query=${encodeURIComponent(form.query)}&location=${encodeURIComponent(form.location)}`
       );
+
+      perfLog("Response Received", tReqStart);
+      const tResp = performance.now();
+
       const jobs = data.jobs || [];
 
       document.getElementById("linkedinCount").innerHTML =
@@ -780,6 +797,10 @@
              </div>
            </div>` + jobs.map(renderLinkedInJob).join("")
         : emptyBlock("linkedin", "No results found", "Try a different keyword or location to find more listings.");
+
+      perfLog("DOM Render Complete", tResp);
+      const total = (performance.now() - tStart).toFixed(1);
+      console.log(`[Perf] ===== Frontend Total: ${total} ms =====`);
 
     } catch (err) {
       document.getElementById("linkedinJobs").innerHTML =

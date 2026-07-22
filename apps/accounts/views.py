@@ -1,11 +1,12 @@
-# file path: apps/accounts/views.py
 import os
 import urllib.parse
 
 import requests
 from django.conf import settings
 from django.contrib.auth import login
+from django.contrib.sessions.models import Session
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from rest_framework import generics, parsers, permissions, response, status, views
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -13,7 +14,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.shared.pdf_utils import extract_pdf_text
 from .models import User, UserProfile
-from .serializers import LoginSerializer, ProfileUpdateSerializer, RegisterSerializer, UserSerializer
+from .serializers import (
+    ChangePasswordSerializer,
+    LoginSerializer,
+    ProfileUpdateSerializer,
+    RegisterSerializer,
+    UserSerializer,
+)
 
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -33,21 +40,16 @@ class LoginAPIView(views.APIView):
 
 
 class GetTokenAPIView(views.APIView):
-    """
-    Get or refresh JWT tokens for an authenticated user.
-    Used when user is authenticated via Django session but needs JWT tokens for API calls.
-    """
     authentication_classes = [SessionAuthentication, JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        """Generate fresh JWT tokens for the authenticated user."""
         if not request.user.is_authenticated:
             return response.Response(
                 {"detail": "User is not authenticated."},
                 status=401
             )
-        
+
         refresh = RefreshToken.for_user(request.user)
         return response.Response({
             "user": UserSerializer(request.user).data,
@@ -62,6 +64,62 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        profile = getattr(instance, "profile", None)
+        if profile:
+            data["phone"] = profile.phone
+            data["location"] = profile.location
+            data["bio"] = profile.bio
+            data["headline"] = profile.headline
+            data["linkedin_url"] = profile.linkedin_url
+            data["github_url"] = profile.github_url
+            data["portfolio_url"] = profile.portfolio_url
+            data["profile"] = {
+                "phone": profile.phone,
+                "location": profile.location,
+                "bio": profile.bio,
+                "headline": profile.headline,
+                "linkedin_url": profile.linkedin_url,
+                "github_url": profile.github_url,
+                "portfolio_url": profile.portfolio_url,
+                "skills": profile.skills,
+                "resume_text": profile.resume_text,
+                "cv_url": profile.cv_url,
+                "experience_years": profile.experience_years,
+                "education": profile.education,
+            }
+        return response.Response(data)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        profile = getattr(instance, "profile", None)
+        return response.Response({
+            "success": True,
+            "message": "Profile updated successfully.",
+            "data": {
+                "id": instance.id,
+                "email": instance.email,
+                "username": instance.username,
+                "profile_picture": instance.profile_picture,
+                "role": instance.role,
+                "phone": profile.phone if profile else "",
+                "location": profile.location if profile else "",
+                "bio": profile.bio if profile else "",
+                "headline": profile.headline if profile else "",
+                "linkedin_url": profile.linkedin_url if profile else "",
+                "github_url": profile.github_url if profile else "",
+                "portfolio_url": profile.portfolio_url if profile else "",
+            }
+        })
 
 
 class ResumeUploadAPIView(views.APIView):
@@ -119,6 +177,129 @@ class LogoutAPIView(views.APIView):
         except Exception:
             pass
         return response.Response({"detail": "Logged out successfully"})
+
+
+class ChangePasswordAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={"user": request.user}
+        )
+        if not serializer.is_valid():
+            errors = {}
+            for field, msgs in serializer.errors.items():
+                if isinstance(msgs, dict):
+                    for f, m in msgs.items():
+                        errors[f] = m if isinstance(m, list) else [str(m)]
+                else:
+                    errors[field] = msgs if isinstance(msgs, list) else [str(msgs)]
+            return response.Response(
+                {"success": False, "errors": errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        request.user.set_password(serializer.validated_data["new_password"])
+        request.user.save()
+
+        return response.Response({
+            "success": True,
+            "message": "Password changed successfully."
+        })
+
+
+class ActiveSessionsAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        sessions = []
+        current_session_key = request.session.session_key
+
+        all_sessions = Session.objects.filter(expire_date__gte=timezone.now())
+        for session in all_sessions:
+            try:
+                data = session.get_decoded()
+                user_id = data.get("_auth_user_id")
+                if str(user_id) == str(request.user.id):
+                    device_info = data.get("device_info", {})
+                    sessions.append({
+                        "session_key": session.session_key,
+                        "is_current": session.session_key == current_session_key,
+                        "created_at": device_info.get("created_at", ""),
+                        "last_activity": session.expire_date.isoformat(),
+                        "browser": device_info.get("browser", "Unknown"),
+                        "os": device_info.get("os", "Unknown"),
+                        "device": device_info.get("device", "Unknown"),
+                    })
+            except Exception:
+                continue
+
+        sessions.sort(
+            key=lambda s: (not s["is_current"], s.get("last_activity", "")),
+            reverse=True
+        )
+
+        return response.Response({"sessions": sessions})
+
+    def delete(self, request):
+        current_session_key = request.session.session_key
+        count = 0
+        all_sessions = Session.objects.filter(expire_date__gte=timezone.now())
+        for session in all_sessions:
+            try:
+                data = session.get_decoded()
+                user_id = data.get("_auth_user_id")
+                if str(user_id) == str(request.user.id) and session.session_key != current_session_key:
+                    session.delete()
+                    count += 1
+            except Exception:
+                continue
+
+        return response.Response({
+            "success": True,
+            "message": f"Logged out {count} other session(s)."
+        })
+
+
+class SaveDeviceInfoMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.user.is_authenticated and request.session.session_key:
+            user_agent = request.META.get("HTTP_USER_AGENT", "")
+            if user_agent:
+                request.session["device_info"] = {
+                    "browser": self._parse_browser(user_agent),
+                    "os": self._parse_os(user_agent),
+                    "device": self._parse_device(user_agent),
+                    "created_at": timezone.now().isoformat(),
+                }
+                request.session.modified = True
+        return self.get_response(request)
+
+    def _parse_browser(self, ua):
+        if "Chrome/" in ua and "Edg/" not in ua: return "Chrome"
+        if "Firefox/" in ua: return "Firefox"
+        if "Safari/" in ua and "Chrome/" not in ua: return "Safari"
+        if "Edg/" in ua: return "Edge"
+        if "OPR/" in ua or "Opera" in ua: return "Opera"
+        return "Unknown"
+
+    def _parse_os(self, ua):
+        if "Windows" in ua: return "Windows"
+        if "Mac OS" in ua or "macOS" in ua: return "macOS"
+        if "Linux" in ua and "Android" not in ua: return "Linux"
+        if "Android" in ua: return "Android"
+        if "iPhone" in ua or "iPad" in ua: return "iOS"
+        return "Unknown"
+
+    def _parse_device(self, ua):
+        if "iPhone" in ua: return "iPhone"
+        if "iPad" in ua: return "iPad"
+        if "Android" in ua: return "Android Device"
+        return "Desktop"
 
 
 LINKEDIN_SCOPES = "openid profile email"
