@@ -342,7 +342,7 @@
     <div class="col-12">
       <div class="cp-save-bar">
         <span class="cp-msg" id="cpSaveMsg"></span>
-        <button class="btn btn-primary" id="cpSaveBtn" onclick="cpSaveAll()">
+        <button class="btn btn-primary" id="cpSaveBtn" onclick="cpSaveAll(true)">
           <i class="bi bi-check-lg"></i> Save Changes
         </button>
       </div>
@@ -394,7 +394,7 @@ requireRole("recruiter");
     cpSocialLinkedin: "socialLinkedin", cpSocialGithub: "socialGithub"
   };
 
-  function cpSaveAll() {
+  function cpSaveAll(showToast) {
     const btn = document.getElementById("cpSaveBtn");
     const origHtml = btn.innerHTML;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:14px;height:14px;"></span> Saving...';
@@ -408,7 +408,9 @@ requireRole("recruiter");
       cpLoadDisplay();
       btn.innerHTML = origHtml;
       btn.disabled = false;
-      cpToast("success", "Company profile saved successfully");
+      if (showToast === true) {
+        cpToast("success", "Company profile saved successfully");
+      }
     }, 400);
   }
   window.cpSaveAll = cpSaveAll;
