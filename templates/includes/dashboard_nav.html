@@ -152,6 +152,94 @@
     pointer-events: none;
   }
 
+  .gs-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border: 1px solid #e5e7eb;
+    z-index: 10000;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 6px 0;
+  }
+  .gs-dropdown .gs-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background .12s;
+    font-size: 14px;
+  }
+  .gs-dropdown .gs-item:hover,
+  .gs-dropdown .gs-item.active {
+    background: #f3f4f6;
+  }
+  .gs-dropdown .gs-item .gs-icon-item {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+    color: #2563eb;
+    background: #eff6ff;
+  }
+  .gs-dropdown .gs-item .gs-icon-item.candidate {
+    color: #7c3aed;
+    background: #f5f3ff;
+  }
+  .gs-dropdown .gs-item .gs-body {
+    min-width: 0;
+    flex: 1;
+  }
+  .gs-dropdown .gs-item .gs-body .gs-title {
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gs-dropdown .gs-item .gs-body .gs-sub {
+    font-size: 13px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gs-dropdown .gs-item .gs-body .gs-skills {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 3px;
+  }
+  .gs-dropdown .gs-item .gs-body .gs-skills .gs-skill {
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+  .gs-dropdown .gs-empty {
+    padding: 20px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+  .gs-dropdown .gs-footer {
+    padding: 8px 14px;
+    border-top: 1px solid #f3f4f6;
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
   .ng-icon-btn {
     position: relative;
     width: 32px; height: 32px;
@@ -171,6 +259,28 @@
   .ng-icon-btn:hover {
     background: var(--ss-brand-soft);
     color: var(--ss-brand);
+  }
+
+  /* ─── Theme Toggle Pill ─── */
+  /* ─── Theme Dropdown ─── */
+  .theme-dropdown {
+    min-width: 150px !important;
+  }
+  .theme-dropdown .dropdown-item {
+    font-size: 14px !important;
+    padding: 8px 14px !important;
+  }
+  .theme-dropdown .dropdown-item i {
+    width: 18px;
+    text-align: center;
+    margin-right: 4px;
+    font-size: 14px;
+  }
+  .theme-dropdown .dropdown-item .bi-check-lg {
+    margin-left: auto;
+    margin-right: 0;
+    color: var(--ss-brand);
+    font-size: 13px;
   }
 
   .dropdown-toggle.btn-outline-primary:hover {
@@ -450,6 +560,10 @@
   html.theme-dark .navbar-glass {
     background: rgba(var(--ss-surface-rgb, 15,23,42), 0.72) !important;
     border-bottom-color: var(--ss-glass-border) !important;
+  }
+  html.theme-dark .navbar-glass .dropdown-menu {
+    background: rgba(var(--ss-surface-rgb, 30,41,59), 0.98) !important;
+    border-color: rgba(var(--ss-brand-rgb, 96,165,250), 0.06) !important;
   }
   html.theme-dark .sb-profile { background: var(--ss-surface-alt, #0F172A) !important; }
   html.theme-dark .sb-profile:hover { background: var(--ss-surface-hover, #1E293B) !important; }
@@ -755,8 +869,9 @@
 
     <div class="ng-search d-none" data-auth-only data-role="job_seeker,recruiter">
       <i class="bi bi-search gs-icon"></i>
-      <input type="text" id="ngSearchInput" placeholder="Search jobs, skills, people..." aria-label="Search">
+      <input type="text" id="ngSearchInput" placeholder="Search jobs, skills, people..." aria-label="Search" autocomplete="off">
       <span class="gs-hint">Ctrl+K</span>
+      <div class="gs-dropdown" id="gsDropdown" style="display:none;"></div>
     </div>
   </div>
 
@@ -772,6 +887,16 @@
     <a class="ng-quick d-none d-sm-inline-flex" data-role="recruiter" href="{% url 'recruiter-post-job' %}">
       <i class="bi bi-plus-lg"></i> Post Job
     </a>
+    <div class="dropdown" id="themeDropdown">
+      <button class="ng-icon-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Switch theme" title="Switch theme" id="themeToggleBtn">
+        <i class="bi bi-sun-fill"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end theme-dropdown">
+        <li><button class="dropdown-item" data-theme-value="light"><i class="bi bi-sun-fill"></i> Light</button></li>
+        <li><button class="dropdown-item" data-theme-value="dark"><i class="bi bi-moon-stars-fill"></i> Dark</button></li>
+      </ul>
+    </div>
+
     <div class="dropdown d-none" data-role="job_seeker,recruiter,admin" id="notificationDropdown">
       <button class="ng-icon-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" id="notificationDropdownToggle">
         <i class="bi bi-bell"></i>
@@ -803,15 +928,13 @@
         <span id="navAvatar" style="display:flex;align-items:center;justify-content:center;">U</span>
       </button>
       <ul class="dropdown-menu dropdown-menu-end" style="min-width:240px;padding:0.5rem;">
-        <li style="padding:0.5rem 0.75rem 0.35rem;border-bottom:1px solid var(--ss-border);margin-bottom:0.375rem;">
+        <li style="padding:0.5rem 0.75rem 0.5rem;border-bottom:1px solid var(--ss-border);margin-bottom:0.375rem;">
           <div style="font-weight:600;font-size:14px;color:var(--ss-text);" id="ddUserName">Account</div>
           <div style="font-size:13px;color:var(--ss-muted);" id="ddUserEmail"></div>
         </li>
+        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+        <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Settings</a></li>
         <li data-role="recruiter"><a class="dropdown-item" href="{% url 'company-profile' %}"><i class="bi bi-building"></i> Company Profile</a></li>
-        <li data-role="job_seeker,admin"><a class="dropdown-item" href="{% url 'notifications' %}"><i class="bi bi-bell"></i> Notifications</a></li>
-        <li style="border-top:1px solid var(--ss-border);margin-top:0.375rem;padding-top:0.375rem;">
-          <button class="dropdown-item text-danger" type="button" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
-        </li>
       </ul>
     </div>
   </div>
@@ -1169,6 +1292,198 @@
       loadNotificationDropdown();
     });
   }
+
+  /* ─── Theme Dropdown ─── */
+  function themeDropdownClick() {
+    var items = document.querySelectorAll('.theme-dropdown .dropdown-item');
+    items.forEach(function(item) {
+      item.addEventListener('click', function() {
+        var theme = this.getAttribute('data-theme-value');
+        if (typeof window.applyTheme === 'function') {
+          window.applyTheme(theme);
+        }
+      });
+    });
+  }
+
+  function updateThemeDropdown() {
+    var items = document.querySelectorAll('.theme-dropdown .dropdown-item');
+    var current = document.documentElement.classList.contains('theme-dark') ? 'dark' : 'light';
+    items.forEach(function(item) {
+      var val = item.getAttribute('data-theme-value');
+      var existingCheck = item.querySelector('.bi-check-lg');
+      if (existingCheck) existingCheck.remove();
+      if (val === current) {
+        item.innerHTML = item.innerHTML + ' <i class="bi bi-check-lg"></i>';
+      }
+    });
+  }
+
+  var themeDropdownEl = document.getElementById('themeDropdown');
+  if (themeDropdownEl) {
+    themeDropdownEl.addEventListener('shown.bs.dropdown', function() {
+      updateThemeDropdown();
+    });
+    themeDropdownClick();
+  }
+
+  document.addEventListener('themeChanged', function() {
+    updateThemeDropdown();
+  });
+
+  /* ─── Global Search ─── */
+  const gsInput = document.getElementById('ngSearchInput');
+  const gsDropdown = document.getElementById('gsDropdown');
+  let gsTimer = null;
+  let gsActive = -1;
+  let gsResults = [];
+
+  function gsEscape(html) {
+    const d = document.createElement('div');
+    d.textContent = html;
+    return d.innerHTML;
+  }
+
+  function gsRender() {
+    if (!gsResults.length) {
+      gsDropdown.innerHTML = '<div class="gs-empty">No results found</div>';
+      gsDropdown.style.display = 'block';
+      return;
+    }
+    const role = localStorage.getItem('role');
+    const rows = gsResults.map((r, i) => {
+      if (r.type === 'job') {
+        const skills = (r.skills || []).slice(0, 3).map(s => `<span class="gs-skill">${gsEscape(s)}</span>`).join('');
+        return `<div class="gs-item${i === gsActive ? ' active' : ''}" data-index="${i}" data-type="job" data-id="${r.id}">
+          <div class="gs-icon-item"><i class="bi bi-briefcase"></i></div>
+          <div class="gs-body">
+            <div class="gs-title">${gsEscape(r.title)}</div>
+            <div class="gs-sub">${gsEscape(r.company)}${r.location ? ' · ' + gsEscape(r.location) : ''}</div>
+            ${skills ? '<div class="gs-skills">' + skills + '</div>' : ''}
+          </div>
+        </div>`;
+      }
+      const skills = (r.skills || []).slice(0, 3).map(s => `<span class="gs-skill">${gsEscape(s)}</span>`).join('');
+      return `<div class="gs-item${i === gsActive ? ' active' : ''}" data-index="${i}" data-type="candidate" data-id="${r.id}">
+        <div class="gs-icon-item candidate"><i class="bi bi-person"></i></div>
+        <div class="gs-body">
+          <div class="gs-title">${gsEscape(r.name)}</div>
+          <div class="gs-sub">${r.headline ? gsEscape(r.headline) : r.email}</div>
+          ${skills ? '<div class="gs-skills">' + skills + '</div>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+    gsDropdown.innerHTML = rows;
+    gsDropdown.style.display = 'block';
+  }
+
+  function gsSearch(query) {
+    if (!query || query.length < 2) {
+      gsDropdown.style.display = 'none';
+      gsResults = [];
+      return;
+    }
+    window.api('/api/search/?q=' + encodeURIComponent(query), { method: 'GET' }, true)
+      .then(data => {
+        gsResults = data.results || [];
+        gsActive = -1;
+        gsRender();
+      })
+      .catch(() => {});
+  }
+
+  function gsNavigate(url) {
+    gsDropdown.style.display = 'none';
+    gsInput.blur();
+    window.location.href = url;
+  }
+
+  function gsSubmitQuery(query) {
+    const role = localStorage.getItem('role');
+    if (!query) return;
+    if (role === 'recruiter') {
+      gsNavigate('/dashboard/recruiter/?q=' + encodeURIComponent(query));
+    } else {
+      gsNavigate('/jobs/?role=' + encodeURIComponent(query));
+    }
+  }
+
+  if (gsInput) {
+    gsInput.addEventListener('input', function() {
+      clearTimeout(gsTimer);
+      const val = this.value.trim();
+      if (val.length < 2) {
+        gsDropdown.style.display = 'none';
+        gsResults = [];
+        return;
+      }
+      gsTimer = setTimeout(() => gsSearch(val), 300);
+    });
+
+    gsInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (gsActive >= 0 && gsActive < gsResults.length) {
+          const r = gsResults[gsActive];
+          if (r.type === 'job') {
+            gsNavigate('/jobs/?role=' + encodeURIComponent(r.title));
+          } else {
+            gsNavigate('/dashboard/recruiter/?q=' + encodeURIComponent(r.name));
+          }
+        } else {
+          gsSubmitQuery(this.value.trim());
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (gsResults.length) {
+          gsActive = Math.min(gsActive + 1, gsResults.length - 1);
+          gsRender();
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (gsResults.length) {
+          gsActive = Math.max(gsActive - 1, -1);
+          gsRender();
+        }
+      } else if (e.key === 'Escape') {
+        gsDropdown.style.display = 'none';
+        gsInput.blur();
+      }
+    });
+
+    gsInput.addEventListener('focus', function() {
+      if (gsResults.length) gsDropdown.style.display = 'block';
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!gsInput || !gsDropdown) return;
+      const t = e.target;
+      if (t.closest('.gs-item')) {
+        const item = t.closest('.gs-item');
+        const idx = parseInt(item.dataset.index, 10);
+        if (!isNaN(idx) && gsResults[idx]) {
+          const r = gsResults[idx];
+          if (r.type === 'job') {
+            gsNavigate('/jobs/?role=' + encodeURIComponent(r.title));
+          } else {
+            gsNavigate('/dashboard/recruiter/?q=' + encodeURIComponent(r.name));
+          }
+        }
+        return;
+      }
+      if (!gsInput.contains(t) && !gsDropdown.contains(t)) {
+        gsDropdown.style.display = 'none';
+      }
+    });
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      const input = document.getElementById('ngSearchInput');
+      if (input) { input.focus(); input.select(); }
+    }
+  });
 
   window.loadNotificationDropdown = loadNotificationDropdown;
   window.handleNotifClick = handleNotifClick;

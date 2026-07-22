@@ -9,10 +9,7 @@
 
   <script>
     (function() {
-      const stored = localStorage.getItem('theme');
-      const theme = stored === 'dark' || stored === 'light'
-        ? stored
-        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
       document.documentElement.classList.add('theme-' + theme);
     })();
   </script>

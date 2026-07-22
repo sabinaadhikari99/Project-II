@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from apps.accounts.views import LinkedInConflictPageView, LinkedInRoleSelectPageView
+from apps.accounts.views import GlobalSearchAPIView, LinkedInConflictPageView, LinkedInRoleSelectPageView
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
@@ -52,6 +52,7 @@ urlpatterns = [
     path("api/chatbot/", include("apps.chatbot.urls")),
     path("api/quiz/", include("apps.quiz.urls")),
     path("api/external/", include("apps.external.urls")),
+    path("api/search/", GlobalSearchAPIView.as_view(), name="global-search"),
     path("api/notifications/", include("apps.notifications.urls")),
     path('cvgen/', include('apps.cvgen.urls', namespace='cvgen')),
 

@@ -82,28 +82,89 @@ class ApplyJobAPIView(views.APIView):
         return response.Response(ApplicationSerializer(application).data, status=201)
 
 
+SYNONYM_MAP = {
+    "javascript": "js", "js": "javascript",
+    "typescript": "ts", "ts": "typescript",
+    "react": "reactjs", "reactjs": "react",
+    "next.js": "nextjs", "nextjs": "next.js",
+    "node.js": "nodejs", "nodejs": "node.js",
+    "ai": "artificial intelligence",
+    "ml": "machine learning",
+    "cybersecurity": "cyber security",
+    "cyber security": "cybersecurity",
+}
+
+
+def normalize(word):
+    w = word.strip().lower()
+    return SYNONYM_MAP.get(w, w)
+
+
+def parse_terms(raw):
+    if not raw:
+        return []
+    return [normalize(t) for t in raw.replace(",", " ").split() if t.strip()]
+
+
 class FilterJobsAPIView(generics.ListAPIView):
     serializer_class = JobPostingSerializer
     permission_classes = [IsJobSeeker]
 
     def get_queryset(self):
         queryset = JobPosting.objects.filter(is_active=True)
+
         title = self.request.query_params.get("title") or self.request.query_params.get("role")
-        location = self.request.query_params.get("location")
         skill = self.request.query_params.get("skill")
         experience = self.request.query_params.get("experience")
         work_mode = self.request.query_params.get("work_mode")
-        if title:
-            queryset = queryset.filter(title__icontains=title)
-        if location:
-            queryset = queryset.filter(location__icontains=location)
-        if skill:
-            queryset = queryset.filter(required_skills__icontains=skill)
+
+        title_terms = parse_terms(title)
+        skill_terms = parse_terms(skill)
+
+        from django.db.models import Q
+
+        title_q = None
+        if title_terms:
+            title_q = Q()
+            for t in title_terms:
+                title_q |= Q(title__icontains=t)
+
+        skill_q = None
+        if len(skill_terms) == 1:
+            skill_q = (
+                Q(required_skills__icontains=skill_terms[0])
+                | Q(title__icontains=skill_terms[0])
+                | Q(description__icontains=skill_terms[0])
+            )
+        elif len(skill_terms) >= 2:
+            from itertools import combinations
+
+            unit_qs = []
+            for t in skill_terms:
+                unit_qs.append(
+                    Q(required_skills__icontains=t)
+                    | Q(title__icontains=t)
+                    | Q(description__icontains=t)
+                )
+            skill_q = Q()
+            for a, b in combinations(unit_qs, 2):
+                skill_q |= a & b
+
+        combined = Q()
+        if title_q:
+            combined |= title_q
+        if skill_q:
+            combined |= skill_q
+
+        if combined:
+            queryset = queryset.filter(combined)
+
         if experience:
             queryset = queryset.filter(experience_required__lte=experience)
         if work_mode:
             queryset = queryset.filter(work_mode=work_mode)
-        return queryset
+
+        return queryset.order_by("-created_at")
 
 
 class SavedJobsAPIView(generics.ListAPIView):

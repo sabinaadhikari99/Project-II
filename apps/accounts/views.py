@@ -95,7 +95,7 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
         return response.Response(data)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
+        partial = kwargs.pop("partial", True)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -576,3 +576,86 @@ def _extract_known_skills(text):
         skill for skill in known
         if skill.lower() in lowered
     )
+
+
+class GlobalSearchAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        q = request.query_params.get("q", "").strip()
+        if not q or len(q) < 2:
+            return response.Response({"results": []})
+
+        from django.db.models import Q
+        from apps.shared.constants import ROLE_JOB_SEEKER, ROLE_RECRUITER
+        from apps.jobs.views import parse_terms
+
+        role = request.user.role
+        terms = parse_terms(q)
+
+        if not terms:
+            return response.Response({"results": []})
+
+        if role == ROLE_RECRUITER:
+            users = User.objects.filter(
+                role=ROLE_JOB_SEEKER, is_active=True
+            ).prefetch_related("profile")
+
+            conditions = Q()
+            for t in terms:
+                conditions |= Q(username__icontains=t)
+                conditions |= Q(email__icontains=t)
+                conditions |= Q(profile__skills__icontains=t)
+                conditions |= Q(profile__headline__icontains=t)
+                conditions |= Q(profile__location__icontains=t)
+                conditions |= Q(profile__bio__icontains=t)
+                conditions |= Q(profile__resume_text__icontains=t)
+                conditions |= Q(profile__education__icontains=t)
+
+            users = users.filter(conditions).distinct()[:8]
+
+            results = []
+            for u in users:
+                profile = getattr(u, "profile", None)
+                results.append({
+                    "id": u.id,
+                    "name": u.username,
+                    "email": u.email,
+                    "headline": profile.headline if profile else "",
+                    "skills": profile.skills if profile else [],
+                    "location": profile.location if profile else "",
+                    "profile_picture": u.profile_picture,
+                    "type": "candidate",
+                })
+
+            return response.Response({"results": results})
+
+        from apps.jobs.models import JobPosting
+
+        queryset = JobPosting.objects.filter(is_active=True)
+
+        conditions = Q()
+        for t in terms:
+            conditions |= Q(title__icontains=t)
+            conditions |= Q(company__icontains=t)
+            conditions |= Q(required_skills__icontains=t)
+            conditions |= Q(description__icontains=t)
+            conditions |= Q(job_category__icontains=t)
+
+        queryset = queryset.filter(conditions).order_by("-created_at")[:8]
+
+        results = []
+        for job in queryset:
+            results.append({
+                "id": job.id,
+                "title": job.title,
+                "company": job.company,
+                "company_logo": job.company_logo,
+                "location": job.location,
+                "work_mode": job.work_mode,
+                "salary_range": job.salary_range,
+                "skills": job.required_skills,
+                "type": "job",
+            })
+
+        return response.Response({"results": results})
