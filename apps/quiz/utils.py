@@ -1,13 +1,12 @@
-# file path: apps/quiz/utils.py
-
 import json
 import re
 
 import google.generativeai as genai
 from django.conf import settings
 
+from apps.shared.performance import PerformanceTimer
 
-# Configure Gemini
+
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
 model = genai.GenerativeModel(
@@ -21,23 +20,15 @@ model = genai.GenerativeModel(
 
 
 def clean_json(text: str):
-    """
-    Remove markdown code fences and parse JSON safely.
-    """
-
     text = text.strip()
-
     text = re.sub(r"^```json", "", text, flags=re.IGNORECASE)
     text = re.sub(r"^```", "", text)
     text = re.sub(r"```$", "", text)
-
     return json.loads(text)
 
 
 def generate_quiz_from_resume(resume_text: str):
-    """
-    Generate interview MCQs from resume text using Gemini.
-    """
+    timer = PerformanceTimer("generate_quiz_from_resume")
 
     prompt = f"""
 You are an expert technical interviewer.
@@ -98,20 +89,21 @@ ONLY JSON.
 """
 
     try:
+        with timer.measure("Gemini API — generate_content"):
+            response = model.generate_content(prompt)
 
-        response = model.generate_content(prompt)
-
-        questions = clean_json(response.text)
+        with timer.measure("Parse JSON response"):
+            questions = clean_json(response.text)
 
         if not isinstance(questions, list):
             raise Exception("Gemini returned invalid JSON.")
 
+        timer.flush("generate_quiz_from_resume (success)")
         return questions
 
     except Exception as e:
-
         print("Gemini Quiz Error:", e)
-
+        timer.flush("generate_quiz_from_resume (fallback)")
         return [
             {
                 "id": 1,

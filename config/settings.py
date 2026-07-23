@@ -50,6 +50,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.accounts.views.SaveDeviceInfoMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -162,6 +163,17 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 APIFY_TOKEN = os.getenv("APIFY_API_TOKEN") or os.getenv("APIFY_TOKEN", "")
 LINKEDIN_ACTOR_ID = os.getenv("LINKEDIN_ACTOR_ID", "hKByXkMQaC5Qt9UMN")
 
+PERFORMANCE_LOGGING_ENABLED = os.getenv("PERFORMANCE_LOGGING_ENABLED", "0") == "1"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "skillsync-cache",
+    }
+}
+
+QUIZ_CACHE_TIMEOUT = 3600
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "SkillSync AI API",
     "DESCRIPTION": "API documentation",
@@ -197,28 +209,29 @@ JAZZMIN_SETTINGS = {
 
 
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'root': {
-#         'handlers': ['console'],
-#         'level': 'DEBUG',
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#         'rest_framework_simplejwt': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "performance": {
+            "format": "%(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+        "perf_console": {
+            "class": "logging.StreamHandler",
+            "formatter": "performance",
+            "level": "INFO",
+        },
+    },
+    "loggers": {
+        "performance": {
+            "handlers": ["perf_console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

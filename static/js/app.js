@@ -239,39 +239,32 @@ function showMessage(message, type = "info") {
    THEME MANAGEMENT – FULLY WORKING
    ──────────────────────────────────────────────────────────── */
 
-// Get preferred theme from localStorage or system preference
+// Get preferred theme from localStorage
 function getPreferredTheme() {
   const stored = localStorage.getItem("theme");
-  if (stored === "light" || stored === "dark") return stored;
-  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "dark";
-  }
+  if (stored === "dark") return "dark";
   return "light";
 }
 
-// Apply theme to the entire website (REAL color changes)
+// Apply theme to the entire website
 function applyTheme(theme) {
   const html = document.documentElement;
   html.classList.remove("theme-light", "theme-dark");
   html.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
   localStorage.setItem("theme", theme);
 
-  // Update all theme toggle buttons on the page
-  const buttons = document.querySelectorAll("#themeToggleBtn, [data-theme-toggle]");
-  buttons.forEach(btn => {
+  // Update theme toggle icon in navbar
+  const btn = document.getElementById("themeToggleBtn");
+  if (btn) {
     const icon = btn.querySelector("i");
     if (icon) {
-      if (theme === "dark") {
-        icon.className = "bi bi-sun-fill";
-        btn.setAttribute("aria-label", "Switch to light mode");
-      } else {
-        icon.className = "bi bi-moon-stars-fill";
-        btn.setAttribute("aria-label", "Switch to dark mode");
-      }
+      icon.className = theme === "dark" ? "bi bi-moon-stars-fill" : "bi bi-sun-fill";
     }
-  });
+    btn.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+    btn.setAttribute("title", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  }
 
-  // Dispatch custom event for any other components listening
+  // Dispatch custom event for theme dropdown and other listeners
   document.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme } }));
 }
 
@@ -287,22 +280,6 @@ function toggleTheme() {
 function initTheme() {
   const theme = getPreferredTheme();
   applyTheme(theme);
-
-  // Listen for system theme changes (only if user hasn't manually set a preference)
-  if (window.matchMedia) {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e) => {
-      if (!localStorage.getItem("theme")) {
-        applyTheme(e.matches ? "dark" : "light");
-      }
-    };
-    try {
-      media.addEventListener("change", handler);
-    } catch (_) {
-      // Fallback for older browsers
-      media.addListener(handler);
-    }
-  }
 }
 
 // ── Expose theme functions globally ──

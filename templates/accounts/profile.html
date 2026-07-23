@@ -29,6 +29,15 @@
 .st-del:hover { opacity: 1; }
 .resume-upload-area { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; }
 .prof-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--ss-border, #e5e7eb); }
+
+/* ── Dark Mode Overrides ── */
+html.theme-dark .st { background: rgba(var(--ss-brand-rgb), 0.12); color: var(--ss-brand); }
+html.theme-dark .st.bg-gray { background: var(--ss-surface-alt); color: var(--ss-muted); }
+html.theme-dark .prof-photo-preview { background: var(--ss-surface-alt); border-color: var(--ss-border); }
+html.theme-dark .prof-sec h3 { color: var(--ss-text); }
+html.theme-dark .pf-grid input, html.theme-dark .pf-grid select, html.theme-dark .pf-grid textarea { background: var(--ss-surface-alt); border-color: var(--ss-border); color: var(--ss-text); }
+html.theme-dark .pf-grid input:focus, html.theme-dark .pf-grid select:focus, html.theme-dark .pf-grid textarea:focus { border-color: var(--ss-brand); }
+html.theme-dark .pf-grid label { color: var(--ss-body); }
 </style>
 
 <div class="prof-wrap">
@@ -54,7 +63,7 @@
       </div>
       <div class="pf-grid">
         <div><label>Full Name</label><input type="text" id="piName" placeholder="John Doe"></div>
-        <div><label>Email Address</label><input type="email" id="piEmail" placeholder="john@example.com" readonly class="bg-light"></div>
+        <div><label>Email Address</label><input type="email" id="piEmail" placeholder="john@example.com"></div>
         <div><label>Phone Number</label><input type="tel" id="piPhone" placeholder="+1 (555) 000-0000"></div>
         <div><label>Location</label><input type="text" id="piLocation" placeholder="New York, USA"></div>
         <div><label>Professional Headline</label><input type="text" id="piTitle" placeholder="Senior Software Engineer"></div>

@@ -69,7 +69,7 @@
 .settings-icon-circle.lock { background: #fef2f2; color: #dc2626; }
 .settings-icon-circle.bell { background: #fffbeb; color: #d97706; }
 .settings-icon-circle.shield { background: #f0fdf4; color: #16a34a; }
-.settings-icon-circle.palette { background: #f5f3ff; color: #7c3aed; }
+
 
 /* ═══ FIELDS ═══ */
 .settings-field-grid {
@@ -248,34 +248,7 @@
 .settings-toggle input:checked + .settings-toggle-slider::before { transform: translateX(20px); }
 .settings-toggle input:focus-visible + .settings-toggle-slider { box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
 
-/* ═══ SEGMENTED CONTROL (APPEARANCE) ═══ */
-.settings-segmented {
-  display: inline-flex;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #f9fafb;
-}
-.settings-seg-option { display: flex; }
-.settings-seg-option input { display: none; }
-.settings-seg-content {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 22px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #6b7280;
-  transition: all .15s;
-  user-select: none;
-}
-.settings-seg-option:not(:last-child) .settings-seg-content { border-right: 1px solid #e5e7eb; }
-.settings-seg-option input:checked + .settings-seg-content {
-  background: #2563eb;
-  color: #fff;
-  border-color: transparent;
-}
+
 
 /* ═══ PASSWORD STRENGTH ═══ */
 .settings-pw-strength {
@@ -392,6 +365,216 @@
   padding: 14px 22px !important;
 }
 
+/* ═══ PROFILE HERO ═══ */
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+}
+.profile-hero-left {
+  flex: 1;
+  min-width: 0;
+}
+.profile-hero-left .ph-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.15rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+.profile-hero-left .ph-headline {
+  font-size: 16px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+.profile-hero-left .ph-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  margin-bottom: 0.35rem;
+}
+.profile-hero-left .ph-provider {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+}
+.profile-hero-left .ph-provider .ph-provider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  flex-shrink: 0;
+}
+.profile-hero-left .ph-email {
+  font-size: 15px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.profile-hero-left .ph-email i {
+  font-size: 13px;
+  color: #9ca3af;
+}
+.profile-hero-left .ph-location {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9ca3af;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.profile-hero-left .ph-location i {
+  font-size: 14px;
+  color: #d1d5db;
+}
+.profile-hero-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.profile-hero-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+  object-fit: cover;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 700;
+  color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+.profile-hero-avatar:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.15);
+}
+.profile-hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.profile-hero-actions .ph-btn {
+  height: 32px;
+  padding: 0 0.9rem;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+  width: 100%;
+  justify-content: center;
+}
+.profile-hero-actions .ph-btn-photo {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.18);
+}
+.profile-hero-actions .ph-btn-photo:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37,99,235,0.25);
+  filter: brightness(1.06);
+}
+.profile-hero-actions .ph-btn-photo:active { transform: translateY(0); }
+.profile-hero-actions .ph-btn-remove {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.18);
+}
+.profile-hero-actions .ph-btn-remove:hover {
+  background: rgba(239,68,68,0.04);
+  border-color: rgba(239,68,68,0.35);
+}
+.profile-hero-upload-area { display: none; }
+.profile-hero #msg:not(:empty) {
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-weight: 400;
+  font-size: 14px;
+  animation: msgIn 0.35s ease both;
+  max-width: 400px;
+  margin: 0.5rem auto 0;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.profile-hero .fmt-badges {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-top: 0.65rem;
+  justify-content: center;
+}
+.profile-hero .fmt-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border: 1px solid #e5e7eb;
+}
+.profile-hero #profPicFile { display: none; }
+
+.profile-hero-skeleton {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 1.75rem 2rem;
+  animation: shimmerPulse 1.5s ease-in-out infinite;
+}
+@keyframes shimmerPulse {
+  0%,100% { opacity: 1; }
+  50%     { opacity: 0.5; }
+}
+.profile-hero-skeleton .sk-left { flex: 1; }
+.profile-hero-skeleton .sk-line {
+  height: 14px;
+  border-radius: 7px;
+  background: #e5e7eb;
+  margin-bottom: 0.6rem;
+}
+.profile-hero-skeleton .sk-line.sk-w40 { width: 40%; }
+.profile-hero-skeleton .sk-line.sk-w25 { width: 25%; }
+.profile-hero-skeleton .sk-line.sk-w55 { width: 55%; }
+.profile-hero-skeleton .sk-line.sk-w35 { width: 35%; }
+.profile-hero-skeleton .sk-line.sk-w20 { width: 20%; }
+.profile-hero-skeleton .sk-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 992px) {
   .settings-page { padding: 24px; }
@@ -401,13 +584,19 @@
   .settings-field-grid { grid-template-columns: 1fr; }
   .settings-card { padding: 20px; }
   .settings-page-header h1 { font-size: 24px; }
-  .settings-segmented { width: 100%; }
-  .settings-seg-option { flex: 1; }
-  .settings-seg-content { justify-content: center; padding: 10px 12px; }
-  .settings-avatar-row { flex-direction: column; align-items: flex-start; }
+
   .settings-actions { flex-direction: column; }
   .settings-actions .settings-btn { width: 100%; justify-content: center; }
   .settings-security-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .profile-hero { flex-direction: column-reverse; align-items: center; text-align: center; gap: 1.25rem; padding: 1.25rem 1.5rem; }
+  .profile-hero-left .ph-meta { justify-content: center; }
+  .profile-hero-left .ph-email { justify-content: center; }
+  .profile-hero-left .ph-location { justify-content: center; }
+  .profile-hero-left .ph-name { font-size: 26px; }
+  .profile-hero-avatar { width: 110px; height: 110px; font-size: 34px; }
+  .profile-hero-skeleton { flex-direction: column-reverse; align-items: center; text-align: center; gap: 1.25rem; padding: 1.25rem 1.5rem; }
+  .profile-hero-skeleton .sk-circle { width: 110px; height: 110px; }
+  .profile-hero-skeleton .sk-line { margin-left: auto; margin-right: auto; }
 }
 </style>
 
@@ -424,43 +613,60 @@
       <div class="settings-icon-circle user"><i class="bi bi-person"></i></div>
       <div>
         <h3>Account Information</h3>
-        <p>Manage your account details.</p>
+        <p>Manage your profile picture and personal information.</p>
       </div>
     </div>
-    <div class="settings-card-body">
-      <div class="settings-avatar-row">
-        <div class="settings-avatar" id="setPreview"></div>
-        <div class="settings-avatar-actions">
-          <button class="settings-btn settings-btn-secondary" onclick="document.getElementById('setPicFile').click()">
-            <i class="bi bi-camera"></i> Change Photo
-          </button>
-          <button class="settings-btn settings-btn-danger" id="btnDelPic">
-            <i class="bi bi-trash3"></i> Remove
-          </button>
-          <input type="file" id="setPicFile" accept="image/jpeg,image/png,image/webp" hidden>
+    <div class="settings-card-body" style="padding:0;">
+      <div class="profile-hero" id="profileHero">
+        <div class="profile-hero-skeleton" id="profSkeleton">
+          <div class="sk-left">
+            <div class="sk-line sk-w40"></div>
+            <div class="sk-line sk-w35"></div>
+            <div class="sk-line sk-w25"></div>
+            <div class="sk-line sk-w55"></div>
+            <div class="sk-line sk-w20"></div>
+          </div>
+          <div class="sk-circle"></div>
+        </div>
+        <div class="profile-hero-left" id="profInfo" style="display:none;">
+          <div class="ph-name" id="profName">Loading...</div>
+          <div class="ph-headline" id="profHeadline" style="display:none;"></div>
+          <div class="ph-meta">
+            <span class="ph-provider">
+              <span class="ph-provider-dot"></span>
+              <span id="profProvider">Email Account</span>
+            </span>
+          </div>
+          <p class="ph-email"><i class="bi bi-envelope-fill"></i> <span id="profEmail">Loading...</span></p>
+          <p class="ph-location" id="profLocation" style="display:none;"><i class="bi bi-geo-alt-fill"></i> <span></span></p>
+
+        </div>
+        <div class="profile-hero-right" id="profAvatarSection" style="display:none;">
+          <span id="profPreview" class="profile-hero-avatar"></span>
+          <div class="profile-hero-actions">
+            <button class="ph-btn ph-btn-photo" id="btnChangePhoto" type="button">
+              <i class="bi bi-camera"></i> Change Photo
+            </button>
+            <button class="ph-btn ph-btn-remove" id="btnRemovePhoto" type="button">
+              <i class="bi bi-trash3"></i> Remove
+            </button>
+          </div>
         </div>
       </div>
-      <div class="settings-field-grid">
-        <div class="settings-field">
-          <label>Full Name</label>
-          <input type="text" id="setFullName" placeholder="John Doe">
+      <div style="padding: 0 1.75rem 1.5rem;">
+        <div class="profile-hero-upload-area">
+          <form id="picForm">
+            <input id="profPicFile" type="file" accept="image/*">
+            <div class="fmt-badges">
+              <span class="fmt-badge">JPG</span>
+              <span class="fmt-badge">PNG</span>
+              <span class="fmt-badge">WEBP</span>
+              <span class="fmt-badge">Max 5 MB</span>
+            </div>
+            <div id="msg" class="small"></div>
+          </form>
         </div>
-        <div class="settings-field">
-          <label>Email Address</label>
-          <input type="email" id="setEmailInput" placeholder="john@example.com" readonly>
-        </div>
-        <div class="settings-field">
-          <label>Phone Number</label>
-          <input type="tel" id="setPhone" placeholder="+1 (555) 000-0000">
-        </div>
-      </div>
-      <div class="settings-actions">
-        <a class="settings-btn settings-btn-secondary" href="{% url 'profile' %}">
-          <i class="bi bi-pencil"></i> Edit Profile
-        </a>
-        <button class="settings-btn settings-btn-primary" onclick="saveProfile()">
-          <i class="bi bi-check-lg"></i> Save Changes
-        </button>
+
       </div>
     </div>
   </div>
@@ -623,36 +829,123 @@
     </div>
   </div>
 
-  <!-- ═══ 5. APPEARANCE ═══ -->
-  <div class="settings-card">
-    <div class="settings-card-header">
-      <div class="settings-icon-circle palette"><i class="bi bi-palette"></i></div>
-      <div>
-        <h3>Appearance</h3>
-        <p>Customize how the app looks.</p>
-      </div>
-    </div>
-    <div class="settings-card-body">
-      <div class="settings-segmented" id="themeGroup">
-        <label class="settings-seg-option">
-          <input type="radio" name="settingsTheme" value="light">
-          <span class="settings-seg-content"><i class="bi bi-sun"></i> Light</span>
-        </label>
-        <label class="settings-seg-option">
-          <input type="radio" name="settingsTheme" value="dark">
-          <span class="settings-seg-content"><i class="bi bi-moon"></i> Dark</span>
-        </label>
-        <label class="settings-seg-option">
-          <input type="radio" name="settingsTheme" value="system">
-          <span class="settings-seg-content"><i class="bi bi-display"></i> System</span>
-        </label>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <div id="settingsMsg" class="settings-msg" style="display:none;"></div>
+
+<!-- ═══ ACTIVE SESSIONS MODAL ═══ -->
+<div class="modal-overlay" id="sessionsModal" style="display:none;">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="mb-hd">
+      <h3>Active Sessions</h3>
+      <button class="mb-close" onclick="closeSessionsModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="mb-bd" id="sessionsBody">
+      <div class="text-center py-4 text-muted">Loading sessions...</div>
+    </div>
+    <div class="mb-ft" style="padding-top:16px;border-top:1px solid #f3f4f6;display:flex;justify-content:flex-end;">
+      <button class="settings-btn settings-btn-danger" id="btnLogoutOthers" onclick="logoutOtherSessions()" style="display:none;">
+        <i class="bi bi-box-arrow-right"></i> Logout All Other Sessions
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.35);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+.modal-box {
+  background: #fff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(15,23,42,0.18);
+  padding: 1.75rem;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.3s ease;
+}
+.mb-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+.mb-hd h3 { font-size: 18px; font-weight: 600; margin: 0; }
+.mb-close {
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+.mb-close:hover { background: #e5e7eb; color: #111827; }
+.session-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+}
+.session-card:hover { border-color: #e5e7eb; background: #fafafa; }
+.session-card.current { border-color: #dbeafe; background: #eff6ff; }
+.session-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.session-card.current .session-icon { background: #dbeafe; color: #2563eb; }
+.session-info { flex: 1; min-width: 0; }
+.session-device {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.15rem;
+}
+.session-detail {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+.session-badge {
+  flex-shrink: 0;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #dbeafe;
+  color: #2563eb;
+}
+</style>
 
 {% endblock %}
 
@@ -691,42 +984,44 @@ const PREFS = {
   theme: "theme"
 };
 
+function maskEmail(email) {
+  if (!email || !email.includes("@")) return email || "";
+  const [local, domain] = email.split("@");
+  if (local.length <= 2) return local[0] + "***@" + domain;
+  return local.slice(0, 3) + "********@" + domain;
+}
+
+function getProviderLabel(user) {
+  if (user && user.provider) return user.provider;
+  const pp = localStorage.getItem("profile_picture") || "";
+  if (pp && pp.includes("linkedin")) return "LinkedIn Account";
+  return "Email Account";
+}
+
 async function loadSet() {
   try {
     const u = await api("/api/auth/profile/");
     saveUser(u);
-    document.getElementById("setFullName").value = u.username || "";
-    document.getElementById("setEmailInput").value = u.email || "";
-    document.getElementById("setPhone").value = (u.profile && u.profile.phone) || "";
-    document.getElementById("setPreview").innerHTML = renderAvatar(u.profile_picture, u.username || u.email);
+    document.getElementById("profSkeleton").style.display = "none";
+    document.getElementById("profInfo").style.display = "block";
+    document.getElementById("profAvatarSection").style.display = "flex";
+    document.getElementById("profPreview").innerHTML = renderAvatar(u.profile_picture, u.username || u.email, "profile-hero-avatar");
+    document.getElementById("profName").textContent = u.username || u.email;
+    document.getElementById("profProvider").textContent = getProviderLabel(u);
+    document.getElementById("profEmail").textContent = maskEmail(u.email || "");
+
+    const prof = u.profile || {};
+    const hlEl = document.getElementById("profHeadline");
+    if (prof.headline) { hlEl.textContent = prof.headline; hlEl.style.display = "block"; }
+    const locEl = document.getElementById("profLocation");
+    if (prof.location) { locEl.querySelector("span").textContent = prof.location; locEl.style.display = "flex"; }
+
     restorePrefs();
   } catch (e) {
+    document.getElementById("profName").textContent = "Error loading profile";
     showMsg("Error loading profile.", "danger");
   }
 }
-
-async function saveProfile() {
-  const name = document.getElementById("setFullName").value.trim();
-  const email = document.getElementById("setEmailInput").value.trim();
-  const phone = document.getElementById("setPhone").value.trim();
-  if (!name || !email) { showMsg("Name and email are required.", "danger"); return; }
-  try {
-    const cur = await api("/api/auth/profile/");
-    const profileData = cur.profile || {};
-    profileData.phone = phone;
-    await api("/api/auth/profile/", {
-      method: "PUT",
-      body: JSON.stringify({ username: name, email: email, profile: profileData, profile_picture: cur.profile_picture || "" })
-    });
-    saveUser({ ...cur, username: name, email: email });
-    localStorage.setItem("username", name);
-    hydrateNavbar();
-    showMsg("Profile saved successfully.", "success");
-  } catch (err) {
-    showMsg(err.message || "Failed to save profile.", "danger");
-  }
-}
-window.saveProfile = saveProfile;
 
 async function changePassword() {
   const cur = document.getElementById("setCurPw").value;
@@ -735,42 +1030,76 @@ async function changePassword() {
   if (!cur || !pw || !conf) { showMsg("All password fields are required.", "danger"); return; }
   if (pw !== conf) { showMsg("New passwords do not match.", "danger"); return; }
   if (pw.length < 8) { showMsg("Password must be at least 8 characters.", "danger"); return; }
+  const btn = document.querySelector(".settings-card:nth-child(2) .settings-btn-primary");
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Updating...';
   try {
-    await api("/api/auth/change-password/", { method: "POST", body: JSON.stringify({ current_password: cur, new_password: pw }) });
+    await api("/api/auth/change-password/", {
+      method: "POST",
+      body: JSON.stringify({ current_password: cur, new_password: pw, confirm_password: conf })
+    });
     document.getElementById("setCurPw").value = ""; document.getElementById("setNewPw").value = ""; document.getElementById("setConfPw").value = "";
     document.getElementById("pwStrength").style.display = "none";
     showMsg("Password changed successfully.", "success");
   } catch (err) { showMsg(err.message || "Failed to change password.", "danger"); }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check-lg"></i> Update Password'; }
 }
 window.changePassword = changePassword;
 
-document.getElementById("setPicFile").addEventListener("change", async function(e) {
-  if (!e.target.files[0]) return;
-  const file = e.target.files[0];
-  if (file.size > 5 * 1024 * 1024) { showMsg("File too large. Max 5 MB.", "danger"); return; }
-  imgData = await fileToDataUrl(file);
-  document.getElementById("setPreview").innerHTML = renderAvatar(imgData, localStorage.getItem("username"));
-  try {
-    const cur = await api("/api/auth/profile/");
-    await api("/api/auth/profile/", { method: "PUT", body: JSON.stringify({ username: cur.username, email: cur.email, profile_picture: imgData, profile: cur.profile || {} }) });
-    localStorage.setItem("profile_picture", imgData);
-    hydrateNavbar();
-    showMsg("Profile picture updated.", "success");
-  } catch (err) { showMsg(err.message || "Upload failed.", "danger"); }
+document.getElementById("btnChangePhoto").addEventListener("click", () => {
+  document.getElementById("profPicFile").click();
 });
 
-document.getElementById("btnDelPic").addEventListener("click", async function() {
-  if (!confirm("Remove your profile picture?")) return;
+document.getElementById("profPicFile").addEventListener("change", async e => {
+  if (!e.target.files[0]) return;
+  const file = e.target.files[0];
+  if (!["image/jpeg","image/png","image/webp"].includes(file.type)) {
+    showMsg("Invalid format. Accepted: JPG, PNG, WEBP.", "danger"); return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showMsg("File too large. Maximum size is 5 MB.", "danger"); return;
+  }
+  imgData = await fileToDataUrl(e.target.files[0]);
+  document.getElementById("profPreview").innerHTML = renderAvatar(imgData, localStorage.getItem("username"), "profile-hero-avatar");
+  document.getElementById("picForm").dispatchEvent(new Event("submit", { cancelable: true }));
+});
+
+document.getElementById("picForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!imgData) return;
+  const btn = document.getElementById("btnChangePhoto");
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+  btn.disabled = true;
   try {
-    const cur = await api("/api/auth/profile/");
-    await api("/api/auth/profile/", { method: "PUT", body: JSON.stringify({ username: cur.username, email: cur.email, profile_picture: "", profile: cur.profile || {} }) });
+    const result = await api("/api/auth/profile/", {
+      method: "PUT",
+      body: JSON.stringify({ profile_picture: imgData })
+    });
+    const picUrl = (result.data && result.data.profile_picture) || imgData;
+    localStorage.setItem("profile_picture", picUrl);
+    hydrateNavbar();
+    showMsg(result.message || "Profile picture updated.", "success");
+  } catch (err) { showMsg(err.message || "Upload failed.", "danger"); }
+  finally { btn.innerHTML = '<i class="bi bi-camera"></i> Change Photo'; btn.disabled = false; }
+});
+
+document.getElementById("btnRemovePhoto").addEventListener("click", async () => {
+  if (!confirm("Remove your profile picture?")) return;
+  const btn = document.getElementById("btnRemovePhoto");
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Removing...';
+  btn.disabled = true;
+  try {
+    const result = await api("/api/auth/profile/", {
+      method: "PUT",
+      body: JSON.stringify({ profile_picture: "" })
+    });
     localStorage.setItem("profile_picture", "");
     imgData = "";
-    document.getElementById("setPicFile").value = "";
-    document.getElementById("setPreview").innerHTML = renderAvatar("", cur.username || cur.email);
-    showMsg("Profile picture removed.", "success");
+    document.getElementById("profPicFile").value = "";
+    document.getElementById("profPreview").innerHTML = renderAvatar("", localStorage.getItem("username"), "profile-hero-avatar");
+    showMsg(result.message || "Profile picture removed.", "success");
     hydrateNavbar();
   } catch (err) { showMsg(err.message || "Failed.", "danger"); }
+  finally { btn.innerHTML = '<i class="bi bi-trash3"></i> Remove'; btn.disabled = false; }
 });
 
 /* ── Password Strength ── */
@@ -809,27 +1138,6 @@ function bindTog(id, key) {
   el.addEventListener("change", () => localStorage.setItem(PREFS[key], el.checked ? "1" : "0"));
 }
 
-function bindTheme() {
-  document.querySelectorAll('input[name="settingsTheme"]').forEach(r => {
-    r.addEventListener("change", function() {
-      const val = this.value;
-      localStorage.setItem(PREFS.theme, val);
-      applyTheme(val);
-    });
-  });
-}
-
-function applyTheme(val) {
-  const html = document.documentElement;
-  html.classList.remove("theme-light", "theme-dark");
-  if (val === "system") {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    html.classList.add(prefersDark ? "theme-dark" : "theme-light");
-  } else {
-    html.classList.add("theme-" + val);
-  }
-}
-
 bindTog("togEmail", "emailNotif");
 bindTog("togInApp", "inAppNotif");
 bindTog("togMatches", "matchAlerts");
@@ -837,7 +1145,6 @@ bindTog("togRecruiter", "recruiterMsgs");
 bindTog("togProfileVis", "profileVis");
 bindTog("togResumeVis", "resumeVis");
 bindTog("togContact", "contact");
-bindTheme();
 
 function restorePrefs() {
   function rt(id, key, def) {
@@ -853,16 +1160,13 @@ function restorePrefs() {
   rt("togResumeVis", "resumeVis", true);
   rt("togContact", "contact", true);
 
-  const saved = localStorage.getItem(PREFS.theme) || "system";
-  const radio = document.querySelector('input[name="settingsTheme"][value="' + saved + '"]');
-  if (radio) radio.checked = true;
-  applyTheme(saved);
+  const saved = localStorage.getItem(PREFS.theme) || "light";
+  window.applyTheme(saved);
 }
 
 function showMsg(text, type) {
   const el = document.getElementById("settingsMsg");
   if (!el) return;
-  el.textContent = text;
   el.className = "settings-msg " + type;
   el.style.display = "flex";
   const icon = type === "success" ? "bi-check-circle-fill" : type === "danger" ? "bi-exclamation-circle-fill" : "bi-info-circle-fill";
@@ -872,6 +1176,72 @@ function showMsg(text, type) {
     setTimeout(() => { el.style.display = "none"; el.style.animation = ""; }, 300);
   }, 4000);
 }
+
+/* ── Active Sessions ── */
+window.viewSessions = async function() {
+  const modal = document.getElementById("sessionsModal");
+  const body = document.getElementById("sessionsBody");
+  const btnLogout = document.getElementById("btnLogoutOthers");
+  modal.style.display = "flex";
+  setTimeout(() => modal.classList.add("open"), 10);
+  body.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading sessions...</div>';
+  btnLogout.style.display = "none";
+  try {
+    const data = await api("/api/auth/sessions/");
+    const sessions = data.sessions || [];
+    if (sessions.length === 0) {
+      body.innerHTML = '<div class="text-center py-4 text-muted">No active sessions found.</div>';
+      return;
+    }
+    body.innerHTML = sessions.map(s => {
+      const icon = s.is_current ? '<i class="bi bi-laptop"></i>' : '<i class="bi bi-phone"></i>';
+      const device = s.device && s.device !== "Unknown" ? s.device : "Unknown Device";
+      const os = s.os && s.os !== "Unknown" ? s.os : "";
+      const browser = s.browser && s.browser !== "Unknown" ? s.browser : "";
+      const detail = [browser, os].filter(Boolean).join(" on ") || "Unknown";
+      const time = s.last_activity ? new Date(s.last_activity).toLocaleString() : "";
+      return '<div class="session-card' + (s.is_current ? " current" : "") + '">' +
+        '<div class="session-icon">' + icon + '</div>' +
+        '<div class="session-info">' +
+        '<div class="session-device">' + device + '</div>' +
+        '<p class="session-detail">' + detail + (time ? " &middot; " + time : "") + '</p>' +
+        '</div>' +
+        (s.is_current ? '<span class="session-badge">Current</span>' : '') +
+        '</div>';
+    }).join("");
+    const hasOther = sessions.some(s => !s.is_current);
+    btnLogout.style.display = hasOther ? "inline-flex" : "none";
+  } catch (err) {
+    body.innerHTML = '<div class="text-center py-4 text-danger">Failed to load sessions: ' + err.message + '</div>';
+  }
+};
+
+window.closeSessionsModal = function() {
+  const modal = document.getElementById("sessionsModal");
+  modal.classList.remove("open");
+  setTimeout(() => { modal.style.display = "none"; }, 250);
+};
+
+document.getElementById("sessionsModal").addEventListener("click", function(e) {
+  if (e.target === this) closeSessionsModal();
+});
+
+window.logoutOtherSessions = async function() {
+  if (!confirm("Logout all other active sessions? You will remain logged in on this device.")) return;
+  const btn = document.getElementById("btnLogoutOthers");
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Logging out...';
+  try {
+    const result = await api("/api/auth/sessions/", { method: "DELETE" });
+    showMsg(result.message || "Other sessions logged out.", "success");
+    viewSessions();
+  } catch (err) { showMsg(err.message || "Failed to logout other sessions.", "danger"); }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="bi bi-box-arrow-right"></i> Logout All Other Sessions'; }
+};
+
+document.querySelector(".settings-security-btn") && document.querySelector(".settings-security-btn").addEventListener("click", function(e) {
+  e.preventDefault();
+  viewSessions();
+});
 
 loadSet();
 </script>

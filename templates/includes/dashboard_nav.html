@@ -1,4 +1,7 @@
 <style>
+  /* ═══════════════════════════════════════════════
+     NAVBAR — Clean Solid Professional
+  ═══════════════════════════════════════════════ */
   .navbar-glass {
     position: fixed !important;
     top: 0 !important;
@@ -6,276 +9,382 @@
     right: 0 !important;
     height: var(--navbar-height, 60px) !important;
     z-index: 1040 !important;
-    background: var(--ss-glass-bg) !important;
-    backdrop-filter: blur(18px) saturate(1.9) !important;
-    -webkit-backdrop-filter: blur(18px) saturate(1.9) !important;
-    border-bottom: 1px solid var(--ss-glass-border) !important;
-    box-shadow: 0 18px 52px rgba(15, 23, 42, 0.10) !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid var(--ss-border, #e2e8f0) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
     display: flex !important;
     align-items: center !important;
-    padding: 0 1rem !important;
-    gap: 0.5rem !important;
-    transition: left var(--ss-transition), background var(--ss-transition) !important;
+    justify-content: space-between !important;
+    padding: 0 1.25rem !important;
+    gap: 1rem !important;
+    transition: left var(--ss-transition, 0.25s ease), 
+                background var(--ss-transition, 0.25s ease),
+                box-shadow var(--ss-transition, 0.25s ease) !important;
   }
 
-  .navbar-glass .ng-left {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    flex: 1 !important;
-    min-width: 0 !important;
-  }
-
+  .navbar-glass .ng-left,
   .navbar-glass .ng-right {
     display: flex !important;
     align-items: center !important;
-    gap: 0.5rem !important;
-    flex-shrink: 0 !important;
+    gap: 0.75rem !important;
+    flex: 0 0 auto !important;
   }
 
+  .navbar-glass .ng-center {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 0 1rem !important;
+  }
+
+  /* ── Toggle (mobile only) ─ */
   .ng-toggle {
     display: none !important;
-    width: 30px; height: 30px;
+    width: 34px;
+    height: 34px;
     align-items: center;
     justify-content: center;
     border: none;
-    background: none;
-    color: var(--ss-muted);
-    border-radius: var(--ss-radius);
+    background: transparent;
+    color: var(--ss-muted, #64748b);
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1.125rem;
-    transition: all var(--ss-transition-fast);
+    font-size: 1.25rem;
+    transition: all 0.2s ease;
     flex-shrink: 0;
   }
 
   .ng-toggle:hover {
-    background: var(--ss-brand-soft);
-    color: var(--ss-brand);
+    background: var(--ss-surface-alt, #f1f5f9);
+    color: var(--ss-brand, #2563eb);
   }
 
-  @media (max-width: 991.98px) {
-    .navbar-glass { left: 0 !important; }
-    .ng-toggle { display: inline-flex !important; }
-  }
-
+  /* ─ Breadcrumb ── */
   .ng-breadcrumb {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
     font-size: 13px;
-    font-weight: 400;
-    color: var(--ss-muted);
-    min-width: 0;
+    font-weight: 500;
+    color: var(--ss-muted, #64748b);
+    white-space: nowrap;
   }
 
   .ng-breadcrumb a {
-    color: var(--ss-muted);
-    white-space: nowrap;
+    color: var(--ss-muted, #64748b);
     text-decoration: none;
-    transition: color var(--ss-transition-fast);
+    transition: color 0.15s ease;
   }
 
-  .ng-breadcrumb a:hover { color: var(--ss-brand); }
+  .ng-breadcrumb a:hover { 
+    color: var(--ss-brand, #2563eb); 
+  }
 
   .ng-breadcrumb .bc-sep {
-    color: var(--ss-border-strong);
+    color: var(--ss-border-strong, #cbd5e1);
     font-size: 0.75rem;
+    opacity: 0.7;
   }
 
   .ng-breadcrumb .bc-current {
-    color: var(--ss-text);
+    color: var(--ss-text, #0f172a);
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 200px;
   }
 
+  /* ── Search (Compact & Centered) ── */
   .ng-search {
     position: relative;
-    flex: 1;
-    max-width: 680px;
-    min-width: 160px;
-  }
-
-  @media (max-width: 1199.98px) {
-    .ng-search { max-width: 460px; }
-  }
-
-  @media (max-width: 767.98px) {
-    .ng-search { max-width: 160px; }
+    width: 100%;
+    max-width: 380px;
+    min-width: 140px;
+    height: 34px;
   }
 
   .ng-search .gs-icon {
     position: absolute;
-    left: 0.85rem;
+    left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--ss-muted-light);
-    font-size: 0.9375rem;
+    color: var(--ss-muted-light, #94a3b8);
+    font-size: 0.875rem;
     pointer-events: none;
   }
 
   .ng-search input {
     width: 100%;
-    height: 36px;
-    padding: 0 0.75rem 0 2.25rem;
-    border: 1px solid #E2E8F0;
-    border-radius: var(--ss-radius);
-    background: #fff;
-    font-size: 14px;
+    height: 34px;
+    padding: 0 2.5rem 0 2.25rem;
+    border: 1px solid var(--ss-border, #e2e8f0);
+    border-radius: 8px;
+    background: var(--ss-surface-alt, #f8fafc);
+    font-size: 13px;
     font-weight: 400;
-    color: var(--ss-body);
+    color: var(--ss-body, #334155);
     outline: none;
-    transition: all var(--ss-transition-fast);
+    transition: all 0.2s ease;
   }
 
-  .ng-search input::placeholder { color: var(--ss-muted-light); }
-  .ng-search input:hover { border-color: var(--ss-border-strong); }
+  .ng-search input::placeholder { 
+    color: var(--ss-muted-light, #94a3b8); 
+  }
+
+  .ng-search input:hover { 
+    border-color: var(--ss-border-strong, #cbd5e1); 
+    background: #ffffff;
+  }
 
   .ng-search input:focus {
-    border-color: #2563EB;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.20);
+    border-color: var(--ss-brand, #2563eb);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
   }
 
   .ng-search .gs-hint {
     position: absolute;
-    right: 0.85rem;
+    right: 0.6rem;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ss-muted-light);
-    background: var(--ss-surface-alt);
-    padding: 0.1rem 0.35rem;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ss-muted-light, #94a3b8);
+    background: rgba(255,255,255,0.8);
+    padding: 0.15rem 0.4rem;
     border-radius: 4px;
-    border: 1px solid var(--ss-border);
+    border: 1px solid var(--ss-border, #e2e8f0);
     pointer-events: none;
+    letter-spacing: 0.02em;
   }
 
+  /* ── Icon Buttons ── */
   .ng-icon-btn {
     position: relative;
-    width: 32px; height: 32px;
+    width: 34px;
+    height: 34px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none;
     background: transparent;
-    color: var(--ss-muted);
-    border-radius: var(--ss-radius);
+    color: var(--ss-muted, #64748b);
+    border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
     text-decoration: none;
-    transition: all var(--ss-transition-fast);
+    transition: all 0.2s ease;
   }
 
   .ng-icon-btn:hover {
-    background: var(--ss-brand-soft);
-    color: var(--ss-brand);
+    background: var(--ss-brand-soft, rgba(37,99,235,0.08));
+    color: var(--ss-brand, #2563eb);
+    transform: translateY(-1px);
   }
 
-  .dropdown-toggle.btn-outline-primary:hover {
-    background: rgba(var(--ss-brand-rgb, 79,70,229), 0.08) !important;
-    border-color: rgba(var(--ss-brand-rgb, 79,70,229), 0.15) !important;
+  .ng-icon-btn .badge-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--ss-danger, #ef4444);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
   }
 
+  /* ── Nav Avatar ── */
   #navAvatar {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 10px;
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px;
     background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-size: 0.8rem;
+    font-weight: 700;
+    font-size: 0.85rem;
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+    transition: transform 0.2s ease;
   }
 
-  .dropdown-toggle .d-none.d-md-inline {
-    line-height: 1.2;
+  .ng-user-avatar:hover #navAvatar {
+    transform: scale(1.05);
   }
 
-  .dropdown-menu {
-    border: none !important;
-    border-radius: 18px !important;
-    box-shadow: 0 16px 60px rgba(0,0,0,0.08) !important;
-    padding: 8px !important;
-    min-width: 220px;
-    background: rgba(255,255,255,0.98) !important;
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(var(--ss-brand-rgb, 79,70,229), 0.06) !important;
-    margin-top: 10px !important;
+  .ng-user-avatar {
+    border: none;
+    background: none;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .dropdown-item {
-    border-radius: 12px !important;
-    padding: 10px 16px !important;
-    font-size: 0.85rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 12px !important;
+  /* ── Quick Action Button ── */
+  .ng-quick {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff !important;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    white-space: nowrap;
   }
 
   .ng-quick:hover {
-    background: linear-gradient(135deg, #1D4ED8, #1E40AF) !important;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     transform: translateY(-1px);
     color: #fff !important;
   }
 
-  .ng-user { display: none !important; }
-  .nu-avatar, .nu-info, .nu-name, .nu-role { display: none !important; }
+  .ng-quick i {
+    font-size: 0.875rem;
+  }
 
+  /* ── Dropdown ── */
+  .dropdown-menu {
+    border: 1px solid var(--ss-border, #e2e8f0) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08) !important;
+    padding: 0.5rem !important;
+    min-width: 220px;
+    background: #ffffff !important;
+    margin-top: 8px !important;
+  }
+
+  .dropdown-item {
+    border-radius: 8px !important;
+    padding: 0.6rem 0.875rem !important;
+    font-size: 0.875rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    color: var(--ss-body, #334155);
+    transition: all 0.15s ease;
+    font-weight: 500;
+  }
+
+  .dropdown-item:hover {
+    background: var(--ss-surface-alt, #f8fafc);
+    color: var(--ss-brand, #2563eb);
+  }
+
+  .dropdown-item i {
+    font-size: 1rem;
+    color: var(--ss-muted, #64748b);
+    width: 20px;
+    text-align: center;
+  }
+
+  .dropdown-item:hover i {
+    color: var(--ss-brand, #2563eb);
+  }
+
+  /* ═══════════════════════════════════════════════
+     SIDEBAR (logout footer removed)
+  ═══════════════════════════════════════════════ */
   .app-sidebar {
     position: fixed;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     width: var(--sidebar-width, 260px);
     height: 100vh;
     z-index: 1050;
-    background: var(--ss-surface);
-    border-right: 1px solid var(--ss-border);
+    background: var(--ss-surface, #ffffff);
+    border-right: 1px solid var(--ss-border, #e2e8f0);
     display: flex;
     flex-direction: column;
-    transition: transform var(--ss-transition);
+    transition: transform var(--ss-transition, 0.25s ease);
     overflow: hidden;
   }
 
-  @media (max-width: 991.98px) {
-    .app-sidebar {
-      transform: translateX(-100%);
-      z-index: 1060;
-      width: 280px !important;
-    }
-    .app-sidebar.mobile-open { transform: translateX(0); box-shadow: 0 0 40px rgba(0,0,0,0.08); }
-  }
-
+  /* ── Brand / Logo ── */
   .sb-brand {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
-    border-bottom: 1px solid var(--ss-border);
+    gap: 0.75rem;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid var(--ss-border, #e2e8f0);
     flex-shrink: 0;
-    height: var(--navbar-height, 52px);
+    height: var(--navbar-height, 60px);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: var(--ss-ink, #0f172a);
     text-decoration: none;
+    background: #ffffff;
   }
 
-  .sidebar-profile:hover::after {
-    opacity: 1;
+  .sb-brand .brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    transition: transform 0.2s ease;
+  }
+
+  .sb-brand:hover .brand-mark {
+    transform: rotate(-3deg) scale(1.05);
+  }
+
+  .sb-brand .brand-name {
+    white-space: nowrap;
+    color: var(--ss-ink, #0f172a);
+    font-weight: 700;
+  }
+
+  /* ── Sidebar Profile Card (if used) ── */
+  .sidebar-profile {
+    transition: all 0.3s ease;
+    margin: 0.75rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
   }
 
   .sidebar-profile:hover {
-    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-    border-color: rgba(var(--ss-brand-rgb, 79,70,229), 0.12);
+    background: var(--ss-surface-alt, #f8fafc);
+    border-color: var(--ss-border, #e2e8f0);
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
   }
 
   #sidebarAvatar {
-    width: 52px !important;
-    height: 52px !important;
-    border-radius: 14px;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 12px;
     background: linear-gradient(135deg, var(--ss-brand, #4f46e5), #818cf8);
     color: #fff;
     display: flex;
@@ -284,156 +393,131 @@
     font-size: 14px;
     font-weight: 700;
     flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(var(--ss-brand-rgb, 79,70,229), 0.20);
+    box-shadow: 0 2px 10px rgba(var(--ss-brand-rgb, 79,70,229), 0.2);
     transition: all 0.3s ease;
   }
 
   .sidebar-profile:hover #sidebarAvatar {
-    transform: scale(1.04);
-    box-shadow: 0 6px 20px rgba(var(--ss-brand-rgb, 79,70,229), 0.30);
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(var(--ss-brand-rgb, 79,70,229), 0.25);
   }
 
   #sidebarUserName {
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--ss-text);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ss-text, #0f172a);
     white-space: nowrap;
+    font-size: 14px;
   }
 
-  .sb-brand .sb-text span { color: #2563EB; }
-
-  .sb-profile { display: none !important; }
-  .sp-avatar, .sp-info, .sp-name, .sp-role { display: none !important; }
-
+  /* ── Nav Items ── */
   .sidebar-nav {
-    padding: 0 0.625rem;
+    padding: 0.5rem;
     flex: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.0625rem;
+    gap: 0.125rem;
   }
 
   .sidebar-nav .sn-label {
     display: flex;
     align-items: center;
-    padding: 0.4rem 0.5rem 0.25rem;
-    font-size: 12px;
-    font-weight: 600;
-    color: #94A3B8;
+    padding: 0.75rem 0.75rem 0.375rem;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ss-muted-light, #94a3b8);
     user-select: none;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
   }
 
   .sidebar-nav .nav-link {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
-    padding: 0.4rem 0.65rem;
-    border-radius: 6px;
-    color: #64748B;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    color: var(--ss-muted, #64748b);
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13.5px;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     cursor: pointer;
     border: none;
     background: transparent;
     width: 100%;
     text-align: left;
     position: relative;
+    margin-bottom: 1px;
   }
 
   .sidebar-nav .nav-link i {
-    font-size: 0.875rem;
-    width: 18px;
+    font-size: 1rem;
+    width: 20px;
     text-align: center;
     flex-shrink: 0;
-    color: #64748B;
-    transition: all 0.2s ease;
+    color: var(--ss-muted, #64748b);
+    transition: all 0.15s ease;
   }
 
   .sidebar-nav .nav-link:hover {
-    background: #DBEAFE;
-    color: #2563EB;
+    background: rgba(37, 99, 235, 0.06);
+    color: #2563eb;
   }
 
-  .sidebar-nav .nav-link:hover i { color: #2563EB; }
+  .sidebar-nav .nav-link:hover i { 
+    color: #2563eb; 
+  }
 
   .sidebar-nav .nav-link.active {
-    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: #fff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
   }
 
-  .sidebar-nav .nav-link.active i { color: #fff; }
+  .sidebar-nav .nav-link.active i { 
+    color: #fff; 
+  }
 
   .sidebar-nav .nav-link .sn-badge {
     margin-left: auto;
-    min-width: 18px; height: 18px;
+    min-width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--ss-radius-full);
-    background: rgba(37, 99, 235, 0.10);
-    color: #2563EB;
+    border-radius: 20px;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
     font-size: 11px;
-    font-weight: 600;
-    padding: 0 0.25rem;
+    font-weight: 700;
+    padding: 0 0.4rem;
+    transition: all 0.2s ease;
   }
 
   .sidebar-nav .nav-link.active .sn-badge {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.25);
     color: #fff;
   }
 
   .sidebar-nav .nav-divider {
     height: 1px;
-    background: var(--ss-border);
-    margin: 0.15rem 0.625rem;
+    background: var(--ss-border, #e2e8f0);
+    margin: 0.5rem;
+    opacity: 0.6;
   }
 
-  .sidebar-footer {
-    padding: 0.5rem 0.625rem;
-    border-top: 1px solid var(--ss-border);
-    flex-shrink: 0;
-  }
-
-  .sidebar-footer .logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.35rem 0.625rem;
-    border-radius: 6px;
-    color: var(--ss-danger);
-    font-weight: 500;
-    font-size: 14px;
-    text-decoration: none;
-    transition: all var(--ss-transition-fast);
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    width: 100%;
-    text-align: left;
-  }
-
-  .sidebar-footer .logout-btn:hover { background: var(--ss-danger-bg); }
-
-  .sidebar-footer .logout-btn i {
-    font-size: 0.875rem;
-    width: 18px;
-    text-align: center;
-  }
-
+  /* ── Mobile Overlay ─ */
   .sidebar-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.4);
     backdrop-filter: blur(4px);
     z-index: 1055;
     opacity: 0;
     visibility: hidden;
-    transition: all var(--ss-transition);
+    transition: all 0.3s ease;
   }
 
   .sidebar-overlay.open {
@@ -441,38 +525,169 @@
     visibility: visible;
   }
 
-  @media (max-width: 575.98px) {
-    .app-sidebar { width: 100% !important; max-width: 320px; }
-    .navbar-glass { padding: 0 0.75rem !important; }
-    .ng-user .nu-info { display: none !important; }
+  /* ═══════════════════════════════════════════════
+     RESPONSIVE
+  ═══════════════════════════════════════════════ */
+  @media (max-width: 1199.98px) {
+    .ng-search { max-width: 320px; }
+    .ng-breadcrumb .bc-current { max-width: 140px; }
   }
 
-  html.theme-dark .navbar-glass {
-    background: rgba(var(--ss-surface-rgb, 15,23,42), 0.72) !important;
-    border-bottom-color: var(--ss-glass-border) !important;
+  @media (max-width: 991.98px) {
+    .navbar-glass { 
+      left: 0 !important; 
+      padding: 0 1rem !important;
+    }
+    .ng-toggle { 
+      display: inline-flex !important; 
+    }
+    .ng-center {
+      padding: 0 0.5rem !important;
+    }
+    .ng-search { 
+      max-width: 260px; 
+    }
+    .app-sidebar {
+      transform: translateX(-100%);
+      z-index: 1060;
+      width: 280px !important;
+    }
+    .app-sidebar.mobile-open {
+      transform: translateX(0);
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+    }
   }
-  html.theme-dark .sb-profile { background: var(--ss-surface-alt, #0F172A) !important; }
-  html.theme-dark .sb-profile:hover { background: var(--ss-surface-hover, #1E293B) !important; }
-  html.theme-dark .sidebar-nav .nav-link { color: var(--ss-muted, #94A3B8) !important; }
-  html.theme-dark .sidebar-nav .nav-link i { color: var(--ss-muted-light, #94A3B8) !important; }
+
+  @media (max-width: 767.98px) {
+    .ng-search { 
+      max-width: 180px; 
+      min-width: 120px;
+    }
+    .ng-search .gs-hint { 
+      display: none; 
+    }
+    .ng-breadcrumb { 
+      display: none !important; 
+    }
+    .ng-quick span {
+      display: none;
+    }
+    .ng-quick {
+      padding: 0.5rem;
+      width: 34px;
+      height: 34px;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .app-sidebar { 
+      width: 100% !important; 
+      max-width: 320px; 
+    }
+    .navbar-glass { 
+      padding: 0 0.75rem !important; 
+    }
+    .ng-center {
+      display: none !important;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     DARK THEME
+  ═══════════════════════════════════════════════ */
+  html.theme-dark .navbar-glass {
+    background: #0f172a !important;
+    border-bottom-color: #1e293b !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+  }
+
+  html.theme-dark .ng-search input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+  }
+
+  html.theme-dark .ng-search input:focus {
+    background: #0f172a;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+
+  html.theme-dark .ng-search .gs-hint {
+    background: #1e293b;
+    border-color: #334155;
+    color: #64748b;
+  }
+
+  html.theme-dark .ng-toggle:hover {
+    background: #1e293b;
+    color: #60a5fa;
+  }
+
+  html.theme-dark .sb-brand {
+    background: #0f172a;
+    border-bottom-color: #1e293b;
+  }
+
+  html.theme-dark .dropdown-menu {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
+  }
+
+  html.theme-dark .dropdown-item:hover {
+    background: #1e293b;
+  }
+
+  html.theme-dark .sidebar-nav .nav-link {
+    color: #94a3b8;
+  }
+
+  html.theme-dark .sidebar-nav .nav-link i {
+    color: #64748b;
+  }
+
   html.theme-dark .sidebar-nav .nav-link:hover,
   html.theme-dark .sidebar-nav .nav-link.active {
-    background: rgba(var(--ss-brand-rgb, 37, 99, 235), 0.15) !important;
-    color: var(--ss-brand, #2563EB) !important;
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
   }
-  html.theme-dark .sidebar-nav .nav-link:hover i,
-  html.theme-dark .sidebar-nav .nav-link.active i { color: var(--ss-brand, #2563EB) !important; }
 
-  /* Force d-none on role-gated elements so Bootstrap responsive utilities
-     (d-sm-inline-flex etc.) cannot override it */
+  html.theme-dark .sidebar-nav .nav-link:hover i,
+  html.theme-dark .sidebar-nav .nav-link.active i {
+    color: #60a5fa;
+  }
+
+  html.theme-dark .sidebar-nav .nav-link.active {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+  }
+
+  html.theme-dark .sidebar-nav .nav-link.active i {
+    color: #fff;
+  }
+
+  /* ═══════════════════════════════════════════════
+     HIDDEN / ROLE-GATED ELEMENTS
+  ═══════════════════════════════════════════════ */
+  .ng-user,
+  .nu-avatar, .nu-info, .nu-name, .nu-role,
+  .sb-profile,
+  .sp-avatar, .sp-info, .sp-name, .sp-role {
+    display: none !important;
+  }
+
   .app-sidebar [data-role].d-none,
-  .navbar-glass [data-role].d-none { display: none !important; }
+  .navbar-glass [data-role].d-none {
+    display: none !important;
+  }
 </style>
 
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-<!-- ═══ GLASS TOP NAVBAR ═══ -->
+<!-- ═══ CLEAN TOP NAVBAR ═══ -->
 <nav class="navbar-glass" id="mainNav">
   <div class="ng-left">
     <button class="ng-toggle" id="sidebarTrigger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
@@ -484,60 +699,73 @@
       <span class="bc-sep"><i class="bi bi-chevron-right"></i></span>
       <span class="bc-current" id="bcCurrent">Dashboard</span>
     </div>
+  </div>
 
-    <div class="ng-search d-none" data-auth-only data-role="job_seeker,recruiter">
+  <div class="ng-center">
+    <div class="ng-search d-none d-md-flex" data-auth-only data-role="job_seeker,recruiter">
       <i class="bi bi-search gs-icon"></i>
-      <input type="text" id="ngSearchInput" placeholder="Search jobs, skills, people..." aria-label="Search">
-      <span class="gs-hint">Ctrl+K</span>
+      <input type="text" id="ngSearchInput" placeholder="Search jobs, skills..." aria-label="Search">
+      <span class="gs-hint">⌘K</span>
     </div>
   </div>
 
   <div class="ng-right">
     <span data-guest-only style="display:flex;gap:0.5rem;">
-      <a class="btn btn-outline btn-sm" href="{% url 'login' %}" style="border-radius:20px;">Login</a>
-      <a class="btn btn-primary btn-sm" href="{% url 'register' %}" style="border-radius:20px;">Get Started</a>
+      <a class="btn btn-outline-primary btn-sm" href="{% url 'login' %}" style="border-radius:8px;font-weight:500;font-size:13px;padding:0.4rem 0.875rem;">Login</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'register' %}" style="border-radius:8px;font-weight:600;font-size:13px;padding:0.4rem 0.875rem;">Get Started</a>
     </span>
 
     <a class="ng-quick d-none d-sm-inline-flex" data-role="job_seeker" href="{% url 'jobs' %}">
-      <i class="bi bi-plus-lg"></i> Find Jobs
+      <i class="bi bi-plus-lg"></i> <span>Find Jobs</span>
     </a>
     <a class="ng-quick d-none d-sm-inline-flex" data-role="recruiter" href="{% url 'recruiter-post-job' %}">
-      <i class="bi bi-plus-lg"></i> Post Job
+      <i class="bi bi-plus-lg"></i> <span>Post Job</span>
     </a>
+
     <a class="ng-icon-btn d-none" data-role="job_seeker,recruiter,admin" href="{% url 'notifications' %}" aria-label="Notifications">
       <i class="bi bi-bell"></i>
       <span id="notificationBadge" class="badge-count d-none">0</span>
     </a>
 
     <div class="dropdown d-none" data-auth-only id="userDropdown">
-      <button class="ng-user-avatar" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu" style="border:none;background:none;padding:0;border-radius:50%;overflow:hidden;cursor:pointer;transition:all 0.2s ease;">
-        <span id="navAvatar" style="display:flex;align-items:center;justify-content:center;">U</span>
+      <button class="ng-user-avatar" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
+        <span id="navAvatar">U</span>
       </button>
-      <ul class="dropdown-menu dropdown-menu-end" style="min-width:240px;padding:0.5rem;">
-        <li style="padding:0.5rem 0.75rem 0.35rem;border-bottom:1px solid var(--ss-border);margin-bottom:0.375rem;">
-          <div style="font-weight:600;font-size:14px;color:var(--ss-text);" id="ddUserName">Account</div>
-          <div style="font-size:13px;color:var(--ss-muted);" id="ddUserEmail"></div>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li style="padding:0.75rem;border-bottom:1px solid var(--ss-border);margin-bottom:0.25rem;">
+          <div style="font-weight:600;font-size:13px;color:var(--ss-text);" id="ddUserName">Account</div>
+          <div style="font-size:12px;color:var(--ss-muted);" id="ddUserEmail"></div>
         </li>
-        <li data-role="recruiter"><a class="dropdown-item" href="{% url 'company-profile' %}"><i class="bi bi-building"></i> Company Profile</a></li>
-        <li data-role="job_seeker,admin"><a class="dropdown-item" href="{% url 'notifications' %}"><i class="bi bi-bell"></i> Notifications</a></li>
-        <li style="border-top:1px solid var(--ss-border);margin-top:0.375rem;padding-top:0.375rem;">
-          <button class="dropdown-item text-danger" type="button" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
+        <li data-role="recruiter">
+          <a class="dropdown-item" href="{% url 'company-profile' %}">
+            <i class="bi bi-building"></i> Company Profile
+          </a>
+        </li>
+        <li data-role="job_seeker,admin">
+          <a class="dropdown-item" href="{% url 'notifications' %}">
+            <i class="bi bi-bell"></i> Notifications
+          </a>
+        </li>
+        <li style="border-top:1px solid var(--ss-border);margin-top:0.25rem;padding-top:0.25rem;">
+          <button class="dropdown-item text-danger" type="button" onclick="logout()">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </button>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
-<!-- ═══ SIDEBAR ═══ -->
+<!-- ═══ SIDEBAR (Logout removed) ═══ -->
 <aside class="app-sidebar d-none" data-auth-only id="appSidebar">
+
   <a class="sb-brand" href="{% url 'landing-page' %}">
-    <span class="sb-icon"><i class="bi bi-lightning-charge-fill"></i></span>
-    <span class="sb-text">SkillSync <span>AI</span></span>
+    <div class="brand-mark">S</div>
+    <span class="brand-name">SkillSync AI</span>
   </a>
 
-  
-
   <nav class="sidebar-nav">
+
     <!-- ═══ JOB SEEKER NAV ═══ -->
     <div data-role="job_seeker">
       <div class="sn-label">Main</div>
@@ -591,7 +819,7 @@
       <div class="sn-label">Communication</div>
       <a class="nav-link" href="{% url 'notifications' %}">
         <i class="bi bi-bell"></i> Notifications
-        <span class="sn-badge" id="sidebarNotifBadge" style="display:none">0</span>
+        <span class="sn-badge" style="display:none">0</span>
       </a>
     </div>
 
@@ -604,17 +832,13 @@
 
     <div class="nav-divider" data-role="recruiter"></div>
 
-    <!-- ═══ ADMIN NAV (simplified) ═══ -->
+    <!-- ═══ ADMIN NAV ═══ -->
     <div data-role="admin">
+      <div class="sn-label">Admin</div>
       <a class="nav-link" href="{% url 'admin-dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-    </div>
-
-    <div class="nav-divider" data-role="admin"></div>
-
-    <div data-role="admin">
       <a class="nav-link" href="{% url 'notifications' %}">
         <i class="bi bi-bell"></i> Notifications
-        <span class="sn-badge" id="sidebarNotifBadge" style="display:none">0</span>
+        <span class="sn-badge" style="display:none">0</span>
       </a>
       <a class="nav-link" href="{% url 'linkedin' %}"><i class="bi bi-linkedin"></i> External Integration</a>
     </div>
@@ -622,16 +846,12 @@
     <div class="nav-divider" data-role="admin"></div>
 
     <div data-role="admin">
+      <div class="sn-label">Account</div>
       <a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Settings</a>
     </div>
 
   </nav>
-
-  <div class="sidebar-footer">
-    <button class="logout-btn" type="button" onclick="logout()">
-      <i class="bi bi-box-arrow-right"></i> Logout
-    </button>
-  </div>
+  <!-- Sidebar footer with logout removed completely -->
 </aside>
 
 <script>
@@ -656,13 +876,20 @@
       const sidebar = document.getElementById('appSidebar');
       if (sidebar && sidebar.classList.contains('mobile-open')) toggleSidebar();
     }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      const searchInput = document.getElementById('ngSearchInput');
+      if (searchInput && !searchInput.closest('.d-none')) {
+        searchInput.focus();
+      }
+    }
   });
 
   window.addEventListener('resize', function() {
     if (window.innerWidth > 991.98) {
-      const sidebar = document.getElementById('appSidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      const trigger = document.getElementById('sidebarTrigger');
+      const sidebar  = document.getElementById('appSidebar');
+      const overlay  = document.getElementById('sidebarOverlay');
+      const trigger  = document.getElementById('sidebarTrigger');
       if (sidebar && sidebar.classList.contains('mobile-open')) {
         sidebar.classList.remove('mobile-open');
         overlay.classList.remove('open');
@@ -672,94 +899,411 @@
   });
 
   function updateSidebarState() {
-    const token = localStorage.getItem('access');
-    const role = localStorage.getItem('role');
+    const token    = localStorage.getItem('access');
+    const role     = localStorage.getItem('role');
     const username = localStorage.getItem('username') || localStorage.getItem('email') || '';
 
-    const sidebar = document.getElementById('appSidebar');
+    const sidebar       = document.getElementById('appSidebar');
     const guestElements = document.querySelectorAll('[data-guest-only]');
-    const authElements = document.querySelectorAll('[data-auth-only]');
-    const roleElements = document.querySelectorAll('[data-role]');
+    const authElements  = document.querySelectorAll('[data-auth-only]');
+    const roleElements  = document.querySelectorAll('[data-role]');
 
     if (token) {
       if (sidebar) sidebar.classList.remove('d-none');
       guestElements.forEach(el => el.classList.add('d-none'));
-      authElements.forEach(el => el.classList.remove('d-none'));
-      roleElements.forEach(el => {
-        const roles = String(el.dataset.role || "").split(",").map(s => s.trim());
-        const show = roles.includes(role) || roles.includes('all');
-        el.classList.toggle('d-none', !show);
+      authElements.forEach(el  => el.classList.remove('d-none'));
+      roleElements.forEach(el  => {
+        const roles = String(el.dataset.role || '').split(',').map(s => s.trim());
+        el.classList.toggle('d-none', !(roles.includes(role) || roles.includes('all')));
       });
-
-      if (username) {
-        const roleNames = { job_seeker: 'Job Seeker', recruiter: 'Recruiter', admin: 'Admin' };
-        const roleLabel = roleNames[role] || role || '';
-      }
       updateNotificationBadge();
       updateSearchPlaceholder();
+      updateUserInfo(username);
     } else {
       if (sidebar) sidebar.classList.add('d-none');
       guestElements.forEach(el => el.classList.remove('d-none'));
-      authElements.forEach(el => el.classList.add('d-none'));
-      roleElements.forEach(el => el.classList.add('d-none'));
+      authElements.forEach(el  => el.classList.add('d-none'));
+      roleElements.forEach(el  => el.classList.add('d-none'));
+    }
+  }
+
+  function updateUserInfo(username) {
+    const navAvatar = document.getElementById('navAvatar');
+    const ddUserName = document.getElementById('ddUserName');
+    const ddUserEmail = document.getElementById('ddUserEmail');
+    if (username) {
+      const initial = username.charAt(0).toUpperCase();
+      if (navAvatar) navAvatar.textContent = initial;
+      if (ddUserName) ddUserName.textContent = username.split('@')[0];
+      if (ddUserEmail) ddUserEmail.textContent = username;
     }
   }
 
   function updateNotificationBadge() {
-    const badge = document.getElementById('notificationBadge');
-    const sideBadge = document.getElementById('sidebarNotifBadge');
-    const count = parseInt(localStorage.getItem('notificationCount') || '0', 10);
-    if (count > 0 && badge) {
+    const count    = parseInt(localStorage.getItem('notificationCount') || '0', 10);
+    const badge    = document.getElementById('notificationBadge');
+    const sideBadges = document.querySelectorAll('.sn-badge');
+    if (badge) {
       badge.textContent = count;
-      badge.classList.remove('d-none');
-    } else if (badge) {
-      badge.classList.add('d-none');
+      badge.classList.toggle('d-none', count === 0);
     }
-    if (count > 0 && sideBadge) {
-      sideBadge.textContent = count;
-      sideBadge.style.display = '';
-    } else if (sideBadge) {
-      sideBadge.style.display = 'none';
-    }
+    sideBadges.forEach(b => {
+      b.textContent    = count;
+      b.style.display  = count > 0 ? '' : 'none';
+    });
   }
 
   function highlightActiveLink() {
     const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-    let matched = false;
     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
       const href = link.getAttribute('href');
       if (!href) { link.classList.remove('active'); return; }
       const normalized = href.replace(/\/+$/, '') || '/';
-      if (normalized === currentPath) {
-        link.classList.add('active');
-        matched = true;
-      } else {
-        link.classList.remove('active');
-      }
+      link.classList.toggle('active', normalized === currentPath);
     });
-    return matched;
   }
 
   window.addEventListener('popstate', highlightActiveLink);
 
   function updateSearchPlaceholder() {
-    const role = localStorage.getItem('role');
+    const role  = localStorage.getItem('role');
     const input = document.getElementById('ngSearchInput');
     if (!input) return;
-    if (role === 'recruiter') {
-      input.placeholder = 'Search jobs, candidates, applicants, skills...';
-    } else {
-      input.placeholder = 'Search jobs, skills, people...';
-    }
+    input.placeholder = role === 'recruiter'
+      ? 'Search candidates, jobs...'
+      : 'Search jobs, skills...';
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     updateSidebarState();
     highlightActiveLink();
     updateSearchPlaceholder();
     setInterval(updateNotificationBadge, 30000);
   });
 
+  /* ─── Notification Dropdown ─── */
+  const NOTIF_ICONS = {
+    job_match: { icon: 'stars', css: 'match' },
+    application: { icon: 'file-earmark-text', css: 'application' },
+    interview: { icon: 'calendar-check', css: 'interview' },
+    ai_match: { icon: 'robot', css: 'match' },
+    resume: { icon: 'file-earmark-person', css: 'resume' },
+    skill_gap: { icon: 'graph-up-arrow', css: 'system' },
+    recruiter: { icon: 'building', css: 'system' },
+    admin: { icon: 'shield-check', css: 'system' },
+    profile: { icon: 'person-circle', css: 'profile' },
+    security: { icon: 'shield-exclamation', css: 'alert' },
+    system: { icon: 'gear', css: 'system' },
+    message: { icon: 'chat-dots', css: 'message' },
+    company: { icon: 'building', css: 'system' },
+    verification: { icon: 'check2-circle', css: 'interview' },
+  };
+
+  function notifIconInfo(type) {
+    return NOTIF_ICONS[type] || { icon: 'bell', css: 'system' };
+  }
+
+  function notifDropdownItem(n) {
+    var info = notifIconInfo(n.notification_type || 'system');
+    var isUnread = !n.is_read;
+    var ago = n.time_ago || '';
+    return '<div class="notif-dropdown-item' + (isUnread ? ' unread' : '') + '" onclick="handleNotifClick(' + n.id + ',' + (n.is_read ? 'true' : 'false') + ')" data-notif-id="' + n.id + '">'
+      + '<div class="notif-icon-wrap notif-icon-' + info.css + '"><i class="bi bi-' + info.icon + '"></i></div>'
+      + '<div class="notif-content-wrap">'
+        + '<div class="notif-title">' + escapeHtml(n.title) + '</div>'
+        + '<div class="notif-msg">' + escapeHtml(n.message) + '</div>'
+        + '<div class="notif-time-row">' + escapeHtml(ago) + (isUnread ? '' : ' \u00b7 Read') + '</div>'
+      + '</div>'
+      + (isUnread ? '<div class="notif-unread-dot"></div>' : '')
+    + '</div>';
+  }
+
+  function notifEmptyState() {
+    return '<div class="notif-empty-state">'
+      + '<div class="nes-icon"><i class="bi bi-bell-slash"></i></div>'
+      + '<div class="nes-title">You\'re all caught up!</div>'
+      + '<div class="nes-sub">No new notifications.</div>'
+    + '</div>';
+  }
+
+  function notifLoadingState() {
+    return '<div class="notif-empty-state">'
+      + '<div class="spinner-border text-primary spinner-border-sm mb-3" role="status"></div>'
+      + '<div class="nes-sub">Loading notifications...</div>'
+    + '</div>';
+  }
+
+  function notifErrorState() {
+    return '<div class="notif-empty-state">'
+      + '<div class="nes-icon"><i class="bi bi-exclamation-triangle"></i></div>'
+      + '<div class="nes-title">Failed to load</div>'
+      + '<div class="nes-sub">Please try again.</div>'
+    + '</div>';
+  }
+
+  async function loadNotificationDropdown() {
+    var list = document.getElementById('notificationList');
+    if (!list) return;
+    list.innerHTML = notifLoadingState();
+    try {
+      var data = await api('/api/notifications/?page_size=5');
+      var results = data.results || [];
+      var unreadCount = data.unread_count != null ? data.unread_count : results.filter(function(n) { return !n.is_read; }).length;
+      if (results.length === 0) {
+        list.innerHTML = notifEmptyState();
+      } else {
+        list.innerHTML = results.map(function(n) { return notifDropdownItem(n); }).join('');
+      }
+      var badge = document.getElementById('dropdownUnreadBadge');
+      if (badge) {
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.style.display = '';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    } catch (e) {
+      list.innerHTML = notifErrorState();
+    }
+  }
+
+  function handleNotifClick(id, isRead) {
+    if (!isRead) {
+      api('/api/notifications/' + id + '/read/', { method: 'POST' }).then(function() {
+        loadNotificationBell();
+        updateSidebarBadge();
+        loadNotificationDropdown();
+      }).catch(function() {});
+    }
+  }
+
+  function markAllReadFromDropdown() {
+    var btn = document.getElementById('markAllReadDropdownBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Marking...'; }
+    api('/api/notifications/mark-all-read/', { method: 'POST' }).then(function(result) {
+      if (result.marked_read > 0 && typeof showToast === 'function') {
+        showToast(result.marked_read + ' marked as read', 'success');
+      }
+      loadNotificationBell();
+      updateSidebarBadge();
+      loadNotificationDropdown();
+    }).catch(function(e) {
+      if (typeof showToast === 'function') showToast(e.message, 'danger');
+    }).finally(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Mark all as read'; }
+    });
+  }
+
+  var notifDropdownEl = document.getElementById('notificationDropdown');
+  if (notifDropdownEl) {
+    notifDropdownEl.addEventListener('shown.bs.dropdown', function() {
+      loadNotificationDropdown();
+    });
+  }
+
+  /* ─── Theme Dropdown ─── */
+  function themeDropdownClick() {
+    var items = document.querySelectorAll('.theme-dropdown .dropdown-item');
+    items.forEach(function(item) {
+      item.addEventListener('click', function() {
+        var theme = this.getAttribute('data-theme-value');
+        if (typeof window.applyTheme === 'function') {
+          window.applyTheme(theme);
+        }
+      });
+    });
+  }
+
+  function updateThemeDropdown() {
+    var items = document.querySelectorAll('.theme-dropdown .dropdown-item');
+    var current = document.documentElement.classList.contains('theme-dark') ? 'dark' : 'light';
+    items.forEach(function(item) {
+      var val = item.getAttribute('data-theme-value');
+      var existingCheck = item.querySelector('.bi-check-lg');
+      if (existingCheck) existingCheck.remove();
+      if (val === current) {
+        item.innerHTML = item.innerHTML + ' <i class="bi bi-check-lg"></i>';
+      }
+    });
+  }
+
+  var themeDropdownEl = document.getElementById('themeDropdown');
+  if (themeDropdownEl) {
+    themeDropdownEl.addEventListener('shown.bs.dropdown', function() {
+      updateThemeDropdown();
+    });
+    themeDropdownClick();
+  }
+
+  document.addEventListener('themeChanged', function() {
+    updateThemeDropdown();
+  });
+
+  /* ─── Global Search ─── */
+  const gsInput = document.getElementById('ngSearchInput');
+  const gsDropdown = document.getElementById('gsDropdown');
+  let gsTimer = null;
+  let gsActive = -1;
+  let gsResults = [];
+
+  function gsEscape(html) {
+    const d = document.createElement('div');
+    d.textContent = html;
+    return d.innerHTML;
+  }
+
+  function gsRender() {
+    if (!gsResults.length) {
+      gsDropdown.innerHTML = '<div class="gs-empty">No results found</div>';
+      gsDropdown.style.display = 'block';
+      return;
+    }
+    const role = localStorage.getItem('role');
+    const rows = gsResults.map((r, i) => {
+      if (r.type === 'job') {
+        const skills = (r.skills || []).slice(0, 3).map(s => `<span class="gs-skill">${gsEscape(s)}</span>`).join('');
+        return `<div class="gs-item${i === gsActive ? ' active' : ''}" data-index="${i}" data-type="job" data-id="${r.id}">
+          <div class="gs-icon-item"><i class="bi bi-briefcase"></i></div>
+          <div class="gs-body">
+            <div class="gs-title">${gsEscape(r.title)}</div>
+            <div class="gs-sub">${gsEscape(r.company)}${r.location ? ' · ' + gsEscape(r.location) : ''}</div>
+            ${skills ? '<div class="gs-skills">' + skills + '</div>' : ''}
+          </div>
+        </div>`;
+      }
+      const skills = (r.skills || []).slice(0, 3).map(s => `<span class="gs-skill">${gsEscape(s)}</span>`).join('');
+      return `<div class="gs-item${i === gsActive ? ' active' : ''}" data-index="${i}" data-type="candidate" data-id="${r.id}">
+        <div class="gs-icon-item candidate"><i class="bi bi-person"></i></div>
+        <div class="gs-body">
+          <div class="gs-title">${gsEscape(r.name)}</div>
+          <div class="gs-sub">${r.headline ? gsEscape(r.headline) : r.email}</div>
+          ${skills ? '<div class="gs-skills">' + skills + '</div>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+    gsDropdown.innerHTML = rows;
+    gsDropdown.style.display = 'block';
+  }
+
+  function gsSearch(query) {
+    if (!query || query.length < 2) {
+      gsDropdown.style.display = 'none';
+      gsResults = [];
+      return;
+    }
+    window.api('/api/search/?q=' + encodeURIComponent(query), { method: 'GET' }, true)
+      .then(data => {
+        gsResults = data.results || [];
+        gsActive = -1;
+        gsRender();
+      })
+      .catch(() => {});
+  }
+
+  function gsNavigate(url) {
+    gsDropdown.style.display = 'none';
+    gsInput.blur();
+    window.location.href = url;
+  }
+
+  function gsSubmitQuery(query) {
+    const role = localStorage.getItem('role');
+    if (!query) return;
+    if (role === 'recruiter') {
+      gsNavigate('/dashboard/recruiter/?q=' + encodeURIComponent(query));
+    } else {
+      gsNavigate('/jobs/?role=' + encodeURIComponent(query));
+    }
+  }
+
+  if (gsInput) {
+    gsInput.addEventListener('input', function() {
+      clearTimeout(gsTimer);
+      const val = this.value.trim();
+      if (val.length < 2) {
+        gsDropdown.style.display = 'none';
+        gsResults = [];
+        return;
+      }
+      gsTimer = setTimeout(() => gsSearch(val), 300);
+    });
+
+    gsInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (gsActive >= 0 && gsActive < gsResults.length) {
+          const r = gsResults[gsActive];
+          if (r.type === 'job') {
+            gsNavigate('/jobs/?role=' + encodeURIComponent(r.title));
+          } else {
+            gsNavigate('/dashboard/recruiter/?q=' + encodeURIComponent(r.name));
+          }
+        } else {
+          gsSubmitQuery(this.value.trim());
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (gsResults.length) {
+          gsActive = Math.min(gsActive + 1, gsResults.length - 1);
+          gsRender();
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (gsResults.length) {
+          gsActive = Math.max(gsActive - 1, -1);
+          gsRender();
+        }
+      } else if (e.key === 'Escape') {
+        gsDropdown.style.display = 'none';
+        gsInput.blur();
+      }
+    });
+
+    gsInput.addEventListener('focus', function() {
+      if (gsResults.length) gsDropdown.style.display = 'block';
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!gsInput || !gsDropdown) return;
+      const t = e.target;
+      if (t.closest('.gs-item')) {
+        const item = t.closest('.gs-item');
+        const idx = parseInt(item.dataset.index, 10);
+        if (!isNaN(idx) && gsResults[idx]) {
+          const r = gsResults[idx];
+          if (r.type === 'job') {
+            gsNavigate('/jobs/?role=' + encodeURIComponent(r.title));
+          } else {
+            gsNavigate('/dashboard/recruiter/?q=' + encodeURIComponent(r.name));
+          }
+        }
+        return;
+      }
+      if (!gsInput.contains(t) && !gsDropdown.contains(t)) {
+        gsDropdown.style.display = 'none';
+      }
+    });
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      const input = document.getElementById('ngSearchInput');
+      if (input) { input.focus(); input.select(); }
+    }
+  });
+
+  window.loadNotificationDropdown = loadNotificationDropdown;
+  window.handleNotifClick = handleNotifClick;
+  window.markAllReadFromDropdown = markAllReadFromDropdown;
   window.updateSidebarState = updateSidebarState;
-  window.toggleSidebar = toggleSidebar;
+  window.toggleSidebar      = toggleSidebar;
+
+  function logout() {
+    localStorage.removeItem('access');
+    localStorage.removeItem('role');
+    localStorage.removeItem('username');
+    window.location.href = "{% url 'login' %}";
+  }
 </script>

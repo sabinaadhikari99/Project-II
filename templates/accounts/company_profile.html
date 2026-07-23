@@ -329,20 +329,8 @@
             </div>
             <div class="col-md-6">
               <div class="input-icon-wrap">
-                <i class="bi bi-facebook input-icon" style="color:#1877F2;"></i>
-                <input class="form-input" id="cpSocialFacebook" placeholder="Facebook URL" style="padding-left:2.5rem;">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="input-icon-wrap">
-                <i class="bi bi-twitter-x input-icon" style="color:#1DA1F2;"></i>
-                <input class="form-input" id="cpSocialTwitter" placeholder="X (Twitter) URL" style="padding-left:2.5rem;">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="input-icon-wrap">
-                <i class="bi bi-instagram input-icon" style="color:#E4405F;"></i>
-                <input class="form-input" id="cpSocialInstagram" placeholder="Instagram URL" style="padding-left:2.5rem;">
+                <i class="bi bi-github input-icon" style="color:#333;"></i>
+                <input class="form-input" id="cpSocialGithub" placeholder="GitHub URL" style="padding-left:2.5rem;">
               </div>
             </div>
           </div>
@@ -354,7 +342,7 @@
     <div class="col-12">
       <div class="cp-save-bar">
         <span class="cp-msg" id="cpSaveMsg"></span>
-        <button class="btn btn-primary" id="cpSaveBtn" onclick="cpSaveAll()">
+        <button class="btn btn-primary" id="cpSaveBtn" onclick="cpSaveAll(true)">
           <i class="bi bi-check-lg"></i> Save Changes
         </button>
       </div>
@@ -403,11 +391,10 @@ requireRole("recruiter");
     cpName: "name", cpIndustry: "industry", cpSize: "size",
     cpAddress: "address", cpWebsite: "website",
     cpDesc: "desc",
-    cpSocialLinkedin: "socialLinkedin", cpSocialFacebook: "socialFacebook",
-    cpSocialTwitter: "socialTwitter", cpSocialInstagram: "socialInstagram"
+    cpSocialLinkedin: "socialLinkedin", cpSocialGithub: "socialGithub"
   };
 
-  function cpSaveAll() {
+  function cpSaveAll(showToast) {
     const btn = document.getElementById("cpSaveBtn");
     const origHtml = btn.innerHTML;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:14px;height:14px;"></span> Saving...';
@@ -421,7 +408,9 @@ requireRole("recruiter");
       cpLoadDisplay();
       btn.innerHTML = origHtml;
       btn.disabled = false;
-      cpToast("success", "Company profile saved successfully");
+      if (showToast === true) {
+        cpToast("success", "Company profile saved successfully");
+      }
     }, 400);
   }
   window.cpSaveAll = cpSaveAll;

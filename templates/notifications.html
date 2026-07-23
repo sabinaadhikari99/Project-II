@@ -388,39 +388,6 @@
     margin-bottom: 0.5rem;
   }
 
-  .match-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.22rem 0.65rem;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    background: var(--success-bg);
-    color: var(--success);
-    border: 1px solid var(--success-bdr);
-  }
-
-  .match-pill i { font-size: 13px; }
-
-  .match-pill.high {
-    background: var(--success-bg);
-    color: var(--success);
-    border-color: var(--success-bdr);
-  }
-
-  .match-pill.medium {
-    background: rgba(245,158,11,0.10);
-    color: var(--warn);
-    border-color: rgba(245,158,11,0.18);
-  }
-
-  .match-pill.low {
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    border-color: rgba(var(--accent-rgb), 0.18);
-  }
-
   .notif-time {
     font-size: 13px;
     font-weight: 400;
@@ -860,12 +827,6 @@
     return date.toLocaleDateString();
   }
 
-  function matchPillClass(pct) {
-    if (pct >= 75) return "match-pill high";
-    if (pct >= 50) return "match-pill medium";
-    return "match-pill low";
-  }
-
   function shimmerLoader(count = 4) {
     return Array.from({ length: count }, (_, i) => `
       <div class="shimmer-item" style="animation-delay:${i * 0.08}s">
@@ -929,7 +890,6 @@
   function renderNotificationItem(item, index) {
     const job = item.job || {};
     const sender = item.sender || {};
-    const pct = item.match_percentage || 0;
     const isUnread = !item.is_read;
     const ago = timeAgo(item.created_at);
     const fullDate = new Date(item.created_at).toLocaleString();
@@ -962,7 +922,6 @@
         </div>
         <div class="notif-body">
           <div class="notif-top">
-            ${isMatch ? `<span class="${matchPillClass(pct)}"><i class="bi bi-check-circle-fill"></i> ${pct}% match</span>` : ""}
             <span class="meta-tag"><i class="bi bi-${categoryIcon(nType)}"></i> ${notificationTypeLabel(nType)}</span>
             <span class="notif-time" title="${escapeHtml(fullDate)}">
               <i class="bi bi-clock"></i> ${escapeHtml(ago)}
