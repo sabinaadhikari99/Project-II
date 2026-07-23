@@ -4,45 +4,743 @@
 
 {% block content %}
 <style>
-.prof-wrap { max-width: 960px; margin: 0 auto; }
-.prof-sec + .prof-sec { margin-top: 2rem; }
-.pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.pf-full { grid-column: 1 / -1; }
-.pf-grid label { display: block; font-size: 0.813rem; font-weight: 600; color: var(--ss-text, #374151); margin-bottom: 0.375rem; }
-.pf-grid input, .pf-grid select, .pf-grid textarea {
-  width: 100%; padding: 0.625rem 0.875rem; border: 1px solid var(--ss-border, #d1d5db);
-  border-radius: var(--ss-radius, 8px); font-size: 0.875rem; background: var(--ss-bg, #fff);
-  color: var(--ss-text, #111827); transition: border-color .15s; box-sizing: border-box;
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+:root {
+  --pf-bg: #f8fafc;
+  --pf-surface: #ffffff;
+  --pf-surface-soft: #f8fafc;
+  --pf-surface-hover: #f1f5f9;
+  --pf-border: #e5e7eb;
+  --pf-border-soft: #f1f5f9;
+  --pf-text: #0f172a;
+  --pf-text-secondary: #475569;
+  --pf-muted: #94a3b8;
+  --pf-primary: #2563eb;
+  --pf-primary-dark: #1d4ed8;
+  --pf-primary-soft: #eff6ff;
+  --pf-danger: #dc2626;
+  --pf-danger-soft: #fef2f2;
+  --pf-success: #16a34a;
+  --pf-success-soft: #f0fdf4;
+  --pf-shadow-sm:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 1px 3px rgba(15, 23, 42, 0.06);
+  --pf-shadow-md:
+    0 4px 12px rgba(15, 23, 42, 0.06),
+    0 2px 4px rgba(15, 23, 42, 0.04);
 }
-.pf-grid input:focus, .pf-grid select:focus, .pf-grid textarea:focus {
-  outline: none; border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-}
-.pf-grid textarea { resize: vertical; min-height: 80px; }
-.pf-grid input.bg-light { background: #f9fafb; }
-.prof-photo-area { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
-.prof-photo-preview { width: 96px; height: 96px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; border: 3px solid var(--ss-border, #e5e7eb); }
-.prof-photo-actions { display: flex; flex-direction: column; gap: 0.5rem; }
-.skill-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-.st { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem; border-radius: 999px; background: #eef2ff; color: #1e40af; font-size: 0.813rem; font-weight: 500; cursor: default; }
-.st.bg-gray { background: #f3f4f6; color: #374151; cursor: pointer; }
-.st-del { cursor: pointer; font-size: 1rem; line-height: 1; opacity: 0.6; margin-left: 0.25rem; }
-.st-del:hover { opacity: 1; }
-.resume-upload-area { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; }
-.prof-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--ss-border, #e5e7eb); }
 
-/* ── Dark Mode Overrides ── */
-html.theme-dark .st { background: rgba(var(--ss-brand-rgb), 0.12); color: var(--ss-brand); }
-html.theme-dark .st.bg-gray { background: var(--ss-surface-alt); color: var(--ss-muted); }
-html.theme-dark .prof-photo-preview { background: var(--ss-surface-alt); border-color: var(--ss-border); }
-html.theme-dark .prof-sec h3 { color: var(--ss-text); }
-html.theme-dark .pf-grid input, html.theme-dark .pf-grid select, html.theme-dark .pf-grid textarea { background: var(--ss-surface-alt); border-color: var(--ss-border); color: var(--ss-text); }
-html.theme-dark .pf-grid input:focus, html.theme-dark .pf-grid select:focus, html.theme-dark .pf-grid textarea:focus { border-color: var(--ss-brand); }
-html.theme-dark .pf-grid label { color: var(--ss-body); }
+:root[data-theme="dark"],
+:root[data-bs-theme="dark"],
+html.theme-dark,
+body.dark-mode {
+  --pf-bg: #0f172a;
+  --pf-surface: #111827;
+  --pf-surface-soft: #1a2334;
+  --pf-surface-hover: #1f2937;
+  --pf-border: #2d3748;
+  --pf-border-soft: #243044;
+  --pf-text: #f1f5f9;
+  --pf-text-secondary: #cbd5e1;
+  --pf-muted: #94a3b8;
+  --pf-primary: #60a5fa;
+  --pf-primary-dark: #3b82f6;
+  --pf-primary-soft: rgba(59, 130, 246, 0.12);
+  --pf-danger: #f87171;
+  --pf-danger-soft: rgba(239, 68, 68, 0.10);
+  --pf-success: #4ade80;
+  --pf-success-soft: rgba(34, 197, 94, 0.12);
+  --pf-shadow-sm:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 1px 3px rgba(0, 0, 0, 0.14);
+  --pf-shadow-md:
+    0 4px 12px rgba(0, 0, 0, 0.24),
+    0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+.prof-wrap {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px;
+  color: var(--pf-text);
+}
+
+.prof-page-header {
+  margin-bottom: 28px;
+}
+
+.prof-page-header h1 {
+  margin: 0 0 6px;
+  color: var(--pf-text);
+  font-size: 30px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.prof-page-header p {
+  margin: 0;
+  color: var(--pf-muted);
+  font-size: 15px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+.prof-sec {
+  margin-bottom: 24px;
+  padding: 28px;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border-soft);
+  border-radius: 16px;
+  box-shadow: var(--pf-shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prof-sec:hover {
+  border-color: var(--pf-border);
+  box-shadow: var(--pf-shadow-md);
+}
+
+.prof-sec + .prof-sec {
+  margin-top: 0;
+}
+
+.sc-hd {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--pf-border-soft);
+}
+
+.sc-icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  font-size: 19px;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+#secProfessional .sc-icon {
+  color: #7c3aed;
+  background: #f5f3ff;
+}
+
+html.theme-dark #secPersonal .sc-icon,
+:root[data-theme="dark"] #secPersonal .sc-icon,
+body.dark-mode #secPersonal .sc-icon {
+  color: #93c5fd;
+  background: rgba(37, 99, 235, 0.16);
+}
+
+html.theme-dark #secProfessional .sc-icon,
+:root[data-theme="dark"] #secProfessional .sc-icon,
+body.dark-mode #secProfessional .sc-icon {
+  color: #c4b5fd;
+  background: rgba(124, 58, 237, 0.16);
+}
+
+.sc-title {
+  margin: 0 0 3px;
+  color: var(--pf-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sc-desc {
+  margin: 0;
+  color: var(--pf-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.sc-bd { padding: 0; }
+
+/* =========================================================
+   PHOTO BLOCK — AVATAR + SIDE ACTIONS
+   ========================================================= */
+.prof-photo-area {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--pf-border-soft);
+}
+
+.prof-photo-preview {
+  position: relative;
+  display: flex;
+  width: 108px;
+  height: 108px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  border: 4px solid var(--pf-surface);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px var(--pf-border-soft),
+    0 8px 24px rgba(37, 99, 235, 0.18);
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  transition: transform 0.2s ease;
+}
+
+.prof-photo-preview:hover {
+  transform: scale(1.02);
+}
+
+.prof-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prof-photo-preview span {
+  color: #ffffff !important;
+}
+
+.prof-photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.prof-photo-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.prof-photo-hint {
+  margin: 4px 0 0;
+  color: var(--pf-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+#profPhotoMsg {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.4;
+}
+
+#profPhotoMsg.small.text-success {
+  color: var(--pf-success) !important;
+}
+
+#profPhotoMsg.small.text-danger {
+  color: var(--pf-danger) !important;
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+.pf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.pf-full { grid-column: 1 / -1; }
+
+.pf-grid label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--pf-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+.pf-grid input,
+.pf-grid select,
+.pf-grid textarea {
+  width: 100%;
+  padding: 0 14px;
+  height: 46px;
+  color: var(--pf-text);
+  background: var(--pf-surface);
+  border: 1.5px solid var(--pf-border);
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.pf-grid textarea {
+  padding: 12px 14px;
+  min-height: 110px;
+  height: auto;
+  resize: vertical;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.pf-grid input::placeholder,
+.pf-grid textarea::placeholder {
+  color: var(--pf-muted);
+}
+
+.pf-grid input:focus,
+.pf-grid select:focus,
+.pf-grid textarea:focus {
+  border-color: var(--pf-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.pf-grid input.bg-light,
+.pf-grid input[readonly] {
+  background: var(--pf-surface-soft);
+}
+
+/* =========================================================
+   SECTION SUB-BLOCK (skills, resume, links)
+   ========================================================= */
+.pf-block {
+  margin-bottom: 24px;
+}
+
+.pf-block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  color: var(--pf-text);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+}
+
+.pf-block-title i {
+  color: var(--pf-muted);
+  font-size: 15px;
+}
+
+.pf-block-hint {
+  margin: -6px 0 12px;
+  color: var(--pf-muted);
+  font-size: 12px;
+}
+
+/* =========================================================
+   SKILLS
+   ========================================================= */
+.skill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 14px;
+  background: var(--pf-surface-soft);
+  border: 1px dashed var(--pf-border);
+  border-radius: 12px;
+  min-height: 62px;
+}
+
+.st {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--pf-primary-soft);
+  color: var(--pf-primary);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: default;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.st.bg-gray {
+  background: var(--pf-surface);
+  color: var(--pf-text-secondary);
+  border: 1px dashed var(--pf-border);
+  cursor: pointer;
+}
+
+.st.bg-gray:hover {
+  color: var(--pf-primary);
+  border-color: var(--pf-primary);
+  background: var(--pf-primary-soft);
+}
+
+.st-del {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--pf-primary);
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.65;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.st-del:hover {
+  opacity: 1;
+  background: rgba(37, 99, 235, 0.14);
+}
+
+.skill-empty {
+  margin: 0;
+  color: var(--pf-muted);
+  font-size: 13px;
+}
+
+/* =========================================================
+   RESUME UPLOAD
+   ========================================================= */
+.resume-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--pf-surface-soft);
+  border: 1px dashed var(--pf-border);
+  border-radius: 12px;
+}
+
+.resume-upload-area input[type="file"] {
+  flex: 1;
+  min-width: 220px;
+  padding: 8px 12px;
+  color: var(--pf-text);
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.resume-upload-area input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 6px 12px;
+  color: var(--pf-primary);
+  background: var(--pf-primary-soft);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.resume-upload-area input[type="file"]::file-selector-button:hover {
+  background: var(--pf-primary);
+  color: #ffffff;
+  border-color: var(--pf-primary);
+}
+
+#resumeInfo {
+  color: var(--pf-muted);
+  font-size: 13px;
+}
+
+#resumeInfo .text-success {
+  color: var(--pf-success) !important;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.prof-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--pf-border-soft);
+}
+
+.btn {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 18px;
+  color: var(--pf-text-secondary);
+  background: var(--pf-surface);
+  border: 1.5px solid var(--pf-border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  color: var(--pf-text);
+  background: var(--pf-surface-hover);
+  border-color: var(--pf-muted);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-sm {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+.btn-primary,
+.btn.btn-primary {
+  color: #ffffff;
+  background: var(--pf-primary);
+  border-color: transparent;
+}
+
+.btn-primary:hover:not(:disabled),
+.btn.btn-primary:hover:not(:disabled) {
+  color: #ffffff;
+  background: var(--pf-primary-dark);
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+  transform: translateY(-1px);
+}
+
+.btn-outline,
+.btn.btn-outline,
+.btn-outline-secondary,
+.btn.btn-outline-secondary {
+  color: var(--pf-text-secondary);
+  background: var(--pf-surface);
+  border: 1.5px solid var(--pf-border);
+}
+
+.btn-outline:hover:not(:disabled),
+.btn.btn-outline:hover:not(:disabled),
+.btn-outline-secondary:hover:not(:disabled),
+.btn.btn-outline-secondary:hover:not(:disabled) {
+  color: var(--pf-text);
+  background: var(--pf-surface-hover);
+  border-color: var(--pf-muted);
+}
+
+.btn.text-danger {
+  color: var(--pf-danger) !important;
+  border-color: rgba(220, 38, 38, 0.22);
+}
+
+.btn.text-danger:hover:not(:disabled) {
+  color: var(--pf-danger) !important;
+  background: var(--pf-danger-soft);
+  border-color: rgba(220, 38, 38, 0.42);
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.modal-overlay.open {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-box {
+  width: min(460px, 100%);
+  padding: 26px;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+  transform: translateY(18px) scale(0.98);
+  transition: transform 0.25s ease;
+}
+
+.modal-overlay.open .modal-box {
+  transform: translateY(0) scale(1);
+}
+
+.mb-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.mb-hd h3 {
+  margin: 0;
+  color: var(--pf-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.mb-close {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  color: var(--pf-muted);
+  background: var(--pf-surface-soft);
+  border: 1px solid var(--pf-border-soft);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.mb-close:hover {
+  color: var(--pf-text);
+  background: var(--pf-surface-hover);
+}
+
+.fm label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--pf-text-secondary) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.fm input,
+.fm select {
+  width: 100%;
+  height: 44px !important;
+  padding: 0 14px !important;
+  color: var(--pf-text) !important;
+  background: var(--pf-surface) !important;
+  border: 1.5px solid var(--pf-border) !important;
+  border-radius: 10px !important;
+  outline: none;
+  font-size: 14px !important;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fm input:focus,
+.fm select:focus {
+  border-color: var(--pf-primary) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.fm .mt-2 { margin-top: 14px; }
+.fm .mt-3 { margin-top: 20px; }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+  .prof-wrap { padding: 24px; }
+}
+
+@media (max-width: 768px) {
+  .prof-wrap { padding: 16px; }
+  .prof-page-header h1 { font-size: 26px; }
+  .prof-sec { padding: 22px; border-radius: 14px; }
+  .pf-grid { grid-template-columns: 1fr; }
+  .pf-full { grid-column: auto; }
+
+  .prof-photo-area {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 18px;
+  }
+
+  .prof-photo-actions {
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .prof-photo-actions-row {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .prof-photo-actions-row .btn {
+    flex: 1;
+    min-width: 130px;
+  }
+
+  .prof-actions {
+    flex-direction: column;
+  }
+
+  .prof-actions .btn {
+    width: 100%;
+  }
+
+  .modal-box { padding: 22px; }
+}
+
+@media (max-width: 540px) {
+  .skill-grid { padding: 12px; }
+  .resume-upload-area { padding: 14px; }
+}
 </style>
 
 <div class="prof-wrap">
 
-  <div class="prof-sec" id="secPersonal">
+  <header class="prof-page-header">
+    <h1>Profile</h1>
+    <p>Update your personal details and professional information.</p>
+  </header>
+
+  <!-- Personal Information -->
+  <section class="prof-sec" id="secPersonal">
     <div class="sc-hd">
       <div class="sc-icon"><i class="bi bi-person"></i></div>
       <div>
@@ -50,24 +748,63 @@ html.theme-dark .pf-grid label { color: var(--ss-body); }
         <p class="sc-desc">Your basic details and contact information.</p>
       </div>
     </div>
+
     <div class="sc-bd">
       <div class="prof-photo-area">
-        <div class="prof-photo-preview" id="profPhotoPreview"><span style="font-size:40px;font-weight:700;color:#2563EB;">U</span></div>
+        <div class="prof-photo-preview" id="profPhotoPreview">
+          <span>U</span>
+        </div>
+
         <div class="prof-photo-actions">
           <input type="file" id="profPhotoFile" accept="image/jpeg,image/png,image/webp" style="display:none;">
-          <button class="btn btn-outline btn-sm" onclick="document.getElementById('profPhotoFile').click()"><i class="bi bi-camera"></i> Change Photo</button>
-          <button class="btn btn-outline btn-sm" id="btnProfSavePhoto" style="display:none;"><i class="bi bi-check-lg"></i> Save Photo</button>
-          <button class="btn btn-outline btn-sm text-danger" id="btnProfDelPhoto" style="display:none;"><i class="bi bi-trash3"></i> Remove</button>
+
+          <div class="prof-photo-actions-row">
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('profPhotoFile').click()">
+              <i class="bi bi-camera"></i> Change Photo
+            </button>
+
+            <button class="btn btn-primary btn-sm" id="btnProfSavePhoto" style="display:none;">
+              <i class="bi bi-check-lg"></i> Save Photo
+            </button>
+
+            <button class="btn btn-outline btn-sm text-danger" id="btnProfDelPhoto" style="display:none;">
+              <i class="bi bi-trash3"></i> Remove
+            </button>
+          </div>
+
+          <p class="prof-photo-hint">Supported: JPG, PNG, WEBP · Max 5 MB.</p>
           <p class="small text-muted mb-0" id="profPhotoMsg"></p>
         </div>
       </div>
+
       <div class="pf-grid">
-        <div><label>Full Name</label><input type="text" id="piName" placeholder="John Doe"></div>
-        <div><label>Email Address</label><input type="email" id="piEmail" placeholder="john@example.com"></div>
-        <div><label>Phone Number</label><input type="tel" id="piPhone" placeholder="+1 (555) 000-0000"></div>
-        <div><label>Location</label><input type="text" id="piLocation" placeholder="New York, USA"></div>
-        <div><label>Professional Headline</label><input type="text" id="piTitle" placeholder="Senior Software Engineer"></div>
-        <div><label>Years of Experience</label>
+        <div>
+          <label>Full Name</label>
+          <input type="text" id="piName" placeholder="John Doe">
+        </div>
+
+        <div>
+          <label>Email Address</label>
+          <input type="email" id="piEmail" placeholder="john@example.com">
+        </div>
+
+        <div>
+          <label>Phone Number</label>
+          <input type="tel" id="piPhone" placeholder="+1 (555) 000-0000">
+        </div>
+
+        <div>
+          <label>Location</label>
+          <input type="text" id="piLocation" placeholder="New York, USA">
+        </div>
+
+        <div>
+          <label>Professional Headline</label>
+          <input type="text" id="piTitle" placeholder="Senior Software Engineer">
+        </div>
+
+        <div>
+          <label>Years of Experience</label>
           <select id="piExp">
             <option value="">Select...</option>
             <option value="0-1">Less than 1 year</option>
@@ -77,16 +814,27 @@ html.theme-dark .pf-grid label { color: var(--ss-body); }
             <option value="10+">10+ years</option>
           </select>
         </div>
-        <div class="pf-full"><label>Short Bio / About Me</label><textarea id="piSummary" placeholder="Brief professional summary..."></textarea></div>
+
+        <div class="pf-full">
+          <label>Short Bio / About Me</label>
+          <textarea id="piSummary" placeholder="Brief professional summary..."></textarea>
+        </div>
       </div>
+
       <div class="prof-actions">
-        <button class="btn btn-primary" onclick="savePersonalInfo()"><i class="bi bi-check-lg"></i> Save Changes</button>
-        <button class="btn btn-outline-secondary" onclick="location.reload()"><i class="bi bi-x-lg"></i> Cancel</button>
+        <button class="btn btn-primary" onclick="savePersonalInfo()">
+          <i class="bi bi-check-lg"></i> Save Changes
+        </button>
+
+        <button class="btn btn-outline-secondary" onclick="location.reload()">
+          <i class="bi bi-x-lg"></i> Cancel
+        </button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="prof-sec" id="secProfessional">
+  <!-- Professional Information -->
+  <section class="prof-sec" id="secProfessional">
     <div class="sc-hd">
       <div class="sc-icon"><i class="bi bi-briefcase"></i></div>
       <div>
@@ -94,41 +842,77 @@ html.theme-dark .pf-grid label { color: var(--ss-body); }
         <p class="sc-desc">Skills, resume, and online profiles.</p>
       </div>
     </div>
+
     <div class="sc-bd">
-      <div class="mb-4">
-        <div class="fw-semibold mb-2" style="font-size:0.875rem;">Skills</div>
-        <div id="skillList"><p class="text-muted small mb-0">No skills added yet.</p></div>
+      <div class="pf-block">
+        <div class="pf-block-title">
+          <i class="bi bi-lightning-charge"></i> Skills
+        </div>
+        <p class="pf-block-hint">Add the skills that best describe your expertise.</p>
+
+        <div id="skillList">
+          <p class="skill-empty">No skills added yet.</p>
+        </div>
       </div>
-      <div class="mb-4">
-        <div class="fw-semibold mb-2" style="font-size:0.875rem;">Resume / CV</div>
+
+      <div class="pf-block">
+        <div class="pf-block-title">
+          <i class="bi bi-file-earmark-text"></i> Resume / CV
+        </div>
+        <p class="pf-block-hint">Upload a PDF or Word document (max 5 MB).</p>
+
         <div class="resume-upload-area">
           <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
-          <span id="resumeInfo" class="small text-muted"></span>
+          <span id="resumeInfo"></span>
         </div>
       </div>
-      <div>
-        <div class="fw-semibold mb-2" style="font-size:0.875rem;">Online Profiles</div>
+
+      <div class="pf-block" style="margin-bottom:0;">
+        <div class="pf-block-title">
+          <i class="bi bi-globe"></i> Online Profiles
+        </div>
+        <p class="pf-block-hint">Add links to your portfolio and public profiles.</p>
+
         <div class="pf-grid">
-          <div><label>Portfolio Website</label><input type="url" id="portUrl" placeholder="https://yourportfolio.com"></div>
-          <div><label>LinkedIn Profile</label><input type="url" id="linkedinUrl" placeholder="https://linkedin.com/in/yourprofile"></div>
-          <div><label>GitHub Profile</label><input type="url" id="githubUrl" placeholder="https://github.com/yourhandle"></div>
+          <div>
+            <label>Portfolio Website</label>
+            <input type="url" id="portUrl" placeholder="https://yourportfolio.com">
+          </div>
+
+          <div>
+            <label>LinkedIn Profile</label>
+            <input type="url" id="linkedinUrl" placeholder="https://linkedin.com/in/yourprofile">
+          </div>
+
+          <div>
+            <label>GitHub Profile</label>
+            <input type="url" id="githubUrl" placeholder="https://github.com/yourhandle">
+          </div>
         </div>
       </div>
+
       <div class="prof-actions">
-        <button class="btn btn-primary" onclick="saveProfessionalInfo()"><i class="bi bi-check-lg"></i> Save Changes</button>
-        <button class="btn btn-outline-secondary" onclick="location.reload()"><i class="bi bi-x-lg"></i> Cancel</button>
+        <button class="btn btn-primary" onclick="saveProfessionalInfo()">
+          <i class="bi bi-check-lg"></i> Save Changes
+        </button>
+
+        <button class="btn btn-outline-secondary" onclick="location.reload()">
+          <i class="bi bi-x-lg"></i> Cancel
+        </button>
       </div>
     </div>
-  </div>
+  </section>
 
 </div>
 
+<!-- Modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <div class="mb-hd">
       <h3 id="modalTitle">Add Skill</h3>
       <button class="mb-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
     </div>
+
     <div class="fm" id="modalBody"></div>
   </div>
 </div>
@@ -176,9 +960,9 @@ function loadProfPhoto() {
   const preview = document.getElementById('profPhotoPreview');
   if (!preview) return;
   if (pp) {
-    preview.innerHTML = '<img src="' + esc(pp) + '" alt="" style="width:100%;height:100%;object-fit:cover;">';
+    preview.innerHTML = '<img src="' + esc(pp) + '" alt="">';
   } else {
-    preview.innerHTML = '<span style="font-size:40px;font-weight:700;color:#2563EB;">' + esc(name.charAt(0).toUpperCase()) + '</span>';
+    preview.innerHTML = '<span>' + esc(name.charAt(0).toUpperCase()) + '</span>';
   }
 }
 
@@ -186,10 +970,10 @@ let profImgData = "";
 document.getElementById("profPhotoFile") && document.getElementById("profPhotoFile").addEventListener("change", async function(e) {
   if (!e.target.files[0]) return;
   const file = e.target.files[0];
-  if (file.size > 5 * 1024 * 1024) { document.getElementById("profPhotoMsg").textContent = "File too large. Max 5 MB."; return; }
-  if (!["image/jpeg","image/png","image/webp"].includes(file.type)) { document.getElementById("profPhotoMsg").textContent = "Unsupported format. Use JPG, PNG, or WEBP."; return; }
+  if (file.size > 5 * 1024 * 1024) { document.getElementById("profPhotoMsg").textContent = "File too large. Max 5 MB."; document.getElementById("profPhotoMsg").className = "small text-danger"; return; }
+  if (!["image/jpeg","image/png","image/webp"].includes(file.type)) { document.getElementById("profPhotoMsg").textContent = "Unsupported format. Use JPG, PNG, or WEBP."; document.getElementById("profPhotoMsg").className = "small text-danger"; return; }
   profImgData = await fileToDataUrl(file);
-  document.getElementById("profPhotoPreview").innerHTML = '<img src="' + esc(profImgData) + '" alt="" style="width:100%;height:100%;object-fit:cover;">';
+  document.getElementById("profPhotoPreview").innerHTML = '<img src="' + esc(profImgData) + '" alt="">';
   document.getElementById("btnProfSavePhoto").style.display = "";
   document.getElementById("btnProfDelPhoto").style.display = "";
   document.getElementById("profPhotoMsg").textContent = "";
@@ -234,15 +1018,15 @@ function renderSkills() {
   let html = '<div class="skill-grid">';
   items.forEach((s, i) => { html += '<span class="st">' + esc(s.name) + ' <span class="st-del" onclick="delSkill(' + i + ')">&times;</span></span>'; });
   html += '<span class="st bg-gray" onclick="openSkillModal()"><i class="bi bi-plus-lg"></i> Add skill</span></div>';
-  document.getElementById("skillList").innerHTML = html || '<p class="text-muted small mb-0">No skills added yet.</p>';
+  document.getElementById("skillList").innerHTML = html;
 }
 function delSkill(i) { const d = getSkills(); d.splice(i, 1); setSkills(d); }
 function openSkillModal() {
   document.getElementById("modalTitle").textContent = "Add Skill";
   document.getElementById("modalBody").innerHTML =
-    '<div><label style="font-size:0.813rem;font-weight:600;color:var(--ss-text,#374151);">Skill name</label><input type="text" id="fSkillName" placeholder="Python" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--ss-border,#d1d5db);border-radius:var(--ss-radius,8px);font-size:0.875rem;"></div>' +
-    '<div class="mt-2"><label style="font-size:0.813rem;font-weight:600;color:var(--ss-text,#374151);">Experience level</label><select id="fSkillLvl" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--ss-border,#d1d5db);border-radius:var(--ss-radius,8px);font-size:0.875rem;"><option value="">Select...</option><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="Expert">Expert</option></select></div>' +
-    '<div class="mt-3 d-flex gap-2"><button class="btn btn-primary" onclick="saveSkill()">Add</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
+    '<div><label>Skill name</label><input type="text" id="fSkillName" placeholder="Python"></div>' +
+    '<div class="mt-2"><label>Experience level</label><select id="fSkillLvl"><option value="">Select...</option><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="Expert">Expert</option></select></div>' +
+    '<div class="mt-3 d-flex gap-2"><button class="btn btn-primary" onclick="saveSkill()">Add Skill</button><button class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button></div>';
   openModal();
 }
 function saveSkill() {
