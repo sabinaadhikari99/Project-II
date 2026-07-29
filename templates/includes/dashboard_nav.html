@@ -17,7 +17,7 @@
     justify-content: space-between !important;
     padding: 0 1.25rem !important;
     gap: 1rem !important;
-    transition: left var(--ss-transition, 0.25s ease), 
+    transition: left var(--ss-transition, 0.25s ease),
                 background var(--ss-transition, 0.25s ease),
                 box-shadow var(--ss-transition, 0.25s ease) !important;
   }
@@ -78,8 +78,8 @@
     transition: color 0.15s ease;
   }
 
-  .ng-breadcrumb a:hover { 
-    color: var(--ss-brand, #2563eb); 
+  .ng-breadcrumb a:hover {
+    color: var(--ss-brand, #2563eb);
   }
 
   .ng-breadcrumb .bc-sep {
@@ -130,12 +130,12 @@
     transition: all 0.2s ease;
   }
 
-  .ng-search input::placeholder { 
-    color: var(--ss-muted-light, #94a3b8); 
+  .ng-search input::placeholder {
+    color: var(--ss-muted-light, #94a3b8);
   }
 
-  .ng-search input:hover { 
-    border-color: var(--ss-border-strong, #cbd5e1); 
+  .ng-search input:hover {
+    border-color: var(--ss-border-strong, #cbd5e1);
     background: #ffffff;
   }
 
@@ -306,6 +306,79 @@
   }
 
   /* ═══════════════════════════════════════════════
+     THEME DROPDOWN
+  ═══════════════════════════════════════════════ */
+  .theme-dropdown .theme-menu {
+    min-width: 210px !important;
+    padding: 0.4rem !important;
+  }
+
+  .theme-dropdown .dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.75rem !important;
+    padding: 0.55rem 0.75rem !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    font-weight: 550 !important;
+    color: var(--ss-body, #334155);
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .theme-dropdown .dropdown-item:hover {
+    background: var(--ss-surface-alt, #f8fafc);
+    color: var(--ss-brand, #2563eb);
+  }
+
+  .theme-dropdown .dropdown-item i {
+    font-size: 15px;
+    color: var(--ss-muted, #64748b);
+    width: 18px;
+    text-align: center;
+    transition: color 0.15s ease;
+  }
+
+  .theme-dropdown .dropdown-item:hover i {
+    color: var(--ss-brand, #2563eb);
+  }
+
+  .theme-dropdown .dropdown-item.active {
+    background: var(--ss-brand-soft, rgba(37,99,235,0.08));
+    color: var(--ss-brand, #2563eb);
+    font-weight: 600;
+  }
+
+  .theme-dropdown .dropdown-item.active i {
+    color: var(--ss-brand, #2563eb);
+  }
+
+  .theme-dropdown .dropdown-item .theme-check {
+    margin-left: auto;
+    color: var(--ss-brand, #2563eb);
+    font-size: 14px;
+    display: none;
+  }
+
+  .theme-dropdown .dropdown-item.active .theme-check {
+    display: inline-block;
+  }
+
+  .theme-menu-heading {
+    padding: 0.4rem 0.75rem 0.5rem;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ss-muted, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ═══════════════════════════════════════════════
      SIDEBAR (logout footer removed)
   ═══════════════════════════════════════════════ */
   .app-sidebar {
@@ -466,8 +539,8 @@
     color: #2563eb;
   }
 
-  .sidebar-nav .nav-link:hover i { 
-    color: #2563eb; 
+  .sidebar-nav .nav-link:hover i {
+    color: #2563eb;
   }
 
   .sidebar-nav .nav-link.active {
@@ -476,8 +549,8 @@
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
   }
 
-  .sidebar-nav .nav-link.active i { 
-    color: #fff; 
+  .sidebar-nav .nav-link.active i {
+    color: #fff;
   }
 
   .sidebar-nav .nav-link .sn-badge {
@@ -534,18 +607,18 @@
   }
 
   @media (max-width: 991.98px) {
-    .navbar-glass { 
-      left: 0 !important; 
+    .navbar-glass {
+      left: 0 !important;
       padding: 0 1rem !important;
     }
-    .ng-toggle { 
-      display: inline-flex !important; 
+    .ng-toggle {
+      display: inline-flex !important;
     }
     .ng-center {
       padding: 0 0.5rem !important;
     }
-    .ng-search { 
-      max-width: 260px; 
+    .ng-search {
+      max-width: 260px;
     }
     .app-sidebar {
       transform: translateX(-100%);
@@ -559,15 +632,15 @@
   }
 
   @media (max-width: 767.98px) {
-    .ng-search { 
-      max-width: 180px; 
+    .ng-search {
+      max-width: 180px;
       min-width: 120px;
     }
-    .ng-search .gs-hint { 
-      display: none; 
+    .ng-search .gs-hint {
+      display: none;
     }
-    .ng-breadcrumb { 
-      display: none !important; 
+    .ng-breadcrumb {
+      display: none !important;
     }
     .ng-quick span {
       display: none;
@@ -581,12 +654,12 @@
   }
 
   @media (max-width: 575.98px) {
-    .app-sidebar { 
-      width: 100% !important; 
-      max-width: 320px; 
+    .app-sidebar {
+      width: 100% !important;
+      max-width: 320px;
     }
-    .navbar-glass { 
-      padding: 0 0.75rem !important; 
+    .navbar-glass {
+      padding: 0 0.75rem !important;
     }
     .ng-center {
       display: none !important;
@@ -636,8 +709,32 @@
     box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
   }
 
+  html.theme-dark .dropdown-item {
+    color: #cbd5e1;
+  }
+
   html.theme-dark .dropdown-item:hover {
     background: #1e293b;
+    color: #60a5fa;
+  }
+
+  html.theme-dark .theme-dropdown .dropdown-item:hover {
+    background: #1e293b;
+    color: #60a5fa;
+  }
+
+  html.theme-dark .theme-dropdown .dropdown-item.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+
+  html.theme-dark .theme-dropdown .dropdown-item.active i,
+  html.theme-dark .theme-dropdown .dropdown-item:hover i {
+    color: #60a5fa;
+  }
+
+  html.theme-dark .theme-menu-heading {
+    color: #64748b;
   }
 
   html.theme-dark .sidebar-nav .nav-link {
@@ -722,10 +819,38 @@
       <i class="bi bi-plus-lg"></i> <span>Post Job</span>
     </a>
 
-    <a class="ng-icon-btn d-none" data-role="job_seeker,recruiter,admin" href="{% url 'notifications' %}" aria-label="Notifications">
-      <i class="bi bi-bell"></i>
-      <span id="notificationBadge" class="badge-count d-none">0</span>
-    </a>
+    <!-- Theme Toggle Dropdown -->
+    <div class="dropdown theme-dropdown d-none" data-auth-only id="themeDropdown">
+      <button class="ng-icon-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Change theme" title="Change theme">
+        <i class="bi bi-sun-fill" id="themeToggleIcon"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end theme-menu">
+        <li>
+          <div class="theme-menu-heading">Appearance</div>
+        </li>
+        <li>
+          <button class="dropdown-item" type="button" data-theme-value="light">
+            <i class="bi bi-sun"></i>
+            <span>Light</span>
+            <i class="bi bi-check-lg theme-check"></i>
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item" type="button" data-theme-value="dark">
+            <i class="bi bi-moon-stars"></i>
+            <span>Dark</span>
+            <i class="bi bi-check-lg theme-check"></i>
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item" type="button" data-theme-value="system">
+            <i class="bi bi-display"></i>
+            <span>System</span>
+            <i class="bi bi-check-lg theme-check"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
 
     <div class="dropdown d-none" data-auth-only id="userDropdown">
       <button class="ng-user-avatar" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
@@ -916,7 +1041,7 @@
         const roles = String(el.dataset.role || '').split(',').map(s => s.trim());
         el.classList.toggle('d-none', !(roles.includes(role) || roles.includes('all')));
       });
-      updateNotificationBadge();
+      updateSidebarNotifBadge();
       updateSearchPlaceholder();
       updateUserInfo(username);
     } else {
@@ -939,17 +1064,12 @@
     }
   }
 
-  function updateNotificationBadge() {
-    const count    = parseInt(localStorage.getItem('notificationCount') || '0', 10);
-    const badge    = document.getElementById('notificationBadge');
+  function updateSidebarNotifBadge() {
+    const count = parseInt(localStorage.getItem('notificationCount') || '0', 10);
     const sideBadges = document.querySelectorAll('.sn-badge');
-    if (badge) {
-      badge.textContent = count;
-      badge.classList.toggle('d-none', count === 0);
-    }
     sideBadges.forEach(b => {
-      b.textContent    = count;
-      b.style.display  = count > 0 ? '' : 'none';
+      b.textContent   = count;
+      b.style.display = count > 0 ? '' : 'none';
     });
   }
 
@@ -974,170 +1094,129 @@
       : 'Search jobs, skills...';
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    updateSidebarState();
-    highlightActiveLink();
-    updateSearchPlaceholder();
-    setInterval(updateNotificationBadge, 30000);
-  });
+  /* ─── Theme Dropdown (Light / Dark / System) ─── */
+  const THEME_KEY = 'theme_preference';
+  const LEGACY_THEME_KEY = 'theme';
+  const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-  /* ─── Notification Dropdown ─── */
-  const NOTIF_ICONS = {
-    job_match: { icon: 'stars', css: 'match' },
-    application: { icon: 'file-earmark-text', css: 'application' },
-    interview: { icon: 'calendar-check', css: 'interview' },
-    ai_match: { icon: 'robot', css: 'match' },
-    resume: { icon: 'file-earmark-person', css: 'resume' },
-    skill_gap: { icon: 'graph-up-arrow', css: 'system' },
-    recruiter: { icon: 'building', css: 'system' },
-    admin: { icon: 'shield-check', css: 'system' },
-    profile: { icon: 'person-circle', css: 'profile' },
-    security: { icon: 'shield-exclamation', css: 'alert' },
-    system: { icon: 'gear', css: 'system' },
-    message: { icon: 'chat-dots', css: 'message' },
-    company: { icon: 'building', css: 'system' },
-    verification: { icon: 'check2-circle', css: 'interview' },
-  };
-
-  function notifIconInfo(type) {
-    return NOTIF_ICONS[type] || { icon: 'bell', css: 'system' };
+  function resolveTheme(preference) {
+    if (preference === 'system') {
+      return systemThemeQuery.matches ? 'dark' : 'light';
+    }
+    return preference === 'dark' ? 'dark' : 'light';
   }
 
-  function notifDropdownItem(n) {
-    var info = notifIconInfo(n.notification_type || 'system');
-    var isUnread = !n.is_read;
-    var ago = n.time_ago || '';
-    return '<div class="notif-dropdown-item' + (isUnread ? ' unread' : '') + '" onclick="handleNotifClick(' + n.id + ',' + (n.is_read ? 'true' : 'false') + ')" data-notif-id="' + n.id + '">'
-      + '<div class="notif-icon-wrap notif-icon-' + info.css + '"><i class="bi bi-' + info.icon + '"></i></div>'
-      + '<div class="notif-content-wrap">'
-        + '<div class="notif-title">' + escapeHtml(n.title) + '</div>'
-        + '<div class="notif-msg">' + escapeHtml(n.message) + '</div>'
-        + '<div class="notif-time-row">' + escapeHtml(ago) + (isUnread ? '' : ' \u00b7 Read') + '</div>'
-      + '</div>'
-      + (isUnread ? '<div class="notif-unread-dot"></div>' : '')
-    + '</div>';
-  }
-
-  function notifEmptyState() {
-    return '<div class="notif-empty-state">'
-      + '<div class="nes-icon"><i class="bi bi-bell-slash"></i></div>'
-      + '<div class="nes-title">You\'re all caught up!</div>'
-      + '<div class="nes-sub">No new notifications.</div>'
-    + '</div>';
-  }
-
-  function notifLoadingState() {
-    return '<div class="notif-empty-state">'
-      + '<div class="spinner-border text-primary spinner-border-sm mb-3" role="status"></div>'
-      + '<div class="nes-sub">Loading notifications...</div>'
-    + '</div>';
-  }
-
-  function notifErrorState() {
-    return '<div class="notif-empty-state">'
-      + '<div class="nes-icon"><i class="bi bi-exclamation-triangle"></i></div>'
-      + '<div class="nes-title">Failed to load</div>'
-      + '<div class="nes-sub">Please try again.</div>'
-    + '</div>';
-  }
-
-  async function loadNotificationDropdown() {
-    var list = document.getElementById('notificationList');
-    if (!list) return;
-    list.innerHTML = notifLoadingState();
-    try {
-      var data = await api('/api/notifications/?page_size=5');
-      var results = data.results || [];
-      var unreadCount = data.unread_count != null ? data.unread_count : results.filter(function(n) { return !n.is_read; }).length;
-      if (results.length === 0) {
-        list.innerHTML = notifEmptyState();
-      } else {
-        list.innerHTML = results.map(function(n) { return notifDropdownItem(n); }).join('');
-      }
-      var badge = document.getElementById('dropdownUnreadBadge');
-      if (badge) {
-        if (unreadCount > 0) {
-          badge.textContent = unreadCount;
-          badge.style.display = '';
-        } else {
-          badge.style.display = 'none';
-        }
-      }
-    } catch (e) {
-      list.innerHTML = notifErrorState();
+  function updateThemeIcon(preference, resolved) {
+    const icon = document.getElementById('themeToggleIcon');
+    if (!icon) return;
+    icon.className = '';
+    if (preference === 'system') {
+      icon.classList.add('bi', 'bi-display');
+    } else if (resolved === 'dark') {
+      icon.classList.add('bi', 'bi-moon-stars-fill');
+    } else {
+      icon.classList.add('bi', 'bi-sun-fill');
     }
   }
 
-  function handleNotifClick(id, isRead) {
-    if (!isRead) {
-      api('/api/notifications/' + id + '/read/', { method: 'POST' }).then(function() {
-        loadNotificationBell();
-        updateSidebarBadge();
-        loadNotificationDropdown();
-      }).catch(function() {});
-    }
-  }
-
-  function markAllReadFromDropdown() {
-    var btn = document.getElementById('markAllReadDropdownBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Marking...'; }
-    api('/api/notifications/mark-all-read/', { method: 'POST' }).then(function(result) {
-      if (result.marked_read > 0 && typeof showToast === 'function') {
-        showToast(result.marked_read + ' marked as read', 'success');
-      }
-      loadNotificationBell();
-      updateSidebarBadge();
-      loadNotificationDropdown();
-    }).catch(function(e) {
-      if (typeof showToast === 'function') showToast(e.message, 'danger');
-    }).finally(function() {
-      if (btn) { btn.disabled = false; btn.textContent = 'Mark all as read'; }
-    });
-  }
-
-  var notifDropdownEl = document.getElementById('notificationDropdown');
-  if (notifDropdownEl) {
-    notifDropdownEl.addEventListener('shown.bs.dropdown', function() {
-      loadNotificationDropdown();
-    });
-  }
-
-  /* ─── Theme Dropdown ─── */
-  function themeDropdownClick() {
-    var items = document.querySelectorAll('.theme-dropdown .dropdown-item');
+  function updateThemeDropdownActive() {
+    const preference = localStorage.getItem(THEME_KEY) || 'system';
+    const items = document.querySelectorAll('.theme-dropdown .dropdown-item');
     items.forEach(function(item) {
-      item.addEventListener('click', function() {
-        var theme = this.getAttribute('data-theme-value');
-        if (typeof window.applyTheme === 'function') {
-          window.applyTheme(theme);
-        }
+      const val = item.getAttribute('data-theme-value');
+      item.classList.toggle('active', val === preference);
+    });
+  }
+
+  function applyThemeChoice(preference, notify) {
+    const allowed = ['light', 'dark', 'system'];
+    const selected = allowed.includes(preference) ? preference : 'system';
+    const resolved = resolveTheme(selected);
+
+    if (typeof window.applyTheme === 'function') {
+      try { window.applyTheme(resolved); } catch (e) {}
+    }
+
+    const html = document.documentElement;
+    html.classList.toggle('theme-dark', resolved === 'dark');
+    html.classList.toggle('theme-light', resolved === 'light');
+    html.setAttribute('data-theme', resolved);
+    html.setAttribute('data-bs-theme', resolved);
+    html.setAttribute('data-theme-preference', selected);
+    if (document.body) {
+      document.body.classList.toggle('dark-mode', resolved === 'dark');
+    }
+
+    localStorage.setItem(THEME_KEY, selected);
+    localStorage.setItem(LEGACY_THEME_KEY, resolved);
+
+    updateThemeIcon(selected, resolved);
+    updateThemeDropdownActive();
+
+    window.dispatchEvent(new CustomEvent('settings-theme-changed', {
+      detail: { preference: selected, resolved: resolved }
+    }));
+    document.dispatchEvent(new Event('themeChanged'));
+
+    if (notify && typeof showToast === 'function') {
+      const label = selected === 'system'
+        ? 'System theme (' + resolved + ' mode)'
+        : selected.charAt(0).toUpperCase() + selected.slice(1) + ' mode enabled';
+      showToast(label, 'success');
+    }
+  }
+
+  function bindThemeDropdown() {
+    const items = document.querySelectorAll('.theme-dropdown .dropdown-item');
+    items.forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const value = this.getAttribute('data-theme-value');
+        applyThemeChoice(value, true);
       });
     });
   }
 
-  function updateThemeDropdown() {
-    var items = document.querySelectorAll('.theme-dropdown .dropdown-item');
-    var current = document.documentElement.classList.contains('theme-dark') ? 'dark' : 'light';
-    items.forEach(function(item) {
-      var val = item.getAttribute('data-theme-value');
-      var existingCheck = item.querySelector('.bi-check-lg');
-      if (existingCheck) existingCheck.remove();
-      if (val === current) {
-        item.innerHTML = item.innerHTML + ' <i class="bi bi-check-lg"></i>';
-      }
+  function restoreThemeChoice() {
+    let pref = localStorage.getItem(THEME_KEY);
+    if (!pref) {
+      const legacy = localStorage.getItem(LEGACY_THEME_KEY);
+      pref = legacy === 'dark' ? 'dark' : (legacy === 'light' ? 'light' : 'system');
+    }
+    applyThemeChoice(pref, false);
+  }
+
+  if (typeof systemThemeQuery.addEventListener === 'function') {
+    systemThemeQuery.addEventListener('change', function() {
+      const pref = localStorage.getItem(THEME_KEY) || 'system';
+      if (pref === 'system') applyThemeChoice('system', false);
+    });
+  } else if (typeof systemThemeQuery.addListener === 'function') {
+    systemThemeQuery.addListener(function() {
+      const pref = localStorage.getItem(THEME_KEY) || 'system';
+      if (pref === 'system') applyThemeChoice('system', false);
     });
   }
 
   var themeDropdownEl = document.getElementById('themeDropdown');
   if (themeDropdownEl) {
-    themeDropdownEl.addEventListener('shown.bs.dropdown', function() {
-      updateThemeDropdown();
-    });
-    themeDropdownClick();
+    themeDropdownEl.addEventListener('shown.bs.dropdown', updateThemeDropdownActive);
+    bindThemeDropdown();
   }
 
-  document.addEventListener('themeChanged', function() {
-    updateThemeDropdown();
+  window.addEventListener('settings-theme-changed', function(e) {
+    const detail = e.detail || {};
+    if (detail.preference) updateThemeIcon(detail.preference, detail.resolved);
+    updateThemeDropdownActive();
+  });
+
+  restoreThemeChoice();
+
+  document.addEventListener('DOMContentLoaded', function () {
+    updateSidebarState();
+    highlightActiveLink();
+    updateSearchPlaceholder();
+    updateThemeDropdownActive();
   });
 
   /* ─── Global Search ─── */
@@ -1154,6 +1233,7 @@
   }
 
   function gsRender() {
+    if (!gsDropdown) return;
     if (!gsResults.length) {
       gsDropdown.innerHTML = '<div class="gs-empty">No results found</div>';
       gsDropdown.style.display = 'block';
@@ -1187,11 +1267,13 @@
   }
 
   function gsSearch(query) {
+    if (!gsDropdown) return;
     if (!query || query.length < 2) {
       gsDropdown.style.display = 'none';
       gsResults = [];
       return;
     }
+    if (typeof window.api !== 'function') return;
     window.api('/api/search/?q=' + encodeURIComponent(query), { method: 'GET' }, true)
       .then(data => {
         gsResults = data.results || [];
@@ -1202,8 +1284,8 @@
   }
 
   function gsNavigate(url) {
-    gsDropdown.style.display = 'none';
-    gsInput.blur();
+    if (gsDropdown) gsDropdown.style.display = 'none';
+    if (gsInput) gsInput.blur();
     window.location.href = url;
   }
 
@@ -1222,7 +1304,7 @@
       clearTimeout(gsTimer);
       const val = this.value.trim();
       if (val.length < 2) {
-        gsDropdown.style.display = 'none';
+        if (gsDropdown) gsDropdown.style.display = 'none';
         gsResults = [];
         return;
       }
@@ -1255,13 +1337,13 @@
           gsRender();
         }
       } else if (e.key === 'Escape') {
-        gsDropdown.style.display = 'none';
+        if (gsDropdown) gsDropdown.style.display = 'none';
         gsInput.blur();
       }
     });
 
     gsInput.addEventListener('focus', function() {
-      if (gsResults.length) gsDropdown.style.display = 'block';
+      if (gsResults.length && gsDropdown) gsDropdown.style.display = 'block';
     });
 
     document.addEventListener('click', function(e) {
@@ -1294,9 +1376,6 @@
     }
   });
 
-  window.loadNotificationDropdown = loadNotificationDropdown;
-  window.handleNotifClick = handleNotifClick;
-  window.markAllReadFromDropdown = markAllReadFromDropdown;
   window.updateSidebarState = updateSidebarState;
   window.toggleSidebar      = toggleSidebar;
 
