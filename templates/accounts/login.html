@@ -39,7 +39,7 @@
           <i class="bi bi-box-arrow-in-right"></i> Sign in
         </button>
 
-        <div id="message" class="mt-3"></div>
+        <div id="message" class="mt-3 text-center"></div>
 
         <div class="auth-divider">or</div>
 
@@ -67,53 +67,316 @@
 
 <script>
   (function() {
-    document.querySelector('.pw-toggle')?.addEventListener('click', function() {
-      const inp = document.getElementById('password');
-      const ico = this.querySelector('i');
-      if (inp.type === 'password') {
-        inp.type = 'text';
-        ico.className = 'bi bi-eye-slash';
-      } else {
-        inp.type = 'password';
-        ico.className = 'bi bi-eye';
+    // ===== Helper Functions =====
+    
+    // Show message with Bootstrap alert styling (without dismiss button)
+    function showMessage(message, type = 'danger') {
+      const msgDiv = document.getElementById('message');
+      if (!msgDiv) return;
+      
+      const alertClass = type === 'danger' ? 'alert-danger' : 
+                        type === 'success' ? 'alert-success' : 
+                        type === 'warning' ? 'alert-warning' : 'alert-info';
+      
+      // Added text-center class to center the alert
+      msgDiv.innerHTML = `<div class="alert ${alertClass} fade show text-center" role="alert" id="alertMessage">
+        ${message}
+      </div>`;
+    }
+
+    // Clear message
+    function clearMessage() {
+      const msgDiv = document.getElementById('message');
+      if (msgDiv) {
+        msgDiv.innerHTML = '';
       }
+    }
+
+    // Extract error message from various API response formats
+    function extractErrorMessage(errorData) {
+      if (!errorData) return 'Unable to process your request. Please try again.';
+      
+      if (typeof errorData === 'string') {
+        return errorData;
+      }
+      
+      if (typeof errorData === 'object') {
+        if (errorData.detail) return errorData.detail;
+        if (errorData.message) return errorData.message;
+        if (errorData.error) return errorData.error;
+        if (errorData.non_field_errors) {
+          if (Array.isArray(errorData.non_field_errors)) {
+            return errorData.non_field_errors.join(', ');
+          }
+          return errorData.non_field_errors;
+        }
+        
+        const fieldErrors = Object.values(errorData);
+        if (fieldErrors.length > 0) {
+          const firstError = fieldErrors[0];
+          if (Array.isArray(firstError) && firstError.length > 0) {
+            return firstError[0];
+          }
+          if (typeof firstError === 'string') {
+            return firstError;
+          }
+        }
+        
+        for (const [field, errors] of Object.entries(errorData)) {
+          if (Array.isArray(errors) && errors.length > 0) {
+            const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `${fieldName}: ${errors[0]}`;
+          }
+          if (typeof errors === 'string') {
+            const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `${fieldName}: ${errors}`;
+          }
+        }
+        
+        if (Array.isArray(errorData) && errorData.length > 0) {
+          return errorData.join(', ');
+        }
+      }
+      
+      try {
+        return JSON.stringify(errorData);
+      } catch {
+        return 'An unexpected error occurred. Please try again.';
+      }
+    }
+
+    // API wrapper function
+    async function apiCall(url, options = {}, includeAuth = true) {
+      const defaultOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      };
+      
+      if (includeAuth) {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          defaultOptions.headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      
+      const finalOptions = { ...defaultOptions, ...options };
+      
+      if (options.headers) {
+        finalOptions.headers = { ...finalOptions.headers, ...options.headers };
+      }
+      
+      const response = await fetch(url, finalOptions);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        const errorMessage = extractErrorMessage(data);
+        throw new Error(errorMessage);
+      }
+      
+      return data;
+    }
+
+    // Save session data
+    function saveSession(data) {
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+      }
+      if (data.user) {
+        localStorage.setItem('user_data', JSON.stringify(data.user));
+      }
+      if (data.access_token) {
+        localStorage.setItem('auth_token', data.access_token);
+      }
+      if (data.refresh_token) {
+        localStorage.setItem('refresh_token', data.refresh_token);
+      }
+      if (data.user && data.user.role) {
+        localStorage.setItem('user_role', data.user.role);
+      }
+    }
+
+    // Route user based on role
+    function routeByRole(role) {
+      const roleRoutes = {
+        'job_seeker': '/job-seeker/dashboard/',
+        'recruiter': '/recruiter/dashboard/',
+        'admin': '/admin/dashboard/',
+        'candidate': '/candidate/dashboard/',
+        'employer': '/employer/dashboard/',
+      };
+      
+      const redirectPath = roleRoutes[role] || '/dashboard/';
+      window.location.href = redirectPath;
+    }
+
+    // ===== DOM Event Handlers =====
+
+    // Toggle password visibility
+    const pwToggle = document.querySelector('.pw-toggle');
+    if (pwToggle) {
+      pwToggle.addEventListener('click', function() {
+        const inp = document.getElementById('password');
+        const ico = this.querySelector('i');
+        if (inp.type === 'password') {
+          inp.type = 'text';
+          ico.className = 'bi bi-eye-slash';
+        } else {
+          inp.type = 'password';
+          ico.className = 'bi bi-eye';
+        }
+      });
+    }
+
+    // ===== AUTO-CLEAR ERROR MESSAGE ON USER INPUT =====
+    // Clear error message when user starts typing in email field
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+      emailInput.addEventListener('input', function() {
+        clearMessage();
+      });
+    }
+
+    // Clear error message when user starts typing in password field
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) {
+      passwordInput.addEventListener('input', function() {
+        clearMessage();
+      });
+    }
+
+    // Clear error message when user clicks on any input field
+    const allInputs = document.querySelectorAll('input');
+    allInputs.forEach(input => {
+      input.addEventListener('focus', function() {
+        clearMessage();
+      });
     });
 
-    document.getElementById('loginForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const btn = event.target.querySelector('.btn-submit');
-      const orig = btn.innerHTML;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in\u2026';
-      btn.disabled = true;
-      const data = Object.fromEntries(new FormData(event.target));
-      try {
-        const result = await api('/api/auth/login/', { method: 'POST', body: JSON.stringify(data) }, false);
-        saveSession(result);
-        routeByRole(result.user.role);
-      } catch (error) {
-        btn.innerHTML = orig;
-        btn.disabled = false;
-        showMessage(error.message, 'danger');
-      }
-    });
+    // ===== Login form submission =====
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        const btn = event.target.querySelector('.btn-submit');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in…';
+        btn.disabled = true;
+        
+        // Clear previous messages before new attempt
+        clearMessage();
+        
+        const data = Object.fromEntries(new FormData(event.target));
+        
+        try {
+          const result = await apiCall('/api/auth/login/', {
+            method: 'POST',
+            body: JSON.stringify(data)
+          }, false);
+          
+          // Save session and redirect
+          saveSession(result);
+          
+          // Show success message
+          showMessage('Login successful! Redirecting...', 'success');
+          
+          // Redirect after a short delay
+          setTimeout(() => {
+            if (result.user && result.user.role) {
+              routeByRole(result.user.role);
+            } else {
+              window.location.href = '/dashboard/';
+            }
+          }, 1000);
+          
+        } catch (error) {
+          btn.innerHTML = orig;
+          btn.disabled = false;
+          // Show error message - this will stay until user starts typing
+          showMessage(error.message || 'Authentication failed. Please verify your credentials and try again.', 'danger');
+        }
+      });
+    }
 
-    document.getElementById('linkedinLoginBtn').addEventListener('click', async function() {
-      const btn = this;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting\u2026';
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const role = params.get('role');
-        const url = role ? '/api/auth/linkedin/login/?role=' + encodeURIComponent(role) : '/api/auth/linkedin/login/';
-        const resp = await fetch(url);
-        const data = await resp.json();
-        window.location.href = data.auth_url;
-      } catch (e) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-linkedin"></i> Continue with LinkedIn';
-        showMessage('Failed to connect to LinkedIn. Please try again.', 'danger');
+    // ===== LinkedIn login =====
+    const linkedinBtn = document.getElementById('linkedinLoginBtn');
+    if (linkedinBtn) {
+      linkedinBtn.addEventListener('click', async function() {
+        const btn = this;
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting…';
+        
+        // Clear any previous messages
+        clearMessage();
+        
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const role = params.get('role');
+          const url = role ? `/api/auth/linkedin/login/?role=${encodeURIComponent(role)}` : '/api/auth/linkedin/login/';
+          
+          const response = await fetch(url);
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(extractErrorMessage(data));
+          }
+          
+          if (data.auth_url) {
+            window.location.href = data.auth_url;
+          } else {
+            throw new Error('Unable to initiate LinkedIn authentication. Please try again.');
+          }
+          
+        } catch (error) {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+          showMessage(error.message || 'Unable to connect to LinkedIn. Please try again later.', 'danger');
+        }
+      });
+    }
+
+    // ===== Check for existing session on page load =====
+    async function checkSession() {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        try {
+          const result = await apiCall('/api/auth/verify/', {
+            method: 'POST',
+            body: JSON.stringify({ token })
+          });
+          
+          if (result.valid) {
+            const userData = localStorage.getItem('user_data');
+            if (userData) {
+              try {
+                const user = JSON.parse(userData);
+                if (user.role) {
+                  routeByRole(user.role);
+                }
+              } catch {
+                // Invalid user data, continue to login page
+              }
+            }
+          } else {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_data');
+            localStorage.removeItem('user_role');
+          }
+        } catch {
+          // Error verifying, just stay on login page
+        }
       }
-    });
+    }
+
+    // Check session on load
+    if (document.readyState === 'complete') {
+      checkSession();
+    } else {
+      window.addEventListener('load', checkSession);
+    }
   })();
 </script>
 {% endblock %}
