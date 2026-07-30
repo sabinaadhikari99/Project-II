@@ -71,7 +71,31 @@ function saveUser(user) {
   localStorage.setItem("profile_picture", user.profile_picture || "");
 }
 
-function logout() {
+// FIX: this previously only did localStorage.clear() and redirected.
+// It never told the backend, so the refresh token was never blacklisted
+// server-side - it stayed valid until its natural expiry even after
+// "logging out". Now it calls /api/auth/logout/ first (best-effort,
+// won't block the redirect if it fails) and only THEN clears storage.
+async function logout() {
+  const refresh = localStorage.getItem("refresh");
+  const access = localStorage.getItem("access");
+
+  try {
+    const csrfToken = getCSRFToken();
+    const headers = { "Content-Type": "application/json" };
+    if (csrfToken) headers["X-CSRFToken"] = csrfToken;
+    if (access) headers["Authorization"] = "Bearer " + access;
+
+    await fetch("/api/auth/logout/", {
+      method: "POST",
+      credentials: "include",
+      headers: headers,
+      body: JSON.stringify({ refresh: refresh })
+    });
+  } catch (e) {
+    console.debug("logout backend call failed:", e && e.message);
+  }
+
   localStorage.clear();
   window.location.href = "/login/";
 }
@@ -239,21 +263,18 @@ function showMessage(message, type = "info") {
    THEME MANAGEMENT – FULLY WORKING
    ──────────────────────────────────────────────────────────── */
 
-// Get preferred theme from localStorage
 function getPreferredTheme() {
   const stored = localStorage.getItem("theme");
   if (stored === "dark") return "dark";
   return "light";
 }
 
-// Apply theme to the entire website
 function applyTheme(theme) {
   const html = document.documentElement;
   html.classList.remove("theme-light", "theme-dark");
   html.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
   localStorage.setItem("theme", theme);
 
-  // Update theme toggle icon in navbar
   const btn = document.getElementById("themeToggleBtn");
   if (btn) {
     const icon = btn.querySelector("i");
@@ -264,11 +285,9 @@ function applyTheme(theme) {
     btn.setAttribute("title", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
   }
 
-  // Dispatch custom event for theme dropdown and other listeners
   document.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme } }));
 }
 
-// Toggle between light and dark
 function toggleTheme() {
   const current = document.documentElement.classList.contains("theme-dark") ? "dark" : "light";
   const next = current === "dark" ? "light" : "dark";
@@ -276,13 +295,11 @@ function toggleTheme() {
   showToast(next === "dark" ? "🌙 Dark mode activated" : "☀️ Light mode activated", "info", 2000);
 }
 
-// Initialize theme on page load
 function initTheme() {
   const theme = getPreferredTheme();
   applyTheme(theme);
 }
 
-// ── Expose theme functions globally ──
 window.toggleTheme = toggleTheme;
 window.applyTheme = applyTheme;
 window.getPreferredTheme = getPreferredTheme;
@@ -592,10 +609,7 @@ function hydrateNavbar() {
    INIT – runs on every page load
    ──────────────────────────────────────────────────────────── */
 document.addEventListener("DOMContentLoaded", async function() {
-  // Initialize theme FIRST
   initTheme();
-
-  // Then other stuff
   await ensureJWTToken();
   hydrateNavbar();
   loadNotificationBell();
@@ -603,12 +617,10 @@ document.addEventListener("DOMContentLoaded", async function() {
   initSidebarToggle();
 });
 
-// Poll for notification updates — longer interval when WebSocket is connected
 setInterval(function() {
   if (!notificationWsConnected) loadNotificationBell();
 }, 60000);
 
-// If token is removed from localStorage, redirect to login
 window.addEventListener("storage", function(e) {
   if (e.key === "access" && e.newValue === null) {
     window.location.href = "/login/";

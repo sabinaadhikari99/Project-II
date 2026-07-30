@@ -31,6 +31,8 @@ dependencies = [
   "django-jazzmin>=3.0.5",
   "channels>=4.3.2",
   "django-cloudinary-storage>=0.3.0",
+  "python-decouple>=3.8",
+  "django-environ>=0.14.0",
 ]
 
 [tool.uv]

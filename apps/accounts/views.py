@@ -4,13 +4,15 @@ import urllib.parse
 import requests
 from django.conf import settings
 from django.contrib.auth import login
+from django.contrib.auth import logout as django_logout
 from django.contrib.sessions.models import Session
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from rest_framework import generics, parsers, permissions, response, status, views
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 from apps.shared.pdf_utils import extract_pdf_text
 from .models import User, UserProfile
@@ -35,7 +37,14 @@ class LoginAPIView(views.APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
+
+        # NOTE: this creates a Django session (sets sessionid cookie) IN
+        # ADDITION to the JWT access/refresh tokens returned below. Both
+        # exist at once. That's fine as long as LogoutAPIView tears down
+        # BOTH (see fix below) - otherwise the session cookie silently
+        # keeps the previous user authenticated after "logout".
         login(request, serializer.user)
+
         return response.Response(serializer.validated_data)
 
 
@@ -55,6 +64,40 @@ class GetTokenAPIView(views.APIView):
             "user": UserSerializer(request.user).data,
             "access": str(refresh.access_token),
             "refresh": str(refresh),
+        })
+
+
+class VerifyTokenAPIView(views.APIView):
+    """
+    NEW. login.html calls POST /api/auth/verify/ with {"token": "..."} on
+    every page load to check for an existing valid session. This endpoint
+    did not exist before, so that call was silently 404ing and being
+    swallowed by the frontend's try/catch - meaning session verification
+    never actually worked client-side.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        token_str = request.data.get("token")
+        if not token_str:
+            return response.Response({"valid": False})
+
+        try:
+            access = AccessToken(token_str)  # raises if expired/invalid/blacklisted
+        except (TokenError, InvalidToken):
+            return response.Response({"valid": False})
+
+        try:
+            user = User.objects.get(id=access["user_id"])
+        except User.DoesNotExist:
+            return response.Response({"valid": False})
+
+        if not user.is_active:
+            return response.Response({"valid": False})
+
+        return response.Response({
+            "valid": True,
+            "user": UserSerializer(user).data,
         })
 
 
@@ -169,6 +212,7 @@ class LogoutAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        # Blacklist the JWT refresh token so it can't be used again.
         try:
             refresh_token = request.data.get("refresh")
             if refresh_token:
@@ -176,7 +220,20 @@ class LogoutAPIView(views.APIView):
                 token.blacklist()
         except Exception:
             pass
-        return response.Response({"detail": "Logged out successfully"})
+
+        # CRITICAL FIX: this was missing entirely. LoginAPIView calls
+        # Django's login(), which creates a session and sets a sessionid
+        # cookie. Without calling logout() here, that session stays valid
+        # server-side after "logout" - so if the browser still sends that
+        # cookie (credentials: 'include'), SessionAuthentication can keep
+        # resolving requests to the PREVIOUS user even after a new person
+        # logs in from the same browser. This is what caused the bug.
+        django_logout(request)
+        request.session.flush()
+
+        resp = response.Response({"detail": "Logged out successfully"})
+        resp.delete_cookie("sessionid")
+        return resp
 
 
 class ChangePasswordAPIView(views.APIView):

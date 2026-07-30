@@ -68,23 +68,20 @@
 <script>
   (function() {
     // ===== Helper Functions =====
-    
-    // Show message with Bootstrap alert styling (without dismiss button)
+
     function showMessage(message, type = 'danger') {
       const msgDiv = document.getElementById('message');
       if (!msgDiv) return;
-      
-      const alertClass = type === 'danger' ? 'alert-danger' : 
-                        type === 'success' ? 'alert-success' : 
+
+      const alertClass = type === 'danger' ? 'alert-danger' :
+                        type === 'success' ? 'alert-success' :
                         type === 'warning' ? 'alert-warning' : 'alert-info';
-      
-      // Added text-center class to center the alert
+
       msgDiv.innerHTML = `<div class="alert ${alertClass} fade show text-center" role="alert" id="alertMessage">
         ${message}
       </div>`;
     }
 
-    // Clear message
     function clearMessage() {
       const msgDiv = document.getElementById('message');
       if (msgDiv) {
@@ -92,14 +89,13 @@
       }
     }
 
-    // Extract error message from various API response formats
     function extractErrorMessage(errorData) {
       if (!errorData) return 'Unable to process your request. Please try again.';
-      
+
       if (typeof errorData === 'string') {
         return errorData;
       }
-      
+
       if (typeof errorData === 'object') {
         if (errorData.detail) return errorData.detail;
         if (errorData.message) return errorData.message;
@@ -110,7 +106,7 @@
           }
           return errorData.non_field_errors;
         }
-        
+
         const fieldErrors = Object.values(errorData);
         if (fieldErrors.length > 0) {
           const firstError = fieldErrors[0];
@@ -121,7 +117,7 @@
             return firstError;
           }
         }
-        
+
         for (const [field, errors] of Object.entries(errorData)) {
           if (Array.isArray(errors) && errors.length > 0) {
             const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -132,12 +128,12 @@
             return `${fieldName}: ${errors}`;
           }
         }
-        
+
         if (Array.isArray(errorData) && errorData.length > 0) {
           return errorData.join(', ');
         }
       }
-      
+
       try {
         return JSON.stringify(errorData);
       } catch {
@@ -145,7 +141,27 @@
       }
     }
 
-    // API wrapper function
+    // ===== Session storage: uses the EXACT SAME keys as app.js =====
+    // (access, refresh, role, email, username, profile_picture)
+    // This is the critical fix. Previously login.html used its own made
+    // up keys (auth_token, user_data, user_role) that app.js NEVER read.
+    // app.js's requireRole()/hydrateNavbar() only ever look at "access"
+    // and "role", which were only ever populated later by app.js's own
+    // ensureJWTToken() - via the Django SESSION COOKIE, not the JWT you
+    // actually just logged in with. That gap is what let a stale/previous
+    // user's identity leak into a new login. Now login.html writes
+    // directly into the keys app.js reads, so the dashboard has the
+    // correct data the instant it loads - no race, no stale session
+    // cookie dependency.
+    function clearSession() {
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
+      localStorage.removeItem('role');
+      localStorage.removeItem('email');
+      localStorage.removeItem('username');
+      localStorage.removeItem('profile_picture');
+    }
+
     async function apiCall(url, options = {}, includeAuth = true) {
       const defaultOptions = {
         headers: {
@@ -153,61 +169,70 @@
         },
         credentials: 'include',
       };
-      
+
       if (includeAuth) {
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-          defaultOptions.headers['Authorization'] = `Bearer ${token}`;
+        const tok = localStorage.getItem('access');
+        if (tok) {
+          defaultOptions.headers['Authorization'] = `Bearer ${tok}`;
         }
       }
-      
+
       const finalOptions = { ...defaultOptions, ...options };
-      
+
       if (options.headers) {
         finalOptions.headers = { ...finalOptions.headers, ...options.headers };
       }
-      
+
       const response = await fetch(url, finalOptions);
       const data = await response.json();
-      
+
       if (!response.ok) {
         const errorMessage = extractErrorMessage(data);
         throw new Error(errorMessage);
       }
-      
+
       return data;
     }
 
-    // Save session data
     function saveSession(data) {
-      if (data.token) {
-        localStorage.setItem('auth_token', data.token);
+      // Wipe any previous session first so nothing from a prior
+      // user/account can linger and get merged with the new one.
+      clearSession();
+
+      // Matches your backend's actual LoginSerializer response exactly:
+      // { "user": {...}, "access": "...", "refresh": "..." }
+      if (data.access) {
+        localStorage.setItem('access', data.access);
+      }
+      if (data.refresh) {
+        localStorage.setItem('refresh', data.refresh);
       }
       if (data.user) {
-        localStorage.setItem('user_data', JSON.stringify(data.user));
-      }
-      if (data.access_token) {
-        localStorage.setItem('auth_token', data.access_token);
-      }
-      if (data.refresh_token) {
-        localStorage.setItem('refresh_token', data.refresh_token);
-      }
-      if (data.user && data.user.role) {
-        localStorage.setItem('user_role', data.user.role);
+        localStorage.setItem('role', data.user.role || '');
+        localStorage.setItem('email', data.user.email || '');
+        localStorage.setItem('username', data.user.username || data.user.email || 'User');
+        localStorage.setItem('profile_picture', data.user.profile_picture || '');
       }
     }
 
-    // Route user based on role
+    // ===== Routing with role normalization =====
     function routeByRole(role) {
+      let normalizedRole = role;
+
+      if (role === 'seeker') {
+        normalizedRole = 'job_seeker';
+      }
+
       const roleRoutes = {
-        'job_seeker': '/job-seeker/dashboard/',
-        'recruiter': '/recruiter/dashboard/',
-        'admin': '/admin/dashboard/',
-        'candidate': '/candidate/dashboard/',
-        'employer': '/employer/dashboard/',
+        'job_seeker': '/dashboard/seeker/',
+        'seeker': '/dashboard/seeker/',
+        'recruiter': '/dashboard/recruiter/',
+        'admin': '/dashboard/admin/',
+        'candidate': '/dashboard/candidate/',
+        'employer': '/dashboard/employer/',
       };
-      
-      const redirectPath = roleRoutes[role] || '/dashboard/';
+
+      const redirectPath = roleRoutes[normalizedRole] || '/dashboard/';
       window.location.href = redirectPath;
     }
 
@@ -229,60 +254,46 @@
       });
     }
 
-    // ===== AUTO-CLEAR ERROR MESSAGE ON USER INPUT =====
-    // Clear error message when user starts typing in email field
+    // Auto-clear error messages on user input
     const emailInput = document.getElementById('email');
     if (emailInput) {
-      emailInput.addEventListener('input', function() {
-        clearMessage();
-      });
+      emailInput.addEventListener('input', clearMessage);
     }
 
-    // Clear error message when user starts typing in password field
     const passwordInput = document.getElementById('password');
     if (passwordInput) {
-      passwordInput.addEventListener('input', function() {
-        clearMessage();
-      });
+      passwordInput.addEventListener('input', clearMessage);
     }
 
-    // Clear error message when user clicks on any input field
-    const allInputs = document.querySelectorAll('input');
-    allInputs.forEach(input => {
-      input.addEventListener('focus', function() {
-        clearMessage();
-      });
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', clearMessage);
     });
 
-    // ===== Login form submission =====
+    // Login form submission
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
       loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        
+
         const btn = event.target.querySelector('.btn-submit');
         const orig = btn.innerHTML;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in…';
         btn.disabled = true;
-        
-        // Clear previous messages before new attempt
+
         clearMessage();
-        
+
         const data = Object.fromEntries(new FormData(event.target));
-        
+
         try {
           const result = await apiCall('/api/auth/login/', {
             method: 'POST',
             body: JSON.stringify(data)
           }, false);
-          
-          // Save session and redirect
+
+          // saveSession() clears any stale session before storing the new one
           saveSession(result);
-          
-          // Show success message
           showMessage('Login successful! Redirecting...', 'success');
-          
-          // Redirect after a short delay
+
           setTimeout(() => {
             if (result.user && result.user.role) {
               routeByRole(result.user.role);
@@ -290,17 +301,16 @@
               window.location.href = '/dashboard/';
             }
           }, 1000);
-          
+
         } catch (error) {
           btn.innerHTML = orig;
           btn.disabled = false;
-          // Show error message - this will stay until user starts typing
           showMessage(error.message || 'Authentication failed. Please verify your credentials and try again.', 'danger');
         }
       });
     }
 
-    // ===== LinkedIn login =====
+    // LinkedIn login
     const linkedinBtn = document.getElementById('linkedinLoginBtn');
     if (linkedinBtn) {
       linkedinBtn.addEventListener('click', async function() {
@@ -308,28 +318,27 @@
         const orig = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting…';
-        
-        // Clear any previous messages
+
         clearMessage();
-        
+
         try {
           const params = new URLSearchParams(window.location.search);
           const role = params.get('role');
           const url = role ? `/api/auth/linkedin/login/?role=${encodeURIComponent(role)}` : '/api/auth/linkedin/login/';
-          
+
           const response = await fetch(url);
           const data = await response.json();
-          
+
           if (!response.ok) {
             throw new Error(extractErrorMessage(data));
           }
-          
+
           if (data.auth_url) {
             window.location.href = data.auth_url;
           } else {
             throw new Error('Unable to initiate LinkedIn authentication. Please try again.');
           }
-          
+
         } catch (error) {
           btn.disabled = false;
           btn.innerHTML = orig;
@@ -339,39 +348,35 @@
     }
 
     // ===== Check for existing session on page load =====
+    // Only trusts the role returned FRESH from the server via
+    // /api/auth/verify/ - never routes off stale cached data. Uses
+    // "access" key, consistent with app.js everywhere else now.
     async function checkSession() {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        try {
-          const result = await apiCall('/api/auth/verify/', {
-            method: 'POST',
-            body: JSON.stringify({ token })
-          });
-          
-          if (result.valid) {
-            const userData = localStorage.getItem('user_data');
-            if (userData) {
-              try {
-                const user = JSON.parse(userData);
-                if (user.role) {
-                  routeByRole(user.role);
-                }
-              } catch {
-                // Invalid user data, continue to login page
-              }
-            }
-          } else {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('user_data');
-            localStorage.removeItem('user_role');
-          }
-        } catch {
-          // Error verifying, just stay on login page
+      const tok = localStorage.getItem('access');
+      if (!tok) {
+        clearSession();
+        return;
+      }
+
+      try {
+        const result = await apiCall('/api/auth/verify/', {
+          method: 'POST',
+          body: JSON.stringify({ token: tok })
+        });
+
+        if (result.valid && result.user && result.user.role) {
+          localStorage.setItem('role', result.user.role);
+          localStorage.setItem('email', result.user.email || '');
+          localStorage.setItem('username', result.user.username || result.user.email || 'User');
+          routeByRole(result.user.role);
+        } else {
+          clearSession();
         }
+      } catch {
+        clearSession();
       }
     }
 
-    // Check session on load
     if (document.readyState === 'complete') {
       checkSession();
     } else {
