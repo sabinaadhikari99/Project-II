@@ -1,0 +1,343 @@
+import json
+
+from django.conf import settings
+from django.core.management.base import BaseCommand
+
+from apps.shared.profession_classifier import PROFESSION_CONFIGS
+from apps.shared.skill_normalizer import display_name, normalize_skill
+
+LINKEDIN = "LinkedIn Learning"
+EDX = "edX"
+LINKEDIN_SEARCH = "https://www.linkedin.com/learning/search?keywords={query}"
+UDEMY_SEARCH = "https://www.udemy.com/courses/search/?q={query}"
+COURSERA_SEARCH = "https://www.coursera.org/search?query={query}"
+EDX_SEARCH = "https://www.edx.org/search?q={query}"
+
+CORE_ENTRIES = {
+    "python": ("Coursera", "Python for Everybody", "https://www.coursera.org/specializations/python", False, "beginner", 30),
+    "machinelearning": ("Google Developers", "Machine Learning Crash Course", "https://developers.google.com/machine-learning/crash-course", True, "beginner", 15),
+    "javascript": ("freeCodeCamp", "JavaScript Algorithms and Data Structures", "https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/", True, "beginner", 30),
+    "html": ("freeCodeCamp", "Responsive Web Design", "https://www.freecodecamp.org/learn/responsive-web-design/", True, "beginner", 20),
+    "css": ("freeCodeCamp", "Responsive Web Design", "https://www.freecodecamp.org/learn/responsive-web-design/", True, "beginner", 20),
+    "react": ("freeCodeCamp", "Front End Development Libraries", "https://www.freecodecamp.org/learn/front-end-development-libraries/", True, "intermediate", 25),
+    "sql": ("freeCodeCamp", "Relational Database", "https://www.freecodecamp.org/learn/relational-database/", True, "beginner", 20),
+    "restapis": ("freeCodeCamp", "Back End Development and APIs", "https://www.freecodecamp.org/learn/back-end-development-and-apis/", True, "intermediate", 18),
+    "apis": ("freeCodeCamp", "Back End Development and APIs", "https://www.freecodecamp.org/learn/back-end-development-and-apis/", True, "beginner", 18),
+    "rest": ("freeCodeCamp", "Back End Development and APIs", "https://www.freecodecamp.org/learn/back-end-development-and-apis/", True, "beginner", 12),
+    "pandas": ("Coursera", "IBM Data Analysis with Python", "https://www.coursera.org/learn/data-analysis-with-python", False, "intermediate", 18),
+    "numpy": ("Coursera", "IBM Python for Data Science, AI & Development", "https://www.coursera.org/learn/python-for-applied-data-science-ai", False, "intermediate", 16),
+    "matplotlib": ("Coursera", "IBM Data Analysis with Python", "https://www.coursera.org/learn/data-analysis-with-python", False, "intermediate", 12),
+    "seaborn": ("Coursera", "IBM Data Analysis with Python", "https://www.coursera.org/learn/data-analysis-with-python", False, "intermediate", 10),
+    "scikitlearn": ("Coursera", "IBM Machine Learning with Python", "https://www.coursera.org/learn/machine-learning-with-python", False, "intermediate", 20),
+    "tensorflow": ("Coursera", "Introduction to TensorFlow for AI, ML and Deep Learning", "https://www.coursera.org/learn/introduction-tensorflow", False, "intermediate", 15),
+    "pytorch": ("Coursera", "PyTorch and Deep Learning Fundamentals", "https://www.coursera.org/learn/pytorch-and-deep-learning-fundamentals", False, "intermediate", 16),
+    "keras": ("Coursera", "Introduction to TensorFlow for AI, ML and Deep Learning", "https://www.coursera.org/learn/introduction-tensorflow", False, "intermediate", 12),
+    "deeplearning": ("Coursera", "Deep Learning Specialization", "https://www.coursera.org/specializations/deep-learning", False, "advanced", 40),
+    "nlp": ("Coursera", "Natural Language Processing Specialization", "https://www.coursera.org/specializations/natural-language-processing", False, "advanced", 30),
+    "computervision": ("Coursera", "Introduction to Computer Vision", "https://www.coursera.org/learn/computer-vision-basics", False, "advanced", 18),
+    "llm": ("Coursera", "Generative AI with Large Language Models", "https://www.coursera.org/learn/generative-ai-with-llms", False, "intermediate", 18),
+    "mlops": ("Coursera", "Machine Learning Engineering for Production (MLOps)", "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops", False, "advanced", 35),
+    "modeldeployment": ("Coursera", "Machine Learning Engineering for Production (MLOps)", "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops", False, "advanced", 20),
+    "faiss": ("Google Developers", "FAISS Getting Started", "https://github.com/facebookresearch/faiss/wiki/Getting-started", True, "intermediate", 6),
+    "statistics": ("Coursera", "Basic Statistics", "https://www.coursera.org/learn/basic-statistics", False, "intermediate", 20),
+    "probability": (EDX, "Introduction to Probability", EDX_SEARCH.format(query="probability"), True, "intermediate", 15),
+    "datavisualization": ("Coursera", "Data Visualization Specialization", "https://www.coursera.org/specializations/data-visualization", False, "intermediate", 20),
+    "excel": ("Coursera", "Excel Skills for Business Specialization", "https://www.coursera.org/specializations/excel", False, "beginner", 25),
+    "tableau": ("Coursera", "Data Visualization with Tableau", "https://www.coursera.org/specializations/data-visualization", False, "intermediate", 15),
+    "powerbi": ("Microsoft Learn", "Microsoft Power BI Training", "https://learn.microsoft.com/en-us/training/powerplatform/power-bi", True, "intermediate", 20),
+    "r": ("Coursera", "R Programming", "https://www.coursera.org/learn/r-programming", False, "beginner", 18),
+    "looker": ("Coursera", "Google Business Intelligence Professional Certificate", "https://www.coursera.org/professional-certificates/google-business-intelligence", False, "intermediate", 20),
+    "dashboarding": ("Coursera", "Google Business Intelligence Professional Certificate", "https://www.coursera.org/professional-certificates/google-business-intelligence", False, "intermediate", 18),
+    "reporting": ("Coursera", "Google Business Intelligence Professional Certificate", "https://www.coursera.org/professional-certificates/google-business-intelligence", False, "intermediate", 12),
+    "datacleaning": ("Coursera", "Google Data Analytics Professional Certificate", "https://www.coursera.org/professional-certificates/google-data-analytics", False, "intermediate", 20),
+    "dataanalysis": ("Coursera", "Google Data Analytics Professional Certificate", "https://www.coursera.org/professional-certificates/google-data-analytics", False, "intermediate", 25),
+    "datawarehouse": ("Coursera", "Google Cloud Data Engineering Professional Certificate", "https://www.coursera.org/professional-certificates/gcp-data-engineering", False, "advanced", 30),
+    "bigquery": ("Coursera", "Google Cloud Data Engineering Professional Certificate", "https://www.coursera.org/professional-certificates/gcp-data-engineering", False, "intermediate", 15),
+    "datapipeline": ("Coursera", "Google Cloud Data Engineering Professional Certificate", "https://www.coursera.org/professional-certificates/gcp-data-engineering", False, "advanced", 25),
+    "etl": ("Coursera", "IBM ETL and Data Pipelines", "https://www.coursera.org/learn/etl-and-data-pipelines-shell-airflow-kafka", False, "intermediate", 16),
+    "spark": ("Coursera", "IBM Big Data with Spark and Hadoop", "https://www.coursera.org/learn/ibm-big-data-strategy", False, "advanced", 20),
+    "hadoop": ("Coursera", "Introduction to Big Data", "https://www.coursera.org/learn/introduction-to-big-data", False, "intermediate", 12),
+    "snowflake": ("Snowflake", "Snowflake Learning Portal", "https://learn.snowflake.com/", True, "intermediate", 12),
+    "airflow": ("Airflow", "Apache Airflow Fundamentals", "https://www.astronomer.io/learn/", True, "intermediate", 10),
+    "kafka": ("Confluent", "Confluent Developer Courses", "https://developer.confluent.io/courses/", True, "advanced", 18),
+    "redshift": ("AWS Skill Builder", "AWS Skill Builder - Analytics", "https://skillbuilder.aws/", True, "intermediate", 12),
+    "datamodeling": (LINKEDIN, "Data Modeling Fundamentals", LINKEDIN_SEARCH.format(query="data modeling"), False, "intermediate", 8),
+    "aws": ("AWS Skill Builder", "AWS Skill Builder", "https://skillbuilder.aws/", True, "intermediate", 30),
+    "azure": ("Microsoft Learn", "Microsoft Learn - Azure", "https://learn.microsoft.com/en-us/training/azure/", True, "intermediate", 25),
+    "gcp": ("Google Developers", "Google Cloud Training", "https://cloud.google.com/training", True, "intermediate", 25),
+    "docker": ("Docker", "Docker 101 Tutorial", "https://www.docker.com/101-tutorial/", True, "beginner", 8),
+    "kubernetes": ("Kubernetes", "Kubernetes Official Training", "https://kubernetes.io/training/", True, "advanced", 25),
+    "helm": ("Kubernetes", "Kubernetes Official Training", "https://kubernetes.io/training/", True, "advanced", 12),
+    "terraform": ("HashiCorp", "Terraform Official Tutorials", "https://developer.hashicorp.com/terraform/tutorials", True, "intermediate", 15),
+    "ansible": ("Red Hat", "Ansible Getting Started", "https://docs.ansible.com/ansible/latest/getting_started/index.html", True, "intermediate", 10),
+    "jenkins": ("Jenkins", "Jenkins User Documentation", "https://www.jenkins.io/doc/tutorials/", True, "intermediate", 10),
+    "cicd": ("GitHub", "GitHub Actions Documentation", "https://docs.github.com/en/actions", True, "intermediate", 12),
+    "githubactions": ("GitHub", "GitHub Actions Documentation", "https://docs.github.com/en/actions", True, "intermediate", 10),
+    "git": ("GitHub", "GitHub Skills", "https://skills.github.com/", True, "beginner", 6),
+    "linux": ("Linux Foundation", "Linux Foundation Training", "https://training.linuxfoundation.org/", False, "beginner", 20),
+    "prometheus": (LINKEDIN, "Monitoring with Prometheus", LINKEDIN_SEARCH.format(query="prometheus"), False, "intermediate", 8),
+    "grafana": ("Grafana", "Grafana Training", "https://grafana.com/training/", False, "intermediate", 8),
+    "elkstack": ("Elastic", "Elastic Training", "https://www.elastic.co/training", False, "intermediate", 15),
+    "shellscripting": (LINKEDIN, "Linux Shell Scripting", LINKEDIN_SEARCH.format(query="shell scripting"), False, "intermediate", 10),
+    "yaml": (LINKEDIN, "YAML Fundamentals", LINKEDIN_SEARCH.format(query="YAML"), False, "beginner", 4),
+    "django": ("Django", "Django Official Tutorial", "https://docs.djangoproject.com/en/5.0/intro/tutorial01/", True, "intermediate", 15),
+    "djangorestframework": ("Django REST Framework", "Django REST Framework Tutorial", "https://www.django-rest-framework.org/tutorial/quickstart/", True, "intermediate", 10),
+    "fastapi": ("FastAPI", "FastAPI Official Tutorial", "https://fastapi.tiangolo.com/tutorial/", True, "intermediate", 12),
+    "flask": ("Flask", "Flask Official Tutorial", "https://flask.palletsprojects.com/en/stable/tutorial/", True, "intermediate", 8),
+    "node.js": ("Node.js", "Node.js Learn", "https://nodejs.org/en/learn", True, "intermediate", 15),
+    "express": ("Express", "Express Getting Started", "https://expressjs.com/en/starter/installing.html", True, "intermediate", 8),
+    "springboot": ("Spring", "Spring Learn", "https://spring.io/learn", True, "intermediate", 20),
+    "java": ("Oracle", "Java Programming Tutorials", "https://dev.java/learn/", True, "beginner", 25),
+    "go": ("Go", "Go Learn", "https://go.dev/learn/", True, "intermediate", 15),
+    "rust": ("Rust", "The Rust Programming Language Book", "https://doc.rust-lang.org/book/", True, "intermediate", 25),
+    "cplusplus": ("Microsoft Learn", "Microsoft Learn - C++", "https://learn.microsoft.com/en-us/cpp/", True, "intermediate", 20),
+    "csharp": ("Microsoft Learn", "Microsoft Learn - C#", "https://learn.microsoft.com/en-us/dotnet/csharp/", True, "intermediate", 20),
+    "dotnet": ("Microsoft Learn", "Microsoft Learn - .NET", "https://learn.microsoft.com/en-us/dotnet/", True, "intermediate", 20),
+    "datastructures": ("Coursera", "Data Structures", "https://www.coursera.org/learn/data-structures", False, "intermediate", 20),
+    "algorithms": ("Coursera", "Algorithms Part I", "https://www.coursera.org/learn/algorithms-part1", False, "intermediate", 25),
+    "systemdesign": ("Coursera", "Software Design and Architecture Specialization", "https://www.coursera.org/specializations/software-design-architecture", False, "advanced", 25),
+    "oop": (LINKEDIN, "Object-Oriented Programming", LINKEDIN_SEARCH.format(query="object-oriented programming"), False, "intermediate", 8),
+    "designpatterns": (LINKEDIN, "Software Design Patterns", LINKEDIN_SEARCH.format(query="design patterns"), False, "intermediate", 10),
+    "tdd": (LINKEDIN, "Test-Driven Development", LINKEDIN_SEARCH.format(query="test driven development"), False, "intermediate", 8),
+    "microservices": (LINKEDIN, "Microservices Architecture", LINKEDIN_SEARCH.format(query="microservices"), False, "advanced", 15),
+    "apidesign": (LINKEDIN, "API Design", LINKEDIN_SEARCH.format(query="API design"), False, "intermediate", 8),
+    "celery": (LINKEDIN, "Celery Task Queues with Django", LINKEDIN_SEARCH.format(query="Celery Django"), False, "intermediate", 6),
+    "rabbitmq": ("RabbitMQ", "RabbitMQ Getting Started", "https://www.rabbitmq.com/getstarted.html", True, "intermediate", 6),
+    "mongodb": ("MongoDB", "MongoDB University", "https://learn.mongodb.com/", True, "intermediate", 15),
+    "redis": ("Redis", "Redis University", "https://university.redis.com/", True, "intermediate", 10),
+    "postgresql": ("PostgreSQL", "PostgreSQL Official Tutorial", "https://www.postgresql.org/docs/current/tutorial.html", True, "intermediate", 10),
+    "mysql": ("MySQL", "MySQL Official Tutorial", "https://dev.mysql.com/doc/mysql-tutorial/en/", True, "beginner", 10),
+    "reactnative": ("Coursera", "Meta React Native Specialization", "https://www.coursera.org/specializations/meta-react-native", False, "intermediate", 30),
+    "flutter": ("Google Developers", "Flutter Official Learning", "https://flutter.dev/learn", True, "intermediate", 20),
+    "dart": ("Google Developers", "Dart Official Learning", "https://dart.dev/learn", True, "beginner", 10),
+    "firebase": ("Google Developers", "Firebase Official Learning", "https://firebase.google.com/learn", True, "intermediate", 12),
+    "android": ("Google Developers", "Android Developers Courses", "https://developer.android.com/courses", True, "intermediate", 25),
+    "kotlin": ("Google Developers", "Android Kotlin Fundamentals", "https://developer.android.com/courses/kotlin-android-fundamentals", True, "intermediate", 20),
+    "ios": ("Apple", "Apple Developer Tutorials", "https://developer.apple.com/tutorials/", True, "intermediate", 20),
+    "swift": ("Apple", "Swift Programming Language", "https://developer.apple.com/swift/", True, "intermediate", 15),
+    "swiftui": ("Apple", "Introducing SwiftUI", "https://developer.apple.com/tutorials/swiftui", True, "intermediate", 12),
+    "uikit": ("Apple", "UIKit Documentation", "https://developer.apple.com/documentation/uikit", True, "intermediate", 10),
+    "appstore": ("Apple", "App Store Resources", "https://developer.apple.com/app-store/", True, "intermediate", 6),
+    "mobileui": (LINKEDIN, "Mobile UI Design", LINKEDIN_SEARCH.format(query="mobile UI design"), False, "intermediate", 8),
+    "mobilearchitecture": (LINKEDIN, "Mobile App Architecture", LINKEDIN_SEARCH.format(query="mobile app architecture"), False, "advanced", 10),
+    "typescript": ("Microsoft Learn", "Microsoft Learn - TypeScript", "https://learn.microsoft.com/en-us/training/paths/build-javascript-applications-typescript/", True, "intermediate", 12),
+    "vue.js": ("Vue.js", "Vue.js Official Tutorial", "https://vuejs.org/tutorial/", True, "intermediate", 12),
+    "angular": ("Angular", "Angular Official Tutorials", "https://angular.dev/tutorials", True, "intermediate", 15),
+    "next.js": ("Next.js", "Next.js Learn", "https://nextjs.org/learn", True, "intermediate", 15),
+    "svelte": ("Svelte", "Svelte Official Tutorial", "https://svelte.dev/tutorial", True, "intermediate", 10),
+    "redux": ("Redux", "Redux Essentials Tutorial", "https://redux.js.org/tutorials/essentials/part-1-overview-concepts", True, "intermediate", 8),
+    "graphql": ("Apollo", "Apollo GraphQL Tutorials", "https://www.apollographql.com/tutorials", True, "intermediate", 8),
+    "webpack": ("Webpack", "Webpack Getting Started Guide", "https://webpack.js.org/guides/getting-started/", True, "intermediate", 8),
+    "vite": ("Vite", "Vite Official Guide", "https://vitejs.dev/guide/", True, "intermediate", 6),
+    "bootstrap": ("freeCodeCamp", "Front End Development Libraries", "https://www.freecodecamp.org/learn/front-end-development-libraries/", True, "beginner", 8),
+    "scss": ("Sass", "Sass Official Guide", "https://sass-lang.com/guide", True, "beginner", 6),
+    "tailwindcss": ("Tailwind CSS", "Tailwind CSS Documentation", "https://tailwindcss.com/docs/installation", True, "intermediate", 8),
+    "postman": ("Postman", "Postman Learning Center", "https://learning.postman.com/", True, "beginner", 6),
+    "figma": ("Figma", "Figma Learn", "https://www.figma.com/resources/learn/", True, "beginner", 12),
+    "sketch": ("Sketch", "Sketch Learn", "https://www.sketch.com/learn/", True, "intermediate", 8),
+    "adobexd": ("Adobe", "Adobe XD Tutorials", "https://helpx.adobe.com/xd/tutorials.html", True, "intermediate", 8),
+    "photoshop": ("Adobe", "Photoshop Tutorials", "https://helpx.adobe.com/photoshop/tutorials.html", True, "beginner", 15),
+    "illustrator": ("Adobe", "Illustrator Tutorials", "https://helpx.adobe.com/illustrator/tutorials.html", True, "beginner", 15),
+    "indesign": ("Adobe", "InDesign Tutorials", "https://helpx.adobe.com/indesign/tutorials.html", True, "beginner", 12),
+    "adobecreativesuite": ("Adobe", "Adobe Creative Cloud Tutorials", "https://helpx.adobe.com/creative-cloud/tutorials.html", True, "intermediate", 15),
+    "canva": ("Canva", "Canva Design School", "https://www.canva.com/learn/", True, "beginner", 6),
+    "typography": ("Canva", "Typography Essentials", "https://www.canva.com/learn/typography/", True, "beginner", 6),
+    "colortheory": ("Canva", "Color Theory", "https://www.canva.com/learn/color-theory/", True, "beginner", 4),
+    "visualdesign": ("Canva", "Visual Design Principles", "https://www.canva.com/learn/design-elements-principles/", True, "intermediate", 8),
+    "logos": ("Canva", "Logo Design Guide", "https://www.canva.com/learn/logo-design/", True, "intermediate", 6),
+    "layout": ("Canva", "Layout Design Basics", "https://www.canva.com/learn/layout-design/", True, "beginner", 6),
+    "branding": (LINKEDIN, "Branding Fundamentals", LINKEDIN_SEARCH.format(query="branding"), False, "intermediate", 10),
+    "printdesign": (LINKEDIN, "Print Design", LINKEDIN_SEARCH.format(query="print design"), False, "intermediate", 8),
+    "uxdesign": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 30),
+    "uidesign": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 20),
+    "userresearch": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 12),
+    "wireframing": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 8),
+    "prototyping": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 10),
+    "usabilitytesting": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 8),
+    "interactiondesign": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 10),
+    "informationarchitecture": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 8),
+    "designsystems": ("Figma", "Design Systems in Figma", "https://www.figma.com/resources/learn/design/design-systems/", True, "intermediate", 10),
+    "userflows": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 6),
+    "personas": ("Coursera", "Google UX Design Professional Certificate", "https://www.coursera.org/professional-certificates/google-ux-design", False, "intermediate", 6),
+    "responsivedesign": ("freeCodeCamp", "Responsive Web Design", "https://www.freecodecamp.org/learn/responsive-web-design/", True, "beginner", 15),
+    "productstrategy": (LINKEDIN, "Product Strategy", LINKEDIN_SEARCH.format(query="product strategy"), False, "intermediate", 12),
+    "roadmapping": (LINKEDIN, "Product Roadmapping", LINKEDIN_SEARCH.format(query="product roadmap"), False, "intermediate", 8),
+    "productmetrics": (LINKEDIN, "Product Analytics and Metrics", LINKEDIN_SEARCH.format(query="product analytics"), False, "intermediate", 8),
+    "agile": ("Coursera", "Agile Project Management", "https://www.coursera.org/learn/agile-project-management", False, "intermediate", 15),
+    "scrum": ("Coursera", "Agile Project Management", "https://www.coursera.org/learn/agile-project-management", False, "intermediate", 10),
+    "jira": ("Atlassian", "Atlassian University", "https://university.atlassian.com/", True, "intermediate", 8),
+    "confluence": ("Atlassian", "Atlassian University", "https://university.atlassian.com/", True, "beginner", 6),
+    "stakeholdermanagement": (LINKEDIN, "Stakeholder Management", LINKEDIN_SEARCH.format(query="stakeholder management"), False, "intermediate", 8),
+    "marketresearch": (LINKEDIN, "Market Research", LINKEDIN_SEARCH.format(query="market research"), False, "intermediate", 10),
+    "featureengineering": ("Coursera", "Feature Engineering", "https://www.coursera.org/learn/feature-engineering", False, "intermediate", 10),
+    "abtesting": (LINKEDIN, "A/B Testing Fundamentals", LINKEDIN_SEARCH.format(query="A/B testing"), False, "intermediate", 8),
+    "digitalmarketing": ("Coursera", "Google Digital Marketing & E-commerce Professional Certificate", "https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce", False, "beginner", 25),
+    "sem": ("Coursera", "Google Digital Marketing & E-commerce Professional Certificate", "https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce", False, "intermediate", 12),
+    "seo": ("Coursera", "Search Engine Optimization Fundamentals", "https://www.coursera.org/learn/seo-fundamentals", False, "intermediate", 12),
+    "socialmedia": ("Meta Blueprint", "Meta Blueprint - Social Media Marketing", "https://blueprint.meta.com/", True, "beginner", 12),
+    "campaignmanagement": ("Meta Blueprint", "Meta Blueprint - Campaign Management", "https://blueprint.meta.com/", True, "intermediate", 8),
+    "googleanalytics": ("Google Developers", "Google Analytics Academy", "https://analytics.google.com/analytics/academy/", True, "intermediate", 10),
+    "marketingautomation": ("HubSpot", "HubSpot Academy", "https://academy.hubspot.com/", True, "intermediate", 10),
+    "crm": ("HubSpot", "HubSpot Academy", "https://academy.hubspot.com/", True, "beginner", 8),
+    "hubspot": ("HubSpot", "HubSpot Academy", "https://academy.hubspot.com/", True, "intermediate", 10),
+    "emailmarketing": (LINKEDIN, "Email Marketing", LINKEDIN_SEARCH.format(query="email marketing"), False, "intermediate", 8),
+    "contentstrategy": (LINKEDIN, "Content Strategy", LINKEDIN_SEARCH.format(query="content strategy"), False, "intermediate", 8),
+    "growthstrategy": (LINKEDIN, "Growth Marketing", LINKEDIN_SEARCH.format(query="growth marketing"), False, "intermediate", 10),
+    "brandstrategy": (LINKEDIN, "Brand Strategy", LINKEDIN_SEARCH.format(query="brand strategy"), False, "intermediate", 8),
+    "accounting": (EDX, "Financial Accounting Fundamentals", EDX_SEARCH.format(query="financial accounting"), True, "intermediate", 20),
+    "bookkeeping": ("Coursera", "Intuit Bookkeeping Professional Certificate", "https://www.coursera.org/professional-certificates/intuit-bookkeeping", False, "beginner", 20),
+    "quickbooks": ("Intuit", "QuickBooks Learn & Support", "https://quickbooks.intuit.com/learn/", True, "beginner", 10),
+    "xero": ("Xero", "Xero Training Hub", "https://www.xero.com/us/training/", True, "beginner", 10),
+    "taxpreparation": (LINKEDIN, "Tax Preparation", LINKEDIN_SEARCH.format(query="tax preparation"), False, "intermediate", 12),
+    "financialreporting": (LINKEDIN, "Financial Reporting", LINKEDIN_SEARCH.format(query="financial reporting"), False, "intermediate", 10),
+    "gaap": (LINKEDIN, "GAAP Accounting", LINKEDIN_SEARCH.format(query="GAAP"), False, "intermediate", 10),
+    "auditing": (LINKEDIN, "Internal Auditing", LINKEDIN_SEARCH.format(query="auditing"), False, "intermediate", 10),
+    "financialanalysis": (LINKEDIN, "Financial Analysis", LINKEDIN_SEARCH.format(query="financial analysis"), False, "intermediate", 12),
+    "erp": (LINKEDIN, "ERP Systems", LINKEDIN_SEARCH.format(query="ERP"), False, "intermediate", 10),
+    "sap": ("SAP", "SAP Learning", "https://learning.sap.com/", True, "intermediate", 15),
+    "oraclefinancials": ("Oracle", "Oracle University", "https://education.oracle.com/", False, "intermediate", 15),
+    "recruiting": (LINKEDIN, "Talent Recruiting", LINKEDIN_SEARCH.format(query="recruiting"), False, "intermediate", 8),
+    "talentacquisition": (LINKEDIN, "Talent Acquisition", LINKEDIN_SEARCH.format(query="talent acquisition"), False, "intermediate", 8),
+    "onboarding": (LINKEDIN, "Employee Onboarding", LINKEDIN_SEARCH.format(query="onboarding"), False, "intermediate", 6),
+    "hrpolicies": (LINKEDIN, "HR Policies", LINKEDIN_SEARCH.format(query="HR policies"), False, "intermediate", 6),
+    "employeerelations": (LINKEDIN, "Employee Relations", LINKEDIN_SEARCH.format(query="employee relations"), False, "intermediate", 6),
+    "payroll": (LINKEDIN, "Payroll Management", LINKEDIN_SEARCH.format(query="payroll"), False, "intermediate", 6),
+    "benefitsadministration": (LINKEDIN, "Benefits Administration", LINKEDIN_SEARCH.format(query="benefits administration"), False, "intermediate", 6),
+    "hris": (LINKEDIN, "HRIS Systems", LINKEDIN_SEARCH.format(query="HRIS"), False, "intermediate", 6),
+    "laborlaws": (LINKEDIN, "Labor Law Compliance", LINKEDIN_SEARCH.format(query="labor law"), False, "intermediate", 6),
+    "performancemanagement": (LINKEDIN, "Performance Management", LINKEDIN_SEARCH.format(query="performance management"), False, "intermediate", 6),
+    "ats": (LINKEDIN, "Applicant Tracking Systems", LINKEDIN_SEARCH.format(query="applicant tracking systems"), False, "intermediate", 4),
+    "networksecurity": ("Cisco Skills for All", "Cisco Skills for All - Networking Academy", "https://skillsforall.com/", True, "intermediate", 25),
+    "firewall": ("Cisco Skills for All", "Cisco Skills for All - Firewall Fundamentals", "https://skillsforall.com/", True, "intermediate", 10),
+    "idsips": ("Cisco Skills for All", "Cisco Skills for All - Intrusion Detection", "https://skillsforall.com/", True, "intermediate", 10),
+    "ethicalhacking": ("Cisco Skills for All", "Cisco Skills for All - Ethical Hacking", "https://skillsforall.com/", True, "advanced", 20),
+    "penetrationtesting": ("Coursera", "Google Cybersecurity Professional Certificate", "https://www.coursera.org/professional-certificates/google-cybersecurity", False, "advanced", 25),
+    "siem": ("Coursera", "Google Cybersecurity Professional Certificate", "https://www.coursera.org/professional-certificates/google-cybersecurity", False, "intermediate", 12),
+    "riskassessment": ("Coursera", "Google Cybersecurity Professional Certificate", "https://www.coursera.org/professional-certificates/google-cybersecurity", False, "intermediate", 10),
+    "compliance": ("Coursera", "Google Cybersecurity Professional Certificate", "https://www.coursera.org/professional-certificates/google-cybersecurity", False, "intermediate", 8),
+    "securityauditing": ("Coursera", "Google Cybersecurity Professional Certificate", "https://www.coursera.org/professional-certificates/google-cybersecurity", False, "intermediate", 10),
+    "cryptography": ("Coursera", "Cryptography I", "https://www.coursera.org/learn/crypto", False, "intermediate", 15),
+    "cissp": ("ISC2", "ISC2 Training", "https://www.isc2.org/Training", False, "advanced", 25),
+    "ruby": (LINKEDIN, "Ruby Programming", LINKEDIN_SEARCH.format(query="Ruby"), False, "intermediate", 15),
+    "scala": (LINKEDIN, "Scala Programming", LINKEDIN_SEARCH.format(query="Scala"), False, "intermediate", 15),
+    "communication": (LINKEDIN, "Communication Skills", LINKEDIN_SEARCH.format(query="communication skills"), False, "beginner", 4),
+    "leadership": (LINKEDIN, "Leadership Fundamentals", LINKEDIN_SEARCH.format(query="leadership"), False, "intermediate", 6),
+    "teamwork": (LINKEDIN, "Teamwork and Collaboration", LINKEDIN_SEARCH.format(query="teamwork"), False, "beginner", 4),
+    "collaboration": (LINKEDIN, "Collaboration Skills", LINKEDIN_SEARCH.format(query="collaboration"), False, "beginner", 4),
+    "problemsolving": (LINKEDIN, "Problem Solving Techniques", LINKEDIN_SEARCH.format(query="problem solving"), False, "beginner", 4),
+    "timemanagement": (LINKEDIN, "Time Management", LINKEDIN_SEARCH.format(query="time management"), False, "beginner", 4),
+    "criticalthinking": (LINKEDIN, "Critical Thinking", LINKEDIN_SEARCH.format(query="critical thinking"), False, "beginner", 4),
+    "adaptability": (LINKEDIN, "Adaptability and Agility", LINKEDIN_SEARCH.format(query="adaptability"), False, "beginner", 3),
+    "creativity": (LINKEDIN, "Creativity at Work", LINKEDIN_SEARCH.format(query="creativity"), False, "beginner", 3),
+    "emotionalintelligence": (LINKEDIN, "Emotional Intelligence", LINKEDIN_SEARCH.format(query="emotional intelligence"), False, "beginner", 4),
+    "notion": (LINKEDIN, "Notion Productivity", LINKEDIN_SEARCH.format(query="Notion"), False, "beginner", 3),
+    "slack": (LINKEDIN, "Slack Productivity", LINKEDIN_SEARCH.format(query="Slack"), False, "beginner", 3),
+    "vscode": ("Microsoft Learn", "Visual Studio Code Documentation", "https://code.visualstudio.com/docs", True, "beginner", 4),
+    "riverpod": ("Udemy", "Riverpod State Management for Flutter", UDEMY_SEARCH.format(query="riverpod flutter"), False, "intermediate", 10),
+    "cleanarchitecture": ("Udemy", "Clean Architecture in Flutter", UDEMY_SEARCH.format(query="clean architecture flutter"), False, "intermediate", 12),
+    "fluttertesting": ("Google Developers", "Flutter Official Testing Guide", "https://docs.flutter.dev/testing/overview", True, "intermediate", 8),
+    "flutterdeployment": ("Google Developers", "Flutter Official Deployment Guide", "https://docs.flutter.dev/deployment", True, "intermediate", 8),
+    "projectmanagement": ("Coursera", "Google Project Management Professional Certificate", "https://www.coursera.org/professional-certificates/google-project-management", False, "intermediate", 25),
+    "versioncontrol": ("GitHub", "GitHub Skills", "https://skills.github.com/", True, "beginner", 6),
+    "unittesting": (LINKEDIN, "Unit Testing Fundamentals", LINKEDIN_SEARCH.format(query="unit testing"), False, "intermediate", 8),
+    "debugging": (LINKEDIN, "Debugging Techniques", LINKEDIN_SEARCH.format(query="debugging"), False, "intermediate", 6),
+    "restfulapi": ("freeCodeCamp", "Back End Development and APIs", "https://www.freecodecamp.org/learn/back-end-development-and-apis/", True, "intermediate", 12),
+    "restapi": ("freeCodeCamp", "Back End Development and APIs", "https://www.freecodecamp.org/learn/back-end-development-and-apis/", True, "intermediate", 12),
+    "apidevelopment": (LINKEDIN, "API Development", LINKEDIN_SEARCH.format(query="API development"), False, "intermediate", 8),
+    "performanceoptimization": (LINKEDIN, "Performance Optimization", LINKEDIN_SEARCH.format(query="performance optimization"), False, "advanced", 10),
+    "responsivewebdesign": ("freeCodeCamp", "Responsive Web Design", "https://www.freecodecamp.org/learn/responsive-web-design/", True, "beginner", 20),
+    "crossplatform": (LINKEDIN, "Cross-Platform Mobile Development", LINKEDIN_SEARCH.format(query="cross-platform development"), False, "intermediate", 10),
+    "mobiletesting": (LINKEDIN, "Mobile App Testing", LINKEDIN_SEARCH.format(query="mobile app testing"), False, "intermediate", 8),
+}
+
+EXTRA_SKILLS = [
+    "Communication", "Leadership", "Teamwork", "Problem Solving", "Time Management",
+    "Critical Thinking", "Collaboration", "Adaptability", "Creativity", "Emotional Intelligence",
+    "Postman", "Confluence", "Notion", "Slack", "VS Code", "GitHub Actions", "APIs",
+    "Dart", "Firebase", "REST", "Git", "YAML", "Shell Scripting", "Excel", "Looker",
+    "Data Cleaning", "Dashboarding", "Reporting", "Data Analysis", "Mobile UI", "App Store",
+    "Model Deployment", "User Flows", "Personas", "Data Modeling", "Data Pipeline", "Data Warehouse",
+    "Riverpod", "Clean Architecture", "Project Management", "Version Control", "Unit Testing",
+    "Debugging", "Restful API", "Performance Optimization", "Rest API", "API Development",
+    "Responsive Web Design", "Cross Platform", "Mobile Testing", "Flutter Testing", "Flutter Deployment",
+]
+
+DIFFICULTY_OVERRIDES = {
+    "kubernetes": "advanced", "helm": "advanced", "systemdesign": "advanced",
+    "deeplearning": "advanced", "computervision": "advanced", "mlops": "advanced",
+    "modeldeployment": "advanced", "microservices": "advanced", "spark": "advanced",
+    "datawarehouse": "advanced", "penetrationtesting": "advanced", "ethicalhacking": "advanced",
+    "cissp": "advanced", "kafka": "advanced", "datapipeline": "advanced",
+    "mobilearchitecture": "advanced",
+    "hadoop": "intermediate",
+}
+
+BASE_HOURS = {"beginner": 8, "intermediate": 16, "advanced": 28}
+
+DOMAIN_FALLBACK = {
+    "beginner": (
+        "LinkedIn Learning",
+        "Learn {skill} - Key Concepts",
+        LINKEDIN_SEARCH,
+        False,
+        "beginner",
+    ),
+    "intermediate": (
+        "LinkedIn Learning",
+        "{skill} in Practice",
+        LINKEDIN_SEARCH,
+        False,
+        "intermediate",
+    ),
+    "advanced": (
+        "Udemy",
+        "Advanced {skill} Masterclass",
+        UDEMY_SEARCH,
+        False,
+        "advanced",
+    ),
+}
+
+
+class Command(BaseCommand):
+    help = "Builds the curated course catalog at data/course_catalog.json from the profession skill universe."
+
+    def handle(self, *args, **options):
+        skill_names = set()
+        for config in PROFESSION_CONFIGS.values():
+            skill_names.update(config["skills"].keys())
+        skill_names.update(EXTRA_SKILLS)
+
+        catalog = {}
+        for raw_name in sorted(skill_names, key=str.lower):
+            key = normalize_skill(raw_name)
+            if not key:
+                continue
+            entry = CORE_ENTRIES.get(key)
+            if entry is None:
+                entry = self._fallback_entry(key, raw_name)
+            provider, title, url, free, difficulty, hours = entry
+            if difficulty == "beginner" and key in DIFFICULTY_OVERRIDES:
+                difficulty = DIFFICULTY_OVERRIDES[key]
+            catalog[key] = {
+                "provider": provider,
+                "title": title,
+                "url": url,
+                "free": bool(free),
+                "difficulty": difficulty,
+                "hours": int(hours),
+            }
+
+        target = settings.DATA_DIR / "course_catalog.json"
+        target.write_text(
+            json.dumps(catalog, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        self.stdout.write(self.style.SUCCESS(f"Wrote {len(catalog)} catalog entries to {target}"))
+
+    def _fallback_entry(self, key, raw_name):
+        difficulty = DIFFICULTY_OVERRIDES.get(key, "beginner")
+        hours = BASE_HOURS[difficulty]
+        provider, title, url, free, _ = DOMAIN_FALLBACK[difficulty]
+        display = display_name(raw_name)
+        return provider, title.format(skill=display), url.format(query=display), free, difficulty, hours

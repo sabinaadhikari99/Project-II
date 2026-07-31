@@ -1,0 +1,1850 @@
+{
+  "a/btesting": {
+    "provider": "LinkedIn Learning",
+    "title": "Learn A/B Testing - Key Concepts",
+    "url": "https://www.linkedin.com/learning/search?keywords=A/B Testing",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 8
+  },
+  "accounting": {
+    "provider": "edX",
+    "title": "Financial Accounting Fundamentals",
+    "url": "https://www.edx.org/search?q=financial accounting",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "adaptability": {
+    "provider": "LinkedIn Learning",
+    "title": "Adaptability and Agility",
+    "url": "https://www.linkedin.com/learning/search?keywords=adaptability",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 3
+  },
+  "adobexd": {
+    "provider": "Adobe",
+    "title": "Adobe XD Tutorials",
+    "url": "https://helpx.adobe.com/xd/tutorials.html",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "agile": {
+    "provider": "Coursera",
+    "title": "Agile Project Management",
+    "url": "https://www.coursera.org/learn/agile-project-management",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "airflow": {
+    "provider": "Airflow",
+    "title": "Apache Airflow Fundamentals",
+    "url": "https://www.astronomer.io/learn/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "algorithms": {
+    "provider": "Coursera",
+    "title": "Algorithms Part I",
+    "url": "https://www.coursera.org/learn/algorithms-part1",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "android": {
+    "provider": "Google Developers",
+    "title": "Android Developers Courses",
+    "url": "https://developer.android.com/courses",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "angular": {
+    "provider": "Angular",
+    "title": "Angular Official Tutorials",
+    "url": "https://angular.dev/tutorials",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "ansible": {
+    "provider": "Red Hat",
+    "title": "Ansible Getting Started",
+    "url": "https://docs.ansible.com/ansible/latest/getting_started/index.html",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "apidesign": {
+    "provider": "LinkedIn Learning",
+    "title": "API Design",
+    "url": "https://www.linkedin.com/learning/search?keywords=API design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "apidevelopment": {
+    "provider": "LinkedIn Learning",
+    "title": "API Development",
+    "url": "https://www.linkedin.com/learning/search?keywords=API development",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "apis": {
+    "provider": "freeCodeCamp",
+    "title": "Back End Development and APIs",
+    "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 18
+  },
+  "appstore": {
+    "provider": "Apple",
+    "title": "App Store Resources",
+    "url": "https://developer.apple.com/app-store/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "ats": {
+    "provider": "LinkedIn Learning",
+    "title": "Applicant Tracking Systems",
+    "url": "https://www.linkedin.com/learning/search?keywords=applicant tracking systems",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 4
+  },
+  "auditing": {
+    "provider": "LinkedIn Learning",
+    "title": "Internal Auditing",
+    "url": "https://www.linkedin.com/learning/search?keywords=auditing",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "aws": {
+    "provider": "AWS Skill Builder",
+    "title": "AWS Skill Builder",
+    "url": "https://skillbuilder.aws/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 30
+  },
+  "azure": {
+    "provider": "Microsoft Learn",
+    "title": "Microsoft Learn - Azure",
+    "url": "https://learn.microsoft.com/en-us/training/azure/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "benefitsadministration": {
+    "provider": "LinkedIn Learning",
+    "title": "Benefits Administration",
+    "url": "https://www.linkedin.com/learning/search?keywords=benefits administration",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "bigquery": {
+    "provider": "Coursera",
+    "title": "Google Cloud Data Engineering Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/gcp-data-engineering",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "bookkeeping": {
+    "provider": "Coursera",
+    "title": "Intuit Bookkeeping Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/intuit-bookkeeping",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 20
+  },
+  "bootstrap": {
+    "provider": "freeCodeCamp",
+    "title": "Front End Development Libraries",
+    "url": "https://www.freecodecamp.org/learn/front-end-development-libraries/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 8
+  },
+  "brandstrategy": {
+    "provider": "LinkedIn Learning",
+    "title": "Brand Strategy",
+    "url": "https://www.linkedin.com/learning/search?keywords=brand strategy",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "branding": {
+    "provider": "LinkedIn Learning",
+    "title": "Branding Fundamentals",
+    "url": "https://www.linkedin.com/learning/search?keywords=branding",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "csharp": {
+    "provider": "Microsoft Learn",
+    "title": "Microsoft Learn - C#",
+    "url": "https://learn.microsoft.com/en-us/dotnet/csharp/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "cplusplus": {
+    "provider": "Microsoft Learn",
+    "title": "Microsoft Learn - C++",
+    "url": "https://learn.microsoft.com/en-us/cpp/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "campaignmanagement": {
+    "provider": "Meta Blueprint",
+    "title": "Meta Blueprint - Campaign Management",
+    "url": "https://blueprint.meta.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "canva": {
+    "provider": "Canva",
+    "title": "Canva Design School",
+    "url": "https://www.canva.com/learn/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "celery": {
+    "provider": "LinkedIn Learning",
+    "title": "Celery Task Queues with Django",
+    "url": "https://www.linkedin.com/learning/search?keywords=Celery Django",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "cicd": {
+    "provider": "GitHub",
+    "title": "GitHub Actions Documentation",
+    "url": "https://docs.github.com/en/actions",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "cissp": {
+    "provider": "ISC2",
+    "title": "ISC2 Training",
+    "url": "https://www.isc2.org/Training",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 25
+  },
+  "cleanarchitecture": {
+    "provider": "Udemy",
+    "title": "Clean Architecture in Flutter",
+    "url": "https://www.udemy.com/courses/search/?q=clean architecture flutter",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "collaboration": {
+    "provider": "LinkedIn Learning",
+    "title": "Collaboration Skills",
+    "url": "https://www.linkedin.com/learning/search?keywords=collaboration",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "colortheory": {
+    "provider": "Canva",
+    "title": "Color Theory",
+    "url": "https://www.canva.com/learn/color-theory/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "communication": {
+    "provider": "LinkedIn Learning",
+    "title": "Communication Skills",
+    "url": "https://www.linkedin.com/learning/search?keywords=communication skills",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "compliance": {
+    "provider": "Coursera",
+    "title": "Google Cybersecurity Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "computervision": {
+    "provider": "Coursera",
+    "title": "Introduction to Computer Vision",
+    "url": "https://www.coursera.org/learn/computer-vision-basics",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 18
+  },
+  "confluence": {
+    "provider": "Atlassian",
+    "title": "Atlassian University",
+    "url": "https://university.atlassian.com/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "contentstrategy": {
+    "provider": "LinkedIn Learning",
+    "title": "Content Strategy",
+    "url": "https://www.linkedin.com/learning/search?keywords=content strategy",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "creativity": {
+    "provider": "LinkedIn Learning",
+    "title": "Creativity at Work",
+    "url": "https://www.linkedin.com/learning/search?keywords=creativity",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 3
+  },
+  "criticalthinking": {
+    "provider": "LinkedIn Learning",
+    "title": "Critical Thinking",
+    "url": "https://www.linkedin.com/learning/search?keywords=critical thinking",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "crm": {
+    "provider": "HubSpot",
+    "title": "HubSpot Academy",
+    "url": "https://academy.hubspot.com/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 8
+  },
+  "crossplatform": {
+    "provider": "LinkedIn Learning",
+    "title": "Cross-Platform Mobile Development",
+    "url": "https://www.linkedin.com/learning/search?keywords=cross-platform development",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "cryptography": {
+    "provider": "Coursera",
+    "title": "Cryptography I",
+    "url": "https://www.coursera.org/learn/crypto",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "css": {
+    "provider": "freeCodeCamp",
+    "title": "Responsive Web Design",
+    "url": "https://www.freecodecamp.org/learn/responsive-web-design/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 20
+  },
+  "dart": {
+    "provider": "Google Developers",
+    "title": "Dart Official Learning",
+    "url": "https://dart.dev/learn",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 10
+  },
+  "dashboarding": {
+    "provider": "Coursera",
+    "title": "Google Business Intelligence Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-business-intelligence",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 18
+  },
+  "dataanalysis": {
+    "provider": "Coursera",
+    "title": "Google Data Analytics Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "datacleaning": {
+    "provider": "Coursera",
+    "title": "Google Data Analytics Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "datamodeling": {
+    "provider": "LinkedIn Learning",
+    "title": "Data Modeling Fundamentals",
+    "url": "https://www.linkedin.com/learning/search?keywords=data modeling",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "datapipeline": {
+    "provider": "Coursera",
+    "title": "Google Cloud Data Engineering Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/gcp-data-engineering",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 25
+  },
+  "datastructures": {
+    "provider": "Coursera",
+    "title": "Data Structures",
+    "url": "https://www.coursera.org/learn/data-structures",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "datavisualization": {
+    "provider": "Coursera",
+    "title": "Data Visualization Specialization",
+    "url": "https://www.coursera.org/specializations/data-visualization",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "datawarehouse": {
+    "provider": "Coursera",
+    "title": "Google Cloud Data Engineering Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/gcp-data-engineering",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 30
+  },
+  "debugging": {
+    "provider": "LinkedIn Learning",
+    "title": "Debugging Techniques",
+    "url": "https://www.linkedin.com/learning/search?keywords=debugging",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "deeplearning": {
+    "provider": "Coursera",
+    "title": "Deep Learning Specialization",
+    "url": "https://www.coursera.org/specializations/deep-learning",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 40
+  },
+  "designpatterns": {
+    "provider": "LinkedIn Learning",
+    "title": "Software Design Patterns",
+    "url": "https://www.linkedin.com/learning/search?keywords=design patterns",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "designsystems": {
+    "provider": "Figma",
+    "title": "Design Systems in Figma",
+    "url": "https://www.figma.com/resources/learn/design/design-systems/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "digitalmarketing": {
+    "provider": "Coursera",
+    "title": "Google Digital Marketing & E-commerce Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 25
+  },
+  "django": {
+    "provider": "Django",
+    "title": "Django Official Tutorial",
+    "url": "https://docs.djangoproject.com/en/5.0/intro/tutorial01/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "djangorestframework": {
+    "provider": "Django REST Framework",
+    "title": "Django REST Framework Tutorial",
+    "url": "https://www.django-rest-framework.org/tutorial/quickstart/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "docker": {
+    "provider": "Docker",
+    "title": "Docker 101 Tutorial",
+    "url": "https://www.docker.com/101-tutorial/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 8
+  },
+  "elkstack": {
+    "provider": "Elastic",
+    "title": "Elastic Training",
+    "url": "https://www.elastic.co/training",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "emailmarketing": {
+    "provider": "LinkedIn Learning",
+    "title": "Email Marketing",
+    "url": "https://www.linkedin.com/learning/search?keywords=email marketing",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "emotionalintelligence": {
+    "provider": "LinkedIn Learning",
+    "title": "Emotional Intelligence",
+    "url": "https://www.linkedin.com/learning/search?keywords=emotional intelligence",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "employeerelations": {
+    "provider": "LinkedIn Learning",
+    "title": "Employee Relations",
+    "url": "https://www.linkedin.com/learning/search?keywords=employee relations",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "erp": {
+    "provider": "LinkedIn Learning",
+    "title": "ERP Systems",
+    "url": "https://www.linkedin.com/learning/search?keywords=ERP",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "ethicalhacking": {
+    "provider": "Cisco Skills for All",
+    "title": "Cisco Skills for All - Ethical Hacking",
+    "url": "https://skillsforall.com/",
+    "free": true,
+    "difficulty": "advanced",
+    "hours": 20
+  },
+  "etl": {
+    "provider": "Coursera",
+    "title": "IBM ETL and Data Pipelines",
+    "url": "https://www.coursera.org/learn/etl-and-data-pipelines-shell-airflow-kafka",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 16
+  },
+  "excel": {
+    "provider": "Coursera",
+    "title": "Excel Skills for Business Specialization",
+    "url": "https://www.coursera.org/specializations/excel",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 25
+  },
+  "express": {
+    "provider": "Express",
+    "title": "Express Getting Started",
+    "url": "https://expressjs.com/en/starter/installing.html",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "faiss": {
+    "provider": "Google Developers",
+    "title": "FAISS Getting Started",
+    "url": "https://github.com/facebookresearch/faiss/wiki/Getting-started",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "fastapi": {
+    "provider": "FastAPI",
+    "title": "FastAPI Official Tutorial",
+    "url": "https://fastapi.tiangolo.com/tutorial/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "featureengineering": {
+    "provider": "Coursera",
+    "title": "Feature Engineering",
+    "url": "https://www.coursera.org/learn/feature-engineering",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "figma": {
+    "provider": "Figma",
+    "title": "Figma Learn",
+    "url": "https://www.figma.com/resources/learn/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 12
+  },
+  "financialanalysis": {
+    "provider": "LinkedIn Learning",
+    "title": "Financial Analysis",
+    "url": "https://www.linkedin.com/learning/search?keywords=financial analysis",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "financialreporting": {
+    "provider": "LinkedIn Learning",
+    "title": "Financial Reporting",
+    "url": "https://www.linkedin.com/learning/search?keywords=financial reporting",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "firebase": {
+    "provider": "Google Developers",
+    "title": "Firebase Official Learning",
+    "url": "https://firebase.google.com/learn",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "firewall": {
+    "provider": "Cisco Skills for All",
+    "title": "Cisco Skills for All - Firewall Fundamentals",
+    "url": "https://skillsforall.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "flask": {
+    "provider": "Flask",
+    "title": "Flask Official Tutorial",
+    "url": "https://flask.palletsprojects.com/en/stable/tutorial/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "flutter": {
+    "provider": "Google Developers",
+    "title": "Flutter Official Learning",
+    "url": "https://flutter.dev/learn",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "flutterdeployment": {
+    "provider": "Google Developers",
+    "title": "Flutter Official Deployment Guide",
+    "url": "https://docs.flutter.dev/deployment",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "fluttertesting": {
+    "provider": "Google Developers",
+    "title": "Flutter Official Testing Guide",
+    "url": "https://docs.flutter.dev/testing/overview",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "gaap": {
+    "provider": "LinkedIn Learning",
+    "title": "GAAP Accounting",
+    "url": "https://www.linkedin.com/learning/search?keywords=GAAP",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "gcp": {
+    "provider": "Google Developers",
+    "title": "Google Cloud Training",
+    "url": "https://cloud.google.com/training",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "git": {
+    "provider": "GitHub",
+    "title": "GitHub Skills",
+    "url": "https://skills.github.com/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "githubactions": {
+    "provider": "GitHub",
+    "title": "GitHub Actions Documentation",
+    "url": "https://docs.github.com/en/actions",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "go": {
+    "provider": "Go",
+    "title": "Go Learn",
+    "url": "https://go.dev/learn/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "googleanalytics": {
+    "provider": "Google Developers",
+    "title": "Google Analytics Academy",
+    "url": "https://analytics.google.com/analytics/academy/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "grafana": {
+    "provider": "Grafana",
+    "title": "Grafana Training",
+    "url": "https://grafana.com/training/",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "graphql": {
+    "provider": "Apollo",
+    "title": "Apollo GraphQL Tutorials",
+    "url": "https://www.apollographql.com/tutorials",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "growthstrategy": {
+    "provider": "LinkedIn Learning",
+    "title": "Growth Marketing",
+    "url": "https://www.linkedin.com/learning/search?keywords=growth marketing",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "hadoop": {
+    "provider": "Coursera",
+    "title": "Introduction to Big Data",
+    "url": "https://www.coursera.org/learn/introduction-to-big-data",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "helm": {
+    "provider": "Kubernetes",
+    "title": "Kubernetes Official Training",
+    "url": "https://kubernetes.io/training/",
+    "free": true,
+    "difficulty": "advanced",
+    "hours": 12
+  },
+  "hrpolicies": {
+    "provider": "LinkedIn Learning",
+    "title": "HR Policies",
+    "url": "https://www.linkedin.com/learning/search?keywords=HR policies",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "hris": {
+    "provider": "LinkedIn Learning",
+    "title": "HRIS Systems",
+    "url": "https://www.linkedin.com/learning/search?keywords=HRIS",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "html": {
+    "provider": "freeCodeCamp",
+    "title": "Responsive Web Design",
+    "url": "https://www.freecodecamp.org/learn/responsive-web-design/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 20
+  },
+  "hubspot": {
+    "provider": "HubSpot",
+    "title": "HubSpot Academy",
+    "url": "https://academy.hubspot.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "ids/ips": {
+    "provider": "LinkedIn Learning",
+    "title": "Learn IDS/IPS - Key Concepts",
+    "url": "https://www.linkedin.com/learning/search?keywords=IDS/IPS",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 8
+  },
+  "illustrator": {
+    "provider": "Adobe",
+    "title": "Illustrator Tutorials",
+    "url": "https://helpx.adobe.com/illustrator/tutorials.html",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 15
+  },
+  "indesign": {
+    "provider": "Adobe",
+    "title": "InDesign Tutorials",
+    "url": "https://helpx.adobe.com/indesign/tutorials.html",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 12
+  },
+  "informationarchitecture": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "interactiondesign": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "ios": {
+    "provider": "Apple",
+    "title": "Apple Developer Tutorials",
+    "url": "https://developer.apple.com/tutorials/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "java": {
+    "provider": "Oracle",
+    "title": "Java Programming Tutorials",
+    "url": "https://dev.java/learn/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 25
+  },
+  "javascript": {
+    "provider": "freeCodeCamp",
+    "title": "JavaScript Algorithms and Data Structures",
+    "url": "https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 30
+  },
+  "jenkins": {
+    "provider": "Jenkins",
+    "title": "Jenkins User Documentation",
+    "url": "https://www.jenkins.io/doc/tutorials/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "jira": {
+    "provider": "Atlassian",
+    "title": "Atlassian University",
+    "url": "https://university.atlassian.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "kafka": {
+    "provider": "Confluent",
+    "title": "Confluent Developer Courses",
+    "url": "https://developer.confluent.io/courses/",
+    "free": true,
+    "difficulty": "advanced",
+    "hours": 18
+  },
+  "keras": {
+    "provider": "Coursera",
+    "title": "Introduction to TensorFlow for AI, ML and Deep Learning",
+    "url": "https://www.coursera.org/learn/introduction-tensorflow",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "kotlin": {
+    "provider": "Google Developers",
+    "title": "Android Kotlin Fundamentals",
+    "url": "https://developer.android.com/courses/kotlin-android-fundamentals",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "kubernetes": {
+    "provider": "Kubernetes",
+    "title": "Kubernetes Official Training",
+    "url": "https://kubernetes.io/training/",
+    "free": true,
+    "difficulty": "advanced",
+    "hours": 25
+  },
+  "laborlaws": {
+    "provider": "LinkedIn Learning",
+    "title": "Labor Law Compliance",
+    "url": "https://www.linkedin.com/learning/search?keywords=labor law",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "layout": {
+    "provider": "Canva",
+    "title": "Layout Design Basics",
+    "url": "https://www.canva.com/learn/layout-design/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "leadership": {
+    "provider": "LinkedIn Learning",
+    "title": "Leadership Fundamentals",
+    "url": "https://www.linkedin.com/learning/search?keywords=leadership",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "linux": {
+    "provider": "Linux Foundation",
+    "title": "Linux Foundation Training",
+    "url": "https://training.linuxfoundation.org/",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 20
+  },
+  "logos": {
+    "provider": "Canva",
+    "title": "Logo Design Guide",
+    "url": "https://www.canva.com/learn/logo-design/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "looker": {
+    "provider": "Coursera",
+    "title": "Google Business Intelligence Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-business-intelligence",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "machinelearning": {
+    "provider": "Google Developers",
+    "title": "Machine Learning Crash Course",
+    "url": "https://developers.google.com/machine-learning/crash-course",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 15
+  },
+  "marketresearch": {
+    "provider": "LinkedIn Learning",
+    "title": "Market Research",
+    "url": "https://www.linkedin.com/learning/search?keywords=market research",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "marketingautomation": {
+    "provider": "HubSpot",
+    "title": "HubSpot Academy",
+    "url": "https://academy.hubspot.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "matplotlib": {
+    "provider": "Coursera",
+    "title": "IBM Data Analysis with Python",
+    "url": "https://www.coursera.org/learn/data-analysis-with-python",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "microservices": {
+    "provider": "LinkedIn Learning",
+    "title": "Microservices Architecture",
+    "url": "https://www.linkedin.com/learning/search?keywords=microservices",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 15
+  },
+  "mlops": {
+    "provider": "Coursera",
+    "title": "Machine Learning Engineering for Production (MLOps)",
+    "url": "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 35
+  },
+  "mobilearchitecture": {
+    "provider": "LinkedIn Learning",
+    "title": "Mobile App Architecture",
+    "url": "https://www.linkedin.com/learning/search?keywords=mobile app architecture",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 10
+  },
+  "mobiletesting": {
+    "provider": "LinkedIn Learning",
+    "title": "Mobile App Testing",
+    "url": "https://www.linkedin.com/learning/search?keywords=mobile app testing",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "mobileui": {
+    "provider": "LinkedIn Learning",
+    "title": "Mobile UI Design",
+    "url": "https://www.linkedin.com/learning/search?keywords=mobile UI design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "modeldeployment": {
+    "provider": "Coursera",
+    "title": "Machine Learning Engineering for Production (MLOps)",
+    "url": "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 20
+  },
+  "mongodb": {
+    "provider": "MongoDB",
+    "title": "MongoDB University",
+    "url": "https://learn.mongodb.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "mysql": {
+    "provider": "MySQL",
+    "title": "MySQL Official Tutorial",
+    "url": "https://dev.mysql.com/doc/mysql-tutorial/en/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 10
+  },
+  "networksecurity": {
+    "provider": "Cisco Skills for All",
+    "title": "Cisco Skills for All - Networking Academy",
+    "url": "https://skillsforall.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "next.js": {
+    "provider": "Next.js",
+    "title": "Next.js Learn",
+    "url": "https://nextjs.org/learn",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "nlp": {
+    "provider": "Coursera",
+    "title": "Natural Language Processing Specialization",
+    "url": "https://www.coursera.org/specializations/natural-language-processing",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 30
+  },
+  "node.js": {
+    "provider": "Node.js",
+    "title": "Node.js Learn",
+    "url": "https://nodejs.org/en/learn",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "notion": {
+    "provider": "LinkedIn Learning",
+    "title": "Notion Productivity",
+    "url": "https://www.linkedin.com/learning/search?keywords=Notion",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 3
+  },
+  "numpy": {
+    "provider": "Coursera",
+    "title": "IBM Python for Data Science, AI & Development",
+    "url": "https://www.coursera.org/learn/python-for-applied-data-science-ai",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 16
+  },
+  "onboarding": {
+    "provider": "LinkedIn Learning",
+    "title": "Employee Onboarding",
+    "url": "https://www.linkedin.com/learning/search?keywords=onboarding",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "oop": {
+    "provider": "LinkedIn Learning",
+    "title": "Object-Oriented Programming",
+    "url": "https://www.linkedin.com/learning/search?keywords=object-oriented programming",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "oraclefinancials": {
+    "provider": "Oracle",
+    "title": "Oracle University",
+    "url": "https://education.oracle.com/",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "pandas": {
+    "provider": "Coursera",
+    "title": "IBM Data Analysis with Python",
+    "url": "https://www.coursera.org/learn/data-analysis-with-python",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 18
+  },
+  "payroll": {
+    "provider": "LinkedIn Learning",
+    "title": "Payroll Management",
+    "url": "https://www.linkedin.com/learning/search?keywords=payroll",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "penetrationtesting": {
+    "provider": "Coursera",
+    "title": "Google Cybersecurity Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 25
+  },
+  "performancemanagement": {
+    "provider": "LinkedIn Learning",
+    "title": "Performance Management",
+    "url": "https://www.linkedin.com/learning/search?keywords=performance management",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "performanceoptimization": {
+    "provider": "LinkedIn Learning",
+    "title": "Performance Optimization",
+    "url": "https://www.linkedin.com/learning/search?keywords=performance optimization",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 10
+  },
+  "personas": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "photoshop": {
+    "provider": "Adobe",
+    "title": "Photoshop Tutorials",
+    "url": "https://helpx.adobe.com/photoshop/tutorials.html",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 15
+  },
+  "postgresql": {
+    "provider": "PostgreSQL",
+    "title": "PostgreSQL Official Tutorial",
+    "url": "https://www.postgresql.org/docs/current/tutorial.html",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "postman": {
+    "provider": "Postman",
+    "title": "Postman Learning Center",
+    "url": "https://learning.postman.com/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "powerbi": {
+    "provider": "Microsoft Learn",
+    "title": "Microsoft Power BI Training",
+    "url": "https://learn.microsoft.com/en-us/training/powerplatform/power-bi",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "printdesign": {
+    "provider": "LinkedIn Learning",
+    "title": "Print Design",
+    "url": "https://www.linkedin.com/learning/search?keywords=print design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "probability": {
+    "provider": "edX",
+    "title": "Introduction to Probability",
+    "url": "https://www.edx.org/search?q=probability",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "problemsolving": {
+    "provider": "LinkedIn Learning",
+    "title": "Problem Solving Techniques",
+    "url": "https://www.linkedin.com/learning/search?keywords=problem solving",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "productmetrics": {
+    "provider": "LinkedIn Learning",
+    "title": "Product Analytics and Metrics",
+    "url": "https://www.linkedin.com/learning/search?keywords=product analytics",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "productstrategy": {
+    "provider": "LinkedIn Learning",
+    "title": "Product Strategy",
+    "url": "https://www.linkedin.com/learning/search?keywords=product strategy",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "projectmanagement": {
+    "provider": "Coursera",
+    "title": "Google Project Management Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-project-management",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "prometheus": {
+    "provider": "LinkedIn Learning",
+    "title": "Monitoring with Prometheus",
+    "url": "https://www.linkedin.com/learning/search?keywords=prometheus",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "prototyping": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "python": {
+    "provider": "Coursera",
+    "title": "Python for Everybody",
+    "url": "https://www.coursera.org/specializations/python",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 30
+  },
+  "pytorch": {
+    "provider": "Coursera",
+    "title": "PyTorch and Deep Learning Fundamentals",
+    "url": "https://www.coursera.org/learn/pytorch-and-deep-learning-fundamentals",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 16
+  },
+  "quickbooks": {
+    "provider": "Intuit",
+    "title": "QuickBooks Learn & Support",
+    "url": "https://quickbooks.intuit.com/learn/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 10
+  },
+  "r": {
+    "provider": "Coursera",
+    "title": "R Programming",
+    "url": "https://www.coursera.org/learn/r-programming",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 18
+  },
+  "rabbitmq": {
+    "provider": "RabbitMQ",
+    "title": "RabbitMQ Getting Started",
+    "url": "https://www.rabbitmq.com/getstarted.html",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "react": {
+    "provider": "freeCodeCamp",
+    "title": "Front End Development Libraries",
+    "url": "https://www.freecodecamp.org/learn/front-end-development-libraries/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "reactnative": {
+    "provider": "Coursera",
+    "title": "Meta React Native Specialization",
+    "url": "https://www.coursera.org/specializations/meta-react-native",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 30
+  },
+  "recruiting": {
+    "provider": "LinkedIn Learning",
+    "title": "Talent Recruiting",
+    "url": "https://www.linkedin.com/learning/search?keywords=recruiting",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "redis": {
+    "provider": "Redis",
+    "title": "Redis University",
+    "url": "https://university.redis.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "redshift": {
+    "provider": "AWS Skill Builder",
+    "title": "AWS Skill Builder - Analytics",
+    "url": "https://skillbuilder.aws/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "redux": {
+    "provider": "Redux",
+    "title": "Redux Essentials Tutorial",
+    "url": "https://redux.js.org/tutorials/essentials/part-1-overview-concepts",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "reporting": {
+    "provider": "Coursera",
+    "title": "Google Business Intelligence Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-business-intelligence",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "responsivedesign": {
+    "provider": "freeCodeCamp",
+    "title": "Responsive Web Design",
+    "url": "https://www.freecodecamp.org/learn/responsive-web-design/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 15
+  },
+  "responsivewebdesign": {
+    "provider": "freeCodeCamp",
+    "title": "Responsive Web Design",
+    "url": "https://www.freecodecamp.org/learn/responsive-web-design/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 20
+  },
+  "rest": {
+    "provider": "freeCodeCamp",
+    "title": "Back End Development and APIs",
+    "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 12
+  },
+  "restapi": {
+    "provider": "freeCodeCamp",
+    "title": "Back End Development and APIs",
+    "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "restapis": {
+    "provider": "freeCodeCamp",
+    "title": "Back End Development and APIs",
+    "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 18
+  },
+  "restfulapi": {
+    "provider": "freeCodeCamp",
+    "title": "Back End Development and APIs",
+    "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "riskassessment": {
+    "provider": "Coursera",
+    "title": "Google Cybersecurity Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "riverpod": {
+    "provider": "Udemy",
+    "title": "Riverpod State Management for Flutter",
+    "url": "https://www.udemy.com/courses/search/?q=riverpod flutter",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "roadmapping": {
+    "provider": "LinkedIn Learning",
+    "title": "Product Roadmapping",
+    "url": "https://www.linkedin.com/learning/search?keywords=product roadmap",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "ruby": {
+    "provider": "LinkedIn Learning",
+    "title": "Ruby Programming",
+    "url": "https://www.linkedin.com/learning/search?keywords=Ruby",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "rust": {
+    "provider": "Rust",
+    "title": "The Rust Programming Language Book",
+    "url": "https://doc.rust-lang.org/book/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 25
+  },
+  "sap": {
+    "provider": "SAP",
+    "title": "SAP Learning",
+    "url": "https://learning.sap.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "scala": {
+    "provider": "LinkedIn Learning",
+    "title": "Scala Programming",
+    "url": "https://www.linkedin.com/learning/search?keywords=Scala",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "scikitlearn": {
+    "provider": "Coursera",
+    "title": "IBM Machine Learning with Python",
+    "url": "https://www.coursera.org/learn/machine-learning-with-python",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "scrum": {
+    "provider": "Coursera",
+    "title": "Agile Project Management",
+    "url": "https://www.coursera.org/learn/agile-project-management",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "scss": {
+    "provider": "Sass",
+    "title": "Sass Official Guide",
+    "url": "https://sass-lang.com/guide",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "seaborn": {
+    "provider": "Coursera",
+    "title": "IBM Data Analysis with Python",
+    "url": "https://www.coursera.org/learn/data-analysis-with-python",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "securityauditing": {
+    "provider": "Coursera",
+    "title": "Google Cybersecurity Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "sem": {
+    "provider": "Coursera",
+    "title": "Google Digital Marketing & E-commerce Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "seo": {
+    "provider": "Coursera",
+    "title": "Search Engine Optimization Fundamentals",
+    "url": "https://www.coursera.org/learn/seo-fundamentals",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "shellscripting": {
+    "provider": "LinkedIn Learning",
+    "title": "Linux Shell Scripting",
+    "url": "https://www.linkedin.com/learning/search?keywords=shell scripting",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "siem": {
+    "provider": "Coursera",
+    "title": "Google Cybersecurity Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "sketch": {
+    "provider": "Sketch",
+    "title": "Sketch Learn",
+    "url": "https://www.sketch.com/learn/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "slack": {
+    "provider": "LinkedIn Learning",
+    "title": "Slack Productivity",
+    "url": "https://www.linkedin.com/learning/search?keywords=Slack",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 3
+  },
+  "snowflake": {
+    "provider": "Snowflake",
+    "title": "Snowflake Learning Portal",
+    "url": "https://learn.snowflake.com/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "socialmedia": {
+    "provider": "Meta Blueprint",
+    "title": "Meta Blueprint - Social Media Marketing",
+    "url": "https://blueprint.meta.com/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 12
+  },
+  "spark": {
+    "provider": "Coursera",
+    "title": "IBM Big Data with Spark and Hadoop",
+    "url": "https://www.coursera.org/learn/ibm-big-data-strategy",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 20
+  },
+  "springboot": {
+    "provider": "Spring",
+    "title": "Spring Learn",
+    "url": "https://spring.io/learn",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "sql": {
+    "provider": "freeCodeCamp",
+    "title": "Relational Database",
+    "url": "https://www.freecodecamp.org/learn/relational-database/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 20
+  },
+  "stakeholdermanagement": {
+    "provider": "LinkedIn Learning",
+    "title": "Stakeholder Management",
+    "url": "https://www.linkedin.com/learning/search?keywords=stakeholder management",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "statistics": {
+    "provider": "Coursera",
+    "title": "Basic Statistics",
+    "url": "https://www.coursera.org/learn/basic-statistics",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "svelte": {
+    "provider": "Svelte",
+    "title": "Svelte Official Tutorial",
+    "url": "https://svelte.dev/tutorial",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "swift": {
+    "provider": "Apple",
+    "title": "Swift Programming Language",
+    "url": "https://developer.apple.com/swift/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "swiftui": {
+    "provider": "Apple",
+    "title": "Introducing SwiftUI",
+    "url": "https://developer.apple.com/tutorials/swiftui",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "systemdesign": {
+    "provider": "Coursera",
+    "title": "Software Design and Architecture Specialization",
+    "url": "https://www.coursera.org/specializations/software-design-architecture",
+    "free": false,
+    "difficulty": "advanced",
+    "hours": 25
+  },
+  "tableau": {
+    "provider": "Coursera",
+    "title": "Data Visualization with Tableau",
+    "url": "https://www.coursera.org/specializations/data-visualization",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "tailwindcss": {
+    "provider": "Tailwind CSS",
+    "title": "Tailwind CSS Documentation",
+    "url": "https://tailwindcss.com/docs/installation",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "talentacquisition": {
+    "provider": "LinkedIn Learning",
+    "title": "Talent Acquisition",
+    "url": "https://www.linkedin.com/learning/search?keywords=talent acquisition",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "taxpreparation": {
+    "provider": "LinkedIn Learning",
+    "title": "Tax Preparation",
+    "url": "https://www.linkedin.com/learning/search?keywords=tax preparation",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "tdd": {
+    "provider": "LinkedIn Learning",
+    "title": "Test-Driven Development",
+    "url": "https://www.linkedin.com/learning/search?keywords=test driven development",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "teamwork": {
+    "provider": "LinkedIn Learning",
+    "title": "Teamwork and Collaboration",
+    "url": "https://www.linkedin.com/learning/search?keywords=teamwork",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "tensorflow": {
+    "provider": "Coursera",
+    "title": "Introduction to TensorFlow for AI, ML and Deep Learning",
+    "url": "https://www.coursera.org/learn/introduction-tensorflow",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "terraform": {
+    "provider": "HashiCorp",
+    "title": "Terraform Official Tutorials",
+    "url": "https://developer.hashicorp.com/terraform/tutorials",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 15
+  },
+  "timemanagement": {
+    "provider": "LinkedIn Learning",
+    "title": "Time Management",
+    "url": "https://www.linkedin.com/learning/search?keywords=time management",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "typescript": {
+    "provider": "Microsoft Learn",
+    "title": "Microsoft Learn - TypeScript",
+    "url": "https://learn.microsoft.com/en-us/training/paths/build-javascript-applications-typescript/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "typography": {
+    "provider": "Canva",
+    "title": "Typography Essentials",
+    "url": "https://www.canva.com/learn/typography/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "uidesign": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 20
+  },
+  "uikit": {
+    "provider": "Apple",
+    "title": "UIKit Documentation",
+    "url": "https://developer.apple.com/documentation/uikit",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 10
+  },
+  "unittesting": {
+    "provider": "LinkedIn Learning",
+    "title": "Unit Testing Fundamentals",
+    "url": "https://www.linkedin.com/learning/search?keywords=unit testing",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "usabilitytesting": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "userflows": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "userresearch": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "uxdesign": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 30
+  },
+  "versioncontrol": {
+    "provider": "GitHub",
+    "title": "GitHub Skills",
+    "url": "https://skills.github.com/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 6
+  },
+  "visualdesign": {
+    "provider": "Canva",
+    "title": "Visual Design Principles",
+    "url": "https://www.canva.com/learn/design-elements-principles/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "vite": {
+    "provider": "Vite",
+    "title": "Vite Official Guide",
+    "url": "https://vitejs.dev/guide/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 6
+  },
+  "vscode": {
+    "provider": "Microsoft Learn",
+    "title": "Visual Studio Code Documentation",
+    "url": "https://code.visualstudio.com/docs",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 4
+  },
+  "vue.js": {
+    "provider": "Vue.js",
+    "title": "Vue.js Official Tutorial",
+    "url": "https://vuejs.org/tutorial/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 12
+  },
+  "webpack": {
+    "provider": "Webpack",
+    "title": "Webpack Getting Started Guide",
+    "url": "https://webpack.js.org/guides/getting-started/",
+    "free": true,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "wireframing": {
+    "provider": "Coursera",
+    "title": "Google UX Design Professional Certificate",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "free": false,
+    "difficulty": "intermediate",
+    "hours": 8
+  },
+  "xero": {
+    "provider": "Xero",
+    "title": "Xero Training Hub",
+    "url": "https://www.xero.com/us/training/",
+    "free": true,
+    "difficulty": "beginner",
+    "hours": 10
+  },
+  "yaml": {
+    "provider": "LinkedIn Learning",
+    "title": "YAML Fundamentals",
+    "url": "https://www.linkedin.com/learning/search?keywords=YAML",
+    "free": false,
+    "difficulty": "beginner",
+    "hours": 4
+  }
+}

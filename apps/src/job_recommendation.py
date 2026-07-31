@@ -4,12 +4,15 @@ from apps.shared.vector_db import get_vector_manager
 
 
 def build_recommendation_text(profile) -> str:
-    return " ".join([
-        " ".join(profile.skills or []),
-        profile.resume_text or "",
-        profile.education or "",
-        str(profile.experience_years or 0),
-    ])
+    parts = [
+        f"Skills: {', '.join(profile.skills or [])}",
+        f"Headline: {profile.headline or ''}",
+        f"Bio: {profile.bio or ''}",
+        f"Experience: {profile.experience_years or 0} years",
+        f"Education: {profile.education or ''}",
+        f"Resume: {profile.resume_text or ''}",
+    ]
+    return " ".join(parts)
 
 
 def rank_jobs_for_user(user, limit=10):

@@ -43,9 +43,7 @@ class RecommendedJobSerializer(serializers.Serializer):
     required_skills = serializers.ListField(child=serializers.CharField())
     matched_skills = serializers.ListField(child=serializers.CharField())
     missing_skills = serializers.ListField(child=serializers.CharField())
-    skill_gap_analysis = serializers.CharField()
-    career_roadmap = serializers.ListField(child=serializers.CharField())
-    recommended_resources = serializers.ListField(child=serializers.DictField())
+    recommendation_insight = serializers.CharField()
     match_explanation = serializers.DictField(child=serializers.IntegerField(), required=False)
 
 

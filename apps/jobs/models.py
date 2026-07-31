@@ -35,15 +35,19 @@ class JobPosting(models.Model):
 
     @property
     def embedding_text(self):
-        return " ".join([
-            self.title,
-            self.company,
-            self.location,
-            self.work_mode,
-            self.description,
-            " ".join(self.required_skills or []),
-            str(self.experience_required),
-        ])
+        parts = [
+            f"Job Title: {self.title}",
+            f"Company: {self.company}",
+            f"Location: {self.location}",
+            f"Work Mode: {self.work_mode}",
+            f"Job Category: {self.job_category}",
+            f"Description: {self.description}",
+            f"Required Skills: {', '.join(self.required_skills or [])}",
+            f"Experience Required: {self.experience_required} years",
+        ]
+        if self.education_required:
+            parts.append(f"Education Required: {self.education_required}")
+        return " ".join(parts)
 
 
 class Application(models.Model):

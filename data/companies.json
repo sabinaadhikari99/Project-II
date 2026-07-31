@@ -1,0 +1,702 @@
+[
+  {
+    "name": "TechCorp Global",
+    "industry": "Technology",
+    "description": "Enterprise SaaS platform provider serving Fortune 500 clients worldwide.",
+    "location": "San Francisco, CA",
+    "size": "50-200"
+  },
+  {
+    "name": "InnoVista Systems",
+    "industry": "Technology",
+    "description": "Cloud infrastructure and DevOps consulting firm specializing in AWS and GCP migrations.",
+    "location": "Seattle, WA",
+    "size": "50-200"
+  },
+  {
+    "name": "CloudPeak Technologies",
+    "industry": "Technology",
+    "description": "Next-gen cloud-native application development company.",
+    "location": "Austin, TX",
+    "size": "500-1000"
+  },
+  {
+    "name": "DataForge Analytics",
+    "industry": "Data & Analytics",
+    "description": "Big data and machine learning solutions for healthcare and finance.",
+    "location": "New York, NY",
+    "size": "200-500"
+  },
+  {
+    "name": "Appcraft Studios",
+    "industry": "Technology",
+    "description": "Mobile-first application development studio building cross-platform apps.",
+    "location": "Portland, OR",
+    "size": "200-500"
+  },
+  {
+    "name": "NexGen Software",
+    "industry": "Technology",
+    "description": "Custom software development firm specializing in enterprise microservices architecture.",
+    "location": "Boston, MA",
+    "size": "200-500"
+  },
+  {
+    "name": "ByteBridge Solutions",
+    "industry": "Technology",
+    "description": "Full-service IT consulting and digital transformation partner.",
+    "location": "Denver, CO",
+    "size": "50-200"
+  },
+  {
+    "name": "QuantumStack Inc",
+    "industry": "Technology",
+    "description": "Cloud-native infrastructure and platform engineering company.",
+    "location": "San Francisco, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "SilverOak Financial",
+    "industry": "Finance",
+    "description": "Wealth management and financial advisory services for high-net-worth individuals.",
+    "location": "New York, NY",
+    "size": "50-200"
+  },
+  {
+    "name": "Pulse Media Group",
+    "industry": "Media & Entertainment",
+    "description": "Digital media and advertising agency with a focus on brand storytelling.",
+    "location": "Los Angeles, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "ShopNova",
+    "industry": "E-commerce",
+    "description": "Direct-to-consumer e-commerce platform for emerging lifestyle brands.",
+    "location": "Austin, TX",
+    "size": "1000-5000"
+  },
+  {
+    "name": "MedCore Health",
+    "industry": "Healthcare",
+    "description": "Healthcare technology company building EHR and telemedicine platforms.",
+    "location": "Boston, MA",
+    "size": "50-200"
+  },
+  {
+    "name": "Apex Manufacturing Corp",
+    "industry": "Manufacturing",
+    "description": "Industrial automation and smart manufacturing solutions provider.",
+    "location": "Detroit, MI",
+    "size": "50-200"
+  },
+  {
+    "name": "StratEdge Consulting",
+    "industry": "Consulting",
+    "description": "Management and technology consulting firm serving mid-market enterprises.",
+    "location": "Chicago, IL",
+    "size": "50-200"
+  },
+  {
+    "name": "LearnSphere Education",
+    "industry": "Education",
+    "description": "EdTech platform offering personalized learning paths and professional certifications.",
+    "location": "Raleigh, NC",
+    "size": "200-500"
+  },
+  {
+    "name": "GreenLeaf Nonprofit",
+    "industry": "Non-profit",
+    "description": "Environmental conservation nonprofit leveraging technology for climate action.",
+    "location": "Portland, OR",
+    "size": "200-500"
+  },
+  {
+    "name": "NexaGen Gaming",
+    "industry": "Gaming",
+    "description": "Indie game studio focused on cross-platform multiplayer experiences.",
+    "location": "Los Angeles, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "CrestView Realty",
+    "industry": "Real Estate",
+    "description": "Commercial real estate technology and property management platform.",
+    "location": "Miami, FL",
+    "size": "5000+"
+  },
+  {
+    "name": "SkyNet Telecom",
+    "industry": "Telecommunications",
+    "description": "Telecommunications infrastructure and 5G network solutions provider.",
+    "location": "Atlanta, GA",
+    "size": "50-200"
+  },
+  {
+    "name": "BioSync Labs",
+    "industry": "Biotechnology",
+    "description": "Biotech research company using AI for drug discovery and genomic analysis.",
+    "location": "San Diego, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "Titan Aerospace",
+    "industry": "Aerospace",
+    "description": "Aerospace engineering and satellite technology company.",
+    "location": "Seattle, WA",
+    "size": "200-500"
+  },
+  {
+    "name": "HorizonNet Corp",
+    "industry": "Energy",
+    "description": "Fast-growing energy company specializing in innovative solutions.",
+    "location": "Philadelphia, PA",
+    "size": "10-50"
+  },
+  {
+    "name": "NextNet LLC",
+    "industry": "Manufacturing",
+    "description": "Innovative manufacturing company specializing in innovative solutions.",
+    "location": "Boston, MA",
+    "size": "200-500"
+  },
+  {
+    "name": "CoreSolutions Group",
+    "industry": "Finance",
+    "description": "Fast-growing finance company specializing in innovative solutions.",
+    "location": "Miami, FL",
+    "size": "1000-5000"
+  },
+  {
+    "name": "EliteSystems Solutions",
+    "industry": "Energy",
+    "description": "Leading energy company specializing in innovative solutions.",
+    "location": "Houston, TX",
+    "size": "500-1000"
+  },
+  {
+    "name": "DynamicMedia LLC",
+    "industry": "Non-profit",
+    "description": "Innovative non-profit company specializing in innovative solutions.",
+    "location": "Philadelphia, PA",
+    "size": "5000+"
+  },
+  {
+    "name": "DynamicSystems Solutions",
+    "industry": "Media & Entertainment",
+    "description": "Leading media & entertainment company specializing in innovative solutions.",
+    "location": "Atlanta, GA",
+    "size": "50-200"
+  },
+  {
+    "name": "CoreCloud LLC",
+    "industry": "Energy",
+    "description": "Innovative energy company specializing in innovative solutions.",
+    "location": "Miami, FL",
+    "size": "200-500"
+  },
+  {
+    "name": "QuantumCorp Solutions",
+    "industry": "Manufacturing",
+    "description": "Award-winning manufacturing company specializing in innovative solutions.",
+    "location": "Seattle, WA",
+    "size": "5000+"
+  },
+  {
+    "name": "NextMedia Solutions",
+    "industry": "Media & Entertainment",
+    "description": "Premier media & entertainment company specializing in innovative solutions.",
+    "location": "Chicago, IL",
+    "size": "500-1000"
+  },
+  {
+    "name": "EliteMedia Corp",
+    "industry": "Gaming",
+    "description": "Innovative gaming company specializing in innovative solutions.",
+    "location": "New York, NY",
+    "size": "10-50"
+  },
+  {
+    "name": "ApexCloud LLC",
+    "industry": "Healthcare",
+    "description": "Award-winning healthcare company specializing in innovative solutions.",
+    "location": "Denver, CO",
+    "size": "5000+"
+  },
+  {
+    "name": "ApexCorp Solutions",
+    "industry": "Aerospace",
+    "description": "Premier aerospace company specializing in innovative solutions.",
+    "location": "Phoenix, AZ",
+    "size": "50-200"
+  },
+  {
+    "name": "EliteWorks Corp",
+    "industry": "Manufacturing",
+    "description": "Premier manufacturing company specializing in innovative solutions.",
+    "location": "Philadelphia, PA",
+    "size": "1000-5000"
+  },
+  {
+    "name": "NovaData Corp",
+    "industry": "E-commerce",
+    "description": "Premier e-commerce company specializing in innovative solutions.",
+    "location": "Remote",
+    "size": "10-50"
+  },
+  {
+    "name": "DigitalLabs Corp",
+    "industry": "Consulting",
+    "description": "Award-winning consulting company specializing in innovative solutions.",
+    "location": "San Diego, CA",
+    "size": "10-50"
+  },
+  {
+    "name": "NovaCloud Technologies",
+    "industry": "Energy",
+    "description": "Fast-growing energy company specializing in innovative solutions.",
+    "location": "Remote",
+    "size": "1000-5000"
+  },
+  {
+    "name": "GlobalLabs Solutions",
+    "industry": "Manufacturing",
+    "description": "Leading manufacturing company specializing in innovative solutions.",
+    "location": "Dallas, TX",
+    "size": "200-500"
+  },
+  {
+    "name": "FusionGroup Group",
+    "industry": "Technology",
+    "description": "Award-winning technology company specializing in innovative solutions.",
+    "location": "Portland, OR",
+    "size": "50-200"
+  },
+  {
+    "name": "NexusLabs Solutions",
+    "industry": "Real Estate",
+    "description": "Award-winning real estate company specializing in innovative solutions.",
+    "location": "Remote",
+    "size": "50-200"
+  },
+  {
+    "name": "PeakData Corp",
+    "industry": "Biotechnology",
+    "description": "Award-winning biotechnology company specializing in innovative solutions.",
+    "location": "San Francisco, CA",
+    "size": "200-500"
+  },
+  {
+    "name": "PulseTech Inc",
+    "industry": "Non-profit",
+    "description": "Innovative non-profit company specializing in innovative solutions.",
+    "location": "Atlanta, GA",
+    "size": "10-50"
+  },
+  {
+    "name": "PremiumHealth Inc",
+    "industry": "Healthcare",
+    "description": "Leading healthcare company specializing in innovative solutions.",
+    "location": "Raleigh, NC",
+    "size": "1000-5000"
+  },
+  {
+    "name": "PeakWorks Solutions",
+    "industry": "Aerospace",
+    "description": "Innovative aerospace company specializing in innovative solutions.",
+    "location": "Houston, TX",
+    "size": "200-500"
+  },
+  {
+    "name": "NexusFinance Group",
+    "industry": "Education",
+    "description": "Innovative education company specializing in innovative solutions.",
+    "location": "Houston, TX",
+    "size": "5000+"
+  },
+  {
+    "name": "PrimeCloud Solutions",
+    "industry": "Non-profit",
+    "description": "Award-winning non-profit company specializing in innovative solutions.",
+    "location": "Minneapolis, MN",
+    "size": "500-1000"
+  },
+  {
+    "name": "CoreInc Corp",
+    "industry": "Healthcare",
+    "description": "Leading healthcare company specializing in innovative solutions.",
+    "location": "Dallas, TX",
+    "size": "1000-5000"
+  },
+  {
+    "name": "HorizonInc Technologies",
+    "industry": "Media & Entertainment",
+    "description": "Leading media & entertainment company specializing in innovative solutions.",
+    "location": "San Francisco, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "DigitalInc Inc",
+    "industry": "Data & Analytics",
+    "description": "Leading data & analytics company specializing in innovative solutions.",
+    "location": "Dallas, TX",
+    "size": "1000-5000"
+  },
+  {
+    "name": "PremiumAnalytics Solutions",
+    "industry": "Aerospace",
+    "description": "Award-winning aerospace company specializing in innovative solutions.",
+    "location": "Denver, CO",
+    "size": "50-200"
+  },
+  {
+    "name": "SummitHealth Group",
+    "industry": "Media & Entertainment",
+    "description": "Premier media & entertainment company specializing in innovative solutions.",
+    "location": "Raleigh, NC",
+    "size": "50-200"
+  },
+  {
+    "name": "CoreLabs Solutions",
+    "industry": "Automotive",
+    "description": "Premier automotive company specializing in innovative solutions.",
+    "location": "Miami, FL",
+    "size": "500-1000"
+  },
+  {
+    "name": "VertexSystems Solutions",
+    "industry": "Finance",
+    "description": "Premier finance company specializing in innovative solutions.",
+    "location": "New York, NY",
+    "size": "5000+"
+  },
+  {
+    "name": "ApexLabs Corp",
+    "industry": "Education",
+    "description": "Award-winning education company specializing in innovative solutions.",
+    "location": "Denver, CO",
+    "size": "500-1000"
+  },
+  {
+    "name": "PeakNet Corp",
+    "industry": "Manufacturing",
+    "description": "Innovative manufacturing company specializing in innovative solutions.",
+    "location": "Minneapolis, MN",
+    "size": "10-50"
+  },
+  {
+    "name": "VertexMedia Inc",
+    "industry": "Data & Analytics",
+    "description": "Leading data & analytics company specializing in innovative solutions.",
+    "location": "Houston, TX",
+    "size": "10-50"
+  },
+  {
+    "name": "PremiumGroup Group",
+    "industry": "Aerospace",
+    "description": "Innovative aerospace company specializing in innovative solutions.",
+    "location": "Raleigh, NC",
+    "size": "500-1000"
+  },
+  {
+    "name": "DigitalGroup Group",
+    "industry": "Technology",
+    "description": "Fast-growing technology company specializing in innovative solutions.",
+    "location": "Phoenix, AZ",
+    "size": "500-1000"
+  },
+  {
+    "name": "PrimeNet Solutions",
+    "industry": "Aerospace",
+    "description": "Innovative aerospace company specializing in innovative solutions.",
+    "location": "Boston, MA",
+    "size": "200-500"
+  },
+  {
+    "name": "FirstSystems Technologies",
+    "industry": "Data & Analytics",
+    "description": "Leading data & analytics company specializing in innovative solutions.",
+    "location": "Dallas, TX",
+    "size": "10-50"
+  },
+  {
+    "name": "SummitVentures Technologies",
+    "industry": "Biotechnology",
+    "description": "Leading biotechnology company specializing in innovative solutions.",
+    "location": "Chicago, IL",
+    "size": "1000-5000"
+  },
+  {
+    "name": "DynamicGroup Inc",
+    "industry": "Healthcare",
+    "description": "Premier healthcare company specializing in innovative solutions.",
+    "location": "Los Angeles, CA",
+    "size": "10-50"
+  },
+  {
+    "name": "SummitInc Technologies",
+    "industry": "Data & Analytics",
+    "description": "Leading data & analytics company specializing in innovative solutions.",
+    "location": "Charlotte, NC",
+    "size": "500-1000"
+  },
+  {
+    "name": "SummitHealth Technologies",
+    "industry": "Gaming",
+    "description": "Innovative gaming company specializing in innovative solutions.",
+    "location": "Portland, OR",
+    "size": "5000+"
+  },
+  {
+    "name": "ApexInc LLC",
+    "industry": "Telecommunications",
+    "description": "Fast-growing telecommunications company specializing in innovative solutions.",
+    "location": "Boston, MA",
+    "size": "500-1000"
+  },
+  {
+    "name": "ApexSolutions Inc",
+    "industry": "Energy",
+    "description": "Award-winning energy company specializing in innovative solutions.",
+    "location": "Charlotte, NC",
+    "size": "10-50"
+  },
+  {
+    "name": "DynamicMedia Corp",
+    "industry": "Biotechnology",
+    "description": "Innovative biotechnology company specializing in innovative solutions.",
+    "location": "Portland, OR",
+    "size": "200-500"
+  },
+  {
+    "name": "DynamicInc LLC",
+    "industry": "Real Estate",
+    "description": "Premier real estate company specializing in innovative solutions.",
+    "location": "Chicago, IL",
+    "size": "1000-5000"
+  },
+  {
+    "name": "PrimeFinance Solutions",
+    "industry": "Biotechnology",
+    "description": "Award-winning biotechnology company specializing in innovative solutions.",
+    "location": "San Francisco, CA",
+    "size": "200-500"
+  },
+  {
+    "name": "CoreWorks LLC",
+    "industry": "Finance",
+    "description": "Award-winning finance company specializing in innovative solutions.",
+    "location": "Austin, TX",
+    "size": "50-200"
+  },
+  {
+    "name": "EliteSoftware Technologies",
+    "industry": "Education",
+    "description": "Innovative education company specializing in innovative solutions.",
+    "location": "Dallas, TX",
+    "size": "5000+"
+  },
+  {
+    "name": "ElitePartners Group",
+    "industry": "Manufacturing",
+    "description": "Leading manufacturing company specializing in innovative solutions.",
+    "location": "New York, NY",
+    "size": "5000+"
+  },
+  {
+    "name": "FusionAnalytics Inc",
+    "industry": "Technology",
+    "description": "Innovative technology company specializing in innovative solutions.",
+    "location": "Dallas, TX",
+    "size": "5000+"
+  },
+  {
+    "name": "EliteGroup Solutions",
+    "industry": "Energy",
+    "description": "Premier energy company specializing in innovative solutions.",
+    "location": "Houston, TX",
+    "size": "1000-5000"
+  },
+  {
+    "name": "GlobalLabs Inc",
+    "industry": "E-commerce",
+    "description": "Leading e-commerce company specializing in innovative solutions.",
+    "location": "Houston, TX",
+    "size": "200-500"
+  },
+  {
+    "name": "SummitMedia Corp",
+    "industry": "Automotive",
+    "description": "Leading automotive company specializing in innovative solutions.",
+    "location": "Boston, MA",
+    "size": "200-500"
+  },
+  {
+    "name": "QuantumSystems LLC",
+    "industry": "Education",
+    "description": "Leading education company specializing in innovative solutions.",
+    "location": "Los Angeles, CA",
+    "size": "200-500"
+  },
+  {
+    "name": "HorizonNet Technologies",
+    "industry": "E-commerce",
+    "description": "Innovative e-commerce company specializing in innovative solutions.",
+    "location": "Los Angeles, CA",
+    "size": "50-200"
+  },
+  {
+    "name": "FusionTech Corp",
+    "industry": "Gaming",
+    "description": "Innovative gaming company specializing in innovative solutions.",
+    "location": "San Diego, CA",
+    "size": "200-500"
+  },
+  {
+    "name": "NextLabs Group",
+    "industry": "Data & Analytics",
+    "description": "Innovative data & analytics company specializing in innovative solutions.",
+    "location": "Raleigh, NC",
+    "size": "50-200"
+  },
+  {
+    "name": "VertexData LLC",
+    "industry": "Media & Entertainment",
+    "description": "Leading media & entertainment company specializing in innovative solutions.",
+    "location": "Los Angeles, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "FirstCloud LLC",
+    "industry": "Manufacturing",
+    "description": "Fast-growing manufacturing company specializing in innovative solutions.",
+    "location": "Seattle, WA",
+    "size": "200-500"
+  },
+  {
+    "name": "NexusCloud Solutions",
+    "industry": "Gaming",
+    "description": "Leading gaming company specializing in innovative solutions.",
+    "location": "San Francisco, CA",
+    "size": "200-500"
+  },
+  {
+    "name": "NextHealth LLC",
+    "industry": "Data & Analytics",
+    "description": "Award-winning data & analytics company specializing in innovative solutions.",
+    "location": "Austin, TX",
+    "size": "500-1000"
+  },
+  {
+    "name": "QuantumDigital Group",
+    "industry": "Biotechnology",
+    "description": "Premier biotechnology company specializing in innovative solutions.",
+    "location": "Austin, TX",
+    "size": "1000-5000"
+  },
+  {
+    "name": "FirstAnalytics Inc",
+    "industry": "Automotive",
+    "description": "Award-winning automotive company specializing in innovative solutions.",
+    "location": "San Francisco, CA",
+    "size": "1000-5000"
+  },
+  {
+    "name": "FirstData Group",
+    "industry": "Healthcare",
+    "description": "Award-winning healthcare company specializing in innovative solutions.",
+    "location": "Dallas, TX",
+    "size": "200-500"
+  },
+  {
+    "name": "CoreSoftware Technologies",
+    "industry": "Real Estate",
+    "description": "Fast-growing real estate company specializing in innovative solutions.",
+    "location": "San Diego, CA",
+    "size": "500-1000"
+  },
+  {
+    "name": "PrimeMedia Corp",
+    "industry": "Education",
+    "description": "Premier education company specializing in innovative solutions.",
+    "location": "San Diego, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "NextFinance Technologies",
+    "industry": "Real Estate",
+    "description": "Award-winning real estate company specializing in innovative solutions.",
+    "location": "Phoenix, AZ",
+    "size": "10-50"
+  },
+  {
+    "name": "PrimeSoftware Corp",
+    "industry": "Automotive",
+    "description": "Award-winning automotive company specializing in innovative solutions.",
+    "location": "Philadelphia, PA",
+    "size": "5000+"
+  },
+  {
+    "name": "ApexDynamics Group",
+    "industry": "Energy",
+    "description": "Award-winning energy company specializing in innovative solutions.",
+    "location": "Denver, CO",
+    "size": "500-1000"
+  },
+  {
+    "name": "NextSolutions LLC",
+    "industry": "Biotechnology",
+    "description": "Fast-growing biotechnology company specializing in innovative solutions.",
+    "location": "Charlotte, NC",
+    "size": "10-50"
+  },
+  {
+    "name": "PremiumSoftware Corp",
+    "industry": "Education",
+    "description": "Leading education company specializing in innovative solutions.",
+    "location": "Boston, MA",
+    "size": "10-50"
+  },
+  {
+    "name": "PremiumVentures Technologies",
+    "industry": "Healthcare",
+    "description": "Premier healthcare company specializing in innovative solutions.",
+    "location": "Minneapolis, MN",
+    "size": "5000+"
+  },
+  {
+    "name": "SummitCorp Solutions",
+    "industry": "Telecommunications",
+    "description": "Premier telecommunications company specializing in innovative solutions.",
+    "location": "Raleigh, NC",
+    "size": "50-200"
+  },
+  {
+    "name": "PeakTech Inc",
+    "industry": "Automotive",
+    "description": "Innovative automotive company specializing in innovative solutions.",
+    "location": "Los Angeles, CA",
+    "size": "5000+"
+  },
+  {
+    "name": "NexusDynamics Inc",
+    "industry": "Media & Entertainment",
+    "description": "Premier media & entertainment company specializing in innovative solutions.",
+    "location": "Austin, TX",
+    "size": "50-200"
+  },
+  {
+    "name": "VertexPartners Technologies",
+    "industry": "Gaming",
+    "description": "Award-winning gaming company specializing in innovative solutions.",
+    "location": "Minneapolis, MN",
+    "size": "5000+"
+  },
+  {
+    "name": "NexusNet Technologies",
+    "industry": "Energy",
+    "description": "Premier energy company specializing in innovative solutions.",
+    "location": "Chicago, IL",
+    "size": "500-1000"
+  }
+]

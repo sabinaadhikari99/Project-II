@@ -18,6 +18,7 @@ from apps.shared.profession_classifier import (
     normalize_skill,
     SKILL_SYNONYMS,
     PROFESSION_CONFIGS,
+    RELATED_PROFESSIONS,
 )
 from apps.shared.skill_normalizer import normalize_skill as norm_skill, normalize_skill_set
 from apps.shared.vector_db import get_vector_manager
@@ -34,11 +35,11 @@ COMMON_SKILLS = [
 ]
 
 SCORE_WEIGHTS = {
-    "profession": float(getattr(settings, "AI_WEIGHT_PROFESSION", 35)),
+    "profession": float(getattr(settings, "AI_WEIGHT_PROFESSION", 40)),
     "skills": float(getattr(settings, "AI_WEIGHT_SKILLS", 30)),
     "experience": float(getattr(settings, "AI_WEIGHT_EXPERIENCE", 15)),
     "education": float(getattr(settings, "AI_WEIGHT_EDUCATION", 10)),
-    "semantic": float(getattr(settings, "AI_WEIGHT_SEMANTIC", 10)),
+    "semantic": float(getattr(settings, "AI_WEIGHT_SEMANTIC", 5)),
 }
 
 AI_MATCH_THRESHOLD = int(getattr(settings, "AI_MATCH_THRESHOLD", 70))
@@ -185,14 +186,17 @@ def _hybrid_rank_jobs(user, profile, user_skills, user_profession, candidate_job
     return scored_jobs[:limit]
 
 
-def _compute_weighted_score(user_skills, user_profession, profile, job, vector_score):
+def compute_match_score(user_skills, user_profession, profile, job, vector_score):
     user_profession_lower = user_profession.lower() if user_profession else ""
 
     job_profession = (job.job_category or "").lower()
-    profession_match = 1.0 if user_profession_lower == job_profession else 0.3
-    related = {p.lower() for p in get_related_profession_titles(user_profession or "")}
-    if job_profession in related:
-        profession_match = 0.7
+    related_professions = {p.lower() for p in get_related_profession_titles(user_profession or "")}
+    if user_profession_lower == job_profession:
+        profession_match = 1.0
+    elif job_profession in related_professions:
+        profession_match = 0.6
+    else:
+        profession_match = 0.0
     profession_score = round(profession_match * 100)
 
     required = normalize_skill_set(job.required_skills or [])
@@ -200,8 +204,11 @@ def _compute_weighted_score(user_skills, user_profession, profile, job, vector_s
     if required:
         matched_skills = user_skills_norm & required
         skills_pct = len(matched_skills) / len(required)
+        matched_count = len(matched_skills)
     else:
+        matched_skills = set()
         skills_pct = 0.5
+        matched_count = 0
     skills_score = round(skills_pct * 100)
 
     user_exp = float(getattr(profile, "experience_years", 0) or 0)
@@ -255,8 +262,12 @@ def _compute_weighted_score(user_skills, user_profession, profile, job, vector_s
         "experience_score": experience_score,
         "education_score": education_score,
         "semantic_score": semantic_score,
+        "missing_count": len(required) - matched_count,
         "match_explanation": match_explanation,
     }
+
+
+_compute_weighted_score = compute_match_score
 
 
 def match_candidates_for_job(job: JobPosting, limit=10):
@@ -312,9 +323,7 @@ def analyze_resume_match(user, resume_file, request=None):
         recommendations = recommend_jobs_for_user(
             user, limit=10, request=request, resume_text=resume_text,
         )
-        missing_skills = sorted({skill for item in recommendations for skill in item["missing_skills"]})
-        resources = _resources_for_skills(missing_skills)
-        gemini = _gemini_resume_insights(resume_text, extracted_skills, missing_skills, recommendations)
+        gemini = _gemini_resume_insights(resume_text, extracted_skills, recommendations)
         best_match = max([item["match_percentage"] for item in recommendations], default=0)
 
         return {
@@ -322,9 +331,6 @@ def analyze_resume_match(user, resume_file, request=None):
             "resume_summary": gemini["resume_summary"],
             "resume_score": best_match,
             "skills_extracted": extracted_skills,
-            "missing_skills": missing_skills,
-            "skill_gap_analysis": gemini["skill_gap_analysis"],
-            "recommended_courses": resources,
             "recommended_jobs": recommendations,
             "match_analytics": [
                 {
@@ -334,7 +340,6 @@ def analyze_resume_match(user, resume_file, request=None):
                 }
                 for item in recommendations[:6]
             ],
-            "learning_roadmap": gemini["learning_roadmap"],
             "resume_insights": gemini["resume_insights"],
             "resume_improvement_suggestions": gemini["resume_improvement_suggestions"],
         }
@@ -347,12 +352,8 @@ def analyze_resume_match(user, resume_file, request=None):
             "resume_summary": "",
             "resume_score": 0,
             "skills_extracted": [],
-            "missing_skills": [],
-            "skill_gap_analysis": "",
-            "recommended_courses": [],
             "recommended_jobs": [],
             "match_analytics": [],
-            "learning_roadmap": [],
             "resume_insights": [],
             "resume_improvement_suggestions": [],
         }
@@ -400,15 +401,12 @@ def _build_recommendation(user, profile, job, vector_score, match_explanation=No
     matched_skills = [skill for skill in required_skills if norm_skill(skill) in matched_lookup]
     missing_skills = [skill for skill in required_skills if norm_skill(skill) not in matched_lookup]
 
-    exp = getattr(profile, "experience_years", 0) or 0
-    gap = ""
+    insight = ""
     if missing_skills:
-        gap = f"Focus on {', '.join(missing_skills[:4])} to improve fit for this role."
+        insight = f"Focus on {', '.join(missing_skills[:4])} to improve fit for this role."
     else:
-        gap = "Your listed skills cover the major requirements for this role."
+        insight = "Your listed skills cover the major requirements for this role."
 
-    resources = _resources_for_skills(missing_skills)
-    roadmap = _roadmap_for(missing_skills, job)
     match_pct = match_explanation.get("final_score", 50) if match_explanation else 50
 
     return {
@@ -418,41 +416,18 @@ def _build_recommendation(user, profile, job, vector_score, match_explanation=No
         "required_skills": required_skills,
         "matched_skills": matched_skills,
         "missing_skills": missing_skills,
-        "skill_gap_analysis": gap,
-        "career_roadmap": roadmap,
-        "recommended_resources": resources,
+        "recommendation_insight": insight,
         "match_explanation": match_explanation or {},
     }
 
 
-def _resources_for_skills(skills):
-    resources_path = settings.DATA_DIR / "learning_resources.json"
-    resources = json.loads(resources_path.read_text(encoding="utf-8")) if resources_path.exists() else []
-    missing = normalize_skill_set(skills)
-    return [item for item in resources if norm_skill(item.get("skill", "")) in missing]
-
-
-def _gemini_resume_insights(resume_text, skills, missing_skills, recommendations):
+def _gemini_resume_insights(resume_text, skills, recommendations):
     fallback = {
         "resume_summary": _fallback_summary(resume_text, skills),
-        "skill_gap_analysis": (
-            f"Primary gaps based on active jobs: {', '.join(missing_skills[:6])}."
-            if missing_skills else "Your resume covers the most common requirements in the current active jobs."
+        "resume_insights": _fallback_resume_insights(resume_text, skills, recommendations),
+        "resume_improvement_suggestions": _fallback_improvement_suggestions(
+            resume_text, skills, recommendations
         ),
-        "learning_roadmap": _roadmap_for(missing_skills, recommendations[0]["job"]) if recommendations else [
-            "Add a clear target role and measurable project outcomes.",
-            "Build one portfolio project aligned to your target job family.",
-            "Apply to roles that match your strongest listed skills.",
-        ],
-        "resume_insights": [
-            "Keep the resume focused on verified skills and project outcomes.",
-            "Add measurable impact where possible, such as users, revenue, accuracy, speed, or time saved.",
-        ],
-        "resume_improvement_suggestions": [
-            "Add a concise professional summary at the top.",
-            "Group technical skills by category.",
-            "Use action verbs and measurable outcomes in project bullets.",
-        ],
     }
 
     if not settings.GEMINI_API_KEY:
@@ -466,24 +441,20 @@ def _gemini_resume_insights(resume_text, skills, missing_skills, recommendations
                 "title": item["job"].title,
                 "company": item["job"].company,
                 "match_percentage": item["match_percentage"],
-                "missing_skills": item["missing_skills"],
             }
             for item in recommendations[:5]
         ]
         prompt = f"""
 You are an expert AI Career Coach. Analyze this resume using only the provided resume text.
 Return strict JSON with keys:
-resume_summary, skill_gap_analysis, learning_roadmap, resume_insights, resume_improvement_suggestions.
-learning_roadmap, resume_insights, and resume_improvement_suggestions must be arrays of short strings.
+resume_summary, resume_insights, resume_improvement_suggestions.
+resume_insights and resume_improvement_suggestions must be arrays of short strings.
 
 Resume text:
 {resume_text}
 
 Extracted skills:
 {skills}
-
-Missing skills:
-{missing_skills}
 
 Recommended jobs:
 {job_context}
@@ -510,19 +481,105 @@ def _fallback_summary(resume_text, skills):
     return f"{first_line or 'The candidate'} presents experience around {skill_text}. Recommendations are based on the uploaded resume and active job requirements."
 
 
-def _roadmap_for(missing_skills, job):
-    if not missing_skills:
-        return [
-            "Polish one portfolio case study that proves your fit for this role.",
-            "Prepare interview stories around the listed responsibilities.",
-            "Apply now and tailor your cover letter to the company context.",
-        ]
-    return [
-        f"Week 1-2: Learn the fundamentals of {', '.join(missing_skills[:2])}.",
-        "Week 3-4: Build a small project using the missing skills in a realistic workflow.",
-        f"Week 5: Update your resume with a project aligned to {job.title}.",
-        "Week 6: Apply to similar roles and practice interview questions around the new skills.",
-    ]
+def _fallback_resume_insights(resume_text, skills, recommendations):
+    lowered = (resume_text or "").lower()
+    insights = []
+
+    experience = re.search(r"\b(\d+)\s*\+?\s*years?\b", lowered)
+    if experience:
+        insights.append(
+            f"Resume indicates {experience.group(0)} of professional experience, which is a solid "
+            f"foundation for {_top_profession_label(recommendations)} roles."
+        )
+    else:
+        insights.append("No explicit years-of-experience range found in the resume.")
+
+    if re.search(r"\b(projects?|portfolio|github|gitlab|bitbucket)\b", lowered):
+        insights.append("Hands-on project or portfolio work is documented in the resume.")
+    else:
+        insights.append("No projects or portfolio section was detected in the resume.")
+
+    if re.search(r"\b(certified|certification|certificate)\b", lowered):
+        insights.append("Professional certifications are listed on the resume.")
+    else:
+        insights.append("No certifications section was detected in the resume.")
+
+    if re.search(r"\b(led|lead|mentor(ed)?|managed|head of|supervis(ed|or))\b", lowered):
+        insights.append("Leadership or mentoring experience was detected in the resume.")
+
+    if re.search(r"\b(\d+(\.\d+)?%|\$\d|\d+k\b|users|revenue|uptime|accuracy)\b", lowered):
+        insights.append("Quantified achievements with metrics were detected, which strengthens the resume.")
+    else:
+        insights.append("Consider adding measurable outcomes such as users, revenue, accuracy, or time saved.")
+
+    if re.search(r"\b(bachelor|master|phd|b\.?sc|m\.?sc|mba|degree|diploma)\b", lowered):
+        insights.append("Formal education credentials were detected in the resume.")
+    else:
+        insights.append("No formal education section was detected in the resume.")
+
+    if skills:
+        insights.append(f"A strong skill base of {len(skills)} recognized skills was extracted from the resume.")
+
+    missing = _top_missing_skills(recommendations, limit=4)
+    if missing:
+        insights.append(f"Closing gaps in {', '.join(missing)} would improve fit for recommended roles.")
+
+    return insights[:8]
+
+
+def _fallback_improvement_suggestions(resume_text, skills, recommendations):
+    lowered = (resume_text or "").lower()
+    suggestions = []
+
+    if not re.search(r"\bprojects?\b", lowered):
+        suggestions.append("Add a Projects section with concrete deliverables and your specific role in each.")
+
+    if not re.search(r"\b(certified|certification|certificate)\b", lowered):
+        suggestions.append("List certifications relevant to your target roles to increase credibility.")
+
+    if not re.search(r"\b(\d+(\.\d+)?%|\$\d|\d+k\b|users|revenue|uptime|accuracy)\b", lowered):
+        suggestions.append("Quantify achievements with metrics such as users, revenue, accuracy, speed, or time saved.")
+
+    if not re.search(r"\b(bachelor|master|phd|b\.?sc|m\.?sc|mba|degree|diploma)\b", lowered):
+        suggestions.append("Include your education section with degree, institution, and graduation year.")
+
+    if not re.search(r"\b(github|portfolio|linkedin|gitlab|bitbucket)\b", lowered):
+        suggestions.append("Add links to your portfolio, GitHub, or LinkedIn profile for recruiters.")
+
+    for skill in _top_missing_skills(recommendations, limit=3):
+        suggestions.append(f"Learn {skill} to qualify for the roles recommended for your profile.")
+
+    if not suggestions:
+        suggestions.append("Keep the resume focused on verified skills and project outcomes.")
+    return suggestions[:6]
+
+
+def _top_missing_skills(recommendations, limit=4):
+    ordered = []
+    seen = set()
+    for item in sorted(
+        (recommendations or []),
+        key=lambda r: r.get("match_percentage", 0) or 0,
+        reverse=True,
+    ):
+        for skill in item.get("missing_skills") or []:
+            if skill not in seen:
+                seen.add(skill)
+                ordered.append(skill)
+            if len(ordered) >= limit:
+                return ordered
+    return ordered
+
+
+def _top_profession_label(recommendations):
+    for item in (recommendations or [])[:3]:
+        job = item.get("job")
+        if job is None:
+            continue
+        if isinstance(job, dict):
+            return job.get("title") or ""
+        return getattr(job, "title", "") or ""
+    return "your target"
 
 
 def _application_link(job, request):

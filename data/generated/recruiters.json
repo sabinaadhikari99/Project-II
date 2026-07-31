@@ -1,0 +1,702 @@
+[
+  {
+    "email": "sarah.chen@techcorp.com",
+    "username": "Sarah Chen",
+    "company_name": "TechCorp Global",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "james.wilson@innovista.com",
+    "username": "James Wilson",
+    "company_name": "InnoVista Systems",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "priya.patel@cloudpeak.com",
+    "username": "Priya Patel",
+    "company_name": "CloudPeak Technologies",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "michael.ross@dataforge.com",
+    "username": "Michael Ross",
+    "company_name": "DataForge Analytics",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "emma.torres@appcraft.com",
+    "username": "Emma Torres",
+    "company_name": "Appcraft Studios",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "david.kim@nexgen.com",
+    "username": "David Kim",
+    "company_name": "NexGen Software",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "lisa.anderson@bytebridge.com",
+    "username": "Lisa Anderson",
+    "company_name": "ByteBridge Solutions",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "raj.mehta@quantumstack.com",
+    "username": "Raj Mehta",
+    "company_name": "QuantumStack Inc",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "jennifer.lee@silveroak.com",
+    "username": "Jennifer Lee",
+    "company_name": "SilverOak Financial",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "nathan.wright@pulsemedia.com",
+    "username": "Nathan Wright",
+    "company_name": "Pulse Media Group",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "sophia.nguyen@shopnova.com",
+    "username": "Sophia Nguyen",
+    "company_name": "ShopNova",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "amanda.johnson@medcore.com",
+    "username": "Amanda Johnson",
+    "company_name": "MedCore Health",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "rachel.hernandez@apexmfg.com",
+    "username": "Rachel Hernandez",
+    "company_name": "Apex Manufacturing Corp",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "kevin.thompson@stratedge.com",
+    "username": "Kevin Thompson",
+    "company_name": "StratEdge Consulting",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "melissa.garcia@learnsphere.com",
+    "username": "Melissa Garcia",
+    "company_name": "LearnSphere Education",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "chris.patton@greenleaf.org",
+    "username": "Chris Patton",
+    "company_name": "GreenLeaf Nonprofit",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "alex.reed@nexagen.com",
+    "username": "Alex Reed",
+    "company_name": "NexaGen Gaming",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "maria.santos@crestview.com",
+    "username": "Maria Santos",
+    "company_name": "CrestView Realty",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "tom.fisher@skynet.com",
+    "username": "Tom Fisher",
+    "company_name": "SkyNet Telecom",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "priya.sharma@biosync.com",
+    "username": "Priya Sharma",
+    "company_name": "BioSync Labs",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "ryan.cooper@titan.aero",
+    "username": "Ryan Cooper",
+    "company_name": "Titan Aerospace",
+    "password": "RecruitPass1!",
+    "company_logo": ""
+  },
+  {
+    "email": "reese.walker@techcorpglobal.com",
+    "username": "Reese Walker",
+    "password": "RecruitPass22!",
+    "company_name": "TechCorp Global",
+    "company_logo": ""
+  },
+  {
+    "email": "abigail.allen@innovistasystems.com",
+    "username": "Abigail Allen",
+    "password": "RecruitPass23!",
+    "company_name": "InnoVista Systems",
+    "company_logo": ""
+  },
+  {
+    "email": "mia.mitchell@cloudpeaktechnologies.com",
+    "username": "Mia Mitchell",
+    "password": "RecruitPass24!",
+    "company_name": "CloudPeak Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "abigail.walker@dataforgeanalytics.com",
+    "username": "Abigail Walker",
+    "password": "RecruitPass25!",
+    "company_name": "DataForge Analytics",
+    "company_logo": ""
+  },
+  {
+    "email": "finley.gonzalez@appcraftstudios.com",
+    "username": "Finley Gonzalez",
+    "password": "RecruitPass26!",
+    "company_name": "Appcraft Studios",
+    "company_logo": ""
+  },
+  {
+    "email": "riley.chen@nexgensoftware.com",
+    "username": "Riley Chen",
+    "password": "RecruitPass27!",
+    "company_name": "NexGen Software",
+    "company_logo": ""
+  },
+  {
+    "email": "rowan.walker@bytebridgesolutions.com",
+    "username": "Rowan Walker",
+    "password": "RecruitPass28!",
+    "company_name": "ByteBridge Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "finley.wright@quantumstackinc.com",
+    "username": "Finley Wright",
+    "password": "RecruitPass29!",
+    "company_name": "QuantumStack Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "liam.turner@silveroakfinancial.com",
+    "username": "Liam Turner",
+    "password": "RecruitPass30!",
+    "company_name": "SilverOak Financial",
+    "company_logo": ""
+  },
+  {
+    "email": "morgan.taylor@pulsemediagroup.com",
+    "username": "Morgan Taylor",
+    "password": "RecruitPass31!",
+    "company_name": "Pulse Media Group",
+    "company_logo": ""
+  },
+  {
+    "email": "dakota.lee@shopnova.com",
+    "username": "Dakota Lee",
+    "password": "RecruitPass32!",
+    "company_name": "ShopNova",
+    "company_logo": ""
+  },
+  {
+    "email": "james.kumar@medcorehealth.com",
+    "username": "James Kumar",
+    "password": "RecruitPass33!",
+    "company_name": "MedCore Health",
+    "company_logo": ""
+  },
+  {
+    "email": "dakota.chen@apexmanufacturingcorp.com",
+    "username": "Dakota Chen",
+    "password": "RecruitPass34!",
+    "company_name": "Apex Manufacturing Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "logan.johnson@stratedgeconsulting.com",
+    "username": "Logan Johnson",
+    "password": "RecruitPass35!",
+    "company_name": "StratEdge Consulting",
+    "company_logo": ""
+  },
+  {
+    "email": "henry.adams@learnsphereeducation.com",
+    "username": "Henry Adams",
+    "password": "RecruitPass36!",
+    "company_name": "LearnSphere Education",
+    "company_logo": ""
+  },
+  {
+    "email": "noah.turner@greenleafnonprofit.com",
+    "username": "Noah Turner",
+    "password": "RecruitPass37!",
+    "company_name": "GreenLeaf Nonprofit",
+    "company_logo": ""
+  },
+  {
+    "email": "olivia.adams@nexagengaming.com",
+    "username": "Olivia Adams",
+    "password": "RecruitPass38!",
+    "company_name": "NexaGen Gaming",
+    "company_logo": ""
+  },
+  {
+    "email": "casey.lewis@crestviewrealty.com",
+    "username": "Casey Lewis",
+    "password": "RecruitPass39!",
+    "company_name": "CrestView Realty",
+    "company_logo": ""
+  },
+  {
+    "email": "henry.scott@skynettelecom.com",
+    "username": "Henry Scott",
+    "password": "RecruitPass40!",
+    "company_name": "SkyNet Telecom",
+    "company_logo": ""
+  },
+  {
+    "email": "mason.kumar@biosynclabs.com",
+    "username": "Mason Kumar",
+    "password": "RecruitPass41!",
+    "company_name": "BioSync Labs",
+    "company_logo": ""
+  },
+  {
+    "email": "jordan.campbell@titanaerospace.com",
+    "username": "Jordan Campbell",
+    "password": "RecruitPass42!",
+    "company_name": "Titan Aerospace",
+    "company_logo": ""
+  },
+  {
+    "email": "james.carter@horizonnetcorp.com",
+    "username": "James Carter",
+    "password": "RecruitPass43!",
+    "company_name": "HorizonNet Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "alex.lopez@nextnetllc.com",
+    "username": "Alex Lopez",
+    "password": "RecruitPass44!",
+    "company_name": "NextNet LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "drew.scott@coresolutionsgroup.com",
+    "username": "Drew Scott",
+    "password": "RecruitPass45!",
+    "company_name": "CoreSolutions Group",
+    "company_logo": ""
+  },
+  {
+    "email": "henry.turner@elitesystemssolutions.com",
+    "username": "Henry Turner",
+    "password": "RecruitPass46!",
+    "company_name": "EliteSystems Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "charlotte.evans@dynamicmediallc.com",
+    "username": "Charlotte Evans",
+    "password": "RecruitPass47!",
+    "company_name": "DynamicMedia LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "sage.mitchell@dynamicsystemssolutions.com",
+    "username": "Sage Mitchell",
+    "password": "RecruitPass48!",
+    "company_name": "DynamicSystems Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "sage.allen@corecloudllc.com",
+    "username": "Sage Allen",
+    "password": "RecruitPass49!",
+    "company_name": "CoreCloud LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "lucas.mitchell@quantumcorpsolutions.com",
+    "username": "Lucas Mitchell",
+    "password": "RecruitPass50!",
+    "company_name": "QuantumCorp Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "jordan.scott@nextmediasolutions.com",
+    "username": "Jordan Scott",
+    "password": "RecruitPass51!",
+    "company_name": "NextMedia Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "noah.morris@elitemediacorp.com",
+    "username": "Noah Morris",
+    "password": "RecruitPass52!",
+    "company_name": "EliteMedia Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "william.gupta@apexcloudllc.com",
+    "username": "William Gupta",
+    "password": "RecruitPass53!",
+    "company_name": "ApexCloud LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "parker.nelson@apexcorpsolutions.com",
+    "username": "Parker Nelson",
+    "password": "RecruitPass54!",
+    "company_name": "ApexCorp Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "cameron.edwards@eliteworkscorp.com",
+    "username": "Cameron Edwards",
+    "password": "RecruitPass55!",
+    "company_name": "EliteWorks Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "charlotte.smith@novadatacorp.com",
+    "username": "Charlotte Smith",
+    "password": "RecruitPass56!",
+    "company_name": "NovaData Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "william.parker@digitallabscorp.com",
+    "username": "William Parker",
+    "password": "RecruitPass57!",
+    "company_name": "DigitalLabs Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "ethan.morris@novacloudtechnologies.com",
+    "username": "Ethan Morris",
+    "password": "RecruitPass58!",
+    "company_name": "NovaCloud Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "jordan.davis@globallabssolutions.com",
+    "username": "Jordan Davis",
+    "password": "RecruitPass59!",
+    "company_name": "GlobalLabs Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "ella.baker@fusiongroupgroup.com",
+    "username": "Ella Baker",
+    "password": "RecruitPass60!",
+    "company_name": "FusionGroup Group",
+    "company_logo": ""
+  },
+  {
+    "email": "cameron.nelson@nexuslabssolutions.com",
+    "username": "Cameron Nelson",
+    "password": "RecruitPass61!",
+    "company_name": "NexusLabs Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "quinn.brown@peakdatacorp.com",
+    "username": "Quinn Brown",
+    "password": "RecruitPass62!",
+    "company_name": "PeakData Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "reese.scott@pulsetechinc.com",
+    "username": "Reese Scott",
+    "password": "RecruitPass63!",
+    "company_name": "PulseTech Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "liam.lewis@premiumhealthinc.com",
+    "username": "Liam Lewis",
+    "password": "RecruitPass64!",
+    "company_name": "PremiumHealth Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "olivia.king@peakworkssolutions.com",
+    "username": "Olivia King",
+    "password": "RecruitPass65!",
+    "company_name": "PeakWorks Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "noah.scott@nexusfinancegroup.com",
+    "username": "Noah Scott",
+    "password": "RecruitPass66!",
+    "company_name": "NexusFinance Group",
+    "company_logo": ""
+  },
+  {
+    "email": "finley.adams@primecloudsolutions.com",
+    "username": "Finley Adams",
+    "password": "RecruitPass67!",
+    "company_name": "PrimeCloud Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "reese.davis@coreinccorp.com",
+    "username": "Reese Davis",
+    "password": "RecruitPass68!",
+    "company_name": "CoreInc Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "ava.smith@horizoninctechnologies.com",
+    "username": "Ava Smith",
+    "password": "RecruitPass69!",
+    "company_name": "HorizonInc Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "charlotte.brown@digitalincinc.com",
+    "username": "Charlotte Brown",
+    "password": "RecruitPass70!",
+    "company_name": "DigitalInc Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "oliver.lee@premiumanalyticssolutions.com",
+    "username": "Oliver Lee",
+    "password": "RecruitPass71!",
+    "company_name": "PremiumAnalytics Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "ella.johnson@summithealthgroup.com",
+    "username": "Ella Johnson",
+    "password": "RecruitPass72!",
+    "company_name": "SummitHealth Group",
+    "company_logo": ""
+  },
+  {
+    "email": "ella.wong@corelabssolutions.com",
+    "username": "Ella Wong",
+    "password": "RecruitPass73!",
+    "company_name": "CoreLabs Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "jordan.walker@vertexsystemssolutions.com",
+    "username": "Jordan Walker",
+    "password": "RecruitPass74!",
+    "company_name": "VertexSystems Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "harper.smith@apexlabscorp.com",
+    "username": "Harper Smith",
+    "password": "RecruitPass75!",
+    "company_name": "ApexLabs Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "evelyn.thomas@peaknetcorp.com",
+    "username": "Evelyn Thomas",
+    "password": "RecruitPass76!",
+    "company_name": "PeakNet Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "emerson.taylor@vertexmediainc.com",
+    "username": "Emerson Taylor",
+    "password": "RecruitPass77!",
+    "company_name": "VertexMedia Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "ava.morris@premiumgroupgroup.com",
+    "username": "Ava Morris",
+    "password": "RecruitPass78!",
+    "company_name": "PremiumGroup Group",
+    "company_logo": ""
+  },
+  {
+    "email": "avery.campbell@digitalgroupgroup.com",
+    "username": "Avery Campbell",
+    "password": "RecruitPass79!",
+    "company_name": "DigitalGroup Group",
+    "company_logo": ""
+  },
+  {
+    "email": "logan.nelson@primenetsolutions.com",
+    "username": "Logan Nelson",
+    "password": "RecruitPass80!",
+    "company_name": "PrimeNet Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "reese.hill@firstsystemstechnologies.com",
+    "username": "Reese Hill",
+    "password": "RecruitPass81!",
+    "company_name": "FirstSystems Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "parker.evans@summitventurestechnologies.com",
+    "username": "Parker Evans",
+    "password": "RecruitPass82!",
+    "company_name": "SummitVentures Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "lucas.chen@dynamicgroupinc.com",
+    "username": "Lucas Chen",
+    "password": "RecruitPass83!",
+    "company_name": "DynamicGroup Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "avery.garcia@summitinctechnologies.com",
+    "username": "Avery Garcia",
+    "password": "RecruitPass84!",
+    "company_name": "SummitInc Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "drew.anderson@summithealthtechnologies.com",
+    "username": "Drew Anderson",
+    "password": "RecruitPass85!",
+    "company_name": "SummitHealth Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "mason.smith@apexincllc.com",
+    "username": "Mason Smith",
+    "password": "RecruitPass86!",
+    "company_name": "ApexInc LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "drew.campbell@apexsolutionsinc.com",
+    "username": "Drew Campbell",
+    "password": "RecruitPass87!",
+    "company_name": "ApexSolutions Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "james.green@dynamicmediacorp.com",
+    "username": "James Green",
+    "password": "RecruitPass88!",
+    "company_name": "DynamicMedia Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "harper.johnson@dynamicincllc.com",
+    "username": "Harper Johnson",
+    "password": "RecruitPass89!",
+    "company_name": "DynamicInc LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "mason.collins@primefinancesolutions.com",
+    "username": "Mason Collins",
+    "password": "RecruitPass90!",
+    "company_name": "PrimeFinance Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "emerson.anderson@coreworksllc.com",
+    "username": "Emerson Anderson",
+    "password": "RecruitPass91!",
+    "company_name": "CoreWorks LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "drew.patel@elitesoftwaretechnologies.com",
+    "username": "Drew Patel",
+    "password": "RecruitPass92!",
+    "company_name": "EliteSoftware Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "lucas.wilson@elitepartnersgroup.com",
+    "username": "Lucas Wilson",
+    "password": "RecruitPass93!",
+    "company_name": "ElitePartners Group",
+    "company_logo": ""
+  },
+  {
+    "email": "ethan.wong@fusionanalyticsinc.com",
+    "username": "Ethan Wong",
+    "password": "RecruitPass94!",
+    "company_name": "FusionAnalytics Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "oliver.turner@elitegroupsolutions.com",
+    "username": "Oliver Turner",
+    "password": "RecruitPass95!",
+    "company_name": "EliteGroup Solutions",
+    "company_logo": ""
+  },
+  {
+    "email": "lucas.morris@globallabsinc.com",
+    "username": "Lucas Morris",
+    "password": "RecruitPass96!",
+    "company_name": "GlobalLabs Inc",
+    "company_logo": ""
+  },
+  {
+    "email": "elijah.johnson@summitmediacorp.com",
+    "username": "Elijah Johnson",
+    "password": "RecruitPass97!",
+    "company_name": "SummitMedia Corp",
+    "company_logo": ""
+  },
+  {
+    "email": "sophia.stewart@quantumsystemsllc.com",
+    "username": "Sophia Stewart",
+    "password": "RecruitPass98!",
+    "company_name": "QuantumSystems LLC",
+    "company_logo": ""
+  },
+  {
+    "email": "noah.martinez@horizonnettechnologies.com",
+    "username": "Noah Martinez",
+    "password": "RecruitPass99!",
+    "company_name": "HorizonNet Technologies",
+    "company_logo": ""
+  },
+  {
+    "email": "henry.mitchell@fusiontechcorp.com",
+    "username": "Henry Mitchell",
+    "password": "RecruitPass100!",
+    "company_name": "FusionTech Corp",
+    "company_logo": ""
+  }
+]

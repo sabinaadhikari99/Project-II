@@ -19,16 +19,22 @@ SKILL_SYNONYMS = {
     "react": "React",
     "reactjs": "React",
     "react.js": "React",
+    "react native": "React Native",
+    "reactnative": "React Native",
     "node": "Node.js",
     "nodejs": "Node.js",
+    "node.js": "Node.js",
     "expressjs": "Express",
     "express.js": "Express",
+    "express": "Express",
     "tf": "TensorFlow",
     "tensor flow": "TensorFlow",
+    "tensorflow": "TensorFlow",
     "torch": "PyTorch",
     "pytorch": "PyTorch",
     "sklearn": "Scikit-learn",
     "scikit learn": "Scikit-learn",
+    "scikit-learn": "Scikit-learn",
     "keras": "Keras",
     "pandas": "Pandas",
     "numpy": "NumPy",
@@ -45,22 +51,24 @@ SKILL_SYNONYMS = {
     "c++": "C++",
     "c#": "C#",
     "html": "HTML",
+    "html5": "HTML",
     "css": "CSS",
+    "css3": "CSS",
     "springboot": "Spring Boot",
     "spring boot": "Spring Boot",
     "tailwind": "Tailwind CSS",
     "tailwind css": "Tailwind CSS",
+    "tailwindcss": "Tailwind CSS",
     "next": "Next.js",
     "nextjs": "Next.js",
     "next.js": "Next.js",
     "vue": "Vue.js",
     "vuejs": "Vue.js",
+    "vue.js": "Vue.js",
     "angular": "Angular",
     "angularjs": "Angular",
     "svelte": "Svelte",
     "bootstrap": "Bootstrap",
-    "html5": "HTML",
-    "css3": "CSS",
     "scss": "SCSS",
     "sass": "SCSS",
     "postgres": "PostgreSQL",
@@ -137,11 +145,27 @@ SKILL_SYNONYMS = {
     "hubspot": "HubSpot",
     "seo": "SEO",
     "sem": "SEM",
+    "kotlin": "Kotlin",
+    "swift": "Swift",
+    "flutter": "Flutter",
+    "flutter sdk": "Flutter",
+    "react native": "React Native",
+    "android": "Android",
+    "ios": "iOS",
+    "go": "Go",
+    "rust": "Rust",
+    "ruby": "Ruby",
+    "scala": "Scala",
+    "php": "PHP",
+    "swiftui": "SwiftUI",
+    "ui kit": "UIKit",
+    "dart": "Dart",
+    "py": "Python",
 }
 
 SECTION_PATTERNS = {
     "title": re.compile(
-        r"(?:^|\n)\s*(resume|curriculum vitae|cv|career|profile)\s*[:\-]?\s*(.+?)(?=\n\s*\n|\n(?=[A-Z]))",
+        r"(?:^|\n)\s*(?:resume|curriculum vitae|cv|career|profile)\s*[:\-]?\s*(.+?)(?=\n\s*\n|\n(?=[A-Z]))",
         re.IGNORECASE,
     ),
     "summary": re.compile(
@@ -166,12 +190,23 @@ SECTION_PATTERNS = {
     ),
 }
 
+GENERIC_TITLE_WORDS = {
+    "developer", "engineer", "manager", "designer", "analyst", "scientist",
+    "intern", "junior", "senior", "lead", "staff", "principal", "associate",
+    "specialist", "consultant", "architect", "administrator", "coordinator",
+    "officer", "head", "director", "vp", "vice", "president", "executive",
+    "trainee", "apprentice", "freelance", "contract", "full-time", "part-time",
+}
+
 PROFESSION_CONFIGS = {
     "Frontend Developer": {
         "titles": {
             "frontend developer", "front end developer", "frontend engineer",
-            "ui developer", "ui engineer", "react developer", "vue developer",
-            "angular developer", "web developer", "frontend",
+            "front end engineer", "ui developer", "ui engineer",
+            "react developer", "vue developer", "angular developer",
+            "web developer", "frontend", "web ui developer",
+            "javascript developer", "typescript developer",
+            "front-end developer", "front-end engineer",
         },
         "skills": {
             "React": 10, "Next.js": 10, "Vue.js": 10, "Angular": 10, "Svelte": 8,
@@ -186,6 +221,9 @@ PROFESSION_CONFIGS = {
             "backend developer", "back end developer", "backend engineer",
             "back end engineer", "python developer", "django developer",
             "api developer", "server side developer", "backend",
+            "back-end developer", "back-end engineer", "node.js developer",
+            "node developer", "java developer", "spring boot developer",
+            "go developer", "ruby developer", "php developer",
         },
         "skills": {
             "Python": 10, "Django": 10, "Django REST Framework": 9, "FastAPI": 9,
@@ -198,7 +236,9 @@ PROFESSION_CONFIGS = {
     "Full Stack Developer": {
         "titles": {
             "full stack developer", "full stack engineer", "fullstack developer",
-            "full stack", "fullstack",
+            "full stack", "fullstack", "full-stack developer",
+            "full-stack engineer", "mean stack developer",
+            "mern stack developer", "full stack web developer",
         },
         "skills": {
             "React": 8, "Next.js": 7, "Vue.js": 7, "Angular": 7,
@@ -213,6 +253,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "software engineer", "software developer", "programmer",
             "software engineer intern", "software developer intern",
+            "software engineering", "sde", "sde intern",
         },
         "skills": {
             "Python": 8, "Java": 9, "C++": 9, "C#": 8, "Go": 8, "Rust": 7,
@@ -227,7 +268,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "devops engineer", "dev ops engineer", "site reliability engineer",
             "sre", "platform engineer", "cloud engineer", "infrastructure engineer",
-            "devops",
+            "devops", "cloud architect", "infrastructure architect",
         },
         "skills": {
             "Docker": 10, "Kubernetes": 10, "AWS": 9, "Azure": 8, "GCP": 8,
@@ -240,6 +281,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "data scientist", "data science", "ai engineer", "ai scientist",
             "machine learning scientist", "research scientist", "data science intern",
+            "data science engineer",
         },
         "skills": {
             "Machine Learning": 10, "Deep Learning": 9, "NLP": 9, "Computer Vision": 8,
@@ -254,6 +296,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "machine learning engineer", "ml engineer", "mlops engineer",
             "deep learning engineer", "nlp engineer", "ml engineering",
+            "ai engineer", "ai ml engineer",
         },
         "skills": {
             "Python": 9, "TensorFlow": 10, "PyTorch": 10, "Keras": 7,
@@ -267,6 +310,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "data engineer", "data pipeline engineer", "big data engineer",
             "data infrastructure engineer", "analytics engineer", "data engineering",
+            "data architect", "data warehouse engineer",
         },
         "skills": {
             "Python": 9, "SQL": 9, "ETL": 10, "Spark": 9, "Hadoop": 7,
@@ -278,7 +322,8 @@ PROFESSION_CONFIGS = {
     "Data Analyst": {
         "titles": {
             "data analyst", "analytics", "business intelligence analyst",
-            "data analyst intern", "junior data analyst",
+            "data analyst intern", "junior data analyst", "business analyst",
+            "data analyst",
         },
         "skills": {
             "SQL": 10, "Excel": 9, "Tableau": 8, "Power BI": 8,
@@ -291,6 +336,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "graphic designer", "visual designer", "creative designer",
             "graphic design", "brand designer", "graphic design intern",
+            "graphic artist", "graphics designer",
         },
         "skills": {
             "Photoshop": 10, "Illustrator": 10, "Figma": 5, "Sketch": 5,
@@ -304,6 +350,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "ui designer", "ux designer", "ux researcher", "product designer",
             "interaction designer", "ui/ux designer", "user experience designer",
+            "user interface designer", "ux engineer",
         },
         "skills": {
             "Figma": 10, "Sketch": 7, "Adobe XD": 8, "User Research": 10,
@@ -317,6 +364,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "product manager", "product owner", "technical product manager",
             "product management", "associate product manager", "product lead",
+            "product manager intern", "senior product manager",
         },
         "skills": {
             "Product Strategy": 10, "Roadmapping": 9, "User Research": 8,
@@ -329,6 +377,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "marketing manager", "marketing", "digital marketing manager",
             "growth marketer", "brand manager", "content marketing manager",
+            "marketing specialist", "marketing coordinator",
         },
         "skills": {
             "Digital Marketing": 10, "SEO": 9, "SEM": 8, "Content Strategy": 8,
@@ -341,6 +390,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "accountant", "accounting", "staff accountant", "senior accountant",
             "financial accountant", "tax accountant", "accountant intern",
+            "chartered accountant", "accounts payable", "accounts receivable",
         },
         "skills": {
             "Accounting": 10, "QuickBooks": 8, "Xero": 7, "Tax Preparation": 8,
@@ -353,6 +403,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "hr manager", "human resources manager", "hr generalist",
             "talent acquisition", "recruiter", "people operations", "hr",
+            "hr business partner", "hr specialist",
         },
         "skills": {
             "Recruiting": 9, "Onboarding": 8, "HR Policies": 9,
@@ -365,7 +416,7 @@ PROFESSION_CONFIGS = {
         "titles": {
             "cybersecurity engineer", "security engineer", "security analyst",
             "penetration tester", "information security", "infosec",
-            "cyber security",
+            "cyber security", "security architect", "cybersecurity analyst",
         },
         "skills": {
             "Network Security": 9, "Penetration Testing": 9, "Ethical Hacking": 9,
@@ -378,10 +429,13 @@ PROFESSION_CONFIGS = {
         "titles": {
             "mobile developer", "android developer", "ios developer",
             "react native developer", "flutter developer", "mobile engineer",
+            "mobile app developer", "android engineer", "ios engineer",
+            "swift developer", "kotlin developer", "mobile application developer",
+            "ios app developer", "android app developer",
         },
         "skills": {
             "Kotlin": 10, "Swift": 10, "React Native": 9, "Flutter": 9,
-            "Android": 9, "iOS": 9, "Java": 7,
+            "Dart": 6, "Android": 9, "iOS": 9, "Java": 7, "SwiftUI": 7, "UIKit": 7,
             "Mobile UI": 7, "App Store": 6, "Firebase": 7,
             "REST APIs": 6, "Mobile Architecture": 8,
         },
@@ -389,43 +443,30 @@ PROFESSION_CONFIGS = {
 }
 
 RELATED_PROFESSIONS = {
-    "Frontend Developer": {
-        "Full Stack Developer", "UI/UX Designer", "Web Developer",
-        "React Developer", "Mobile Developer",
-    },
+    "Frontend Developer": {"Full Stack Developer", "UI/UX Designer", "Mobile Developer"},
     "Backend Developer": {"Full Stack Developer", "Software Engineer", "DevOps Engineer"},
     "Full Stack Developer": {"Frontend Developer", "Backend Developer", "Software Engineer"},
     "Software Engineer": {"Backend Developer", "Full Stack Developer", "DevOps Engineer"},
-    "DevOps Engineer": {"Site Reliability Engineer", "Backend Developer", "Software Engineer"},
+    "DevOps Engineer": {"Backend Developer", "Software Engineer", "Cybersecurity Engineer"},
     "Data Scientist": {"Machine Learning Engineer", "Data Engineer", "Data Analyst"},
-    "Machine Learning Engineer": {
-        "Data Scientist", "Data Engineer", "Software Engineer",
-        "AI Engineer", "NLP Engineer", "Deep Learning Engineer",
-        "Computer Vision Engineer",
-    },
-    "Data Engineer": {"Data Scientist", "Software Engineer", "Data Analyst"},
-    "Data Analyst": {"Data Scientist", "Business Intelligence Analyst", "Data Engineer"},
-    "Graphic Designer": {
-        "UI/UX Designer", "Visual Designer", "Creative Designer",
-        "Brand Designer",
-    },
-    "UI/UX Designer": {
-        "Graphic Designer", "Frontend Developer", "Product Manager",
-        "Interaction Designer",
-    },
-    "Product Manager": {"Data Analyst", "Marketing Manager", "Growth Marketer"},
-    "Marketing Manager": {"Product Manager", "Growth Marketer", "Brand Manager"},
-    "Accountant": {"Financial Analyst", "Bookkeeper", "Auditor"},
-    "Human Resources Manager": {"Talent Acquisition Specialist", "Operations Manager"},
-    "Cybersecurity Engineer": {"DevOps Engineer", "Network Engineer", "Security Analyst"},
-    "Mobile Developer": {"Frontend Developer", "Software Engineer", "React Native Developer"},
+    "Machine Learning Engineer": {"Data Scientist", "Data Engineer", "Software Engineer"},
+    "Data Engineer": {"Data Scientist", "Data Analyst", "Software Engineer"},
+    "Data Analyst": {"Data Scientist", "Data Engineer", "Product Manager"},
+    "Graphic Designer": {"UI/UX Designer"},
+    "UI/UX Designer": {"Graphic Designer", "Frontend Developer", "Product Manager"},
+    "Product Manager": {"Data Analyst", "Marketing Manager"},
+    "Marketing Manager": {"Product Manager"},
+    "Accountant": set(),
+    "Human Resources Manager": set(),
+    "Cybersecurity Engineer": {"DevOps Engineer"},
+    "Mobile Developer": {"Frontend Developer", "Full Stack Developer"},
 }
 
 SECTIONS_WEIGHTS = {
-    "title": 40,
-    "summary": 20,
+    "title": 50,
+    "summary": 15,
     "experience": 15,
-    "projects": 10,
+    "projects": 5,
     "skills": 15,
 }
 
@@ -437,8 +478,13 @@ def normalize_skill(raw):
     return str(raw).strip()
 
 
+def _build_skill_pattern(skill_name):
+    escaped = re.escape(skill_name.lower())
+    return re.compile(r"(?<![a-z0-9+#.])" + escaped + r"(?![a-z0-9+#.])", re.IGNORECASE)
+
+
 def extract_resume_sections(resume_text):
-    sections = {"title": "", "summary": "", "experience": "", "projects": "", "skills": ""}
+    sections = {"title": "", "summary": "", "experience": "", "projects": "", "skills": "", "certifications": ""}
     for key, pattern in SECTION_PATTERNS.items():
         match = pattern.search(resume_text)
         if match:
@@ -454,18 +500,35 @@ def extract_skills_from_section(text):
         return []
     found = set()
     text_lower = text.lower()
-    for canon, synonym_target in SKILL_SYNONYMS.items():
-        target = synonym_target.lower()
-        if canon in text_lower or target in text_lower:
-            found.add(synonym_target)
+    for synonym_key, canon in SKILL_SYNONYMS.items():
+        pattern = _build_skill_pattern(synonym_key)
+        if pattern.search(text):
+            found.add(canon)
     all_skill_names = set()
     for config in PROFESSION_CONFIGS.values():
         all_skill_names.update(config["skills"].keys())
     for skill in sorted(all_skill_names, key=len, reverse=True):
-        pattern = r"(?<![a-z0-9+#.])" + re.escape(skill.lower()) + r"(?![a-z0-9+#.])"
-        if re.search(pattern, text_lower):
+        pattern = _build_skill_pattern(skill)
+        if pattern.search(text):
             found.add(skill)
     return sorted(found, key=str.lower)
+
+
+def _matches_profession_title(title_lower, pattern):
+    return pattern in title_lower
+
+
+def _has_unique_term_match(title_lower, pattern):
+    title_words = set(title_lower.split())
+    pattern_words = set(pattern.split())
+    unique_pattern = pattern_words - GENERIC_TITLE_WORDS
+    if not unique_pattern:
+        return len(pattern_words & title_words) >= len(pattern_words) * 0.75
+    matched_unique = unique_pattern & title_words
+    if not matched_unique:
+        return False
+    overlap = len(pattern_words & title_words)
+    return overlap >= len(pattern_words) * 0.6
 
 
 def _score_title(resume_title, profession):
@@ -475,15 +538,27 @@ def _score_title(resume_title, profession):
     config = PROFESSION_CONFIGS.get(profession, {})
     t = config.get("titles", set())
     for pattern in t:
-        if pattern in title_lower:
+        if _matches_profession_title(title_lower, pattern):
             return 100, 1.0
     for pattern in t:
-        words = set(pattern.split())
-        title_words = set(title_lower.split())
-        overlap = len(words & title_words)
-        if overlap >= len(words) * 0.5:
+        if _has_unique_term_match(title_lower, pattern):
             return 70, 0.7
     return 0, 0.0
+
+
+def _count_skill_matches_in_text(text, profession):
+    if not text:
+        return 0, 0
+    config = PROFESSION_CONFIGS.get(profession, {})
+    skills = config.get("skills", {})
+    if not skills:
+        return 0, 0
+    matches = 0
+    for skill in skills:
+        pattern = _build_skill_pattern(skill)
+        if pattern.search(text):
+            matches += 1
+    return matches, len(skills)
 
 
 def _score_summary(summary_text, profession):
@@ -495,14 +570,10 @@ def _score_summary(summary_text, profession):
     for pattern in t:
         if pattern in summary_lower:
             return 100, 1.0
-    skills = config.get("skills", {})
-    matches = 0
-    for skill in skills:
-        if skill.lower() in summary_lower:
-            matches += 1
-    if len(skills) == 0:
+    matches, total = _count_skill_matches_in_text(summary_text, profession)
+    if total == 0:
         return 0, 0
-    ratio = matches / len(skills)
+    ratio = matches / total
     scaled = min(100, round(ratio * 200))
     return scaled, ratio
 
@@ -516,14 +587,10 @@ def _score_experience(exp_text, profession):
     for pattern in t:
         if pattern in exp_lower:
             return 100, 1.0
-    skills = config.get("skills", {})
-    matches = 0
-    for skill in skills:
-        if skill.lower() in exp_lower:
-            matches += 1
-    if len(skills) == 0:
+    matches, total = _count_skill_matches_in_text(exp_text, profession)
+    if total == 0:
         return 0, 0
-    ratio = matches / len(skills)
+    ratio = matches / total
     scaled = min(100, round(ratio * 200))
     return scaled, ratio
 
@@ -531,16 +598,10 @@ def _score_experience(exp_text, profession):
 def _score_projects(proj_text, profession):
     if not proj_text:
         return 0, 0
-    proj_lower = proj_text.lower()
-    config = PROFESSION_CONFIGS.get(profession, {})
-    skills = config.get("skills", {})
-    matches = 0
-    for skill in skills:
-        if skill.lower() in proj_lower:
-            matches += 1
-    if len(skills) == 0:
+    matches, total = _count_skill_matches_in_text(proj_text, profession)
+    if total == 0:
         return 0, 0
-    ratio = matches / len(skills)
+    ratio = matches / total
     scaled = min(100, round(ratio * 200))
     return scaled, ratio
 
@@ -671,9 +732,6 @@ def _title_weighted_classify(title, extracted_skills):
             if from_title:
                 match = PROFESSION_CONFIGS.get(from_title, {})
                 score = 100
-                for s in match.get("skills", {}):
-                    if any(normalize_skill(s).lower() in (normalize_skill(x).lower() for x in extracted_skills) for s in [s]):
-                        pass
                 combined[from_title] = score * title_weight / 100
                 all_profs.add(from_title)
             if skills_prof:
@@ -712,9 +770,10 @@ def classify_profession_from_title(title):
     for profession, config in PROFESSION_CONFIGS.items():
         t = config.get("titles", set())
         for pattern in t:
-            if pattern in title_lower or title_lower in pattern:
-                if len(pattern) > best_score:
-                    best_score = len(pattern)
+            if pattern in title_lower:
+                pattern_unique = len(pattern.split())
+                if pattern_unique > best_score:
+                    best_score = pattern_unique
                     best = profession
     return best
 
