@@ -1,5 +1,6 @@
 from django.db import models
-from django.core.validators import FileExtensionValidator
+
+from .cv_templates import TEMPLATE_CHOICES, DEFAULT_TEMPLATE_ID
 
 
 class JobSeekerProfile(models.Model):
@@ -15,12 +16,11 @@ class JobSeekerProfile(models.Model):
     certifications = models.TextField(blank=True, help_text='Use separate lines for each certification.')
     linkedin_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
-    profile_photo = models.FileField(
-        upload_to='cv_profiles/',
-        blank=True,
-        null=True,
-        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])],
-        help_text='Optional profile photo for records only.'
+    selected_template = models.CharField(
+        max_length=50,
+        choices=TEMPLATE_CHOICES,
+        default=DEFAULT_TEMPLATE_ID,
+        help_text='The CV template last chosen for this profile.',
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

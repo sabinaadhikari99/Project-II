@@ -93,7 +93,7 @@
           <i class="bi bi-person-plus"></i> Create account
         </button>
 
-        <div id="message"></div>
+        <div id="message" class="mt-3 text-center"></div>
 
         <div class="auth-divider">or</div>
 
@@ -187,10 +187,122 @@
 </style>
 <script>
   (function() {
+    // ===== Helper Functions =====
+    
+    // Show message with Bootstrap alert styling (without dismiss button, centered)
+    function showMessage(message, type = 'danger') {
+      const msgDiv = document.getElementById('message');
+      if (!msgDiv) return;
+      
+      const alertClass = type === 'danger' ? 'alert-danger' : 
+                        type === 'success' ? 'alert-success' : 
+                        type === 'warning' ? 'alert-warning' : 'alert-info';
+      
+      msgDiv.innerHTML = `<div class="alert ${alertClass} fade show text-center" role="alert" id="alertMessage">
+        ${message}
+      </div>`;
+    }
+
+    // Clear message
+    function clearMessage() {
+      const msgDiv = document.getElementById('message');
+      if (msgDiv) {
+        msgDiv.innerHTML = '';
+      }
+    }
+
+    // Extract error message from various API response formats
+    function extractErrorMessage(errorData) {
+      if (!errorData) return 'Unable to process your request. Please try again.';
+      
+      if (typeof errorData === 'string') {
+        return errorData;
+      }
+      
+      if (typeof errorData === 'object') {
+        if (errorData.detail) return errorData.detail;
+        if (errorData.message) return errorData.message;
+        if (errorData.error) return errorData.error;
+        if (errorData.non_field_errors) {
+          if (Array.isArray(errorData.non_field_errors)) {
+            return errorData.non_field_errors.join(', ');
+          }
+          return errorData.non_field_errors;
+        }
+        
+        // Handle field-specific errors like {"email":["user with this email already exists."]}
+        const fieldErrors = Object.values(errorData);
+        if (fieldErrors.length > 0) {
+          const firstError = fieldErrors[0];
+          if (Array.isArray(firstError) && firstError.length > 0) {
+            return firstError[0];
+          }
+          if (typeof firstError === 'string') {
+            return firstError;
+          }
+        }
+        
+        for (const [field, errors] of Object.entries(errorData)) {
+          if (Array.isArray(errors) && errors.length > 0) {
+            const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `${fieldName}: ${errors[0]}`;
+          }
+          if (typeof errors === 'string') {
+            const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `${fieldName}: ${errors}`;
+          }
+        }
+        
+        if (Array.isArray(errorData) && errorData.length > 0) {
+          return errorData.join(', ');
+        }
+      }
+      
+      try {
+        return JSON.stringify(errorData);
+      } catch {
+        return 'An unexpected error occurred. Please try again.';
+      }
+    }
+
+    // API wrapper function
+    async function apiCall(url, options = {}, includeAuth = true) {
+      const defaultOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      };
+      
+      if (includeAuth) {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          defaultOptions.headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      
+      const finalOptions = { ...defaultOptions, ...options };
+      
+      if (options.headers) {
+        finalOptions.headers = { ...finalOptions.headers, ...options.headers };
+      }
+      
+      const response = await fetch(url, finalOptions);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        const errorMessage = extractErrorMessage(data);
+        throw new Error(errorMessage);
+      }
+      
+      return data;
+    }
+
+    // ===== Password Toggle =====
     document.querySelectorAll('.pw-toggle').forEach(function(button) {
       button.addEventListener('click', function() {
         const wrapper = this.closest('.input-wrap');
-        const inp = wrapper ? wrapper.querySelector('input[type="password"]') : document.getElementById('password');
+        const inp = wrapper ? wrapper.querySelector('input[type="password"], input[type="text"]') : document.getElementById('password');
         const ico = this.querySelector('i');
         if (!inp) return;
         if (inp.type === 'password') {
@@ -203,6 +315,7 @@
       });
     });
 
+    // ===== Password Strength =====
     document.getElementById('password').addEventListener('input', function() {
       const val = this.value;
       const bars = ['bar1','bar2','bar3','bar4'].map(id => document.getElementById(id));
@@ -222,6 +335,7 @@
       label.style.color = score <= 1 ? '#EF4444' : score === 2 ? '#F59E0B' : '#10B981';
     });
 
+    // ===== Role Selection =====
     const roleSelect = document.getElementById('role');
     const roleCards = document.querySelectorAll('.role-card');
 
@@ -237,57 +351,119 @@
       card.addEventListener('click', () => {
         syncRoleDropdown(card.dataset.role);
         syncRoleCards(card.dataset.role);
+        clearMessage(); // Clear any error messages when role changes
       });
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           syncRoleDropdown(card.dataset.role);
           syncRoleCards(card.dataset.role);
+          clearMessage();
         }
       });
     });
 
     roleSelect.addEventListener('change', () => {
       syncRoleCards(roleSelect.value);
+      clearMessage();
     });
 
+    // ===== AUTO-CLEAR ERROR MESSAGE ON USER INPUT =====
+    // Clear error message when user starts typing
+    const allInputs = document.querySelectorAll('input, select');
+    allInputs.forEach(input => {
+      input.addEventListener('input', function() {
+        clearMessage();
+      });
+      input.addEventListener('focus', function() {
+        clearMessage();
+      });
+    });
+
+    // ===== Register Form Submission =====
     document.getElementById("registerForm").addEventListener("submit", async (event) => {
       event.preventDefault();
+      
       const btn = event.target.querySelector('.btn-submit');
       const orig = btn.innerHTML;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Creating account\u2026';
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Creating account…';
       btn.disabled = true;
+      
+      // Clear previous messages
+      clearMessage();
+      
       const form = Object.fromEntries(new FormData(event.target));
+      
+      // Client-side validation
       if (form.password !== form.password_confirm) {
         btn.innerHTML = orig;
         btn.disabled = false;
-        return showMessage('Passwords do not match.', 'danger');
+        showMessage('Passwords do not match. Please try again.', 'danger');
+        return;
       }
-      const payload = { email: form.email, username: form.username, password: form.password, role: form.role };
+      
+      if (form.password.length < 8) {
+        btn.innerHTML = orig;
+        btn.disabled = false;
+        showMessage('Password must be at least 8 characters long.', 'danger');
+        return;
+      }
+      
+      const payload = { 
+        email: form.email, 
+        username: form.username, 
+        password: form.password, 
+        role: form.role 
+      };
+      
       try {
-        await api("/api/auth/register/", {method:"POST", body:JSON.stringify(payload)}, false);
+        await apiCall("/api/auth/register/", {
+          method: "POST", 
+          body: JSON.stringify(payload)
+        }, false);
+        
         showMessage('Registration successful! Please log in to continue.', 'success');
-        setTimeout(() => { window.location.href = '/login/'; }, 2000);
+        
+        setTimeout(() => { 
+          window.location.href = '/login/'; 
+        }, 2000);
+        
       } catch (error) {
         btn.innerHTML = orig;
         btn.disabled = false;
-        showMessage(error.message, "danger");
+        showMessage(error.message || 'Registration failed. Please try again.', "danger");
       }
     });
 
+    // ===== LinkedIn Registration =====
     document.getElementById('linkedinRegisterBtn').addEventListener('click', async function() {
       const btn = this;
+      const orig = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting\u2026';
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting…';
+      
+      // Clear any previous messages
+      clearMessage();
+      
       try {
         const role = document.getElementById('role').value;
-        const resp = await fetch('/api/auth/linkedin/login/?role=' + encodeURIComponent(role));
-        const data = await resp.json();
-        window.location.href = data.auth_url;
-      } catch (e) {
+        const response = await fetch('/api/auth/linkedin/login/?role=' + encodeURIComponent(role));
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(extractErrorMessage(data));
+        }
+        
+        if (data.auth_url) {
+          window.location.href = data.auth_url;
+        } else {
+          throw new Error('Unable to initiate LinkedIn authentication. Please try again.');
+        }
+        
+      } catch (error) {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-linkedin"></i> Sign up with LinkedIn';
-        showMessage('Failed to connect to LinkedIn. Please try again.', 'danger');
+        btn.innerHTML = orig;
+        showMessage(error.message || 'Unable to connect to LinkedIn. Please try again later.', 'danger');
       }
     });
   })();

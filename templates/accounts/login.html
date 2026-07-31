@@ -39,7 +39,7 @@
           <i class="bi bi-box-arrow-in-right"></i> Sign in
         </button>
 
-        <div id="message" class="mt-3"></div>
+        <div id="message" class="mt-3 text-center"></div>
 
         <div class="auth-divider">or</div>
 
@@ -67,53 +67,321 @@
 
 <script>
   (function() {
-    document.querySelector('.pw-toggle')?.addEventListener('click', function() {
-      const inp = document.getElementById('password');
-      const ico = this.querySelector('i');
-      if (inp.type === 'password') {
-        inp.type = 'text';
-        ico.className = 'bi bi-eye-slash';
-      } else {
-        inp.type = 'password';
-        ico.className = 'bi bi-eye';
+    // ===== Helper Functions =====
+
+    function showMessage(message, type = 'danger') {
+      const msgDiv = document.getElementById('message');
+      if (!msgDiv) return;
+
+      const alertClass = type === 'danger' ? 'alert-danger' :
+                        type === 'success' ? 'alert-success' :
+                        type === 'warning' ? 'alert-warning' : 'alert-info';
+
+      msgDiv.innerHTML = `<div class="alert ${alertClass} fade show text-center" role="alert" id="alertMessage">
+        ${message}
+      </div>`;
+    }
+
+    function clearMessage() {
+      const msgDiv = document.getElementById('message');
+      if (msgDiv) {
+        msgDiv.innerHTML = '';
       }
+    }
+
+    function extractErrorMessage(errorData) {
+      if (!errorData) return 'Unable to process your request. Please try again.';
+
+      if (typeof errorData === 'string') {
+        return errorData;
+      }
+
+      if (typeof errorData === 'object') {
+        if (errorData.detail) return errorData.detail;
+        if (errorData.message) return errorData.message;
+        if (errorData.error) return errorData.error;
+        if (errorData.non_field_errors) {
+          if (Array.isArray(errorData.non_field_errors)) {
+            return errorData.non_field_errors.join(', ');
+          }
+          return errorData.non_field_errors;
+        }
+
+        const fieldErrors = Object.values(errorData);
+        if (fieldErrors.length > 0) {
+          const firstError = fieldErrors[0];
+          if (Array.isArray(firstError) && firstError.length > 0) {
+            return firstError[0];
+          }
+          if (typeof firstError === 'string') {
+            return firstError;
+          }
+        }
+
+        for (const [field, errors] of Object.entries(errorData)) {
+          if (Array.isArray(errors) && errors.length > 0) {
+            const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `${fieldName}: ${errors[0]}`;
+          }
+          if (typeof errors === 'string') {
+            const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `${fieldName}: ${errors}`;
+          }
+        }
+
+        if (Array.isArray(errorData) && errorData.length > 0) {
+          return errorData.join(', ');
+        }
+      }
+
+      try {
+        return JSON.stringify(errorData);
+      } catch {
+        return 'An unexpected error occurred. Please try again.';
+      }
+    }
+
+    // ===== Session storage: uses the EXACT SAME keys as app.js =====
+    // (access, refresh, role, email, username, profile_picture)
+    // This is the critical fix. Previously login.html used its own made
+    // up keys (auth_token, user_data, user_role) that app.js NEVER read.
+    // app.js's requireRole()/hydrateNavbar() only ever look at "access"
+    // and "role", which were only ever populated later by app.js's own
+    // ensureJWTToken() - via the Django SESSION COOKIE, not the JWT you
+    // actually just logged in with. That gap is what let a stale/previous
+    // user's identity leak into a new login. Now login.html writes
+    // directly into the keys app.js reads, so the dashboard has the
+    // correct data the instant it loads - no race, no stale session
+    // cookie dependency.
+    function clearSession() {
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
+      localStorage.removeItem('role');
+      localStorage.removeItem('email');
+      localStorage.removeItem('username');
+      localStorage.removeItem('profile_picture');
+    }
+
+    async function apiCall(url, options = {}, includeAuth = true) {
+      const defaultOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      };
+
+      if (includeAuth) {
+        const tok = localStorage.getItem('access');
+        if (tok) {
+          defaultOptions.headers['Authorization'] = `Bearer ${tok}`;
+        }
+      }
+
+      const finalOptions = { ...defaultOptions, ...options };
+
+      if (options.headers) {
+        finalOptions.headers = { ...finalOptions.headers, ...options.headers };
+      }
+
+      const response = await fetch(url, finalOptions);
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage = extractErrorMessage(data);
+        throw new Error(errorMessage);
+      }
+
+      return data;
+    }
+
+    function saveSession(data) {
+      // Wipe any previous session first so nothing from a prior
+      // user/account can linger and get merged with the new one.
+      clearSession();
+
+      // Matches your backend's actual LoginSerializer response exactly:
+      // { "user": {...}, "access": "...", "refresh": "..." }
+      if (data.access) {
+        localStorage.setItem('access', data.access);
+      }
+      if (data.refresh) {
+        localStorage.setItem('refresh', data.refresh);
+      }
+      if (data.user) {
+        localStorage.setItem('role', data.user.role || '');
+        localStorage.setItem('email', data.user.email || '');
+        localStorage.setItem('username', data.user.username || data.user.email || 'User');
+        localStorage.setItem('profile_picture', data.user.profile_picture || '');
+      }
+    }
+
+    // ===== Routing with role normalization =====
+    function routeByRole(role) {
+      let normalizedRole = role;
+
+      if (role === 'seeker') {
+        normalizedRole = 'job_seeker';
+      }
+
+      const roleRoutes = {
+        'job_seeker': '/dashboard/seeker/',
+        'seeker': '/dashboard/seeker/',
+        'recruiter': '/dashboard/recruiter/',
+        'admin': '/dashboard/admin/',
+        'candidate': '/dashboard/candidate/',
+        'employer': '/dashboard/employer/',
+      };
+
+      const redirectPath = roleRoutes[normalizedRole] || '/dashboard/';
+      window.location.href = redirectPath;
+    }
+
+    // ===== DOM Event Handlers =====
+
+    // Toggle password visibility
+    const pwToggle = document.querySelector('.pw-toggle');
+    if (pwToggle) {
+      pwToggle.addEventListener('click', function() {
+        const inp = document.getElementById('password');
+        const ico = this.querySelector('i');
+        if (inp.type === 'password') {
+          inp.type = 'text';
+          ico.className = 'bi bi-eye-slash';
+        } else {
+          inp.type = 'password';
+          ico.className = 'bi bi-eye';
+        }
+      });
+    }
+
+    // Auto-clear error messages on user input
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+      emailInput.addEventListener('input', clearMessage);
+    }
+
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) {
+      passwordInput.addEventListener('input', clearMessage);
+    }
+
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', clearMessage);
     });
 
-    document.getElementById('loginForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const btn = event.target.querySelector('.btn-submit');
-      const orig = btn.innerHTML;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in\u2026';
-      btn.disabled = true;
-      const data = Object.fromEntries(new FormData(event.target));
-      try {
-        const result = await api('/api/auth/login/', { method: 'POST', body: JSON.stringify(data) }, false);
-        saveSession(result);
-        routeByRole(result.user.role);
-      } catch (error) {
-        btn.innerHTML = orig;
-        btn.disabled = false;
-        showMessage(error.message, 'danger');
-      }
-    });
+    // Login form submission
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    document.getElementById('linkedinLoginBtn').addEventListener('click', async function() {
-      const btn = this;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting\u2026';
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const role = params.get('role');
-        const url = role ? '/api/auth/linkedin/login/?role=' + encodeURIComponent(role) : '/api/auth/linkedin/login/';
-        const resp = await fetch(url);
-        const data = await resp.json();
-        window.location.href = data.auth_url;
-      } catch (e) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-linkedin"></i> Continue with LinkedIn';
-        showMessage('Failed to connect to LinkedIn. Please try again.', 'danger');
+        const btn = event.target.querySelector('.btn-submit');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in…';
+        btn.disabled = true;
+
+        clearMessage();
+
+        const data = Object.fromEntries(new FormData(event.target));
+
+        try {
+          const result = await apiCall('/api/auth/login/', {
+            method: 'POST',
+            body: JSON.stringify(data)
+          }, false);
+
+          // saveSession() clears any stale session before storing the new one
+          saveSession(result);
+          showMessage('Login successful! Redirecting...', 'success');
+
+          setTimeout(() => {
+            if (result.user && result.user.role) {
+              routeByRole(result.user.role);
+            } else {
+              window.location.href = '/dashboard/';
+            }
+          }, 1000);
+
+        } catch (error) {
+          btn.innerHTML = orig;
+          btn.disabled = false;
+          showMessage(error.message || 'Authentication failed. Please verify your credentials and try again.', 'danger');
+        }
+      });
+    }
+
+    // LinkedIn login
+    const linkedinBtn = document.getElementById('linkedinLoginBtn');
+    if (linkedinBtn) {
+      linkedinBtn.addEventListener('click', async function() {
+        const btn = this;
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting…';
+
+        clearMessage();
+
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const role = params.get('role');
+          const url = role ? `/api/auth/linkedin/login/?role=${encodeURIComponent(role)}` : '/api/auth/linkedin/login/';
+
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(extractErrorMessage(data));
+          }
+
+          if (data.auth_url) {
+            window.location.href = data.auth_url;
+          } else {
+            throw new Error('Unable to initiate LinkedIn authentication. Please try again.');
+          }
+
+        } catch (error) {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+          showMessage(error.message || 'Unable to connect to LinkedIn. Please try again later.', 'danger');
+        }
+      });
+    }
+
+    // ===== Check for existing session on page load =====
+    // Only trusts the role returned FRESH from the server via
+    // /api/auth/verify/ - never routes off stale cached data. Uses
+    // "access" key, consistent with app.js everywhere else now.
+    async function checkSession() {
+      const tok = localStorage.getItem('access');
+      if (!tok) {
+        clearSession();
+        return;
       }
-    });
+
+      try {
+        const result = await apiCall('/api/auth/verify/', {
+          method: 'POST',
+          body: JSON.stringify({ token: tok })
+        });
+
+        if (result.valid && result.user && result.user.role) {
+          localStorage.setItem('role', result.user.role);
+          localStorage.setItem('email', result.user.email || '');
+          localStorage.setItem('username', result.user.username || result.user.email || 'User');
+          routeByRole(result.user.role);
+        } else {
+          clearSession();
+        }
+      } catch {
+        clearSession();
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      checkSession();
+    } else {
+      window.addEventListener('load', checkSession);
+    }
   })();
 </script>
 {% endblock %}

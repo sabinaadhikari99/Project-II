@@ -10,6 +10,7 @@ from .views import (
     ProfileAPIView,
     RegisterAPIView,
     ResumeUploadAPIView,
+    VerifyTokenAPIView,
     LinkedInLoginAPIView,
     LinkedInCallbackAPIView,
     LinkedInRoleSelectAPIView,
@@ -22,6 +23,7 @@ urlpatterns = [
     path("token/", GetTokenAPIView.as_view(), name="auth-token"),
     path("refresh/", TokenRefreshView.as_view(), name="auth-refresh"),
     path("logout/", LogoutAPIView.as_view(), name="auth-logout"),
+    path("verify/", VerifyTokenAPIView.as_view(), name="auth-verify"),  # NEW - was missing
     path("profile/", ProfileAPIView.as_view(), name="auth-profile"),
     path("resume/", ResumeUploadAPIView.as_view(), name="auth-resume"),
     path("change-password/", ChangePasswordAPIView.as_view(), name="auth-change-password"),

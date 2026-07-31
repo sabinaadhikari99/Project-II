@@ -5,11 +5,17 @@ import os
 
 from dotenv import load_dotenv
 import cloudinary
+from decouple import config 
+import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = '&xjg@w9wz%(8sh)_fr4w(*yf8utj=3uefxtjim63#q2s#5g#r_'
+env = environ.Env()
+# FORCE LOAD .env FILE
+env.read_env(str(BASE_DIR / ".env"))
+
+SECRET_KEY = env("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "1") == "1"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
@@ -252,3 +258,13 @@ cloudinary.config(
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
+
+MEDIA_ROOT = BASE_DIR/"media"
+
+EMAIL_BACKEND ="django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT =587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")

@@ -1,13 +1,73 @@
 <!DOCTYPE html>
-<html><body style="font-family:sans-serif;padding:20px;max-width:600px;margin:auto;">
-<h2 style="color:#2563EB;">New Application Received</h2>
-<p>Hi {{ recruiter.username }},</p>
-<p>{{ message }}</p>
-<table style="width:100%;border-collapse:collapse;margin:16px 0;">
-  <tr><td style="padding:8px;background:#f1f5f9;"><strong>Candidate:</strong></td><td style="padding:8px;">{{ applicant.username }} ({{ applicant.email }})</td></tr>
-  <tr><td style="padding:8px;background:#f1f5f9;"><strong>Job:</strong></td><td style="padding:8px;">{{ job.title }}</td></tr>
-  <tr><td style="padding:8px;background:#f1f5f9;"><strong>Company:</strong></td><td style="padding:8px;">{{ job.company }}</td></tr>
-</table>
-<a href="#" style="display:inline-block;padding:10px 24px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;">View Applications</a>
-<p style="margin-top:24px;color:#64748b;font-size:12px;">SkillSync AI &mdash; Recruiter Dashboard</p>
-</body></html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Application Received | SkillSync AI</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background: #f8fafc;">
+
+    <div style="background: #ffffff; border-radius: 16px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="font-size: 32px; margin-bottom: 8px;">📥</div>
+            <h2 style="color: #0f172a; font-size: 24px; font-weight: 700; margin: 0 0 4px 0; letter-spacing: -0.5px;">
+                New Application Received
+            </h2>
+            <p style="color: #64748b; font-size: 15px; margin: 0;">A candidate has applied for your job posting</p>
+        </div>
+
+        <!-- Greeting -->
+        <p style="color: #0f172a; font-size: 16px; font-weight: 600; margin: 0 0 4px 0;">
+            Hi {{ recruiter.username }},
+        </p>
+        <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+            {{ message }}
+        </p>
+
+        <!-- Candidate Section -->
+        <div style="background: #eff6ff; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; border: 1px solid #bfdbfe;">
+            <p style="color: #1e40af; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">👤 Candidate Details</p>
+            <p style="color: #0f172a; font-size: 15px; font-weight: 600; margin: 0;">
+                {{ applicant.username }}
+            </p>
+            <p style="color: #2563EB; font-size: 14px; margin: 0;">
+                {{ applicant.email }}
+            </p>
+        </div>
+
+        <!-- Application Details -->
+        <div style="background: #f8fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; border: 1px solid #eef2f6;">
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eef2f6;">
+                <span style="color: #64748b; font-size: 14px; font-weight: 500;">💼 Job Title</span>
+                <span style="color: #0f172a; font-size: 14px; font-weight: 600;">{{ job.title }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                <span style="color: #64748b; font-size: 14px; font-weight: 500;">🏢 Company</span>
+                <span style="color: #2563EB; font-size: 14px; font-weight: 600;">{{ job.company }}</span>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div style="background: #f0fdf4; border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; border: 1px solid #bbf7d0;">
+            <p style="color: #065f46; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">📌 Quick Actions</p>
+            <p style="color: #475569; font-size: 14px; margin: 0; line-height: 1.6;">
+                Review this application and get back to the candidate within <strong>5-7 business days</strong>.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eef2f6;">
+            <p style="color: #94a3b8; font-size: 13px; margin: 0 0 4px 0;">
+                © 2026 <strong style="color: #0f172a;">SkillSync <span style="color: #2563EB;">AI</span></strong> — Your Career Platform
+            </p>
+            <p style="color: #cbd5e1; font-size: 11px; margin: 0 0 4px 0;">
+                You're receiving this because someone applied to your job posting.
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>

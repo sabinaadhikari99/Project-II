@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ profile.full_name|default:"CV" }} — {{ meta.name }} Preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1f2937;
+      background: #EEF2F7;
+    }
+    .page {
+      max-width: 780px;
+      margin: 24px auto;
+      background: #fff;
+      box-shadow: 0 8px 30px rgba(15,23,42,0.10);
+      min-height: 900px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      margin: 22px 0 8px;
+    }
+    .section-title:first-child { margin-top: 0; }
+    p, ul { margin: 0 0 8px; font-size: 13.5px; line-height: 1.6; }
+    ul { padding-left: 18px; }
+    li { margin-bottom: 4px; }
+
+    /* ── Single-column layout ── */
+    .layout-single .page-pad { padding: 40px 46px; }
+    .layout-single .cv-name {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 0 0 6px;
+    }
+    .layout-single .cv-contact {
+      font-size: 12.5px;
+      color: #6b7280;
+      margin-bottom: 14px;
+    }
+    .layout-single hr {
+      border: none;
+      border-top: 1px solid #d1d5db;
+      margin: 0 0 16px;
+    }
+
+    /* ── Sidebar layout ── */
+    .layout-sidebar .page { display: flex; min-height: 900px; }
+    .layout-sidebar .sidebar {
+      width: 240px;
+      background: var(--accent);
+      color: #fff;
+      padding: 34px 24px;
+      flex-shrink: 0;
+    }
+    .layout-sidebar .sidebar .cv-name {
+      font-size: 21px;
+      font-weight: 700;
+      margin: 0 0 18px;
+      line-height: 1.3;
+    }
+    .layout-sidebar .sidebar .section-title {
+      color: #fff;
+      opacity: 0.9;
+      font-size: 12.5px;
+      margin: 20px 0 8px;
+    }
+    .layout-sidebar .sidebar .section-title:first-of-type { margin-top: 0; }
+    .layout-sidebar .sidebar p, .layout-sidebar .sidebar li {
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.9);
+    }
+    .layout-sidebar .sidebar ul { padding-left: 16px; }
+    .layout-sidebar .main {
+      flex: 1;
+      padding: 34px 40px;
+    }
+  </style>
+</head>
+<body class="layout-{{ meta.layout }}" style="--accent: {{ meta.accent }};">
+
+{% if meta.layout == 'sidebar' %}
+  <div class="page">
+    <div class="sidebar">
+      <div class="cv-name">{{ profile.full_name|default:"Job Seeker" }}</div>
+
+      {% if profile.email or profile.phone_number or profile.address or profile.linkedin_url or profile.github_url %}
+        <div class="section-title">Contact</div>
+        {% if profile.email %}<p>{{ profile.email }}</p>{% endif %}
+        {% if profile.phone_number %}<p>{{ profile.phone_number }}</p>{% endif %}
+        {% if profile.address %}<p>{{ profile.address }}</p>{% endif %}
+        {% if profile.linkedin_url %}<p>{{ profile.linkedin_url }}</p>{% endif %}
+        {% if profile.github_url %}<p>{{ profile.github_url }}</p>{% endif %}
+      {% endif %}
+
+      {% if skills %}
+        <div class="section-title">Skills</div>
+        <ul>{% for skill in skills %}<li>{{ skill }}</li>{% endfor %}</ul>
+      {% endif %}
+
+      {% if education %}
+        <div class="section-title">Education</div>
+        {% for item in education %}<p>{{ item }}</p>{% endfor %}
+      {% endif %}
+
+      {% if certifications %}
+        <div class="section-title">Certifications</div>
+        {% for item in certifications %}<p>{{ item }}</p>{% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="main">
+      <div class="section-title">Professional Summary</div>
+      <p>
+        {% if skills %}
+          Experienced professional with skills in {{ skills.0 }} and a strong record of accomplishment.
+        {% else %}
+          Professional job seeker with a strong focus on delivering value in every role.
+        {% endif %}
+      </p>
+
+      {% if work_experience %}
+        <div class="section-title">Work Experience</div>
+        <ul>{% for item in work_experience %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% endif %}
+
+      {% if projects %}
+        <div class="section-title">Projects</div>
+        <ul>{% for item in projects %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+  </div>
+
+{% else %}
+  <div class="page">
+    <div class="page-pad">
+      <div class="cv-name">{{ profile.full_name|default:"Job Seeker" }}</div>
+      <div class="cv-contact">
+        {{ profile.email }}{% if profile.phone_number %} &nbsp;|&nbsp; {{ profile.phone_number }}{% endif %}{% if profile.address %} &nbsp;|&nbsp; {{ profile.address }}{% endif %}{% if profile.linkedin_url %} &nbsp;|&nbsp; {{ profile.linkedin_url }}{% endif %}{% if profile.github_url %} &nbsp;|&nbsp; {{ profile.github_url }}{% endif %}
+      </div>
+      <hr>
+
+      <div class="section-title">Professional Summary</div>
+      <p>
+        {% if skills %}
+          Experienced professional with skills in {{ skills.0 }} and a strong record of accomplishment.
+        {% else %}
+          Professional job seeker with a strong focus on delivering value in every role.
+        {% endif %}
+      </p>
+
+      {% if skills %}
+        <div class="section-title">Skills</div>
+        <p>{{ skills|join:", " }}</p>
+      {% endif %}
+
+      {% if work_experience %}
+        <div class="section-title">Work Experience</div>
+        <ul>{% for item in work_experience %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% endif %}
+
+      {% if education %}
+        <div class="section-title">Education</div>
+        <ul>{% for item in education %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% endif %}
+
+      {% if projects %}
+        <div class="section-title">Projects</div>
+        <ul>{% for item in projects %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% endif %}
+
+      {% if certifications %}
+        <div class="section-title">Certifications</div>
+        <ul>{% for item in certifications %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+
+</body>
+</html>
