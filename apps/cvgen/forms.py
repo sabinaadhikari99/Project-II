@@ -19,7 +19,6 @@ class JobSeekerProfileForm(forms.ModelForm):
             'certifications',
             'linkedin_url',
             'github_url',
-            'profile_photo',
         ]
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name', 'required': True}),
@@ -33,5 +32,4 @@ class JobSeekerProfileForm(forms.ModelForm):
             'certifications': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Certification details, one entry per line'}),
             'linkedin_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn URL'}),
             'github_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'GitHub URL'}),
-            'profile_photo': forms.ClearableFileInput(attrs={'class': 'form-control form-control-file'}),
         }

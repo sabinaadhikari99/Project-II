@@ -360,7 +360,6 @@
   .cv-section input[type="email"],
   .cv-section input[type="url"],
   .cv-section input[type="tel"],
-  .cv-section input[type="file"],
   .cv-section textarea,
   .cv-section select {
     width: 100%;
@@ -387,11 +386,6 @@
     line-height: 1.6 !important;
   }
 
-  .cv-section input[type="file"] {
-    padding: 0.65rem 1rem 0.65rem 2.75rem !important;
-    cursor: pointer !important;
-  }
-
   .cv-section input::placeholder,
   .cv-section textarea::placeholder {
     color: rgba(15,23,42,0.28) !important;
@@ -410,24 +404,6 @@
     background: var(--surface) !important;
   }
 
-  /* File input special styling */
-  .cv-section input[type="file"]::file-selector-button {
-    border: none !important;
-    background: rgba(var(--accent-rgb), 0.08) !important;
-    color: var(--accent) !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
-    padding: 0.3rem 0.85rem !important;
-    border-radius: 8px !important;
-    margin-right: 0.75rem !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-  }
-
-  .cv-section input[type="file"]::file-selector-button:hover {
-    background: rgba(var(--accent-rgb), 0.14) !important;
-  }
-
   /* Error styling */
   .field-error {
     font-size: 14px;
@@ -442,15 +418,6 @@
   .field-error::before {
     content: "⚠";
     font-size: 13px;
-  }
-
-  /* ══════════════════════════════
-     DIVIDER BETWEEN SECTIONS
-  ══════════════════════════════ */
-  .section-divider {
-    height: 1px;
-    background: var(--bdr);
-    margin: 0;
   }
 
   /* ══════════════════════════════
@@ -613,22 +580,17 @@
       <div class="cv-progress">
         <div class="cp-step active">
           <div class="cp-dot">1</div>
-          <span>Personal</span>
+          <span>Details</span>
         </div>
         <div class="cp-line"></div>
-        <div class="cp-step active">
+        <div class="cp-step">
           <div class="cp-dot">2</div>
-          <span>Career</span>
+          <span>Template</span>
         </div>
         <div class="cp-line"></div>
-        <div class="cp-step active">
+        <div class="cp-step">
           <div class="cp-dot">3</div>
-          <span>Experience</span>
-        </div>
-        <div class="cp-line"></div>
-        <div class="cp-step active">
-          <div class="cp-dot">4</div>
-          <span>Profiles</span>
+          <span>Download</span>
         </div>
       </div>
     </div>
@@ -645,30 +607,30 @@
             </div>
             <h1>Create a recruiter-ready CV fast</h1>
             <p class="hero-desc">
-              Use this dedicated CV builder to generate a polished, ATS-friendly PDF
-              designed for hiring teams, recruiters, and professional applications.
+              Fill in your details, then choose from a gallery of professional templates
+              previewed with your own information before you download the PDF.
             </p>
             <div class="benefit-row">
               <span class="benefit-pill"><i class="bi bi-check-circle-fill"></i> ATS optimized</span>
-              <span class="benefit-pill"><i class="bi bi-check-circle-fill"></i> Clean modern format</span>
-              <span class="benefit-pill"><i class="bi bi-check-circle-fill"></i> Instant PDF download</span>
+              <span class="benefit-pill"><i class="bi bi-check-circle-fill"></i> Multiple templates</span>
+              <span class="benefit-pill"><i class="bi bi-check-circle-fill"></i> Live preview</span>
               <span class="benefit-pill"><i class="bi bi-check-circle-fill"></i> Free to use</span>
             </div>
           </div>
 
           <div class="hero-stats-card">
             <div class="hsc-title">What you'll get</div>
+            <div class="hsc-item"><i class="bi bi-grid-3x3-gap"></i> 10 template choices</div>
+            <div class="hsc-item"><i class="bi bi-eye"></i> Preview before you download</div>
             <div class="hsc-item"><i class="bi bi-file-earmark-pdf"></i> ATS-friendly PDF</div>
-            <div class="hsc-item"><i class="bi bi-layout-text-sidebar"></i> Professional layout</div>
             <div class="hsc-item"><i class="bi bi-lightning-charge"></i> Instant generation</div>
             <div class="hsc-item"><i class="bi bi-shield-check"></i> Secure & private</div>
-            <div class="hsc-item"><i class="bi bi-download"></i> Download immediately</div>
           </div>
         </div>
       </div>
 
       <!-- ── Form ── -->
-      <form method="post" enctype="multipart/form-data" novalidate class="cv-sections">
+      <form method="post" novalidate class="cv-sections">
         {% csrf_token %}
 
         <!-- ─── SECTION 1: Personal Details ─── -->
@@ -836,35 +798,20 @@
                 {{ form.github_url }}
               </div>
             </div>
-
-            <div class="col-12 col-md-6">
-              <label class="cv-label" for="{{ form.profile_photo.id_for_label }}">
-                <i class="bi bi-image-fill"></i> {{ form.profile_photo.label }}
-                <span style="font-size:13px;font-weight:600;color:var(--txt-muted);margin-left:0.4rem;">(Optional)</span>
-              </label>
-              <div class="field-wrap">
-                <i class="bi bi-image fw-icon"></i>
-                {{ form.profile_photo }}
-              </div>
-              <div style="font-size:13px;color:var(--txt-muted);margin-top:0.35rem;display:flex;align-items:center;gap:0.25rem;">
-                <i class="bi bi-info-circle" style="font-size:13px;color:var(--accent);opacity:0.5;"></i>
-                Your photo is optional and helps personalize your CV.
-              </div>
-            </div>
           </div>
         </div>
 
         <!-- ─── Footer / Submit ─── -->
         <div class="cv-footer">
           <div class="footer-hint">
-            <i class="bi bi-file-earmark-pdf"></i>
+            <i class="bi bi-grid-3x3-gap-fill"></i>
             <div>
-              <div style="font-weight:600;color:var(--txt-soft);font-size:14px;">Ready to generate your CV?</div>
-              <div>Submit the form and your PDF will download immediately.</div>
+              <div style="font-weight:600;color:var(--txt-soft);font-size:14px;">Ready to pick a look?</div>
+              <div>Next you'll choose a template and preview it with your own details.</div>
             </div>
           </div>
           <button type="submit" class="btn-generate-cv">
-            <i class="bi bi-download"></i> Generate &amp; Download CV
+            <i class="bi bi-arrow-right-circle"></i> Continue to Templates
           </button>
         </div>
 
@@ -905,7 +852,7 @@
   document.querySelector('form').addEventListener('submit', function() {
     const btn = this.querySelector('.btn-generate-cv');
     if (!btn) return;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Generating PDF…';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving details…';
     btn.disabled = true;
     btn.style.opacity = '0.8';
   });
