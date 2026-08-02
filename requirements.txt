@@ -21,3 +21,4 @@ apify-client==1.5.0
 requests==2.31.0
 cloudinary==1.36.0
 pypdf2>=3.0.1
+faker>=30.0.0

@@ -27,7 +27,7 @@ def _fallback_embedding(text: str) -> list[float]:
 def get_embedding(text: str) -> list[float]:
     payload = {"text": text or ""}
     try:
-        response = requests.post(f"{settings.FASTAPI_URL}/embed/", json=payload, timeout=8)
+        response = requests.post(f"{settings.FASTAPI_URL}/embed/", json=payload, timeout=1.5)
         response.raise_for_status()
         embedding = response.json()["embedding"]
         if len(embedding) == VECTOR_DIMENSION:
