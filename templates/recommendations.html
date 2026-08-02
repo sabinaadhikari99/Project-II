@@ -541,6 +541,71 @@
 
   .chip-warn:hover { background: rgba(245,158,11,0.16); transform: translateY(-1px); }
 
+  /* ── Skill action plan (Phase 2 #4) ── */
+  .plan-item {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+  .plan-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.5rem; margin-bottom: 0.35rem;
+  }
+  .plan-skill { font-weight: 700; font-size: 14px; }
+  .plan-gain {
+    font-size: 12px; font-weight: 700; color: #10B981;
+    background: rgba(16,185,129,0.10); border-radius: 999px; padding: 2px 8px;
+  }
+  .plan-why { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
+  .plan-meta {
+    display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.45rem;
+    font-size: 11.5px; font-weight: 600;
+  }
+  .plan-tag {
+    border-radius: 999px; padding: 2px 8px;
+    background: rgba(99,102,241,0.10); color: #6366f1;
+  }
+  .plan-tag.high { background: rgba(239,68,68,0.10); color: #EF4444; }
+  .plan-tag.medium { background: rgba(245,158,11,0.12); color: #F59E0B; }
+  .plan-tag.low { background: rgba(100,116,139,0.12); color: #64748B; }
+
+  /* ── Resume quality (Phase 2 #11) ── */
+  .rq-row { margin-bottom: 0.7rem; }
+  .rq-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13px; font-weight: 600; margin-bottom: 0.25rem;
+  }
+  .rq-track { height: 7px; border-radius: 999px; background: rgba(15,23,42,0.07); overflow: hidden; }
+  .rq-fill { height: 100%; border-radius: 999px; transition: width 0.7s ease; }
+  .rq-detail { font-size: 12px; color: var(--txt-muted); margin-top: 0.25rem; line-height: 1.45; }
+
+  /* ── Why matched / why not higher (Phase 2 #5) ── */
+  .rj-why { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.6rem; }
+  @media (max-width: 720px) { .rj-why { grid-template-columns: 1fr; } }
+  .why-box { border-radius: 10px; padding: 0.55rem 0.7rem; font-size: 12.5px; line-height: 1.5; }
+  .why-box.pos { background: rgba(16,185,129,0.07); }
+  .why-box.neg { background: rgba(245,158,11,0.08); }
+  .why-box .why-title { font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.25rem; }
+  .why-box.pos .why-title { color: #10B981; }
+  .why-box.neg .why-title { color: #F59E0B; }
+  .why-box ul { margin: 0; padding-left: 1rem; }
+
+  /* ── Structured insights (Phase 2 #3) ── */
+  .insight-group { margin-bottom: 0.85rem; }
+  .insight-group-title {
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--txt-muted); margin-bottom: 0.3rem;
+  }
+  .insight-group ul { margin: 0; padding-left: 1.05rem; font-size: 13px; line-height: 1.6; }
+
+  .badge-spec {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 12px; font-weight: 700; border-radius: 999px;
+    padding: 3px 10px; background: rgba(139,92,246,0.12); color: #8B5CF6;
+    margin-left: 0.4rem;
+  }
+
   /* ── Chart ── */
   .chart-wrap {
     position: relative;
@@ -1063,6 +1128,37 @@
     <div class="dash-panel">
       <div class="panel-head">
         <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-radar"></i></div>
+          Score Breakdown
+        </div>
+        <span id="breakdownScore" class="badge-count"><i class="bi bi-speedometer2"></i> 0%</span>
+      </div>
+      <div class="panel-body">
+        <div class="chart-wrap"><canvas id="breakdownChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2b: Resume Quality (ATS) + Skills Extracted -->
+  <div class="match-row">
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="panel-icon"><i class="bi bi-file-earmark-check"></i></div>
+          Resume Quality (ATS)
+        </div>
+        <span id="qualityScore" class="badge-count"><i class="bi bi-shield-check"></i> 0%</span>
+      </div>
+      <div class="panel-body" id="resumeQuality">
+        <div class="placeholder-block">
+          <div class="ph-icon"><i class="bi bi-file-earmark-text"></i></div>
+          <div class="ph-text">Upload a CV to receive an ATS compatibility report.</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <div class="panel-title">
           <div class="panel-icon"><i class="bi bi-check-circle"></i></div>
           Skills Extracted
         </div>
@@ -1122,6 +1218,7 @@
         </div>
       </div>
       <div class="panel-body">
+        <div id="skillActionPlan"></div>
         <ul id="resumeSuggestions" class="modern-list bullet-list mb-0"></ul>
       </div>
     </div>
@@ -1148,6 +1245,7 @@
 <script>
   requireRole("job_seeker");
   let matchChart;
+  let breakdownChart;
 
   /* ── Apply accent color ── */
   (function applyAccentColor() {
@@ -1197,16 +1295,21 @@
     ).join("");
   }
 
+  /* ── Score components (single source of truth for every chart/bar) ── */
+  const SCORE_COMPONENTS = [
+    { key: "profession_match",    label: "Profession",     color: "#6366f1" },
+    { key: "skills_match",        label: "Skills",         color: "#10B981" },
+    { key: "experience_match",    label: "Experience",     color: "#F59E0B" },
+    { key: "education_match",     label: "Education",      color: "#3B82F6" },
+    { key: "project_match",       label: "Projects",       color: "#EC4899" },
+    { key: "certification_match", label: "Certifications", color: "#14B8A6" },
+    { key: "semantic_similarity", label: "Semantic",       color: "#8B5CF6" },
+  ];
+
   /* ── Match explanation bar ── */
   function renderMatchExplanation(exp) {
     if (!exp || !exp.final_score) return "";
-    const bars = [
-      { key: "profession_match", label: "Profession", color: "#6366f1" },
-      { key: "skills_match", label: "Skills", color: "#10B981" },
-      { key: "experience_match", label: "Experience", color: "#F59E0B" },
-      { key: "education_match", label: "Education", color: "#3B82F6" },
-      { key: "semantic_similarity", label: "Semantic", color: "#8B5CF6" },
-    ];
+    const bars = SCORE_COMPONENTS;
     return `<div class="exp-bar-wrap">
       ${bars.map(b => {
         const val = Math.min(100, Math.max(0, parseInt(exp[b.key]) || 0));
@@ -1218,6 +1321,23 @@
           <span class="exp-val">${val}%</span>
         </div>`;
       }).join("")}
+    </div>`;
+  }
+
+  /* ── Why this job matched / why it did not score higher (Phase 2 #5) ── */
+  function renderWhy(item) {
+    const pos = item.why_matched || [];
+    const neg = item.why_not_higher || [];
+    if (!pos.length && !neg.length) return "";
+    const box = (cls, title, rows) => rows.length
+      ? `<div class="why-box ${cls}">
+           <div class="why-title">${title}</div>
+           <ul>${rows.map(r => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
+         </div>`
+      : "";
+    return `<div class="rj-why">
+      ${box("pos", "Why it matches", pos)}
+      ${box("neg", "Why not higher", neg)}
     </div>`;
   }
 
@@ -1270,6 +1390,7 @@
           <div class="chip-wrap">${missing || '<span style="font-size:13px;color:var(--txt-muted)">None</span>'}</div>
         </div>
       </div>
+      ${renderWhy(item)}
       <div class="rj-insight">${escapeHtml(item.recommendation_insight || "")}</div>
       <div class="rj-actions">
         <button class="btn-apply-job" type="button" onclick="submitJobApplication(${job.id}, this)">
@@ -1282,30 +1403,92 @@
     </div>`;
   }
 
-  /* ── Chart ── */
-  function renderChart(rows) {
-    const canvas = document.getElementById("matchChart");
-    if (matchChart) matchChart.destroy();
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#2563EB';
+  /* ── Radar: this CV's score profile against the best-matching role ──
+     Driven entirely by score_breakdown / match_analytics from the backend, so
+     a different CV always produces a different shape (Phase 2 #1). */
+  function renderBreakdownChart(breakdown, rows) {
+    const canvas = document.getElementById("breakdownChart");
+    if (!canvas) return;
+    if (breakdownChart) breakdownChart.destroy();
 
-    matchChart = new Chart(canvas, {
-      type: "bar",
+    // Fall back to the top analytics row if score_breakdown is absent.
+    const src = (breakdown && Object.keys(breakdown).length)
+      ? breakdown
+      : ((rows || [])[0] || {});
+    const values = SCORE_COMPONENTS.map(c => Math.min(100, Math.max(0, parseInt(src[c.key]) || 0)));
+
+    const badge = document.getElementById("breakdownScore");
+    if (badge) {
+      const overall = parseInt(src.final_score || src.match_percentage) || 0;
+      badge.innerHTML = `<i class="bi bi-speedometer2"></i> ${overall}%`;
+    }
+
+    breakdownChart = new Chart(canvas, {
+      type: "radar",
       data: {
-        labels: (rows || []).map(r => r.title),
+        labels: SCORE_COMPONENTS.map(c => c.label),
         datasets: [{
-          label: "Match %",
-          data: (rows || []).map(r => r.match_percentage),
-          backgroundColor: accent,
-          borderRadius: 10,
-          barThickness: 28
+          label: "Your profile",
+          data: values,
+          backgroundColor: "rgba(99,102,241,0.18)",
+          borderColor: "#6366f1",
+          borderWidth: 2,
+          pointBackgroundColor: SCORE_COMPONENTS.map(c => c.color),
+          pointRadius: 4
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 800, easing: "easeOutCubic" },
+        plugins: { legend: { display: false } },
+        scales: {
+          r: {
+            beginAtZero: true, max: 100,
+            ticks: { stepSize: 25, font: { size: 10 }, backdropColor: "transparent" },
+            pointLabels: { font: { size: 11, weight: "600" } },
+            grid: { color: "rgba(15,23,42,0.08)" },
+            angleLines: { color: "rgba(15,23,42,0.08)" }
+          }
+        }
+      }
+    });
+  }
+
+  /* ── Chart ── */
+  function renderChart(rows) {
+    const canvas = document.getElementById("matchChart");
+    if (matchChart) matchChart.destroy();
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#2563EB';
+
+    // Grouped comparison: overall vs skills vs experience per matched role.
+    // Previously this plotted a single flat "Match %" series, which looked
+    // near-identical for every CV.
+    const series = [
+      { key: "match_percentage", label: "Overall", color: accent },
+      { key: "skills_match", label: "Skills", color: "#10B981" },
+      { key: "experience_match", label: "Experience", color: "#F59E0B" },
+    ];
+    const hasDetail = (rows || []).some(r => r.skills_match !== undefined);
+
+    matchChart = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: (rows || []).map(r => r.title),
+        datasets: (hasDetail ? series : series.slice(0, 1)).map(s => ({
+          label: s.label,
+          data: (rows || []).map(r => parseInt(r[s.key]) || 0),
+          backgroundColor: s.color,
+          borderRadius: 8,
+          maxBarThickness: 22
+        }))
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 800, easing: "easeOutCubic" },
         plugins: {
-          legend: { display: false },
+          legend: { display: true, labels: { boxWidth: 10, font: { size: 11 } } },
           tooltip: {
             backgroundColor: "rgba(15,23,42,0.88)",
             titleFont: { size: 12, weight: "700" },
@@ -1338,7 +1521,13 @@
     animateValue("resumeScore", data.resume_score || 0, "%");
     const professionEl = document.getElementById("detectedProfession");
     if (data.profession && professionEl) {
-      professionEl.innerHTML = `<span class="badge-profession"><i class="bi bi-person-badge"></i> ${escapeHtml(data.profession)}</span>`;
+      // Show the fine-grained specialisation alongside the coarse profession
+      // when the backend detected one (e.g. Mobile Developer / Flutter Developer).
+      const spec = (data.specialization && data.specialization !== data.profession)
+        ? `<span class="badge-spec"><i class="bi bi-diagram-3"></i> ${escapeHtml(data.specialization)}</span>`
+        : "";
+      professionEl.innerHTML =
+        `<span class="badge-profession"><i class="bi bi-person-badge"></i> ${escapeHtml(data.profession)}</span>${spec}`;
     }
     animateValue("skillCount", (data.skills_extracted || []).length);
     const jobsList = data.matched_jobs || data.recommended_jobs || [];
@@ -1361,9 +1550,8 @@
     document.getElementById("skillsExtracted").innerHTML =
       chipList(data.skills_extracted, "No skills extracted yet.");
 
-    document.getElementById("resumeInsights").innerHTML =
-      (data.resume_insights || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")
-      || `<li style="opacity:0.45;border-style:dashed;">Insights will appear after analysis.</li>`;
+    renderInsights(data);
+    renderActionPlan(data.skill_action_plan || []);
 
     document.getElementById("resumeSuggestions").innerHTML =
       (data.resume_improvement_suggestions || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")
@@ -1374,7 +1562,83 @@
         ? jobsList.map(renderRecommendedJob).join("")
         : emptyBlock("briefcase", "No matching jobs found", "Try updating your skills or check back later.");
 
+    renderResumeQuality(data.resume_quality);
     renderChart(data.match_analytics || []);
+    renderBreakdownChart(data.score_breakdown, data.match_analytics || []);
+  }
+
+  /* ── CV Insights: categorised when the backend supplies them (Phase 2 #3) ── */
+  function renderInsights(data) {
+    const target = document.getElementById("resumeInsights");
+    const groups = data.structured_insights || [];
+    if (groups.length) {
+      // The container is a <ul>; swap it for grouped blocks.
+      target.innerHTML = groups.map(g => `
+        <div class="insight-group">
+          <div class="insight-group-title">${escapeHtml(g.category)}</div>
+          <ul>${(g.items || []).map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+        </div>`).join("");
+      target.style.listStyle = "none";
+      target.style.padding = "0";
+      return;
+    }
+    target.innerHTML =
+      (data.resume_insights || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")
+      || `<li style="opacity:0.45;border-style:dashed;">Insights will appear after analysis.</li>`;
+  }
+
+  /* ── Skill action plan (Phase 2 #4) ── */
+  function renderActionPlan(plan) {
+    const target = document.getElementById("skillActionPlan");
+    if (!target) return;
+    if (!plan.length) { target.innerHTML = ""; return; }
+    target.innerHTML = plan.map(p => `
+      <div class="plan-item">
+        <div class="plan-head">
+          <span class="plan-skill">${escapeHtml(p.skill)}</span>
+          <span class="plan-gain">+${p.expected_score_gain}% match</span>
+        </div>
+        <div class="plan-why">${escapeHtml(p.why)}</div>
+        <div class="plan-meta">
+          <span class="plan-tag ${String(p.importance).toLowerCase()}">${escapeHtml(p.importance)} priority</span>
+          <span class="plan-tag">Required by ${p.required_by_percent}% of matches</span>
+          <span class="plan-tag">~${p.estimated_weeks} week(s)</span>
+          <span class="plan-tag">${escapeHtml(p.difficulty)}</span>
+        </div>
+      </div>`).join("");
+  }
+
+  /* ── Resume quality / ATS report (Phase 2 #11) ── */
+  function renderResumeQuality(quality) {
+    const target = document.getElementById("resumeQuality");
+    const badge = document.getElementById("qualityScore");
+    if (!target) return;
+    if (!quality || !quality.breakdown || !quality.breakdown.length) {
+      target.innerHTML = `<div class="placeholder-hint">
+        <div class="ph-icon"><i class="bi bi-file-earmark-text"></i></div>
+        <div class="ph-text">Upload a CV to receive an ATS compatibility report.</div>
+      </div>`;
+      return;
+    }
+    if (badge) badge.innerHTML = `<i class="bi bi-shield-check"></i> ${quality.score}%`;
+
+    const colorFor = v => v >= 85 ? "#10B981" : v >= 70 ? "#3B82F6" : v >= 50 ? "#F59E0B" : "#EF4444";
+    const rows = quality.breakdown.map(b => `
+      <div class="rq-row">
+        <div class="rq-top">
+          <span>${escapeHtml(b.label)}</span>
+          <span style="color:${colorFor(b.score)}">${b.score}%</span>
+        </div>
+        <div class="rq-track"><div class="rq-fill" style="width:${b.score}%;background:${colorFor(b.score)}"></div></div>
+        <div class="rq-detail">${escapeHtml(b.detail)}</div>
+      </div>`).join("");
+
+    const tips = (quality.recommendations || []).length
+      ? `<div class="insight-group" style="margin-top:0.8rem">
+           <div class="insight-group-title">How to improve</div>
+           <ul>${quality.recommendations.map(r => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
+         </div>` : "";
+    target.innerHTML = rows + tips;
   }
 
   /* ── Upload area drag-and-drop ── */
@@ -1432,5 +1696,6 @@
   });
 
   renderChart([]);
+  renderBreakdownChart(null, []);
 </script>
 {% endblock %}

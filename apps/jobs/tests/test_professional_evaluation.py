@@ -597,9 +597,18 @@ class TestSkillExtraction(TestCase):
 
 class TestRelatedProfessions(TestCase):
     def test_mobile_developer_related(self):
+        # Mobile is a field of its own. Frontend used to be listed here, and
+        # because get_related_profession_titles() feeds the job-category filter
+        # directly, that is what made Flutter CVs come back full of React roles.
         related = get_related_professions("Mobile Developer")
-        self.assertIn("Frontend Developer", related)
+        self.assertNotIn("Frontend Developer", related)
+        self.assertNotIn("Full Stack Developer", related)
         self.assertNotIn("Accountant", related)
+
+    def test_designer_never_related_to_engineering(self):
+        related = get_related_professions("UI/UX Designer")
+        self.assertNotIn("Frontend Developer", related)
+        self.assertIn("Graphic Designer", related)
 
     def test_graphic_designer_related(self):
         related = get_related_professions("Graphic Designer")

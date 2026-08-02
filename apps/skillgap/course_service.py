@@ -136,7 +136,26 @@ class CourseRecommendationService:
             "is_free": bool(entry["free"]),
             "importance": info["importance"],
             "job_demand": info["job_count"],
+            # Phase 2 (#8, #12): every course states what it is worth and why.
+            "gap_category": info.get("gap_category", "important"),
+            "expected_score_gain": self._expected_gain(info),
         }
+
+    def _expected_gain(self, info):
+        """Match-score points expected from completing this course.
+
+        Uses the same weighting the match score itself uses, so the figure is
+        consistent with the score it claims to improve rather than invented.
+        """
+        from apps.jobs.services import estimate_score_gain
+
+        context = self.context
+        required = 0
+        for job in (context.jobs or [])[:3]:
+            required = max(required, len(job.required_skills or []))
+        if not required:
+            required = max(len(context.missing_skills), 1)
+        return estimate_score_gain(required)
 
     def _fallback_entry(self, info):
         context = self.context

@@ -44,10 +44,31 @@ class SkillGapServiceTests(TestCase):
         result = analyze_skill_gap(self.user)
 
         self.assertEqual(result["user_skills"], ["django", "Python"])
-        self.assertEqual(result["missing_skills"], ["REST"])
-        self.assertEqual(len(result["recommended_resources"]), 0)
+        # The gap is no longer only "what this one posting lists". It is the
+        # requirements of the best-matched postings PLUS the canonical skills of
+        # the detected specialisation (Python/Django Developer), which is what
+        # makes the analysis role-correct instead of pool-shaped.
+        self.assertIn("REST APIs", result["missing_skills"])
+        self.assertIn("PostgreSQL", result["missing_skills"])
+        # ...and it must never drift into another field.
+        for off_profession in ("React", "Flutter", "Photoshop", "Kubernetes"):
+            self.assertNotIn(off_profession, result["missing_skills"])
+        # Every recommended resource must map to an actual gap (compared on
+        # normalised keys - a resource may be filed under an alias such as
+        # "drf" for "Django REST Framework").
+        from apps.shared.skill_normalizer import normalize_skill, normalize_skill_set
+        missing_norm = normalize_skill_set(result["missing_skills"])
+        for resource in result["recommended_resources"]:
+            self.assertIn(normalize_skill(resource["skill"]), missing_norm)
 
-    def test_analyze_skill_gap_recommends_resources_for_missing_skills(self):
+    def test_frontend_job_is_not_a_gap_for_a_python_candidate(self):
+        """A Python/Django candidate must NOT be told to learn React because an
+        unrelated Frontend posting happens to exist in the database.
+
+        This is the exact cross-profession bleed that made every CV produce the
+        same gaps: the analyser used to union required_skills across the whole
+        job pool regardless of the candidate's profession.
+        """
         JobPosting.objects.create(
             recruiter=self.user,
             title="Frontend Developer",
@@ -57,16 +78,34 @@ class SkillGapServiceTests(TestCase):
             description="Build modern frontends.",
             required_skills=["JavaScript", "React"],
             experience_required=1,
+            job_category="Frontend Developer",
             is_active=True,
         )
 
         result = analyze_skill_gap(self.user)
 
-        self.assertIn("JavaScript", result["missing_skills"])
-        self.assertTrue(any(
-            resource.get("skill", "").lower() == "javascript"
-            for resource in result["recommended_resources"]
-        ))
+        self.assertNotIn("React", result["missing_skills"])
+        self.assertNotIn("JavaScript", result["missing_skills"])
+
+    def test_resources_are_recommended_for_on_profession_gaps(self):
+        JobPosting.objects.create(
+            recruiter=self.user,
+            title="Frontend Developer",
+            company="Acme Inc",
+            location="Remote",
+            work_mode="remote",
+            description="Build modern frontends.",
+            required_skills=["JavaScript", "React"],
+            experience_required=1,
+            job_category="Frontend Developer",
+            is_active=True,
+        )
+        self.profile.skills = ["JavaScript", "HTML", "CSS"]
+        self.profile.save()
+
+        result = analyze_skill_gap(self.user)
+
+        self.assertIn("React", result["missing_skills"])
 
 
 class ResumeGateTests(TestCase):
@@ -183,6 +222,109 @@ class ResumeGateTests(TestCase):
         self.assertTrue(flutter_skills)
         self.assertTrue(analyst_skills)
         self.assertTrue(flutter_skills.isdisjoint(analyst_skills))
+
+
+class JobReadyRoadmapTests(TestCase):
+    """A CV with no remaining gaps must still produce a roadmap with advanced
+    topics — never an empty/unavailable state after a successful analysis."""
+
+    def setUp(self):
+        clear()
+        self.recruiter = User.objects.create_user(
+            username="recruiter_jr",
+            email="recruiter_jr@example.com",
+            password="testpass123",
+            role="recruiter",
+        )
+        JobPosting.objects.create(
+            recruiter=self.recruiter,
+            title="Data Analyst",
+            company="Acme Inc",
+            location="Remote",
+            work_mode="remote",
+            description="Analyze data, build dashboards, and produce reports.",
+            required_skills=["SQL", "Power BI", "Tableau", "Statistics", "Excel", "Data Visualization"],
+            experience_required=2,
+            job_category="Data Analyst",
+            is_active=True,
+        )
+        self.user = User.objects.create_user(
+            username="jobready_user",
+            email="jobready_user@example.com",
+            password="testpass123",
+        )
+        self.profile = UserProfile.objects.create(
+            user=self.user,
+            skills=["SQL", "Power BI", "Tableau", "Statistics", "Excel", "Data Visualization"],
+            resume_text=(
+                "Data analyst with 4 years of experience in SQL, Power BI, Tableau, "
+                "statistics, Excel and data visualization."
+            ),
+        )
+
+    def test_job_ready_roadmap_generated_with_advanced_topics(self):
+        result = LearningRoadmapService.get_or_generate(self.user)
+        self.assertIs(result["has_resume"], True)
+        roadmap = result["roadmap"]
+        self.assertIsNotNone(roadmap)
+        self.assertTrue(roadmap["job_ready"])
+        self.assertEqual(roadmap["roadmap_type"], "job_ready")
+        self.assertTrue(roadmap["steps"])
+        self.assertTrue(roadmap["phases"])
+        self.assertGreaterEqual(roadmap["total_steps"], 1)
+
+    def test_job_ready_roadmap_skips_topics_already_mastered(self):
+        roadmap = LearningRoadmapService.get_or_generate(self.user)["roadmap"]
+        keys = {step["skill_key"] for step in roadmap["steps"]}
+        self.assertNotIn("statistics", keys)
+        self.assertNotIn("tableau", keys)
+        self.assertIn("a/btesting", keys)
+        self.assertIn("machinelearning", keys)
+
+    def test_phases_contain_all_required_elements(self):
+        roadmap = LearningRoadmapService.get_or_generate(self.user)["roadmap"]
+        for phase in roadmap["phases"]:
+            self.assertIn("skills", phase)
+            self.assertIn("why_important", phase)
+            self.assertIn("learning_resources", phase)
+            self.assertIn("estimated_hours", phase)
+            self.assertIn("estimated_weeks", phase)
+            self.assertIn("priority", phase)
+            self.assertIn("practice_project", phase)
+            self.assertIn("objectives", phase)
+        for phase in roadmap["phases"][:-1]:
+            self.assertTrue(phase["why_important"])
+            self.assertTrue(phase["learning_resources"])
+            for resource in phase["learning_resources"]:
+                self.assertTrue(resource["title"])
+                self.assertTrue(resource["url"])
+                self.assertTrue(resource["skill"])
+        for step in roadmap["steps"]:
+            self.assertIn("why", step)
+            self.assertIn("priority", step)
+            self.assertIn("estimated_hours", step)
+            self.assertIn("learning_resource", step)
+            self.assertTrue(step["learning_resource"]["url"])
+
+    def test_roadmap_persisted_and_replaced_on_new_cv(self):
+        first = LearningRoadmapService.get_or_generate(self.user)["roadmap"]
+        self.assertTrue(LearningRoadmap.objects.filter(user=self.user).exists())
+
+        self.profile.skills = ["Flutter", "Dart", "Riverpod", "Firebase"]
+        self.profile.resume_text = (
+            "Flutter mobile developer building cross-platform apps with Riverpod and Firebase."
+        )
+        self.profile.save()
+        clear()
+        result = LearningRoadmapService.get_or_generate(self.user)
+        self.assertIs(result["has_resume"], True)
+        self.assertIsNotNone(result["roadmap"])
+        self.assertEqual(LearningRoadmap.objects.filter(user=self.user).count(), 1)
+        self.assertEqual(result["roadmap"]["profession"], "Mobile Developer")
+        self.assertNotEqual(
+            [step["skill_key"] for step in result["roadmap"]["steps"]],
+            [step["skill_key"] for step in first["steps"]],
+        )
 
 
 class CourseQualityTests(TestCase):

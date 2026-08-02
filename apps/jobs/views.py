@@ -1,4 +1,6 @@
 # file path: apps/jobs/views.py
+import logging
+
 from rest_framework import generics, parsers, response, views
 
 from apps.shared.permissions import IsJobSeeker
@@ -12,6 +14,8 @@ from .serializers import (
     SavedJobSerializer,
 )
 from .services import analyze_resume_match, apply_to_job, recommend_jobs_for_user
+
+logger = logging.getLogger(__name__)
 
 
 class RecommendedJobsAPIView(views.APIView):
@@ -36,7 +40,6 @@ class AIMatchAPIView(views.APIView):
         except ValueError as e:
             return response.Response({"success": False, "message": str(e)}, status=400)
         except Exception as e:
-            logger = logging.getLogger(__name__)
             logger.error("AI Match unexpected error for user %s: %s", request.user.id, e, exc_info=True)
             return response.Response(
                 {"success": False, "message": "An unexpected error occurred while analyzing your resume. Please try again."},
@@ -55,12 +58,21 @@ class AIMatchAPIView(views.APIView):
             "count": len(serialized_jobs),
             "matched_jobs": serialized_jobs,
             "profession": data.get("profession", ""),
+            "specialization": data.get("specialization", ""),
+            "specialization_confidence": data.get("specialization_confidence", 0),
+            "profession_confidence": data.get("profession_confidence", 0),
             "resume_score": best_match,
             "resume_summary": data.get("resume_summary", ""),
             "skills_extracted": data.get("skills_extracted", []),
             "match_analytics": data.get("match_analytics", []),
             "resume_insights": data.get("resume_insights", []),
             "resume_improvement_suggestions": data.get("resume_improvement_suggestions", []),
+            # Phase 2: everything below explains WHY a number was produced.
+            "score_breakdown": data.get("score_breakdown", {}),
+            "structured_insights": data.get("structured_insights", []),
+            "skill_action_plan": data.get("skill_action_plan", []),
+            "resume_quality": data.get("resume_quality", {}),
+            "cv_signals": data.get("cv_signals", {}),
         }
         if len(serialized_jobs) == 0:
             result["message"] = "No matching jobs found based on your current resume. Try updating your skills or check back later."

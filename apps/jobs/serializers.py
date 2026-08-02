@@ -45,6 +45,11 @@ class RecommendedJobSerializer(serializers.Serializer):
     missing_skills = serializers.ListField(child=serializers.CharField())
     recommendation_insight = serializers.CharField()
     match_explanation = serializers.DictField(child=serializers.IntegerField(), required=False)
+    # Phase 2 (#5): the UI must be able to explain each recommendation, not
+    # just display a percentage.
+    why_matched = serializers.ListField(child=serializers.CharField(), required=False)
+    why_not_higher = serializers.ListField(child=serializers.CharField(), required=False)
+    is_related_role = serializers.BooleanField(required=False, default=False)
 
 
 class SavedJobSerializer(serializers.ModelSerializer):

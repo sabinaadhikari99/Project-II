@@ -11,6 +11,7 @@ from .views import (
     RegisterAPIView,
     ResumeUploadAPIView,
     VerifyTokenAPIView,
+    LinkedInAuthStartView,
     LinkedInLoginAPIView,
     LinkedInCallbackAPIView,
     LinkedInRoleSelectAPIView,
@@ -28,6 +29,8 @@ urlpatterns = [
     path("resume/", ResumeUploadAPIView.as_view(), name="auth-resume"),
     path("change-password/", ChangePasswordAPIView.as_view(), name="auth-change-password"),
     path("sessions/", ActiveSessionsAPIView.as_view(), name="auth-sessions"),
+    # Browser entry point: plain 302 into LinkedIn, no JS required.
+    path("linkedin/start/", LinkedInAuthStartView.as_view(), name="auth-linkedin-start"),
     path("linkedin/login/", LinkedInLoginAPIView.as_view(), name="auth-linkedin-login"),
     path("linkedin/callback/", LinkedInCallbackAPIView.as_view(), name="auth-linkedin-callback"),
     path("linkedin/role-select/", LinkedInRoleSelectAPIView.as_view(), name="auth-linkedin-role-select"),

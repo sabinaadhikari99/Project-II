@@ -236,6 +236,10 @@
       window.location.href = redirectPath;
     }
 
+    // Set once the user commits to an OAuth redirect, so the session check
+    // below can never navigate out from under it.
+    let oauthRedirectInProgress = false;
+
     // ===== DOM Event Handlers =====
 
     // Toggle password visibility
@@ -310,48 +314,75 @@
       });
     }
 
-    // LinkedIn login
+    // ===== LinkedIn login =====
+    // This is a plain top-level navigation to a Django view that 302s to
+    // LinkedIn. It deliberately does NOT fetch() an auth_url and then redirect
+    // with JS: that made the redirect racy - any other script touching
+    // window.location (checkSession below, app.js) tore the page down while the
+    // request was in flight, which is what produced the spinner that flashed
+    // and vanished with no error and no LinkedIn page.
     const linkedinBtn = document.getElementById('linkedinLoginBtn');
     if (linkedinBtn) {
-      linkedinBtn.addEventListener('click', async function() {
-        const btn = this;
-        const orig = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting…';
+      linkedinBtn.addEventListener('click', function() {
+        // A LinkedIn sign-in is an explicit, deliberate action - it must win
+        // over any session auto-routing that may still be pending.
+        oauthRedirectInProgress = true;
 
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting to LinkedIn…';
         clearMessage();
 
-        try {
-          const params = new URLSearchParams(window.location.search);
-          const role = params.get('role');
-          const url = role ? `/api/auth/linkedin/login/?role=${encodeURIComponent(role)}` : '/api/auth/linkedin/login/';
+        const role = new URLSearchParams(window.location.search).get('role');
+        const target = role
+          ? `/api/auth/linkedin/start/?role=${encodeURIComponent(role)}`
+          : '/api/auth/linkedin/start/';
 
-          const response = await fetch(url);
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(extractErrorMessage(data));
-          }
-
-          if (data.auth_url) {
-            window.location.href = data.auth_url;
-          } else {
-            throw new Error('Unable to initiate LinkedIn authentication. Please try again.');
-          }
-
-        } catch (error) {
-          btn.disabled = false;
-          btn.innerHTML = orig;
-          showMessage(error.message || 'Unable to connect to LinkedIn. Please try again later.', 'danger');
-        }
+        // The loading state stays put: this page is being unloaded.
+        window.location.href = target;
       });
     }
+
+    // Display OAuth callback errors (e.g. ?error=linkedin_invalid_state) that
+    // the LinkedIn flow redirects back to the login page with.
+    function showCallbackError() {
+      const error = new URLSearchParams(window.location.search).get('error');
+      if (!error) return;
+
+      const messages = {
+        'linkedin_invalid_state': 'Security verification failed. Please try again. If the problem persists, open SkillSync AI at http://localhost:8000 and sign in again.',
+        'linkedin_token_exchange_failed': 'LinkedIn could not complete the sign-in. Please try again.',
+        'linkedin_no_email': 'LinkedIn did not provide an email address. Please allow email access and try again.',
+        'linkedin_access_denied': 'LinkedIn sign-in was cancelled.',
+        'linkedin_user_cancelled': 'LinkedIn sign-in was cancelled.',
+        'linkedin_invalid_scope': 'LinkedIn sign-in failed. Please try again.',
+        'linkedin_request_failed': 'LinkedIn sign-in failed. Please try again.',
+        'linkedin_not_configured': 'LinkedIn sign-in is not configured on this server. Set LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET and LINKEDIN_REDIRECT_URI in your .env file.',
+      };
+      showMessage(messages[error] || 'LinkedIn sign-in failed. Please try again.', 'danger');
+    }
+    showCallbackError();
 
     // ===== Check for existing session on page load =====
     // Only trusts the role returned FRESH from the server via
     // /api/auth/verify/ - never routes off stale cached data. Uses
     // "access" key, consistent with app.js everywhere else now.
     async function checkSession() {
+      if (oauthRedirectInProgress) return;
+
+      const search = new URLSearchParams(window.location.search);
+
+      // Landing here with ?next= means a LoginRequiredMixin page just bounced
+      // us: the Django session is gone even though a JWT is still sitting in
+      // localStorage. Auto-routing on that stale JWT sends us straight back to
+      // the page that rejected us - an endless dashboard <-> /login/ loop that
+      // reloads this page out from under every click. Drop the stale token and
+      // let the user sign in again instead.
+      if (search.has('next') || search.has('error')) {
+        clearSession();
+        return;
+      }
+
       const tok = localStorage.getItem('access');
       if (!tok) {
         clearSession();

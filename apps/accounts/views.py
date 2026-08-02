@@ -8,6 +8,7 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.sessions.models import Session
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.views import View
 from rest_framework import generics, parsers, permissions, response, status, views
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -360,9 +361,92 @@ class SaveDeviceInfoMiddleware:
 
 
 LINKEDIN_SCOPES = "openid profile email"
+LINKEDIN_AUTHORIZE_URL = "https://www.linkedin.com/oauth/v2/authorization"
+
+# Sessions created for LinkedIn users need an explicit backend: the User object
+# comes from a plain .get()/.create_user() rather than authenticate(), so it has
+# no ".backend" attribute for django.contrib.auth.login() to read.
+AUTH_BACKEND = "django.contrib.auth.backends.ModelBackend"
+
+
+def _linkedin_is_configured():
+    return all([
+        settings.LINKEDIN_CLIENT_ID,
+        settings.LINKEDIN_CLIENT_SECRET,
+        settings.LINKEDIN_REDIRECT_URI,
+    ])
+
+
+def _build_linkedin_auth_url(request, role):
+    """Persist the CSRF state + requested role, then build LinkedIn's consent URL.
+
+    The state is stored in the session, i.e. in the sessionid cookie. It has to
+    be written to the session store BEFORE the browser leaves for LinkedIn,
+    hence the explicit save().
+    """
+    state = os.urandom(16).hex()
+    request.session["linkedin_oauth_state"] = state
+    request.session["linkedin_oauth_role"] = role
+    request.session.save()
+
+    params = urllib.parse.urlencode({
+        "response_type": "code",
+        "client_id": settings.LINKEDIN_CLIENT_ID,
+        "redirect_uri": settings.LINKEDIN_REDIRECT_URI,
+        "scope": LINKEDIN_SCOPES,
+        "state": state,
+    })
+    return f"{LINKEDIN_AUTHORIZE_URL}?{params}"
+
+
+class LinkedInAuthStartView(View):
+    """Top-level 302 into LinkedIn's consent screen.
+
+    "Continue with LinkedIn" used to fetch() an endpoint that returned
+    {"auth_url": ...} and then navigate with JS. Any other script that touched
+    window.location while that request was in flight cancelled the redirect,
+    which left the user staring at a spinner that flashed and reverted with no
+    error - the page had simply been torn down mid-request. A server-side
+    redirect is a normal top-level navigation and cannot be cancelled that way.
+    """
+
+    def get(self, request):
+        role = request.GET.get("role") or "job_seeker"
+        if role not in ("job_seeker", "recruiter"):
+            role = "job_seeker"
+
+        if not _linkedin_is_configured():
+            return redirect(f"/login/?{urllib.parse.urlencode({'error': 'linkedin_not_configured'})}")
+
+        # The state we are about to store lives in the session cookie, which is
+        # scoped to the host the browser is currently on. LinkedIn will return
+        # the user to the host in LINKEDIN_REDIRECT_URI - if that is a different
+        # host (the classic localhost vs 127.0.0.1 split) the callback cannot
+        # read the cookie and every attempt dies as linkedin_invalid_state.
+        # Move the browser onto the configured host first. The _hostfix marker
+        # makes this strictly one hop, so a proxy that rewrites Host can never
+        # turn it into a redirect loop.
+        configured = urllib.parse.urlparse(settings.LINKEDIN_REDIRECT_URI)
+        if (
+            configured.netloc
+            and request.get_host() != configured.netloc
+            and "_hostfix" not in request.GET
+        ):
+            query = urllib.parse.urlencode({"role": role, "_hostfix": "1"})
+            return redirect(
+                f"{configured.scheme}://{configured.netloc}{request.path}?{query}"
+            )
+
+        return redirect(_build_linkedin_auth_url(request, role))
 
 
 class LinkedInLoginAPIView(views.APIView):
+    """JSON variant of LinkedInAuthStartView, kept for API clients.
+
+    The browser UI no longer uses this - it navigates straight to
+    /api/auth/linkedin/start/ instead.
+    """
+
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
@@ -373,23 +457,13 @@ class LinkedInLoginAPIView(views.APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        stored_role = role or "job_seeker"
+        if not _linkedin_is_configured():
+            return response.Response(
+                {"detail": "LinkedIn sign-in is not configured on this server."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
-        client_id = settings.LINKEDIN_CLIENT_ID
-        redirect_uri = settings.LINKEDIN_REDIRECT_URI
-        state = os.urandom(16).hex()
-
-        request.session["linkedin_oauth_state"] = state
-        request.session["linkedin_oauth_role"] = stored_role
-
-        params = urllib.parse.urlencode({
-            "response_type": "code",
-            "client_id": client_id,
-            "redirect_uri": redirect_uri,
-            "scope": LINKEDIN_SCOPES,
-            "state": state,
-        })
-        auth_url = f"https://www.linkedin.com/oauth/v2/authorization?{params}"
+        auth_url = _build_linkedin_auth_url(request, role or "job_seeker")
         return response.Response({"auth_url": auth_url})
 
 
@@ -404,20 +478,36 @@ class LinkedInCallbackAPIView(views.APIView):
         role = request.session.pop("linkedin_oauth_role", "job_seeker")
 
         if error:
-            return redirect(f"/login/?error=linkedin_{error}")
+            error_query = urllib.parse.urlencode({
+                "error": f"linkedin_{error}",
+                "role": role,
+            })
+            return redirect(f"/login/?{error_query}")
 
         if not code or not state or state != stored_state:
-            return redirect("/login/?error=linkedin_invalid_state")
+            error_query = urllib.parse.urlencode({
+                "error": "linkedin_invalid_state",
+                "role": role,
+            })
+            return redirect(f"/login/?{error_query}")
 
         token_data = self._exchange_code(code)
         if "error" in token_data:
-            return redirect("/login/?error=linkedin_token_exchange_failed")
+            error_query = urllib.parse.urlencode({
+                "error": "linkedin_token_exchange_failed",
+                "role": role,
+            })
+            return redirect(f"/login/?{error_query}")
 
         access_token = token_data["access_token"]
 
         profile = self._fetch_profile(access_token)
         if not profile or not profile.get("email"):
-            return redirect("/login/?error=linkedin_no_email")
+            error_query = urllib.parse.urlencode({
+                "error": "linkedin_no_email",
+                "role": role,
+            })
+            return redirect(f"/login/?{error_query}")
 
         email = profile["email"]
         name = profile.get("name", email.split("@")[0])
@@ -426,6 +516,11 @@ class LinkedInCallbackAPIView(views.APIView):
         try:
             user = User.objects.get(email=email)
             if user.role == role:
+                # The dashboards are LoginRequiredMixin views, i.e. they
+                # authenticate off the Django session, not the JWT. Without
+                # this the user bounced dashboard -> /login/ -> dashboard
+                # forever after a successful LinkedIn sign-in.
+                login(request, user, backend=AUTH_BACKEND)
                 refresh = RefreshToken.for_user(user)
                 return redirect(
                     f"/linkedin/success/?access={str(refresh.access_token)}&refresh={str(refresh)}"
@@ -456,6 +551,7 @@ class LinkedInCallbackAPIView(views.APIView):
             )
             UserProfile.objects.create(user=user)
 
+            login(request, user, backend=AUTH_BACKEND)
             refresh = RefreshToken.for_user(user)
             return redirect(
                 f"/linkedin/success/?access={str(refresh.access_token)}&refresh={str(refresh)}"
@@ -528,6 +624,7 @@ class LinkedInRoleSelectAPIView(views.APIView):
         email = linkedin_data["email"]
         try:
             user = User.objects.get(email=email, role=role)
+            login(request, user, backend=AUTH_BACKEND)
             refresh = RefreshToken.for_user(user)
             return response.Response({
                 "user": UserSerializer(user).data,
@@ -557,6 +654,7 @@ class LinkedInRoleSelectAPIView(views.APIView):
         )
         UserProfile.objects.create(user=user)
 
+        login(request, user, backend=AUTH_BACKEND)
         refresh = RefreshToken.for_user(user)
         return response.Response({
             "user": UserSerializer(user).data,
@@ -598,6 +696,7 @@ class LinkedInConflictResolveAPIView(views.APIView):
         email = conflict_data.get("email")
         try:
             user = User.objects.get(email=email)
+            login(request, user, backend=AUTH_BACKEND)
             refresh = RefreshToken.for_user(user)
             return response.Response({
                 "user": UserSerializer(user).data,

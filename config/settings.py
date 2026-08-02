@@ -210,10 +210,10 @@ SPECTACULAR_SETTINGS = {
 
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Inventory Management",
-    "site_header": "Inventory Management",
-    "site_brand": "Inventory Management",
-    "welcome_sign": "Welcome to Inventory Management Admin",
+    "site_title": "Skillsync AI",
+    "site_header": "Skillsync AI",
+    "site_brand": "Skillsync AI",
+    "welcome_sign": "Welcome to Skillsync AI Admin",
     "copyright": "Sabina",
     "show_sidebar": True,
     "navigation_expanded": True,

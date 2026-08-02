@@ -436,35 +436,18 @@
     });
 
     // ===== LinkedIn Registration =====
-    document.getElementById('linkedinRegisterBtn').addEventListener('click', async function() {
+    // Plain top-level navigation to a Django view that 302s to LinkedIn - see
+    // the matching comment in login.html for why this must not go through
+    // fetch() + window.location.assign().
+    document.getElementById('linkedinRegisterBtn').addEventListener('click', function() {
       const btn = this;
-      const orig = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting…';
-      
-      // Clear any previous messages
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting to LinkedIn…';
       clearMessage();
-      
-      try {
-        const role = document.getElementById('role').value;
-        const response = await fetch('/api/auth/linkedin/login/?role=' + encodeURIComponent(role));
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(extractErrorMessage(data));
-        }
-        
-        if (data.auth_url) {
-          window.location.href = data.auth_url;
-        } else {
-          throw new Error('Unable to initiate LinkedIn authentication. Please try again.');
-        }
-        
-      } catch (error) {
-        btn.disabled = false;
-        btn.innerHTML = orig;
-        showMessage(error.message || 'Unable to connect to LinkedIn. Please try again later.', 'danger');
-      }
+
+      const role = document.getElementById('role').value;
+      // The loading state stays put: this page is being unloaded.
+      window.location.href = '/api/auth/linkedin/start/?role=' + encodeURIComponent(role);
     });
   })();
 </script>
