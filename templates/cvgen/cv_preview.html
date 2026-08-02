@@ -8,10 +8,12 @@
     * { box-sizing: border-box; }
     html, body {
       margin: 0; padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: #1f2937;
       background: #EEF2F7;
+      color: #1f2937;
     }
+    body.font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body.font-serif { font-family: Georgia, "Times New Roman", Times, serif; }
+
     .page {
       max-width: 780px;
       margin: 24px auto;
@@ -19,74 +21,69 @@
       box-shadow: 0 8px 30px rgba(15,23,42,0.10);
       min-height: 900px;
     }
-    .section-title {
-      font-size: 14px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--accent);
-      margin: 22px 0 8px;
-    }
-    .section-title:first-child { margin-top: 0; }
+
     p, ul { margin: 0 0 8px; font-size: 13.5px; line-height: 1.6; }
     ul { padding-left: 18px; }
     li { margin-bottom: 4px; }
+    .entry-title { font-weight: 700; margin: 8px 0 2px; font-size: 13.5px; }
+    .entry-block:first-of-type .entry-title { margin-top: 0; }
+
+    /* ── Heading style variants (shared across layouts) ── */
+    .heading-underline .section-title {
+      font-size: 14px; font-weight: 700; color: var(--accent);
+      margin: 18px 0 4px; border-bottom: 2px solid var(--accent); padding-bottom: 4px;
+      display: block;
+    }
+    .heading-plain_caps .section-title {
+      font-size: 12.5px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin: 18px 0 6px; display: block;
+    }
+    .heading-block .section-title {
+      font-size: 11px; font-weight: 700; color: #fff;
+      text-transform: uppercase; letter-spacing: 0.03em;
+      background: var(--accent); display: inline-block;
+      padding: 4px 10px; border-radius: 4px; margin: 18px 0 8px;
+    }
+    .section-title:first-of-type { margin-top: 0 !important; }
 
     /* ── Single-column layout ── */
     .layout-single .page-pad { padding: 40px 46px; }
     .layout-single .cv-name {
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--accent);
-      margin: 0 0 6px;
+      font-size: 30px; font-weight: 700; color: var(--accent); margin: 0 0 6px;
     }
-    .layout-single .cv-contact {
-      font-size: 12.5px;
-      color: #6b7280;
-      margin-bottom: 14px;
-    }
-    .layout-single hr {
-      border: none;
-      border-top: 1px solid #d1d5db;
-      margin: 0 0 16px;
-    }
+    .layout-single .cv-contact { font-size: 12.5px; color: #6b7280; margin-bottom: 10px; }
+    .layout-single hr.name-divider { border: none; border-top: 1px solid #d1d5db; margin: 0 0 6px; }
 
     /* ── Sidebar layout ── */
     .layout-sidebar .page { display: flex; min-height: 900px; }
+    .layout-sidebar.sidebar-right .page { flex-direction: row-reverse; }
     .layout-sidebar .sidebar {
-      width: 240px;
-      background: var(--accent);
-      color: #fff;
-      padding: 34px 24px;
-      flex-shrink: 0;
+      width: 240px; flex-shrink: 0;
+      background: var(--accent); color: #fff; padding: 34px 24px;
     }
-    .layout-sidebar .sidebar .cv-name {
-      font-size: 21px;
-      font-weight: 700;
-      margin: 0 0 18px;
-      line-height: 1.3;
-    }
-    .layout-sidebar .sidebar .section-title {
-      color: #fff;
-      opacity: 0.9;
-      font-size: 12.5px;
-      margin: 20px 0 8px;
-    }
-    .layout-sidebar .sidebar .section-title:first-of-type { margin-top: 0; }
-    .layout-sidebar .sidebar p, .layout-sidebar .sidebar li {
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.9);
-    }
+    .layout-sidebar .sidebar .cv-name { font-size: 21px; font-weight: 700; margin: 0 0 18px; line-height: 1.3; }
+    .layout-sidebar .sidebar .section-title { color: #fff !important; opacity: 0.92; background: none !important; padding: 0 !important; }
+    .layout-sidebar .sidebar p, .layout-sidebar .sidebar li { font-size: 12.5px; color: rgba(255,255,255,0.9); }
     .layout-sidebar .sidebar ul { padding-left: 16px; }
-    .layout-sidebar .main {
-      flex: 1;
-      padding: 34px 40px;
+    .layout-sidebar .main { flex: 1; padding: 34px 40px; }
+
+    /* ── Banded layout ── */
+    .layout-banded .band-header {
+      background: var(--accent); color: #fff; padding: 34px 46px;
     }
+    .layout-banded .band-header .cv-name { font-size: 26px; font-weight: 700; margin: 0 0 6px; color: #fff; }
+    .layout-banded .band-header .cv-contact { font-size: 12.5px; color: rgba(255,255,255,0.85); }
+    .layout-banded .banded-body { display: flex; gap: 0; }
+    .layout-banded .banded-main { flex: 1.6; padding: 26px 24px 26px 46px; }
+    .layout-banded .banded-side { flex: 1; padding: 26px 46px 26px 24px; border-left: 1px solid #f0f1f3; }
   </style>
 </head>
-<body class="layout-{{ meta.layout }}" style="--accent: {{ meta.accent }};">
+<body class="font-{{ meta.font }}" style="--accent: {{ meta.accent }};">
 
-{% if meta.layout == 'sidebar' %}
+<div class="layout-{{ meta.layout }}{% if meta.layout == 'sidebar' %} sidebar-{{ meta.sidebar_side }}{% endif %} heading-{{ meta.heading_style }}">
+
+  {% if meta.layout == 'sidebar' %}
   <div class="page">
     <div class="sidebar">
       <div class="cv-name">{{ profile.full_name|default:"Job Seeker" }}</div>
@@ -119,11 +116,8 @@
     <div class="main">
       <div class="section-title">Professional Summary</div>
       <p>
-        {% if skills %}
-          Experienced professional with skills in {{ skills.0 }} and a strong record of accomplishment.
-        {% else %}
-          Professional job seeker with a strong focus on delivering value in every role.
-        {% endif %}
+        {% if skills %}Experienced professional with skills in {{ skills.0 }} and a strong record of accomplishment.
+        {% else %}Professional job seeker with a strong focus on delivering value in every role.{% endif %}
       </p>
 
       {% if work_experience %}
@@ -133,27 +127,84 @@
 
       {% if projects %}
         <div class="section-title">Projects</div>
-        <ul>{% for item in projects %}<li>{{ item }}</li>{% endfor %}</ul>
+        {% for proj in projects %}
+          <div class="entry-block">
+            <div class="entry-title">{{ proj.title }}</div>
+            {% if proj.details %}<ul>{% for d in proj.details %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+        {% endfor %}
       {% endif %}
+
+      {% for info in additional_info %}
+        <div class="section-title">{{ info.title }}</div>
+        {% if info.details %}<ul>{% for d in info.details %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+      {% endfor %}
     </div>
   </div>
 
-{% else %}
+  {% elif meta.layout == 'banded' %}
+  <div class="page">
+    <div class="band-header">
+      <div class="cv-name">{{ profile.full_name|default:"Job Seeker" }}</div>
+      <div class="cv-contact">
+        {{ profile.email }}{% if profile.phone_number %} &nbsp;|&nbsp; {{ profile.phone_number }}{% endif %}{% if profile.address %} &nbsp;|&nbsp; {{ profile.address }}{% endif %}{% if profile.linkedin_url %} &nbsp;|&nbsp; {{ profile.linkedin_url }}{% endif %}{% if profile.github_url %} &nbsp;|&nbsp; {{ profile.github_url }}{% endif %}
+      </div>
+    </div>
+    <div class="banded-body">
+      <div class="banded-main">
+        <div class="section-title">Professional Summary</div>
+        <p>
+          {% if skills %}Experienced professional with skills in {{ skills.0 }} and a strong record of accomplishment.
+          {% else %}Professional job seeker with a strong focus on delivering value in every role.{% endif %}
+        </p>
+        {% if work_experience %}
+          <div class="section-title">Work Experience</div>
+          <ul>{% for item in work_experience %}<li>{{ item }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if projects %}
+          <div class="section-title">Projects</div>
+          {% for proj in projects %}
+            <div class="entry-block">
+              <div class="entry-title">{{ proj.title }}</div>
+              {% if proj.details %}<ul>{% for d in proj.details %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="banded-side">
+        {% if skills %}
+          <div class="section-title">Skills</div>
+          <p>{{ skills|join:", " }}</p>
+        {% endif %}
+        {% if education %}
+          <div class="section-title">Education</div>
+          <ul>{% for item in education %}<li>{{ item }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if certifications %}
+          <div class="section-title">Certifications</div>
+          <ul>{% for item in certifications %}<li>{{ item }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% for info in additional_info %}
+          <div class="section-title">{{ info.title }}</div>
+          {% if info.details %}<ul>{% for d in info.details %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% else %}
   <div class="page">
     <div class="page-pad">
       <div class="cv-name">{{ profile.full_name|default:"Job Seeker" }}</div>
       <div class="cv-contact">
         {{ profile.email }}{% if profile.phone_number %} &nbsp;|&nbsp; {{ profile.phone_number }}{% endif %}{% if profile.address %} &nbsp;|&nbsp; {{ profile.address }}{% endif %}{% if profile.linkedin_url %} &nbsp;|&nbsp; {{ profile.linkedin_url }}{% endif %}{% if profile.github_url %} &nbsp;|&nbsp; {{ profile.github_url }}{% endif %}
       </div>
-      <hr>
+      {% if meta.divider %}<hr class="name-divider">{% endif %}
 
       <div class="section-title">Professional Summary</div>
       <p>
-        {% if skills %}
-          Experienced professional with skills in {{ skills.0 }} and a strong record of accomplishment.
-        {% else %}
-          Professional job seeker with a strong focus on delivering value in every role.
-        {% endif %}
+        {% if skills %}Experienced professional with skills in {{ skills.0 }} and a strong record of accomplishment.
+        {% else %}Professional job seeker with a strong focus on delivering value in every role.{% endif %}
       </p>
 
       {% if skills %}
@@ -173,16 +224,27 @@
 
       {% if projects %}
         <div class="section-title">Projects</div>
-        <ul>{% for item in projects %}<li>{{ item }}</li>{% endfor %}</ul>
+        {% for proj in projects %}
+          <div class="entry-block">
+            <div class="entry-title">{{ proj.title }}</div>
+            {% if proj.details %}<ul>{% for d in proj.details %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+        {% endfor %}
       {% endif %}
 
       {% if certifications %}
         <div class="section-title">Certifications</div>
         <ul>{% for item in certifications %}<li>{{ item }}</li>{% endfor %}</ul>
       {% endif %}
+
+      {% for info in additional_info %}
+        <div class="section-title">{{ info.title }}</div>
+        {% if info.details %}<ul>{% for d in info.details %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+      {% endfor %}
     </div>
   </div>
-{% endif %}
+  {% endif %}
 
+</div>
 </body>
 </html>

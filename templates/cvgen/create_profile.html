@@ -421,6 +421,64 @@
   }
 
   /* ══════════════════════════════
+     ADDITIONAL INFO (dynamic rows)
+  ══════════════════════════════ */
+  #additional-info-list template { display: none; }
+
+  .additional-info-row {
+    padding: 1.1rem;
+    border: 1.5px solid rgba(15,23,42,0.08);
+    border-radius: 14px;
+    background: var(--surface-alt);
+    margin-bottom: 1rem;
+    animation: sectionSlide 0.35s ease both;
+  }
+
+  .btn-remove-additional {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(239,68,68,0.25);
+    background: rgba(239,68,68,0.06);
+    color: #EF4444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1.7rem;
+  }
+
+  .btn-remove-additional:hover {
+    background: rgba(239,68,68,0.12);
+    border-color: rgba(239,68,68,0.4);
+  }
+
+  .btn-add-additional {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 12px;
+    border: 1.5px dashed rgba(var(--accent-rgb), 0.4);
+    background: rgba(var(--accent-rgb), 0.05);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-add-additional:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    border-color: var(--accent);
+  }
+
+  @media (max-width: 767.98px) {
+    .btn-remove-additional { margin-top: 0.5rem; }
+  }
+
+  /* ══════════════════════════════
      FOOTER / SUBMIT
   ══════════════════════════════ */
   .cv-footer {
@@ -801,6 +859,83 @@
           </div>
         </div>
 
+        <!-- ─── SECTION 5: Additional Information ─── -->
+        <div class="cv-section" data-step="05">
+          <div class="section-hdr">
+            <div class="section-icon"><i class="bi bi-plus-square"></i></div>
+            <div class="section-hdr-text">
+              <div class="sec-title">Additional Information</div>
+              <div class="sec-sub">Add any extra sections you'd like on your CV - Achievements, Publications, Volunteering, Languages, anything. Add as many as you need.</div>
+            </div>
+          </div>
+
+          {{ formset.management_form }}
+
+          <div id="additional-info-list">
+            {% for aform in formset %}
+              <div class="additional-info-row">
+                {% for hidden in aform.hidden_fields %}{{ hidden }}{% endfor %}
+                <div class="row g-3 align-items-start">
+                  <div class="col-12 col-md-4">
+                    <label class="cv-label" for="{{ aform.title.id_for_label }}">
+                      <i class="bi bi-tag-fill"></i> Section Title
+                    </label>
+                    <div class="field-wrap">
+                      <i class="bi bi-tag fw-icon"></i>
+                      {{ aform.title }}
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <label class="cv-label" for="{{ aform.details.id_for_label }}">
+                      <i class="bi bi-list-ul"></i> Details
+                    </label>
+                    <div class="field-wrap">
+                      <i class="bi bi-list-ul fw-icon" style="top:1.1rem;transform:none;"></i>
+                      {{ aform.details }}
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-1 d-flex justify-content-md-center">
+                    <button type="button" class="btn-remove-additional" onclick="removeAdditionalRow(this)" title="Remove this section" aria-label="Remove this section">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <button type="button" class="btn-add-additional" onclick="addAdditionalRow()">
+            <i class="bi bi-plus-circle"></i> Add another section
+          </button>
+
+          <!-- Hidden blueprint used by JS to create new rows. __prefix__ is swapped for the real form index. -->
+          <template id="additional-empty-form-template">
+            <div class="additional-info-row">
+              <div class="row g-3 align-items-start">
+                <div class="col-12 col-md-4">
+                  <label class="cv-label"><i class="bi bi-tag-fill"></i> Section Title</label>
+                  <div class="field-wrap">
+                    <i class="bi bi-tag fw-icon"></i>
+                    {{ formset.empty_form.title }}
+                  </div>
+                </div>
+                <div class="col-12 col-md-7">
+                  <label class="cv-label"><i class="bi bi-list-ul"></i> Details</label>
+                  <div class="field-wrap">
+                    <i class="bi bi-list-ul fw-icon" style="top:1.1rem;transform:none;"></i>
+                    {{ formset.empty_form.details }}
+                  </div>
+                </div>
+                <div class="col-12 col-md-1 d-flex justify-content-md-center">
+                  <button type="button" class="btn-remove-additional" onclick="removeAdditionalRow(this)" title="Remove this section" aria-label="Remove this section">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
         <!-- ─── Footer / Submit ─── -->
         <div class="cv-footer">
           <div class="footer-hint">
@@ -839,14 +974,43 @@
     );
   })();
 
-  /* ── Auto-resize textareas ── */
-  document.querySelectorAll('textarea').forEach(ta => {
+  /* ── Auto-resize textareas (reusable so new rows get it too) ── */
+  function initTextareaAutoResize(ta) {
     ta.style.minHeight = '110px';
     ta.addEventListener('input', function() {
       this.style.height = 'auto';
       this.style.height = Math.max(110, this.scrollHeight) + 'px';
     });
-  });
+  }
+  document.querySelectorAll('textarea').forEach(initTextareaAutoResize);
+
+  /* ── Additional Info: add/remove dynamic rows ── */
+  function addAdditionalRow() {
+    const totalInput = document.getElementById('id_additional-TOTAL_FORMS');
+    if (!totalInput) return;
+    const index = parseInt(totalInput.value, 10);
+
+    const templateHtml = document.getElementById('additional-empty-form-template').innerHTML;
+    const newRowHtml = templateHtml.replace(/__prefix__/g, index);
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = newRowHtml.trim();
+    const newRow = wrapper.firstElementChild;
+
+    document.getElementById('additional-info-list').appendChild(newRow);
+    totalInput.value = index + 1;
+
+    newRow.querySelectorAll('textarea').forEach(initTextareaAutoResize);
+    newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function removeAdditionalRow(button) {
+    const row = button.closest('.additional-info-row');
+    if (row) row.remove();
+    // Note: we intentionally don't decrement TOTAL_FORMS. Django's formset
+    // treats a completely blank "extra" form as empty and skips it, so
+    // leaving a gap in the index sequence is harmless.
+  }
 
   /* ── Submit button loading state ── */
   document.querySelector('form').addEventListener('submit', function() {

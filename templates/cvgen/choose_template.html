@@ -29,363 +29,180 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .cv-progress {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .cp-step {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--txt-muted);
-  }
-
+  .cv-progress { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .cp-step { display: flex; align-items: center; gap: 0.4rem; font-size: 13px; font-weight: 600; color: var(--txt-muted); }
   .cp-step .cp-dot {
-    width: 28px; height: 28px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 600;
-    background: rgba(15,23,42,0.05);
-    color: var(--txt-muted);
-    border: 1px solid var(--bdr);
+    width: 28px; height: 28px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; background: rgba(15,23,42,0.05); color: var(--txt-muted); border: 1px solid var(--bdr);
   }
-
-  .cp-step.active .cp-dot, .cp-step.done .cp-dot {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-
+  .cp-step.active .cp-dot, .cp-step.done .cp-dot { background: var(--accent); color: #fff; border-color: var(--accent); }
   .cp-step.active, .cp-step.done { color: var(--accent); }
+  .cp-line { flex: 1; height: 2px; border-radius: 999px; background: var(--bdr); min-width: 20px; max-width: 50px; }
 
-  .cp-line {
-    flex: 1;
-    height: 2px;
-    border-radius: 999px;
-    background: var(--bdr);
-    min-width: 20px;
-    max-width: 50px;
-  }
-
-  .tpl-heading h1 {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--txt);
-    margin: 0 0 0.35rem;
-  }
-
-  .tpl-heading p {
-    font-size: 14px;
-    color: var(--txt-muted);
-    margin: 0;
-  }
+  .tpl-heading h1 { font-size: 22px; font-weight: 600; color: var(--txt); margin: 0 0 0.35rem; }
+  .tpl-heading p { font-size: 14px; color: var(--txt-muted); margin: 0; }
 
   /* ── Grid ── */
-  .tpl-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-    margin-top: 1.75rem;
-  }
-
-  @media (max-width: 1199.98px) {
-    .tpl-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-  @media (max-width: 767.98px) {
-    .tpl-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 479.98px) {
-    .tpl-grid { grid-template-columns: 1fr; }
-  }
+  .tpl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 1.75rem; }
+  @media (max-width: 1199.98px) { .tpl-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 767.98px)  { .tpl-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 479.98px)  { .tpl-grid { grid-template-columns: 1fr; } }
 
   /* ── Card ── */
   .tpl-card {
-    background: var(--surface);
-    border-radius: 20px;
-    border: 2px solid var(--bdr);
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    background: var(--surface); border-radius: 20px; border: 2px solid var(--bdr);
+    overflow: hidden; cursor: pointer; transition: all 0.25s ease;
     box-shadow: 0 6px 18px rgba(15,23,42,0.05);
   }
+  .tpl-card:hover { transform: translateY(-4px); border-color: var(--bdr-hover); box-shadow: 0 16px 32px var(--shadow-lg); }
+  .tpl-card.selected { border-color: var(--tpl-accent, var(--accent)); box-shadow: 0 12px 28px rgba(var(--accent-rgb), 0.18); }
 
-  .tpl-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--bdr-hover);
-    box-shadow: 0 16px 32px var(--shadow-lg);
-  }
-
-  .tpl-card.selected {
-    border-color: var(--tpl-accent, var(--accent));
-    box-shadow: 0 12px 28px rgba(var(--accent-rgb), 0.18);
-  }
-
-  .tpl-thumb {
-    position: relative;
-    height: 190px;
-    background: var(--surface-alt);
-    padding: 14px;
-    display: flex;
-    gap: 8px;
-    overflow: hidden;
-  }
+  .tpl-thumb { position: relative; height: 190px; background: var(--surface-alt); padding: 14px; display: flex; overflow: hidden; }
 
   /* Single-column thumb mockup */
-  .tpl-thumb.layout-single { flex-direction: column; }
-  .tpl-thumb.layout-single .mock-header {
-    height: 22px;
-    border-radius: 5px;
-    background: var(--tpl-accent);
-    width: 60%;
-    margin-bottom: 8px;
-  }
-  .tpl-thumb.layout-single .mock-line {
-    height: 7px;
-    border-radius: 4px;
-    background: rgba(15,23,42,0.10);
-    margin-bottom: 6px;
-  }
-  .tpl-thumb.layout-single .mock-line.w-100 { width: 100%; }
-  .tpl-thumb.layout-single .mock-line.w-80 { width: 80%; }
-  .tpl-thumb.layout-single .mock-line.w-60 { width: 60%; }
-  .tpl-thumb.layout-single .mock-title {
-    height: 8px;
-    width: 40%;
-    border-radius: 4px;
-    background: var(--tpl-accent);
-    opacity: 0.55;
-    margin: 10px 0 6px;
-  }
+  .tpl-thumb.layout-single { flex-direction: column; gap: 0; }
+  .tpl-thumb.layout-single .mock-header { height: 22px; border-radius: 5px; background: var(--tpl-accent); width: 60%; margin-bottom: 8px; }
+  .tpl-thumb.layout-single .mock-line { height: 7px; border-radius: 4px; background: rgba(15,23,42,0.10); margin-bottom: 6px; }
+  .tpl-thumb.layout-single .mock-line.w-100 { width: 100%; } .tpl-thumb.layout-single .mock-line.w-80 { width: 80%; } .tpl-thumb.layout-single .mock-line.w-60 { width: 60%; }
+  .tpl-thumb.layout-single .mock-title { height: 8px; width: 40%; border-radius: 4px; background: var(--tpl-accent); opacity: 0.55; margin: 10px 0 6px; }
 
   /* Sidebar thumb mockup */
-  .tpl-thumb.layout-sidebar .mock-sidebar {
-    width: 32%;
-    background: var(--tpl-accent);
-    border-radius: 6px;
-    padding: 10px 7px;
-  }
-  .tpl-thumb.layout-sidebar .mock-sidebar .mock-sb-line {
-    height: 6px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.55);
-    margin-bottom: 7px;
-  }
-  .tpl-thumb.layout-sidebar .mock-sidebar .mock-sb-line.w-70 { width: 70%; }
-  .tpl-thumb.layout-sidebar .mock-sidebar .mock-sb-line.w-100 { width: 100%; }
+  .tpl-thumb.layout-sidebar { gap: 8px; }
+  .tpl-thumb.layout-sidebar.side-right { flex-direction: row-reverse; }
+  .tpl-thumb.layout-sidebar .mock-sidebar { width: 32%; background: var(--tpl-accent); border-radius: 6px; padding: 10px 7px; }
+  .tpl-thumb.layout-sidebar .mock-sidebar .mock-sb-line { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.55); margin-bottom: 7px; }
+  .tpl-thumb.layout-sidebar .mock-sidebar .mock-sb-line.w-70 { width: 70%; } .tpl-thumb.layout-sidebar .mock-sidebar .mock-sb-line.w-100 { width: 100%; }
   .tpl-thumb.layout-sidebar .mock-main { flex: 1; }
-  .tpl-thumb.layout-sidebar .mock-main .mock-title {
-    height: 8px;
-    width: 50%;
-    border-radius: 4px;
-    background: var(--tpl-accent);
-    opacity: 0.55;
-    margin-bottom: 8px;
-  }
-  .tpl-thumb.layout-sidebar .mock-main .mock-line {
-    height: 7px;
-    border-radius: 4px;
-    background: rgba(15,23,42,0.10);
-    margin-bottom: 6px;
-  }
-  .tpl-thumb.layout-sidebar .mock-main .mock-line.w-100 { width: 100%; }
-  .tpl-thumb.layout-sidebar .mock-main .mock-line.w-80 { width: 80%; }
-  .tpl-thumb.layout-sidebar .mock-main .mock-line.w-60 { width: 60%; }
+  .tpl-thumb.layout-sidebar .mock-main .mock-title { height: 8px; width: 50%; border-radius: 4px; background: var(--tpl-accent); opacity: 0.55; margin-bottom: 8px; }
+  .tpl-thumb.layout-sidebar .mock-main .mock-line { height: 7px; border-radius: 4px; background: rgba(15,23,42,0.10); margin-bottom: 6px; }
+  .tpl-thumb.layout-sidebar .mock-main .mock-line.w-100 { width: 100%; } .tpl-thumb.layout-sidebar .mock-main .mock-line.w-80 { width: 80%; } .tpl-thumb.layout-sidebar .mock-main .mock-line.w-60 { width: 60%; }
+
+  /* Banded thumb mockup */
+  .tpl-thumb.layout-banded { flex-direction: column; gap: 8px; }
+  .tpl-thumb.layout-banded .mock-band { height: 34px; border-radius: 6px; background: var(--tpl-accent); width: 100%; }
+  .tpl-thumb.layout-banded .mock-band-body { display: flex; gap: 8px; flex: 1; }
+  .tpl-thumb.layout-banded .mock-band-main, .tpl-thumb.layout-banded .mock-band-side { display: flex; flex-direction: column; }
+  .tpl-thumb.layout-banded .mock-band-main { flex: 1.6; }
+  .tpl-thumb.layout-banded .mock-band-side { flex: 1; }
+  .tpl-thumb.layout-banded .mock-title { height: 7px; width: 60%; border-radius: 4px; background: var(--tpl-accent); opacity: 0.55; margin-bottom: 6px; }
+  .tpl-thumb.layout-banded .mock-line { height: 6px; border-radius: 3px; background: rgba(15,23,42,0.10); margin-bottom: 5px; }
+  .tpl-thumb.layout-banded .mock-line.w-100 { width: 100%; } .tpl-thumb.layout-banded .mock-line.w-80 { width: 80%; } .tpl-thumb.layout-banded .mock-line.w-60 { width: 60%; }
 
   .tpl-check {
-    position: absolute;
-    top: 10px; right: 10px;
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid var(--bdr);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    color: transparent;
-    transition: all 0.2s ease;
+    position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--bdr); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: transparent; transition: all 0.2s ease;
   }
+  .tpl-card.selected .tpl-check { background: var(--tpl-accent, var(--accent)); border-color: var(--tpl-accent, var(--accent)); color: #fff; }
 
-  .tpl-card.selected .tpl-check {
-    background: var(--tpl-accent, var(--accent));
-    border-color: var(--tpl-accent, var(--accent));
-    color: #fff;
+  .tpl-body { padding: 0.9rem 1rem 1rem; }
+  .tpl-name { font-size: 14.5px; font-weight: 600; color: var(--txt); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.4rem; }
+  .tpl-name .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tpl-accent); flex-shrink: 0; }
+  .tpl-desc { font-size: 12.5px; color: var(--txt-muted); line-height: 1.45; margin-bottom: 0.75rem; min-height: 50px; }
+
+  .tpl-actions { display: flex; gap: 0.5rem; }
+  .btn-tpl-preview, .btn-tpl-select {
+    flex: 1; font-size: 12.5px; font-weight: 600; border-radius: 9px; padding: 0.4rem 0.5rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; transition: all 0.2s ease;
   }
-
-  .tpl-body {
-    padding: 0.9rem 1rem 1rem;
-  }
-
-  .tpl-name {
-    font-size: 14.5px;
-    font-weight: 600;
-    color: var(--txt);
-    margin-bottom: 0.2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .tpl-name .dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    background: var(--tpl-accent);
-    flex-shrink: 0;
-  }
-
-  .tpl-desc {
-    font-size: 12.5px;
-    color: var(--txt-muted);
-    line-height: 1.45;
-    margin-bottom: 0.75rem;
-    min-height: 36px;
-  }
-
-  .tpl-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .btn-tpl-preview {
-    flex: 1;
-    font-size: 12.5px;
-    font-weight: 600;
-    border-radius: 9px;
-    padding: 0.4rem 0.5rem;
-    border: 1.5px solid var(--bdr);
-    background: transparent;
-    color: var(--txt-soft);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3rem;
-    transition: all 0.2s ease;
-  }
-
-  .btn-tpl-preview:hover {
-    border-color: var(--tpl-accent, var(--accent));
-    color: var(--tpl-accent, var(--accent));
-    background: rgba(var(--accent-rgb), 0.05);
-  }
-
-  .btn-tpl-select {
-    flex: 1;
-    font-size: 12.5px;
-    font-weight: 600;
-    border-radius: 9px;
-    padding: 0.4rem 0.5rem;
-    border: none;
-    background: var(--tpl-accent, var(--accent));
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3rem;
-  }
-
+  .btn-tpl-preview { border: 1.5px solid var(--bdr); background: transparent; color: var(--txt-soft); }
+  .btn-tpl-preview:hover { border-color: var(--tpl-accent, var(--accent)); color: var(--tpl-accent, var(--accent)); background: rgba(var(--accent-rgb), 0.05); }
+  .btn-tpl-select { border: none; background: var(--tpl-accent, var(--accent)); color: #fff; }
   .tpl-card.selected .btn-tpl-select { opacity: 0.55; pointer-events: none; }
 
   /* ── Sticky action bar ── */
   .tpl-action-bar {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    z-index: 1030;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--bdr);
-    padding: 1rem 0;
-    box-shadow: 0 -8px 24px rgba(15,23,42,0.06);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--bdr); padding: 1rem 0; box-shadow: 0 -8px 24px rgba(15,23,42,0.06);
   }
-
-  .tab-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .tab-status {
-    font-size: 13.5px;
-    color: var(--txt-muted);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .tab-status .status-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--bdr);
-  }
-
-  .tab-status.ready .status-dot { background: var(--success, #10B981); }
+  .tab-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .tab-status { font-size: 13.5px; color: var(--txt-muted); display: flex; align-items: center; gap: 0.5rem; }
+  .tab-status .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bdr); }
+  .tab-status.ready .status-dot { background: #10B981; }
   .tab-status.ready { color: var(--txt); font-weight: 600; }
 
   .btn-generate-final {
-    height: 50px;
-    padding: 0 1.75rem;
-    border-radius: 14px;
-    font-weight: 600;
-    font-size: 14px;
-    border: none;
-    background: var(--accent);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.25s ease;
-    box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.25);
-    white-space: nowrap;
+    height: 50px; padding: 0 1.75rem; border-radius: 14px; font-weight: 600; font-size: 14px; border: none;
+    background: var(--accent); color: #fff; display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: all 0.25s ease; box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.25); white-space: nowrap;
+    text-decoration: none;
   }
+  .btn-generate-final:hover:not(.disabled) { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(var(--accent-rgb), 0.32); color: #fff; }
+  .btn-generate-final.disabled { background: rgba(15,23,42,0.15); color: rgba(15,23,42,0.4); box-shadow: none; pointer-events: none; cursor: not-allowed; }
 
-  .btn-generate-final:hover:not(.disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(var(--accent-rgb), 0.32);
-    color: #fff;
+  /* ══════════════════════════════
+     Preview modal - PLAIN VANILLA JS/CSS, no Bootstrap JS dependency
+  ══════════════════════════════ */
+  .cv-modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(15,23,42,0.55);
+    align-items: center; justify-content: center;
+    padding: 20px;
   }
+  .cv-modal-overlay.open { display: flex; }
 
-  .btn-generate-final.disabled {
-    background: rgba(15,23,42,0.15);
-    color: rgba(15,23,42,0.4);
-    box-shadow: none;
-    pointer-events: none;
-    cursor: not-allowed;
-  }
-
-  /* ── Preview modal ── */
-  #templatePreviewModal .modal-dialog {
-    max-width: 900px;
-  }
-
-  #templatePreviewModal .modal-body {
-    padding: 0;
-    background: #EEF2F7;
-  }
-
-  #templatePreviewModal iframe {
+  .cv-modal-box {
+    background: #fff;
+    border-radius: 20px;
     width: 100%;
-    height: 78vh;
-    border: none;
-    display: block;
-    background: #fff;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.28);
   }
 
-  #templatePreviewModal .preview-loading {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
+  .cv-modal-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 1rem 1.25rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0;
+  }
+  .cv-modal-header h5 { margin: 0; font-size: 16px; font-weight: 600; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .cv-modal-zoom { display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0; }
+  .cv-modal-zoom button {
+    width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--bdr);
+    background: var(--surface-alt); color: var(--txt-soft); font-size: 14px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .cv-modal-zoom button:hover { background: rgba(15,23,42,0.06); }
+  .cv-modal-zoom span { font-size: 12.5px; color: var(--txt-muted); min-width: 34px; text-align: center; }
+
+  .cv-modal-close {
+    background: none; border: none; font-size: 22px; line-height: 1; color: var(--txt-muted);
+    cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 6px; flex-shrink: 0;
+  }
+  .cv-modal-close:hover { background: rgba(15,23,42,0.06); color: var(--txt); }
+
+  .cv-modal-body { position: relative; flex: 1; background: #d7dde6; min-height: 65vh; overflow: auto; }
+  .cv-modal-body iframe {
+    width: 100%; height: 100%; min-height: 65vh; border: none; display: block; background: #fff;
+    transform-origin: top center; transition: transform 0.15s ease;
+  }
+
+  .cv-modal-loading {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #fff; z-index: 1;
+  }
+  .cv-modal-loading.hidden { display: none; }
+
+  .cv-modal-footer {
+    display: flex; justify-content: flex-end; gap: 0.6rem;
+    padding: 0.85rem 1.25rem; border-top: 1px solid var(--bdr); flex-shrink: 0;
+  }
+  .cv-modal-btn {
+    border-radius: 10px; padding: 0.5rem 1.1rem; font-size: 13.5px; font-weight: 600; border: none; cursor: pointer;
+  }
+  .cv-modal-btn.secondary { background: var(--surface-alt); color: var(--txt-soft); }
+  .cv-modal-btn.secondary:hover { background: rgba(15,23,42,0.08); }
+  .cv-modal-btn.primary { background: var(--accent); color: #fff; }
+  .cv-modal-btn.primary:hover { filter: brightness(1.08); }
+
+  @media (max-width: 767.98px) {
+    .cv-modal-box { max-height: 95vh; }
+    .cv-modal-body, .cv-modal-body iframe { min-height: 55vh; }
+    .cv-modal-zoom { display: none; } /* zoom controls are a desktop nicety; mobile scrolls/pinches fine */
   }
 </style>
 
@@ -399,20 +216,11 @@
       </div>
 
       <div class="cv-progress">
-        <div class="cp-step done">
-          <div class="cp-dot"><i class="bi bi-check"></i></div>
-          <span>Details</span>
-        </div>
+        <div class="cp-step done"><div class="cp-dot"><i class="bi bi-check"></i></div><span>Details</span></div>
         <div class="cp-line"></div>
-        <div class="cp-step active">
-          <div class="cp-dot">2</div>
-          <span>Template</span>
-        </div>
+        <div class="cp-step active"><div class="cp-dot">2</div><span>Template</span></div>
         <div class="cp-line"></div>
-        <div class="cp-step">
-          <div class="cp-dot">3</div>
-          <span>Download</span>
-        </div>
+        <div class="cp-step"><div class="cp-dot">3</div><span>Download</span></div>
       </div>
     </div>
 
@@ -425,7 +233,7 @@
            data-template-name="{{ tpl.name }}"
            onclick="selectTemplate('{{ tpl.id }}', '{{ tpl.name|escapejs }}')">
 
-        <div class="tpl-thumb layout-{{ tpl.layout }}">
+        <div class="tpl-thumb layout-{{ tpl.layout }}{% if tpl.layout == 'sidebar' %} side-{{ tpl.sidebar_side }}{% endif %}">
           <div class="tpl-check"><i class="bi bi-check-lg"></i></div>
 
           {% if tpl.layout == 'sidebar' %}
@@ -444,6 +252,21 @@
               <div class="mock-title"></div>
               <div class="mock-line w-100"></div>
               <div class="mock-line w-80"></div>
+            </div>
+          {% elif tpl.layout == 'banded' %}
+            <div class="mock-band"></div>
+            <div class="mock-band-body">
+              <div class="mock-band-main">
+                <div class="mock-title"></div>
+                <div class="mock-line w-100"></div>
+                <div class="mock-line w-80"></div>
+                <div class="mock-line w-60"></div>
+              </div>
+              <div class="mock-band-side">
+                <div class="mock-title"></div>
+                <div class="mock-line w-100"></div>
+                <div class="mock-line w-80"></div>
+              </div>
             </div>
           {% else %}
             <div class="mock-header"></div>
@@ -491,26 +314,32 @@
   </div>
 </div>
 
-<!-- ── Preview modal ── -->
-<div class="modal fade" id="templatePreviewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="border-radius:20px; overflow:hidden; border:none;">
-      <div class="modal-header">
-        <h5 class="modal-title" id="templatePreviewModalLabel">Preview</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- ── Preview modal (plain vanilla JS, no Bootstrap JS required) ── -->
+<div class="cv-modal-overlay" id="cvModalOverlay">
+  <div class="cv-modal-box">
+    <div class="cv-modal-header">
+      <h5 id="cvModalTitle">Preview</h5>
+      <div class="cv-modal-zoom">
+        <button type="button" onclick="adjustZoom(-0.1)" aria-label="Zoom out"><i class="bi bi-dash"></i></button>
+        <span id="cvZoomLabel">100%</span>
+        <button type="button" onclick="adjustZoom(0.1)" aria-label="Zoom in"><i class="bi bi-plus"></i></button>
       </div>
-      <div class="modal-body position-relative">
-        <div class="preview-loading" id="previewLoading">
-          <div class="spinner-border" role="status"></div>
-        </div>
-        <iframe id="templatePreviewFrame" src="about:blank" onload="document.getElementById('previewLoading').style.display='none';"></iframe>
+      <button type="button" class="cv-modal-close" onclick="closePreviewModal()" aria-label="Close">&times;</button>
+    </div>
+    <div class="cv-modal-body">
+      <div class="cv-modal-loading" id="cvModalLoading">
+        <div class="spinner-border" role="status"></div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="useThisTemplateBtn">
-          <i class="bi bi-check2"></i> Use this template
-        </button>
-      </div>
+      <iframe id="cvModalFrame" src="about:blank"></iframe>
+    </div>
+    <div class="cv-modal-footer">
+      <button type="button" class="cv-modal-btn secondary" onclick="closePreviewModal()">Close</button>
+      <a href="#" class="cv-modal-btn secondary" id="modalDownloadBtn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.35rem;">
+        <i class="bi bi-download"></i> Download this
+      </a>
+      <button type="button" class="cv-modal-btn primary" id="useThisTemplateBtn">
+        <i class="bi bi-check2"></i> Use this template
+      </button>
     </div>
   </div>
 </div>
@@ -519,20 +348,32 @@
 
 {% block scripts %}
 <script>
-  const PROFILE_PK = "{{ profile.pk }}";
   // Placeholder-based URLs - "__TID__" gets swapped for the real template id at click time.
   const PREVIEW_URL_TEMPLATE = "{% url 'cvgen:preview_template' pk=profile.pk template_id='__TID__' %}";
   const GENERATE_URL_TEMPLATE = "{% url 'cvgen:generate_cv_with_template' pk=profile.pk template_id='__TID__' %}";
 
   let currentPreviewTemplateId = null;
   let currentPreviewTemplateName = null;
+  let currentZoom = 1;
 
   function buildUrl(template, templateId) {
     return template.replace('__TID__', templateId);
   }
 
+  function applyZoom() {
+    const frame = document.getElementById('cvModalFrame');
+    frame.style.transform = 'scale(' + currentZoom + ')';
+    frame.style.height = (100 / currentZoom) + '%';
+    document.getElementById('cvZoomLabel').textContent = Math.round(currentZoom * 100) + '%';
+  }
+
+  function adjustZoom(delta) {
+    currentZoom = Math.min(1.3, Math.max(0.5, Math.round((currentZoom + delta) * 10) / 10));
+    applyZoom();
+  }
+
   function selectTemplate(templateId, templateName) {
-    document.querySelectorAll('.tpl-card').forEach(card => card.classList.remove('selected'));
+    document.querySelectorAll('.tpl-card').forEach(function (card) { card.classList.remove('selected'); });
     const card = document.getElementById('tpl-card-' + templateId);
     if (card) card.classList.add('selected');
 
@@ -546,29 +387,53 @@
     generateBtn.href = buildUrl(GENERATE_URL_TEMPLATE, templateId);
   }
 
+  function openPreviewModal() {
+    document.getElementById('cvModalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePreviewModal() {
+    document.getElementById('cvModalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    // Stop the iframe from continuing to render/hold state in the background.
+    document.getElementById('cvModalFrame').src = 'about:blank';
+  }
+
   function previewTemplate(templateId, templateName) {
     currentPreviewTemplateId = templateId;
     currentPreviewTemplateName = templateName;
+    currentZoom = 1;
 
-    document.getElementById('templatePreviewModalLabel').textContent = templateName + ' — Preview';
-    document.getElementById('previewLoading').style.display = 'flex';
-    document.getElementById('templatePreviewFrame').src = buildUrl(PREVIEW_URL_TEMPLATE, templateId);
+    document.getElementById('cvModalTitle').textContent = templateName + ' — Preview';
+    document.getElementById('modalDownloadBtn').href = buildUrl(GENERATE_URL_TEMPLATE, templateId);
 
-    const modal = new bootstrap.Modal(document.getElementById('templatePreviewModal'));
-    modal.show();
+    const loadingEl = document.getElementById('cvModalLoading');
+    const frame = document.getElementById('cvModalFrame');
+    loadingEl.classList.remove('hidden');
+
+    frame.onload = function () {
+      loadingEl.classList.add('hidden');
+      applyZoom();
+    };
+    frame.src = buildUrl(PREVIEW_URL_TEMPLATE, templateId);
+
+    openPreviewModal();
   }
 
   document.getElementById('useThisTemplateBtn').addEventListener('click', function () {
     if (!currentPreviewTemplateId) return;
     selectTemplate(currentPreviewTemplateId, currentPreviewTemplateName);
-    const modalEl = document.getElementById('templatePreviewModal');
-    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-    modal.hide();
+    closePreviewModal();
   });
 
-  // Reset iframe when modal closes so it doesn't keep rendering in the background.
-  document.getElementById('templatePreviewModal').addEventListener('hidden.bs.modal', function () {
-    document.getElementById('templatePreviewFrame').src = 'about:blank';
+  // Close on backdrop click (but not when clicking inside the modal box itself).
+  document.getElementById('cvModalOverlay').addEventListener('click', function (e) {
+    if (e.target === this) closePreviewModal();
+  });
+
+  // Close on Escape key.
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closePreviewModal();
   });
 </script>
 {% endblock %}
