@@ -79,6 +79,7 @@ class AIMatchAPIView(views.APIView):
             "resume_score": best_match,
             "resume_summary": data.get("resume_summary", ""),
             "skills_extracted": data.get("skills_extracted", []),
+            "skill_sources": data.get("skill_sources", []),
             "match_analytics": data.get("match_analytics", []),
             "resume_insights": data.get("resume_insights", []),
             "resume_improvement_suggestions": data.get("resume_improvement_suggestions", []),
