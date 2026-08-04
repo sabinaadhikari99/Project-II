@@ -1,5 +1,6 @@
 import logging
 import pickle
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -21,9 +22,49 @@ class FAISSManager:
         self.index_path = self.store_dir / "faiss_index.bin"
         self.map_path = self.store_dir / "id_map.pkl"
         self.store_dir.mkdir(parents=True, exist_ok=True)
+        # The instance is shared process-wide (see get_vector_manager), so every
+        # mutation has to be serialised. RLock rather than Lock because
+        # add_embedding and update_embedding delegate to each other.
+        self._lock = threading.RLock()
         self.id_map: list[str] = []
         self.index = self._load_index()
+        self._source_mtime = self._current_mtime()
         self._validate_sync()
+
+    # -- freshness -----------------------------------------------------------
+    def _current_mtime(self) -> float:
+        """Newest mtime across the files backing this index.
+
+        Used to notice writes made by *another* process (a second gunicorn
+        worker, a management command) so a long-lived cached instance does not
+        keep serving a stale index.
+        """
+        newest = 0.0
+        for path in (self.index_path, self.map_path,
+                     self.store_dir / "fallback_vectors.npy"):
+            try:
+                newest = max(newest, path.stat().st_mtime)
+            except OSError:
+                continue
+        return newest
+
+    def refresh_if_stale(self):
+        """Reload from disk only when someone else has written since our load.
+
+        This is what makes caching the manager safe: reads stay in memory, and
+        the expensive `faiss.read_index` happens on a real change rather than
+        on every single call.
+        """
+        with self._lock:
+            current = self._current_mtime()
+            if current <= self._source_mtime:
+                return False
+            logger.debug("Vector store changed on disk; reloading index.")
+            self.id_map = []
+            self.index = self._load_index()
+            self._source_mtime = current
+            self._validate_sync()
+            return True
 
     def _load_index(self):
         if faiss and self.index_path.exists():
@@ -53,6 +94,9 @@ class FAISSManager:
             faiss.write_index(self.index, str(self.index_path))
         else:
             np.save(self.store_dir / "fallback_vectors.npy", self.index)
+        # Our own write must not look like someone else's, or the next call
+        # would pointlessly reload the index we just persisted.
+        self._source_mtime = self._current_mtime()
 
     def _normalize(self, embedding: list[float]) -> np.ndarray:
         array = np.array([embedding], dtype="float32")
@@ -88,36 +132,38 @@ class FAISSManager:
         return self.index.ntotal if faiss else len(self.index)
 
     def add_embedding(self, object_id: str, embedding: list[float]):
-        if object_id in self.id_map:
-            return self.update_embedding(object_id, embedding)
-        if len(embedding) != VECTOR_DIMENSION:
-            logger.error("add_embedding: expected dimension %d, got %d", VECTOR_DIMENSION, len(embedding))
-            return
-        vector = self._normalize(embedding)
-        self.id_map.append(object_id)
-        if faiss:
-            self.index.add(vector)
-        else:
-            self.index = np.vstack([self.index, vector])
-        self._save()
+        with self._lock:
+            if object_id in self.id_map:
+                return self.update_embedding(object_id, embedding)
+            if len(embedding) != VECTOR_DIMENSION:
+                logger.error("add_embedding: expected dimension %d, got %d", VECTOR_DIMENSION, len(embedding))
+                return
+            vector = self._normalize(embedding)
+            self.id_map.append(object_id)
+            if faiss:
+                self.index.add(vector)
+            else:
+                self.index = np.vstack([self.index, vector])
+            self._save()
 
     def update_embedding(self, object_id: str, embedding: list[float]):
-        if object_id not in self.id_map:
-            return self.add_embedding(object_id, embedding)
-        if len(embedding) != VECTOR_DIMENSION:
-            logger.error("update_embedding: expected dimension %d, got %d", VECTOR_DIMENSION, len(embedding))
-            return
-        self._validate_sync()
-        try:
-            idx = self.id_map.index(object_id)
-            if idx >= self._vector_count():
-                logger.warning("update_embedding: index %d out of bounds (count %d), skipping", idx, self._vector_count())
+        with self._lock:
+            if object_id not in self.id_map:
+                return self.add_embedding(object_id, embedding)
+            if len(embedding) != VECTOR_DIMENSION:
+                logger.error("update_embedding: expected dimension %d, got %d", VECTOR_DIMENSION, len(embedding))
                 return
-            vectors = self._all_vectors()
-            vectors[idx] = self._normalize(embedding)[0]
-            self._rebuild(vectors)
-        except (IndexError, ValueError) as e:
-            logger.error("update_embedding failed for %s: %s", object_id, e)
+            self._validate_sync()
+            try:
+                idx = self.id_map.index(object_id)
+                if idx >= self._vector_count():
+                    logger.warning("update_embedding: index %d out of bounds (count %d), skipping", idx, self._vector_count())
+                    return
+                vectors = self._all_vectors()
+                vectors[idx] = self._normalize(embedding)[0]
+                self._rebuild(vectors)
+            except (IndexError, ValueError) as e:
+                logger.error("update_embedding failed for %s: %s", object_id, e)
 
     def _all_vectors(self):
         if not faiss:
@@ -137,33 +183,66 @@ class FAISSManager:
         self._save()
 
     def search_similar(self, embedding: list[float], top_k: int = 5, prefix: str | None = None):
-        if len(self.id_map) == 0 or self._vector_count() == 0:
-            return []
-        if len(embedding) != VECTOR_DIMENSION:
-            logger.error("search_similar: expected dimension %d, got %d", VECTOR_DIMENSION, len(embedding))
-            return []
-        self._validate_sync()
-        query = self._normalize(embedding)
-        n = self._vector_count()
-        try:
-            if faiss:
-                scores, indices = self.index.search(query, min(top_k * 3, n))
-                pairs = []
-                for idx, score in zip(indices[0], scores[0]):
-                    if idx < 0 or idx >= len(self.id_map):
-                        continue
-                    pairs.append((self.id_map[idx], float(score)))
-            else:
-                scores = self.index @ query[0]
-                ordered = np.argsort(-scores)[: min(top_k * 3, n)]
-                pairs = [(self.id_map[idx], float(scores[idx])) for idx in ordered if idx < len(self.id_map)]
-        except Exception as e:
-            logger.error("search_similar failed: %s", e, exc_info=True)
-            return []
+        with self._lock:
+            if len(self.id_map) == 0 or self._vector_count() == 0:
+                return []
+            if len(embedding) != VECTOR_DIMENSION:
+                logger.error("search_similar: expected dimension %d, got %d", VECTOR_DIMENSION, len(embedding))
+                return []
+            self._validate_sync()
+            query = self._normalize(embedding)
+            n = self._vector_count()
+            # `prefix` is applied after the search, so a window of top_k*3 can be
+            # entirely consumed by the other namespace (profile vectors crowding
+            # out job vectors). Widen the window when filtering is requested so a
+            # prefixed search still has top_k results left to return.
+            window = min(top_k * (10 if prefix else 3), n)
+            try:
+                if faiss:
+                    scores, indices = self.index.search(query, window)
+                    pairs = []
+                    for idx, score in zip(indices[0], scores[0]):
+                        if idx < 0 or idx >= len(self.id_map):
+                            continue
+                        pairs.append((self.id_map[idx], float(score)))
+                else:
+                    scores = self.index @ query[0]
+                    ordered = np.argsort(-scores)[:window]
+                    pairs = [(self.id_map[idx], float(scores[idx])) for idx in ordered if idx < len(self.id_map)]
+            except Exception as e:
+                logger.error("search_similar failed: %s", e, exc_info=True)
+                return []
         if prefix:
             pairs = [pair for pair in pairs if pair[0].startswith(prefix)]
         return pairs[:top_k]
 
 
+#: Process-wide instance. Building a FAISSManager reads the index off disk, and
+#: it used to happen on every single call - several times per recommendation
+#: request. The index is now loaded once and reloaded only when another process
+#: writes to it (see FAISSManager.refresh_if_stale).
+_MANAGER: "FAISSManager | None" = None
+_MANAGER_LOCK = threading.Lock()
+
+
 def get_vector_manager() -> FAISSManager:
-    return FAISSManager()
+    global _MANAGER
+    with _MANAGER_LOCK:
+        # A changed VECTOR_STORE_DIR (tests, or a relocated store) means the
+        # cached instance points at the wrong files - rebuild rather than serve it.
+        if _MANAGER is not None and _MANAGER.store_dir != Path(settings.VECTOR_STORE_DIR):
+            _MANAGER = None
+        if _MANAGER is None:
+            _MANAGER = FAISSManager()
+            return _MANAGER
+        manager = _MANAGER
+    manager.refresh_if_stale()
+    return manager
+
+
+def reset_vector_manager():
+    """Drop the cached instance. For tests and for management commands that
+    rebuild the store underneath a running process."""
+    global _MANAGER
+    with _MANAGER_LOCK:
+        _MANAGER = None

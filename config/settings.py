@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.core.apps.CoreConfig",
     "apps.shared",
+    "apps.state.apps.StateConfig",
     "apps.jobs",
     "apps.skillgap",
     "apps.recruiters",
@@ -94,6 +95,11 @@ CHANNEL_LAYERS = {
 
 AI_MATCH_THRESHOLD = 70
 AI_MATCH_DEBUG = False
+
+# TEMPORARY. Logs a full per-resume, per-job pipeline trace on every AI Match
+# analysis (apps.shared.match_debug). Diagnostic only - it formats values the
+# analysis already produced and changes no score. Remove with match_debug.py.
+AI_MATCH_TRACE = False
 
 AI_WEIGHT_PROFESSION = 40
 AI_WEIGHT_SKILLS = 30
@@ -186,6 +192,16 @@ QUIZ_CACHE_TIMEOUT = 3600
 SKILLGAP_CACHE_TIMEOUT = 86400
 SKILLGAP_WEEKLY_HOURS = 5
 
+# --- Persistent state layer -------------------------------------------------
+# How long a user's restored state (analysis session, UI keys, quiz progress)
+# may be served from cache before the DB is consulted again. Writes invalidate
+# the cache explicitly, so this is only a safety net.
+STATE_CACHE_TIMEOUT = 900
+# The CareerContext computed for one CV is shared by the gap, courses and
+# roadmap endpoints, which arrive as three separate requests. Keyed by CV
+# fingerprint, so a new upload is never served a previous CV's analysis.
+CAREER_CONTEXT_CACHE_TIMEOUT = 86400
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "SkillSync AI API",
     "DESCRIPTION": "API documentation",
@@ -210,10 +226,10 @@ SPECTACULAR_SETTINGS = {
 
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Inventory Management",
-    "site_header": "Inventory Management",
-    "site_brand": "Inventory Management",
-    "welcome_sign": "Welcome to Inventory Management Admin",
+    "site_title": "Skillsync AI",
+    "site_header": "Skillsync AI",
+    "site_brand": "Skillsync AI",
+    "welcome_sign": "Welcome to Skillsync AI Admin",
     "copyright": "Sabina",
     "show_sidebar": True,
     "navigation_expanded": True,

@@ -442,8 +442,19 @@ PROFESSION_CONFIGS = {
     },
 }
 
+# Professions close enough that their postings are a reasonable secondary
+# suggestion for a candidate.
+#
+# These sets are injected straight into the job-category filter by
+# get_related_profession_titles(), so anything listed here WILL be recommended.
+# The previous values crossed field boundaries - "Mobile Developer" pulled in
+# Frontend and Full Stack, and "Graphic Designer" reached Frontend via UI/UX -
+# which is precisely why a Flutter CV came back full of React jobs and a
+# designer CV came back full of engineering jobs. Relations are now restricted
+# to genuinely interchangeable roles within the same field.
 RELATED_PROFESSIONS = {
-    "Frontend Developer": {"Full Stack Developer", "UI/UX Designer", "Mobile Developer"},
+    # Frontend no longer reaches Mobile or UI/UX - those are different fields.
+    "Frontend Developer": {"Full Stack Developer"},
     "Backend Developer": {"Full Stack Developer", "Software Engineer", "DevOps Engineer"},
     "Full Stack Developer": {"Frontend Developer", "Backend Developer", "Software Engineer"},
     "Software Engineer": {"Backend Developer", "Full Stack Developer", "DevOps Engineer"},
@@ -453,13 +464,18 @@ RELATED_PROFESSIONS = {
     "Data Engineer": {"Data Scientist", "Data Analyst", "Software Engineer"},
     "Data Analyst": {"Data Scientist", "Data Engineer", "Product Manager"},
     "Graphic Designer": {"UI/UX Designer"},
-    "UI/UX Designer": {"Graphic Designer", "Frontend Developer", "Product Manager"},
+    # UI/UX no longer reaches Frontend: a designer CV must not return
+    # engineering roles.
+    "UI/UX Designer": {"Graphic Designer", "Product Manager"},
     "Product Manager": {"Data Analyst", "Marketing Manager"},
     "Marketing Manager": {"Product Manager"},
     "Accountant": set(),
     "Human Resources Manager": set(),
     "Cybersecurity Engineer": {"DevOps Engineer"},
-    "Mobile Developer": {"Frontend Developer", "Full Stack Developer"},
+    # Mobile is its own field: Flutter/Android/iOS candidates must NOT be
+    # funnelled into React/web roles. This single entry was the direct cause of
+    # "Flutter CV shows Frontend results".
+    "Mobile Developer": set(),
 }
 
 SECTIONS_WEIGHTS = {
@@ -483,6 +499,30 @@ def _build_skill_pattern(skill_name):
     return re.compile(r"(?<![a-z0-9+#.])" + escaped + r"(?![a-z0-9+#.])", re.IGNORECASE)
 
 
+#: Words that make a resume line plausibly a JOB TITLE rather than a person's
+#: name. Real CVs open with the candidate's name, and the title carries 50% of
+#: the classification weight - blindly taking line 1 meant classifying people by
+#: their name, which is why real-world CVs scored far worse than clean fixtures.
+_ROLE_LINE_WORDS = GENERIC_TITLE_WORDS | {
+    "software", "web", "mobile", "frontend", "backend", "fullstack", "full-stack",
+    "data", "cloud", "security", "network", "database", "game", "embedded",
+    "qa", "test", "quality", "graphic", "visual", "product", "marketing",
+    "accounting", "hr", "devops", "sre", "ml", "ai", "programmer", "tester",
+}
+
+
+def _looks_like_job_title(line):
+    """True when a line reads like a role, not a person's name."""
+    if not line:
+        return False
+    stripped = line.strip()
+    # Titles are short; bullets and sentences are not titles.
+    if len(stripped) > 60 or stripped.endswith("."):
+        return False
+    words = {w.strip(" \t|,-()").lower() for w in stripped.split()}
+    return bool(words & _ROLE_LINE_WORDS)
+
+
 def extract_resume_sections(resume_text):
     sections = {"title": "", "summary": "", "experience": "", "projects": "", "skills": "", "certifications": ""}
     for key, pattern in SECTION_PATTERNS.items():
@@ -490,8 +530,13 @@ def extract_resume_sections(resume_text):
         if match:
             sections[key] = match.group(1).strip()
     if not sections["title"]:
-        first_lines = [l.strip() for l in resume_text.splitlines() if l.strip()][:3]
-        sections["title"] = first_lines[0] if first_lines else ""
+        # Scan the header block for a line that actually looks like a role.
+        # If none does, leave the title EMPTY - an empty title contributes 0 and
+        # lets skills decide, which is far better than scoring off a name.
+        for line in [l.strip() for l in resume_text.splitlines() if l.strip()][:6]:
+            if _looks_like_job_title(line):
+                sections["title"] = line
+                break
     return sections
 
 
@@ -515,7 +560,18 @@ def extract_skills_from_section(text):
 
 
 def _matches_profession_title(title_lower, pattern):
-    return pattern in title_lower
+    """Word-boundary containment.
+
+    A bare `pattern in title_lower` matched substrings, so loose patterns such as
+    "analytics", "hr" or "frontend" fired inside unrelated words ("hrm",
+    "storefront analytics") and pinned the wrong profession at full score.
+    """
+    if not pattern or not title_lower:
+        return False
+    return re.search(
+        r"(?<![a-z0-9])" + re.escape(pattern) + r"(?![a-z0-9])",
+        title_lower,
+    ) is not None
 
 
 def _has_unique_term_match(title_lower, pattern):
@@ -561,38 +617,40 @@ def _count_skill_matches_in_text(text, profession):
     return matches, len(skills)
 
 
-def _score_summary(summary_text, profession):
-    if not summary_text:
+def _score_prose_section(text, profession, title_ceiling=85):
+    """Graded score for a free-text section (summary / experience).
+
+    Previously a single title mention anywhere in the section returned a flat
+    100. One passing reference to "web developer" in a Flutter CV's history was
+    therefore enough to pin Frontend Developer at maximum for that section. Now
+    a title mention is strong evidence that still has to be corroborated by the
+    profession's skill vocabulary, so passing references cannot dominate.
+    """
+    if not text:
         return 0, 0
-    summary_lower = summary_text.lower()
+    text_lower = text.lower()
     config = PROFESSION_CONFIGS.get(profession, {})
-    t = config.get("titles", set())
-    for pattern in t:
-        if pattern in summary_lower:
-            return 100, 1.0
-    matches, total = _count_skill_matches_in_text(summary_text, profession)
-    if total == 0:
-        return 0, 0
-    ratio = matches / total
-    scaled = min(100, round(ratio * 200))
-    return scaled, ratio
+    titles = config.get("titles", set())
+
+    title_hit = any(_matches_profession_title(text_lower, pattern) for pattern in titles)
+
+    matches, total = _count_skill_matches_in_text(text, profession)
+    ratio = (matches / total) if total else 0.0
+    skill_component = min(100, round(ratio * 200))
+
+    if title_hit:
+        # Floor of 55 for the mention, rising with skill corroboration, capped
+        # below 100 so an incidental mention never outranks a real match.
+        return min(title_ceiling, max(55, skill_component)), max(ratio, 0.55)
+    return skill_component, ratio
+
+
+def _score_summary(summary_text, profession):
+    return _score_prose_section(summary_text, profession)
 
 
 def _score_experience(exp_text, profession):
-    if not exp_text:
-        return 0, 0
-    exp_lower = exp_text.lower()
-    config = PROFESSION_CONFIGS.get(profession, {})
-    t = config.get("titles", set())
-    for pattern in t:
-        if pattern in exp_lower:
-            return 100, 1.0
-    matches, total = _count_skill_matches_in_text(exp_text, profession)
-    if total == 0:
-        return 0, 0
-    ratio = matches / total
-    scaled = min(100, round(ratio * 200))
-    return scaled, ratio
+    return _score_prose_section(exp_text, profession)
 
 
 def _score_projects(proj_text, profession):

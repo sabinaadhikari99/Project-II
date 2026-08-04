@@ -261,6 +261,16 @@ DIFFICULTY_OVERRIDES = {
 DEFAULT_DIFFICULTY = "beginner"
 BASE_HOURS = {"beginner": 8, "intermediate": 16, "advanced": 28}
 
+# Friendly display names for catalog keys not present in any profession config.
+DISPLAY_OVERRIDES = {
+    "cleanarchitecture": "Clean Architecture",
+    "unittesting": "Unit Testing",
+    "fluttertesting": "Flutter Testing",
+    "responsivewebdesign": "Responsive Web Design",
+    "mobiletesting": "Mobile Testing",
+    "apidesign": "API Design",
+}
+
 # Technology families used to keep recommendations relevant to the
 # candidate's detected stack (a Flutter developer must never be recommended
 # Swift or iOS courses, even when related-profession jobs list them).
@@ -549,7 +559,7 @@ _display_cache = None
 def display_for_key(key):
     global _display_cache
     if _display_cache is None:
-        _display_cache = {}
+        _display_cache = dict(DISPLAY_OVERRIDES)
         for config in PROFESSION_CONFIGS.values():
             for name in config.get("skills", {}):
                 _display_cache.setdefault(normalize_skill(name), name)

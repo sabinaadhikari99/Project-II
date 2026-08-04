@@ -1204,6 +1204,30 @@
     // leaving a gap in the index sequence is harmless.
   }
 
+  /* ── Draft autosave ───────────────────────────────────────────
+     The CV builder is a long form. Everything typed into it is kept as a
+     draft so closing the tab, following a link or losing the session never
+     costs the work; saving the profile clears the draft. ── */
+  (function bindCvDraft() {
+    const store = window.SkillSyncState;
+    const form = document.querySelector('form.cv-sections') || document.querySelector('form');
+    if (!store || !form) return;
+
+    store.bindForm(form, "cvgen.draft", {
+      clearOnSubmit: true,
+      onRestore(values, meta) {
+        if (!meta.applied || meta.source !== "local") return;
+        if (typeof showToast === "function") {
+          showToast("Restored your unsaved CV details.", "info", 3500);
+        }
+        form.querySelectorAll('textarea').forEach(ta => {
+          ta.style.height = 'auto';
+          ta.style.height = Math.max(110, ta.scrollHeight) + 'px';
+        });
+      }
+    });
+  })();
+
   /* ── Submit button loading state ── */
   document.querySelector('form').addEventListener('submit', function() {
     const btn = this.querySelector('.btn-generate-cv');

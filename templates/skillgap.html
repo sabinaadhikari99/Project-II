@@ -726,6 +726,120 @@
   line-height: 1.55;
 }
 .sg-phase-project strong { color: var(--txt); }
+.sg-phase-why {
+  margin-bottom: 0.55rem;
+}
+.sg-phase-why .sg-why-title {
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: var(--txt-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.sg-phase-why .sg-why-title i { color: var(--warn); }
+.sg-phase-why ul {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+.sg-phase-why li {
+  font-size: 0.72rem;
+  color: var(--txt-soft);
+  line-height: 1.6;
+}
+.sg-phase-resources {
+  background: var(--surface-alt);
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  margin-bottom: 0.6rem;
+}
+.sg-phase-resources .sg-res-title {
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: var(--txt-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.sg-phase-resources .sg-res-title i { color: var(--accent); }
+.sg-res-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed var(--bdr);
+  font-size: 0.72rem;
+}
+.sg-res-item:last-child { border-bottom: none; padding-bottom: 0; }
+.sg-res-item:first-child { padding-top: 0; }
+.sg-res-item .sg-res-name {
+  color: var(--txt);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.sg-res-item .sg-res-provider {
+  color: var(--txt-muted);
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+.sg-res-item a {
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-decoration: none;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.sg-res-item a:hover { text-decoration: underline; }
+.sg-job-ready-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  background: linear-gradient(135deg, rgba(34,197,94,0.10), rgba(34,197,94,0.16));
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+}
+.sg-job-ready-banner .sg-jr-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--success);
+  color: #fff;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 10px rgba(34,197,94,0.3);
+}
+.sg-job-ready-banner .sg-jr-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--success);
+  margin-bottom: 0.15rem;
+}
+.sg-job-ready-banner .sg-jr-text {
+  font-size: 0.74rem;
+  color: var(--txt-soft);
+  line-height: 1.55;
+  margin: 0;
+}
 .sg-phase-steps {
   display: flex;
   flex-direction: column;
@@ -1364,12 +1478,27 @@
     const progress = data.progress;
     const roadmap = data.roadmap;
     if (!roadmap || !progress || !progress.steps.length) {
-      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-signpost"></i></div>No learning steps needed right now. Revisit after your skill gaps change.</div>`;
+      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-signpost"></i></div>We're preparing your roadmap from your latest CV analysis — refresh in a moment.</div>`;
     }
 
     const pct = progress.percentage;
     const eta = progress.estimated_completion_date ? new Date(progress.estimated_completion_date) : null;
     const etaText = eta ? eta.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "–";
+
+    const jobReady = roadmap.job_ready;
+    const typeLabel = jobReady
+      ? `<span class="sgh-badge green"><i class="bi bi-award-fill" style="font-size:0.55rem;"></i> Job Ready · Advanced Topics</span>`
+      : `<span class="sgh-badge blue"><i class="bi bi-lightning-charge-fill" style="font-size:0.55rem;"></i> ${roadmap.total_steps || progress.total} Skill Gap${(roadmap.total_steps || progress.total) === 1 ? "" : "s"}</span>`;
+
+    const banner = jobReady
+      ? `<div class="sg-job-ready-banner">
+          <div class="sg-jr-icon"><i class="bi bi-award-fill"></i></div>
+          <div>
+            <div class="sg-jr-title">You're Job Ready for ${sgEscape(roadmap.profession || "your target role")}!</div>
+            <p class="sg-jr-text">No critical skill gaps remain. This advanced roadmap keeps you competitive — master specialization topics and deepen your expertise while your skills stay current.</p>
+          </div>
+        </div>`
+      : "";
 
     const summary = `
       <div class="sg-rm-summary">
@@ -1384,11 +1513,12 @@
         </div>
         <span class="pct">${pct}%</span>
         <span class="sgh-badge blue"><i class="bi bi-calendar-check" style="font-size:0.55rem;"></i> Est. ${etaText}</span>
+        ${typeLabel}
       </div>`;
 
     const phases = roadmap.phases || [];
     if (!phases.length) {
-      return summary + `<div class="sg-timeline">${progress.steps.map(sgRoadmapStep).join("")}</div>`;
+      return banner + summary + `<div class="sg-timeline">${progress.steps.map(sgRoadmapStep).join("")}</div>`;
     }
 
     const stepsByPhase = {};
@@ -1397,7 +1527,7 @@
       if (!stepsByPhase[key]) stepsByPhase[key] = [];
       stepsByPhase[key].push(step);
     }
-    return summary + `<div class="sg-phase-timeline">${phases.map(ph => sgPhase(ph, stepsByPhase)).join("")}</div>`;
+    return banner + summary + `<div class="sg-phase-timeline">${phases.map(ph => sgPhase(ph, stepsByPhase)).join("")}</div>`;
   }
 
   function sgPhase(ph, stepsByPhase) {
@@ -1429,6 +1559,25 @@
       ? `<div class="sg-phase-project"><strong><i class="bi bi-briefcase-fill" style="color:var(--accent);font-size:0.6rem;"></i> ${sgEscape(ph.practice_project.title)}</strong> — ${sgEscape(ph.practice_project.description)}</div>`
       : "";
 
+    const why = (ph.why_important || []).length
+      ? `<div class="sg-phase-why">
+          <div class="sg-why-title"><i class="bi bi-lightbulb-fill" style="font-size:0.6rem;"></i> Why this phase matters</div>
+          <ul>${ph.why_important.map(w => `<li>${sgEscape(w)}</li>`).join("")}</ul>
+        </div>`
+      : "";
+
+    const resources = (ph.learning_resources || []).length
+      ? `<div class="sg-phase-resources">
+          <div class="sg-res-title"><i class="bi bi-mortarboard-fill" style="font-size:0.6rem;"></i> Recommended learning resources</div>
+          ${ph.learning_resources.map(r => `
+            <div class="sg-res-item">
+              <span class="sg-res-name">${sgEscape(r.title)}</span>
+              <span class="sg-res-provider">${sgEscape(r.provider || "")}</span>
+              <a href="${sgEscape(r.url)}" target="_blank" rel="noopener noreferrer">Open <i class="bi bi-box-arrow-up-right" style="font-size:0.55rem;"></i></a>
+            </div>`).join("")}
+        </div>`
+      : "";
+
     const phaseSteps = stepsByPhase[String(ph.phase_number)] || [];
     const stepsHtml = phaseSteps.length
       ? `<div class="sg-phase-steps">${phaseSteps.map(sgRoadmapStep).join("")}</div>`
@@ -1440,12 +1589,15 @@
         <div class="sg-phase-head">
           <div class="sg-phase-title">${capstone ? `<i class="bi bi-trophy-fill" style="color:#a855f7;font-size:0.75rem;"></i>` : ""}${sgEscape(ph.title)}</div>
           <div class="sg-phase-meta">
+            ${ph.priority ? sgPriBadge(sgCap(ph.priority)) : ""}
             <span><i class="bi bi-clock"></i> ~${ph.estimated_weeks} wks</span>
             <span><i class="bi bi-hourglass-split"></i> ${ph.estimated_hours}h</span>
           </div>
         </div>
         ${progressBar}
         ${skills}
+        ${why}
+        ${resources}
         ${objectives}
         ${project}
         ${stepsHtml}
@@ -1462,6 +1614,14 @@
       `<span class="sg-tag ${p.coverage === "existing" ? "" : ""}" style="${p.coverage === "existing" ? "background:var(--success-bg);color:var(--success);border-color:var(--success-bdr);" : "background:rgba(var(--accent-rgb),0.07);color:var(--accent);border-color:rgba(var(--accent-rgb),0.12);"}"><i class="bi ${p.coverage === "existing" ? "bi-check-circle" : "bi-arrow-right-circle"}" style="font-size:0.5rem;"></i> ${sgEscape(p.skill_name)}</span>`
     ).join("") || `<span style="font-size:0.68rem;color:var(--txt-muted);">None required</span>`;
 
+    const resource = step.learning_resource
+      ? `<div class="sg-step-detail" style="grid-column:1/-1;"><div class="lab">Recommended Resource</div><div class="val" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">${sgEscape(step.learning_resource.title)} <a href="${sgEscape(step.learning_resource.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-size:0.7rem;font-weight:700;text-decoration:none;white-space:nowrap;">Open <i class="bi bi-box-arrow-up-right" style="font-size:0.5rem;"></i></a></div></div>`
+      : "";
+
+    const priority = step.priority
+      ? `<div class="sg-step-detail"><div class="lab">Priority</div><div class="val">${sgPriBadge(sgCap(step.priority))}</div></div>`
+      : "";
+
     return `<div class="sg-step ${state}" id="sgStep${step.step_number}">
       <div class="sg-step-num">${step.step_number}</div>
       <div class="sg-step-head" onclick="sgToggleStep(${step.step_number})">
@@ -1469,6 +1629,7 @@
         <p class="sg-step-name">Learn ${sgEscape(step.skill_name)}</p>
         <div class="sg-step-meta">
           ${sgDiffBadge(sgCap(step.difficulty))}
+          ${step.priority ? sgPriBadge(sgCap(step.priority)) : ""}
           <span class="sgh-badge blue" style="background:rgba(var(--accent-rgb),0.06);color:var(--accent);border-color:rgba(var(--accent-rgb),0.12);"><i class="bi bi-clock" style="font-size:0.55rem;"></i> ${step.estimated_hours}h</span>
           <i class="bi bi-chevron-down" style="font-size:0.65rem;color:var(--txt-muted);"></i>
         </div>
@@ -1478,75 +1639,153 @@
         <div class="sg-step-detail-grid">
           <div class="sg-step-detail"><div class="lab">Estimated Time</div><div class="val">${step.estimated_hours} hours</div></div>
           <div class="sg-step-detail"><div class="lab">Difficulty</div><div class="val">${sgCap(step.difficulty)}</div></div>
+          ${priority}
           <div class="sg-step-detail"><div class="lab">Prerequisites</div><div class="val">${prereq}</div></div>
         </div>
+        ${resource}
         <p class="sg-step-outcome"><strong>Outcome:</strong> ${sgEscape(step.expected_outcome)}</p>
       </div>
     </div>`;
   }
 
+  /* ── Persistence ───────────────────────────────────────────────
+     Everything on this page is derived from the CV on file, so a snapshot is
+     valid exactly as long as that CV is unchanged. Each cache entry carries
+     the CV fingerprint the backend reported; when the fingerprint moves, the
+     stale entries are dropped rather than shown. ── */
+  const SG_STORE = window.SkillSyncState || null;
+  let sgFingerprint = SG_STORE ? (SG_STORE.local.get("skillgap.fingerprint", "") || "") : "";
+
+  function sgCacheRead(name) {
+    return SG_STORE ? SG_STORE.cache.read("skillgap." + name, sgFingerprint) : null;
+  }
+
+  function sgCacheWrite(name, data) {
+    if (SG_STORE) SG_STORE.cache.write("skillgap." + name, data, sgFingerprint);
+  }
+
+  function sgSetFingerprint(fingerprint) {
+    if (!fingerprint || !SG_STORE) return;
+    if (sgFingerprint && sgFingerprint !== fingerprint) {
+      ["skillgap.gap", "skillgap.courses", "skillgap.roadmap"].forEach(k => SG_STORE.cache.drop(k));
+      SG_STORE.local.remove("skillgap.openSteps");
+    }
+    sgFingerprint = fingerprint;
+    SG_STORE.local.set("skillgap.fingerprint", fingerprint);
+  }
+
+  /* Which roadmap steps the user had expanded. */
+  function sgOpenSteps() {
+    const stored = SG_STORE ? SG_STORE.local.get("skillgap.openSteps", []) : [];
+    return Array.isArray(stored) ? stored : [];
+  }
+
+  function sgApplyOpenSteps() {
+    sgOpenSteps().forEach(n => {
+      const el = document.getElementById("sgStep" + n);
+      if (el) el.classList.add("open");
+    });
+  }
+
   window.sgToggleStep = function(n) {
     const el = document.getElementById("sgStep" + n);
-    if (el) el.classList.toggle("open");
+    if (!el) return;
+    const open = el.classList.toggle("open");
+    if (!SG_STORE) return;
+    const steps = new Set(sgOpenSteps().map(String));
+    if (open) steps.add(String(n)); else steps.delete(String(n));
+    SG_STORE.local.set("skillgap.openSteps", Array.from(steps));
   };
 
   window.sgCycleStep = async function(n, current) {
     const next = current === "not_started" ? "in_progress" : (current === "in_progress" ? "completed" : "not_started");
     try {
-      const updated = await api("/api/skillgap/roadmap/progress/", {
+      const progress = await api("/api/skillgap/roadmap/progress/", {
         method: "PATCH",
         body: JSON.stringify({ step_number: n, status: next })
       });
-      renderRoadmap(updated);
+      /* The endpoint returns the progress summary only. It is merged into the
+         roadmap already on screen so the step list keeps its phases, resources
+         and headers instead of being replaced by a bare summary. */
+      const base = sgRoadmapData || sgCacheRead("roadmap") || {};
+      const merged = Object.assign({}, base, {
+        progress: progress,
+        has_resume: base.has_resume !== undefined ? base.has_resume : true
+      });
+      sgCacheWrite("roadmap", merged);
+      renderRoadmap(merged);
     } catch (e) {
       showToast("Could not update progress: " + e.message, "danger");
     }
   };
 
-  async function loadCourses() {
-    document.getElementById("sgCourses").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-    document.getElementById("sgCourseBadge").textContent = "…";
-    let data = { courses: [] };
-    try {
-      data = await api("/api/skillgap/courses/");
-    } catch (e) {
-      document.getElementById("sgCourses").innerHTML =
-        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Course recommendations are temporarily unavailable.</div>`;
-      return;
-    }
+  function renderCourses(data) {
     const haveSkills = (window.__sgHaveSkills || []);
     const courses = data.courses || [];
     document.getElementById("sgCourseBadge").textContent = courses.length;
     document.getElementById("sgCourses").innerHTML = sgRenderCourses(haveSkills, data);
   }
 
+  async function loadCourses() {
+    const cached = sgCacheRead("courses");
+    if (cached) {
+      renderCourses(cached);
+    } else {
+      document.getElementById("sgCourses").innerHTML =
+        `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
+      document.getElementById("sgCourseBadge").textContent = "…";
+    }
+
+    let data = { courses: [] };
+    try {
+      data = await api("/api/skillgap/courses/");
+    } catch (e) {
+      if (cached) return;   /* keep the restored view rather than blanking it */
+      document.getElementById("sgCourses").innerHTML =
+        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Course recommendations are temporarily unavailable.</div>`;
+      return;
+    }
+    sgCacheWrite("courses", data);
+    renderCourses(data);
+  }
+
+  let sgRoadmapData = null;
+
   function renderRoadmap(data) {
+    sgRoadmapData = data;
     const haveSkills = (window.__sgHaveSkills || []);
     const progress = data.progress;
     document.getElementById("sgRoadmapBadge").textContent =
       progress ? progress.percentage + "%" : "–";
     document.getElementById("sgRoadmap").innerHTML = sgRenderRoadmap(haveSkills, data);
+    sgApplyOpenSteps();
   }
 
   async function loadRoadmap() {
-    document.getElementById("sgRoadmap").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-    document.getElementById("sgRoadmapBadge").textContent = "…";
+    const cached = sgCacheRead("roadmap");
+    if (cached) {
+      renderRoadmap(cached);
+    } else {
+      document.getElementById("sgRoadmap").innerHTML =
+        `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
+      document.getElementById("sgRoadmapBadge").textContent = "…";
+    }
+
     let data = {};
     try {
       data = await api("/api/skillgap/roadmap/");
     } catch (e) {
+      if (cached) return;
       document.getElementById("sgRoadmap").innerHTML =
-        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Learning roadmap is temporarily unavailable.</div>`;
+        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Could not load your roadmap right now. Please try again.</div>`;
       return;
     }
+    sgCacheWrite("roadmap", data);
     renderRoadmap(data);
   }
 
   /* ── Main ── */
-  async function loadSkillGap() {
-    /* Show shimmers */
+  function sgShowShimmers() {
     document.getElementById("sgCurrentSkills").innerHTML =
       `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div></div>`;
     document.getElementById("sgMissingSkills").innerHTML =
@@ -1560,9 +1799,9 @@
     document.getElementById("sgCritVal").textContent = "–";
     document.getElementById("sgMatchVal").textContent = "–";
     document.getElementById("sgMatchSub").textContent = "";
+  }
 
-    const gap = await api("/api/skillgap/");
-
+  function applyGap(gap) {
     const haveSkills = gap.user_skills || [];
     const missSkills = gap.missing_skills || [];
     const haveLen    = haveSkills.length;
@@ -1595,8 +1834,38 @@
     /* Missing Skills */
     document.getElementById("sgMissingSkills").innerHTML = sgRenderMissing(haveSkills, p);
 
-    /* Recommended Courses + Learning Roadmap */
     window.__sgHaveSkills = haveSkills;
+  }
+
+  /* Restore the last analysis instantly, then revalidate against the server.
+     The gap, courses and roadmap all describe the same CV, so one fingerprint
+     governs the whole page. */
+  async function loadSkillGap() {
+    const cached = sgCacheRead("gap");
+    if (cached) {
+      applyGap(cached);
+    } else {
+      sgShowShimmers();
+    }
+
+    let gap;
+    try {
+      gap = await api("/api/skillgap/");
+    } catch (e) {
+      if (cached) {
+        /* Serve what the user already had rather than an error screen. */
+        loadCourses();
+        loadRoadmap();
+        return;
+      }
+      throw e;
+    }
+
+    sgSetFingerprint(gap.analysis_fingerprint || "");
+    sgCacheWrite("gap", gap);
+    if (!cached || JSON.stringify(cached) !== JSON.stringify(gap)) applyGap(gap);
+
+    /* Recommended Courses + Learning Roadmap */
     loadCourses();
     loadRoadmap();
   }

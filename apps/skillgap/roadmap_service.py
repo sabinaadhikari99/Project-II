@@ -1,12 +1,13 @@
 import heapq
 import math
 from datetime import date, timedelta
+from urllib.parse import quote
 
 from django.conf import settings
 from django.utils import timezone
 
 from .analysis_memo import run_once
-from .cache import get_cached, set_cached
+from .cache import analysis_fingerprint, get_analysis_cached, set_analysis_cached
 from .career import CareerAnalyzer
 from .catalog import (
     BASE_HOURS,
@@ -27,6 +28,9 @@ MAX_STEPS = 25
 PHASE_SIZE = 3
 MAX_SKILL_PHASES = 5
 CAPSTONE_PHASE_NUMBER = "capstone"
+
+LINKEDIN_SEARCH = "https://www.linkedin.com/learning/search?keywords={query}"
+FALLBACK_PROVIDER = "LinkedIn Learning"
 
 OUTCOMES = {
     "beginner": "Confidently apply {skill} fundamentals to {role} projects and entry-level tasks.",
@@ -82,6 +86,138 @@ PROJECT_DOMAIN = {
     "Human Resources Manager": "HR Program",
 }
 
+# Advanced topics offered when the candidate has no remaining skill gaps.
+# Each entry maps a catalog skill key to why it matters for that profession.
+# Topics the candidate already masters are skipped automatically.
+JOB_READY_ADVANCED = {
+    "Frontend Developer": [
+        ("systemdesign", "Scaling state, data flow and performance budgets is what separates senior front-end work."),
+        ("webpack", "Bundle optimization keeps large front-ends fast for real users."),
+        ("graphql", "Modern front-ends consume GraphQL APIs; it is a differentiating skill on the market."),
+        ("tdd", "Test-driven development signals production-grade, regression-safe front-end quality."),
+        ("microservices", "Understanding how front-ends talk to distributed backends unlocks senior architecture roles."),
+    ],
+    "Backend Developer": [
+        ("systemdesign", "Designing APIs and services that scale is what separates mid-level from senior backend work."),
+        ("microservices", "Most senior backend roadmaps lead here: small, independently deployable services."),
+        ("kafka", "Event-driven architectures rely on streaming platforms like Kafka."),
+        ("redis", "Caching and job queues are the core performance levers of production backends."),
+        ("kubernetes", "Running backend services in production today means containers and orchestration."),
+    ],
+    "Full Stack Developer": [
+        ("systemdesign", "Owning the full stack means thinking in systems, not just pages."),
+        ("microservices", "Breaking a monolith into services is the classic senior full stack challenge."),
+        ("graphql", "GraphQL unifies front-end and back-end data contracts in modern platforms."),
+        ("aws", "Cloud deployment of full stack apps is expected in most hiring pipelines."),
+        ("tdd", "Automated tests let you ship full stack features with confidence."),
+    ],
+    "Software Engineer": [
+        ("systemdesign", "System design interviews and real-world architecture both live here."),
+        ("microservices", "Service decomposition, ownership and failure isolation are core engineering skills."),
+        ("cleanarchitecture", "Keeps codebases maintainable as teams and features grow."),
+        ("kubernetes", "Deploying and operating software at scale now means orchestrated containers."),
+        ("algorithms", "Sharp algorithms keep you competitive in interviews and hard problems."),
+    ],
+    "Mobile Developer": [
+        ("mobilearchitecture", "Well-structured mobile codebases are exactly what teams hire senior devs for."),
+        ("mobiletesting", "Automated tests protect the release quality of mobile apps."),
+        ("systemdesign", "Offline sync, auth and API design are the hard parts of mobile engineering."),
+        ("aws", "Mobile backends, notifications and analytics commonly run on the cloud."),
+    ],
+    "DevOps Engineer": [
+        ("helm", "Helm is the standard way to package and deploy Kubernetes workloads."),
+        ("terraform", "Infrastructure as code is the core skill of modern platform teams."),
+        ("prometheus", "Monitoring is how SRE teams detect failures before users do."),
+        ("grafana", "Dashboards turn raw metrics into operational insight."),
+        ("kafka", "Event streaming underpins reliable, decoupled data pipelines."),
+    ],
+    "Cybersecurity Engineer": [
+        ("cissp", "The most recognized credential for senior security roles."),
+        ("penetrationtesting", "Offensive skill deepens your defensive expertise."),
+        ("cryptography", "The math and engineering behind modern security controls."),
+        ("kubernetes", "Securing containerized environments is a growing security mandate."),
+        ("compliance", "Security leaders must map technical controls to regulations."),
+    ],
+    "Data Analyst": [
+        ("statistics", "Stronger statistics turns the same dashboards into sharper insights."),
+        ("a/btesting", "Causal analysis separates analysts from senior analysts."),
+        ("machinelearning", "Foundational ML lets analysts move from reporting to prediction."),
+        ("tableau", "Interactive storytelling with data is a signature analyst skill."),
+        ("datavisualization", "Visual craft is how insights get understood and acted on."),
+    ],
+    "Data Engineer": [
+        ("spark", "Distributed processing is how data teams scale to petabyte workloads."),
+        ("kafka", "Streaming data is a core ingredient of modern pipelines."),
+        ("airflow", "Orchestration is the backbone of reliable, rerunnable pipelines."),
+        ("snowflake", "Cloud warehousing is the most common destination for curated data."),
+        ("kubernetes", "Data platforms increasingly run on orchestrated clusters."),
+    ],
+    "Data Scientist": [
+        ("mlops", "Models that never ship have zero impact; MLOps fixes that."),
+        ("modeldeployment", "Putting models behind APIs is the highest-leverage production skill."),
+        ("deeplearning", "Deepen beyond standard ML to solve harder problems."),
+        ("spark", "Scaling data work beyond a single notebook unlocks real-world impact."),
+        ("a/btesting", "Rigorous experimentation is how data science earns trust."),
+    ],
+    "Machine Learning Engineer": [
+        ("mlops", "The discipline that turns models into dependable products."),
+        ("modeldeployment", "Serving models behind low-latency APIs is the core ML engineer craft."),
+        ("kubernetes", "Scalable model serving and training infrastructure run on clusters."),
+        ("systemdesign", "Designing end-to-end ML platforms separates engineers from builders."),
+        ("kafka", "Streaming features and online inference start with event platforms."),
+    ],
+    "UI/UX Designer": [
+        ("designsystems", "Design systems are how mature teams scale UI without chaos."),
+        ("usabilitytesting", "Evidence-based design beats opinion every time."),
+        ("interactiondesign", "Micro-interactions and motion make products feel polished."),
+        ("informationarchitecture", "Structure is what makes complex products genuinely navigable."),
+    ],
+    "Graphic Designer": [
+        ("branding", "Brand systems are the highest-value work a designer can own."),
+        ("logos", "Identity design is a signature skill for senior designers."),
+        ("visualdesign", "Deeper color and typography craft elevates every deliverable."),
+        ("printdesign", "Print production is a discipline clients still pay a premium for."),
+    ],
+    "Product Manager": [
+        ("productmetrics", "Data-driven decisions are the core of product management."),
+        ("a/btesting", "Experimentation is how PMs validate direction before building."),
+        ("marketresearch", "Market insight shapes positioning, pricing and roadmap bets."),
+        ("roadmapping", "Roadmaps communicate vision and sequence to the whole company."),
+    ],
+    "Marketing Manager": [
+        ("marketingautomation", "Automation scales campaigns without scaling headcount."),
+        ("brandstrategy", "Strategic positioning is what senior marketers are hired for."),
+        ("seo", "Organic acquisition compounds and lowers customer acquisition cost."),
+        ("googleanalytics", "Measurement is the marketer's superpower."),
+        ("sem", "Paid acquisition fundamentals power growth at every stage."),
+    ],
+    "Accountant": [
+        ("financialanalysis", "Analysis is the path from bookkeeping to advisory work."),
+        ("erp", "ERP fluency is prized across corporate finance teams."),
+        ("sap", "SAP expertise commands a premium in enterprise accounting."),
+        ("auditing", "Audit expertise underpins trust, compliance and leadership careers."),
+    ],
+    "Human Resources Manager": [
+        ("talentacquisition", "Recruiting excellence drives every other HR function."),
+        ("ats", "Applicant tracking systems run modern hiring operations."),
+        ("laborlaws", "Compliance knowledge protects the organization and your career."),
+        ("benefitsadministration", "Compensation and benefits are high-value HR specializations."),
+    ],
+}
+
+# Fallback advanced topics for professions without a curated list.
+JOB_READY_GENERIC = [
+    ("systemdesign", "System-level thinking is the clearest signal of seniority."),
+    ("cleanarchitecture", "Maintainable architecture keeps your codebase healthy as it grows."),
+    ("unittesting", "Verified code is what lets you move fast without breaking things."),
+    ("microservices", "Modern teams decompose systems; understanding it unlocks senior roles."),
+    ("kubernetes", "Deployed at scale, modern software runs on orchestrated containers."),
+    ("aws", "Cloud fluency appears in the majority of job postings."),
+    ("mlops", "Operationalizing ML is the fastest-growing demand in technology."),
+    ("llm", "LLM-powered features are now expected across product roadmaps."),
+    ("datastructures", "Interview preparation and day-to-day engineering both depend on them."),
+]
+
 
 class RoadmapNotFoundError(Exception):
     pass
@@ -103,13 +239,13 @@ class LearningRoadmapService:
     def get_or_generate(cls, user, force=False):
         context = run_once(user, lambda: CareerAnalyzer.analyze(user))
         service = cls(context)
-        if not context.resume_text or not context.has_skills:
+        if not context.resume_text:
             return {
                 "profession": "",
                 "career_level": "",
                 "roadmap": None,
                 "progress": None,
-                "has_resume": bool(context.resume_text),
+                "has_resume": False,
             }
         roadmap = service._load_or_build(user, force)
         payload = roadmap["payload"]
@@ -213,7 +349,8 @@ class LearningRoadmapService:
 
     def _load_or_build(self, user, force):
         context = self.context
-        cached = get_cached("roadmap", user.id, context.resume_text)
+        fingerprint = analysis_fingerprint(user)
+        cached = get_analysis_cached("roadmap", user.id, fingerprint)
         if cached is not None and not force:
             if LearningRoadmap.objects.filter(pk=cached["pk"]).exists():
                 return cached
@@ -237,15 +374,25 @@ class LearningRoadmapService:
             LearningRoadmap.objects.filter(user=user).exclude(pk=obj.pk).delete()
             self._sync_progress(obj)
             result = {"pk": obj.pk, "payload": payload}
-        set_cached("roadmap", user.id, context.resume_text, result)
+        set_analysis_cached("roadmap", user.id, fingerprint, result)
         return result
 
     def generate(self):
         context = self.context
-        ordered_keys = self._ordered_missing_skills(context)[:MAX_STEPS]
+        ordered = self._ordered_missing_skills(context)
+        # Job-readiness is decided by gaps that real matched postings demand
+        # ("job"), not by canonical role skills the local job pool happens not
+        # to list ("core") - otherwise a fully qualified candidate would never
+        # be job-ready once canonical skills joined the gap universe.
+        self._job_ready = not [i for i in ordered if i.get("source", "job") != "core"]
+        if self._job_ready:
+            ordered = self._ordered_job_ready_skills(context) + ordered
+        ordered = ordered[:MAX_STEPS]
+        info_by_key = {info["skill_key"]: info for info in ordered}
+        ordered_keys = list(info_by_key)
         steps = []
         for step_number, skill_key in enumerate(ordered_keys, start=1):
-            steps.append(self._build_step(step_number, skill_key))
+            steps.append(self._build_step(step_number, skill_key, info_by_key[skill_key]))
         steps_by_key = {
             step["skill_key"]: step for step in steps
         }
@@ -254,6 +401,8 @@ class LearningRoadmapService:
         return {
             "profession": context.profession,
             "career_level": context.career_level_label,
+            "roadmap_type": "job_ready" if self._job_ready else "gaps",
+            "job_ready": self._job_ready,
             "total_steps": len(steps),
             "total_hours": total_hours,
             "weekly_hours": settings.SKILLGAP_WEEKLY_HOURS,
@@ -261,6 +410,40 @@ class LearningRoadmapService:
             "phases": phases,
             "steps": steps,
         }
+
+    def _ordered_job_ready_skills(self, context):
+        """Advanced topics for candidates with no remaining gaps."""
+        candidates = JOB_READY_ADVANCED.get(context.profession or "", JOB_READY_GENERIC)
+        result = []
+        seen = set()
+        for skill_key, reason in candidates:
+            norm = _norm(skill_key)
+            if norm in context.user_skills_norm or norm in seen:
+                continue
+            seen.add(norm)
+            result.append({
+                "skill": display_for_key(norm),
+                "skill_key": norm,
+                "importance": 5,
+                "priority": "medium",
+                "job_count": 0,
+                "profession_weight": 1,
+                "reason": reason,
+            })
+        if not result:
+            return [
+                {
+                    "skill": display_for_key(_norm(skill_key)),
+                    "skill_key": _norm(skill_key),
+                    "importance": 5,
+                    "priority": "medium",
+                    "job_count": 0,
+                    "profession_weight": 1,
+                    "reason": reason,
+                }
+                for skill_key, reason in JOB_READY_GENERIC
+            ]
+        return result
 
     def _build_phases(self, ordered_keys, steps_by_key):
         context = self.context
@@ -287,6 +470,16 @@ class LearningRoadmapService:
                 "estimated_hours": hours,
                 "estimated_weeks": math.ceil(hours / settings.SKILLGAP_WEEKLY_HOURS),
                 "skills": skills,
+                "priority": min(
+                    (step["priority"] for step in phase_steps),
+                    key=lambda value: PRIORITY_ORDER.get(value, 2),
+                ),
+                "why_important": [step["why"] for step in phase_steps],
+                "learning_resources": [
+                    {**step["learning_resource"], "skill": step["skill_name"]}
+                    for step in phase_steps
+                    if step.get("learning_resource")
+                ],
                 "objectives": [
                     f"Master {_join_skills(skills)} through focused, hands-on practice.",
                     f"Apply these skills to a real {domain.lower()} project.",
@@ -313,6 +506,12 @@ class LearningRoadmapService:
                 "estimated_hours": 40,
                 "estimated_weeks": math.ceil(40 / settings.SKILLGAP_WEEKLY_HOURS),
                 "skills": [],
+                "priority": "medium",
+                "why_important": [
+                    "A polished portfolio and interview story is what converts skills into offers.",
+                    "Recruiters screen portfolios before resumes in most senior pipelines.",
+                ],
+                "learning_resources": [],
                 "objectives": [
                     f"Build and deploy a complete {role} project combining {_join_skills(all_skills[:3] or ['your new skills'])}.",
                     "Publish it and prepare a project walkthrough for interviews.",
@@ -367,7 +566,7 @@ class LearningRoadmapService:
                     "job_count": 0,
                     "profession_weight": 1,
                 })
-        return self._topological_order(include)
+        return [include[key] for key in self._topological_order(include)]
 
     def _topological_order(self, include):
         indegree = {key: 0 for key in include}
@@ -395,18 +594,46 @@ class LearningRoadmapService:
                 order.append(key)
         return order
 
-    def _build_step(self, step_number, skill_key):
+    def _build_step(self, step_number, skill_key, info=None):
         context = self.context
-        info = next(
-            (item for item in context.missing_skills if item["skill_key"] == skill_key),
-            {"skill": display_for_key(skill_key), "priority": "medium", "importance": 5},
-        )
+        if info is None:
+            info = next(
+                (item for item in context.missing_skills if item["skill_key"] == skill_key),
+                {"skill": display_for_key(skill_key), "priority": "medium", "importance": 5, "job_count": 0},
+            )
         difficulty = self._adjusted_difficulty(get_skill_difficulty(skill_key))
         entry = get_course_entry(skill_key)
         base_hours = entry["hours"] if entry else BASE_HOURS[difficulty]
         hours = max(4, round(base_hours * LEVEL_FACTORS[context.career_level] / 2) * 2)
         role = context.profession or "your target role"
         skill_name = info["skill"]
+        job_count = int(info.get("job_count", 0) or 0)
+        priority = info.get("priority", "medium")
+        importance = int(info.get("importance", 5))
+        if info.get("reason"):
+            why = info["reason"]
+        elif job_count:
+            why = (
+                f"{skill_name} is required by {job_count} active {role} posting"
+                f"{'s' if job_count != 1 else ''} and is a {priority}-priority gap "
+                f"rated {importance}/10 in importance."
+            )
+        else:
+            why = (
+                f"{skill_name} is a {priority}-priority gap for {role} roles, "
+                f"rated {importance}/10 in importance."
+            )
+        if info.get("reason"):
+            description = (
+                f"Advanced learning path covering {skill_name} for an already "
+                f"job-ready {role} profile: {why}"
+            )
+        else:
+            description = (
+                f"Focused learning path covering {skill_name} through guided practice and "
+                f"hands-on {role} application, aligned with a {priority}-priority gap "
+                f"rated {importance}/10 in importance."
+            )
         prerequisites = []
         for dependency in get_skill_dependencies(skill_key):
             dep_key = _norm(dependency)
@@ -434,17 +661,32 @@ class LearningRoadmapService:
             "step_number": step_number,
             "skill_name": skill_name,
             "skill_key": skill_key,
-            "description": (
-                f"Focused learning path covering {skill_name} through guided practice and "
-                f"hands-on {role} application, aligned with a {info['priority']}-priority gap "
-                f"rated {info['importance']}/10 in importance."
-            ),
+            "description": description,
+            "why": why,
+            "priority": priority,
+            "learning_resource": self._resource_for_skill(skill_key, skill_name),
             "estimated_hours": hours,
             "difficulty": difficulty,
             "prerequisites": prerequisites,
             "expected_outcome": OUTCOMES[difficulty].format(skill=skill_name, role=role),
             "phase_number": phase_number,
             "phase_title": phase_title,
+        }
+
+    def _resource_for_skill(self, skill_key, skill_name):
+        entry = get_course_entry(skill_key)
+        if entry:
+            return {
+                "title": entry["title"],
+                "provider": entry["provider"],
+                "url": entry["url"],
+                "free": bool(entry["free"]),
+            }
+        return {
+            "title": f"{skill_name} — Advanced Course",
+            "provider": FALLBACK_PROVIDER,
+            "url": LINKEDIN_SEARCH.format(query=quote(skill_name)),
+            "free": False,
         }
 
     def _adjusted_difficulty(self, difficulty):

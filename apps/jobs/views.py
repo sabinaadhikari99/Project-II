@@ -1,7 +1,12 @@
 # file path: apps/jobs/views.py
+import logging
+
+from django.utils import timezone
 from rest_framework import generics, parsers, response, views
 
+from apps.shared.fingerprint import profile_resume_fingerprint
 from apps.shared.permissions import IsJobSeeker
+from apps.state.services import AnalysisSessionService
 
 from .models import JobPosting, RecentlyViewedJob, SavedJob
 from .serializers import (
@@ -13,6 +18,8 @@ from .serializers import (
 )
 from .services import analyze_resume_match, apply_to_job, recommend_jobs_for_user
 
+logger = logging.getLogger(__name__)
+
 
 class RecommendedJobsAPIView(views.APIView):
     permission_classes = [IsJobSeeker]
@@ -23,8 +30,20 @@ class RecommendedJobsAPIView(views.APIView):
 
 
 class AIMatchAPIView(views.APIView):
+    """Analyse an uploaded CV (POST) or replay the stored analysis (GET).
+
+    The analysis is expensive and, until now, existed only in the browser tab
+    that produced it: a refresh or a trip to another page threw it away and the
+    user had to re-upload. Every successful POST is persisted as the user's
+    single shared analysis session, and GET replays it verbatim - no models are
+    re-run, no AI calls are made - until a new upload replaces it.
+    """
+
     permission_classes = [IsJobSeeker]
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+
+    def get(self, request):
+        return response.Response(AnalysisSessionService.restore(request.user))
 
     def post(self, request):
         resume = request.FILES.get("resume")
@@ -36,7 +55,6 @@ class AIMatchAPIView(views.APIView):
         except ValueError as e:
             return response.Response({"success": False, "message": str(e)}, status=400)
         except Exception as e:
-            logger = logging.getLogger(__name__)
             logger.error("AI Match unexpected error for user %s: %s", request.user.id, e, exc_info=True)
             return response.Response(
                 {"success": False, "message": "An unexpected error occurred while analyzing your resume. Please try again."},
@@ -55,15 +73,44 @@ class AIMatchAPIView(views.APIView):
             "count": len(serialized_jobs),
             "matched_jobs": serialized_jobs,
             "profession": data.get("profession", ""),
+            "specialization": data.get("specialization", ""),
+            "specialization_confidence": data.get("specialization_confidence", 0),
+            "profession_confidence": data.get("profession_confidence", 0),
             "resume_score": best_match,
             "resume_summary": data.get("resume_summary", ""),
             "skills_extracted": data.get("skills_extracted", []),
             "match_analytics": data.get("match_analytics", []),
             "resume_insights": data.get("resume_insights", []),
             "resume_improvement_suggestions": data.get("resume_improvement_suggestions", []),
+            # Phase 2: everything below explains WHY a number was produced.
+            "score_breakdown": data.get("score_breakdown", {}),
+            "structured_insights": data.get("structured_insights", []),
+            "skill_action_plan": data.get("skill_action_plan", []),
+            "resume_quality": data.get("resume_quality", {}),
+            "cv_signals": data.get("cv_signals", {}),
         }
         if len(serialized_jobs) == 0:
             result["message"] = "No matching jobs found based on your current resume. Try updating your skills or check back later."
+
+        result["analyzed_at"] = timezone.now().isoformat()
+        result["cv_filename"] = getattr(resume, "name", "") or ""
+
+        # Persist the finished analysis as the user's shared session. A storage
+        # failure must never lose the response the user just waited for, so it
+        # is logged and the analysis is still returned.
+        try:
+            session = AnalysisSessionService.save(
+                request.user,
+                result,
+                resume_fingerprint=profile_resume_fingerprint(request.user),
+                cv_filename=result["cv_filename"],
+            )
+            # Same shape the restore endpoint returns, so the page stores one
+            # kind of CV record whether it just uploaded or is coming back.
+            result["cv"] = AnalysisSessionService.cv_metadata(session)
+        except Exception:
+            logger.exception("AI Match: could not persist analysis session for user %s", request.user.id)
+            result["cv"] = None
 
         return response.Response(result)
 

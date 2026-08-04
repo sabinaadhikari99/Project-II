@@ -144,6 +144,22 @@
     border: 1px solid var(--success-bdr);
   }
 
+  .panel-head .btn-clear-chat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.26rem 0.7rem;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    background: transparent;
+    color: var(--txt-muted);
+    border: 1px solid var(--bdr);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .panel-head .btn-clear-chat:hover { color: var(--danger, #EF4444); border-color: rgba(239,68,68,0.35); }
+
   .panel-head .online-badge .on-dot {
     width: 6px; height: 6px;
     border-radius: 999px;
@@ -359,6 +375,42 @@
     30%           { transform: translateY(-6px); opacity: 1; }
   }
 
+  /* ── Rich answer formatting ── */
+  .msg-bubble .msg-text p { margin: 0 0 0.5rem; }
+  .msg-bubble .msg-text p:last-child { margin-bottom: 0; }
+  .msg-bubble .msg-text ul,
+  .msg-bubble .msg-text ol { margin: 0.35rem 0 0.5rem; padding-left: 1.15rem; }
+  .msg-bubble .msg-text li { margin-bottom: 0.25rem; }
+  .msg-bubble .msg-text strong { font-weight: 700; }
+
+  /* Which parts of the user's record grounded an answer */
+  .msg-ai .msg-grounding {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed var(--bdr);
+  }
+  .msg-ai .grounding-chip {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(var(--accent-rgb), 0.07);
+    color: var(--accent);
+  }
+
+  /* ── Follow-up suggestions ── */
+  .follow-ups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.75rem 0 0.15rem;
+    flex-shrink: 0;
+  }
+
   /* ── Chat Input ── */
   .chat-input-bar {
     display: flex;
@@ -438,208 +490,6 @@
   .btn-send:active { transform: translateY(0); }
   .btn-send:disabled { opacity: 0.6; pointer-events: none; }
 
-  /* ── Interview Panel ── */
-  .interview-panel { animation-delay: 0.12s; }
-
-  .interview-panel .form-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--txt-soft);
-    margin-bottom: 0.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  .interview-panel .form-label i {
-    font-size: 13px;
-    color: var(--accent);
-    opacity: 0.6;
-  }
-
-  .interview-panel .input-wrap { position: relative; }
-
-  .interview-panel .input-wrap .field-icon {
-    position: absolute;
-    left: 0.85rem; top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    color: rgba(15,23,42,0.24);
-    pointer-events: none;
-    transition: all 0.25s ease;
-    z-index: 2;
-  }
-
-  .interview-panel .input-wrap:focus-within .field-icon {
-    color: var(--accent);
-    transform: translateY(-50%) scale(1.08);
-  }
-
-  .interview-panel .form-control {
-    height: 44px;
-    border-radius: 12px;
-    padding-left: 2.5rem;
-    border: 1.5px solid rgba(15,23,42,0.09);
-    background: var(--surface-alt);
-    font-size: 14px;
-    transition: all 0.25s ease;
-  }
-
-  .interview-panel .form-control::placeholder { color: var(--txt-muted); }
-
-  .interview-panel .form-control:hover {
-    border-color: var(--bdr-hover);
-    background: var(--surface);
-  }
-
-  .interview-panel .form-control:focus {
-    border-color: rgba(var(--accent-rgb), 0.5);
-    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.10);
-    background: var(--surface);
-    outline: none;
-  }
-
-  .btn-generate {
-    width: 100%;
-    height: 44px;
-    border-radius: 12px;
-    font-weight: 500;
-    font-size: 14px;
-    background: transparent !important;
-    color: var(--accent) !important;
-    border: 1.5px solid rgba(var(--accent-rgb), 0.28) !important;
-    transition: all 0.25s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-  }
-
-  .btn-generate:hover {
-    background: rgba(var(--accent-rgb), 0.06) !important;
-    border-color: rgba(var(--accent-rgb), 0.4) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px var(--shadow);
-    color: var(--accent) !important;
-  }
-
-  .btn-generate:disabled { opacity: 0.6; pointer-events: none; }
-
-  /* ── Interview Question Cards ── */
-  .iq-list { margin-top: 1rem; }
-
-  .iq-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.65rem;
-    padding: 0.75rem 0.85rem;
-    border-radius: 13px;
-    border: 1px solid var(--bdr);
-    background: var(--surface-alt);
-    margin-bottom: 0.5rem;
-    transition: all 0.25s ease;
-    animation: iqSlide 0.35s ease both;
-  }
-
-  .iq-card:last-child { margin-bottom: 0; }
-
-  @keyframes iqSlide {
-    from { opacity: 0; transform: translateX(-8px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  .iq-card:hover {
-    border-color: rgba(var(--accent-rgb), 0.14);
-    background: var(--surface);
-    box-shadow: 0 4px 14px var(--shadow);
-    transform: translateX(3px);
-  }
-
-  .iq-num {
-    width: 24px; height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 600;
-    flex-shrink: 0;
-    margin-top: 1px;
-    transition: all 0.25s ease;
-  }
-
-  .iq-card:hover .iq-num {
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 3px 8px rgba(var(--accent-rgb), 0.22);
-  }
-
-  .iq-text {
-    font-size: 14px;
-    color: var(--txt-soft);
-    line-height: 1.55;
-    font-weight: 400;
-  }
-
-  /* ── Quick Tips ── */
-  .tips-divider {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--txt-muted);
-    margin: 1.25rem 0 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .tips-divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--bdr);
-  }
-
-  .tips-divider i { color: var(--accent); opacity: 0.5; font-size: 13px; }
-
-  .tip-mini {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.55rem;
-    padding: 0.55rem 0.7rem;
-    border-radius: 10px;
-    font-size: 14px;
-    color: var(--txt-soft);
-    line-height: 1.45;
-    transition: all 0.2s ease;
-    margin-bottom: 0.35rem;
-    background: rgba(var(--accent-rgb), 0.02);
-    border: 1px solid rgba(var(--accent-rgb), 0.06);
-  }
-
-  .tip-mini:last-child { margin-bottom: 0; }
-
-  .tip-mini:hover {
-    background: rgba(var(--accent-rgb), 0.05);
-    border-color: rgba(var(--accent-rgb), 0.12);
-  }
-
-  .tip-mini .tm-icon {
-    width: 20px; height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 13px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
   /* ── Empty State ── */
   .empty-block {
     display: flex;
@@ -710,20 +560,27 @@
     </div>
   </div>
 
+  <!-- The conversation owns the page. Interview practice is its own feature
+       now - sidebar item, own page, own three-stage flow - so this is a chat
+       client, not a chat client with a form bolted to the side. -->
   <div class="row g-4">
-
-    <!-- ── Chat Panel ── -->
-    <div class="col-lg-8">
+    <div class="col-12">
       <div class="dash-panel">
         <div class="panel-head">
           <div class="panel-title">
             <div class="panel-icon"><i class="bi bi-chat-dots"></i></div>
             Conversation
           </div>
-          <span class="online-badge">
-            <span class="on-dot"></span>
-            AI Online
-          </span>
+          <div class="d-flex align-items-center gap-2">
+            <button id="btnNewChat" class="btn-clear-chat" type="button" style="display:none;"
+                    onclick="startNewConversation()" title="Start a new conversation">
+              <i class="bi bi-plus-circle"></i> New chat
+            </button>
+            <span class="online-badge">
+              <span class="on-dot"></span>
+              AI Online
+            </span>
+          </div>
         </div>
         <div class="panel-body">
 
@@ -752,6 +609,9 @@
             </div>
           </div>
 
+          <!-- Follow-up suggestions, refreshed after every reply -->
+          <div id="followUps" class="follow-ups" style="display:none;"></div>
+
           <!-- Input bar -->
           <form id="chatForm" class="chat-input-bar">
             <input class="form-control" name="message" placeholder="Ask about CVs, interviews, or skills…" required autocomplete="off">
@@ -759,58 +619,6 @@
               <i class="bi bi-send"></i> Send
             </button>
           </form>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Interview Panel ── -->
-    <div class="col-lg-4">
-      <div class="dash-panel interview-panel">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-list-check"></i></div>
-            Interview practice
-          </div>
-        </div>
-        <div class="panel-body">
-
-          <p style="font-size:14px;color:var(--txt-muted);margin-bottom:1rem;line-height:1.5;">
-            Generate quick interview prompts for any target role to practice with.
-          </p>
-
-          <form id="interviewForm">
-            <div class="field-group" style="margin-bottom:0.75rem;">
-              <label class="form-label" for="role">
-                <i class="bi bi-briefcase"></i> Target role
-              </label>
-              <div class="input-wrap">
-                <i class="bi bi-briefcase field-icon"></i>
-                <input id="role" class="form-control" name="role" placeholder="Frontend Developer">
-              </div>
-            </div>
-            <button class="btn-generate" type="submit" id="btnGenerate">
-              <i class="bi bi-list-check"></i> Generate questions
-            </button>
-          </form>
-
-          <div id="interviewOutput" class="iq-list"></div>
-
-          <!-- Tips -->
-          <div class="tips-divider"><i class="bi bi-lightbulb"></i> Quick tips</div>
-
-          <div class="tip-mini">
-            <div class="tm-icon"><i class="bi bi-mic"></i></div>
-            Practice answering aloud for natural delivery.
-          </div>
-          <div class="tip-mini">
-            <div class="tm-icon"><i class="bi bi-clock-history"></i></div>
-            Keep answers under 2 minutes for conciseness.
-          </div>
-          <div class="tip-mini">
-            <div class="tm-icon"><i class="bi bi-star"></i></div>
-            Use the STAR method for behavioral questions.
-          </div>
 
         </div>
       </div>
@@ -841,10 +649,6 @@
   })();
 
   /* ── Time helper ── */
-  function chatTime() {
-    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
   /* ── Typing indicator ── */
   function showTyping() {
     const output = document.getElementById("chatOutput");
@@ -864,39 +668,6 @@
     document.getElementById("typingIndicator")?.remove();
   }
 
-  /* ── Append chat ── */
-  function appendChat(message, reply) {
-    const output = document.getElementById("chatOutput");
-    const initial = output.querySelector(".chat-initial");
-    if (initial) initial.remove();
-
-    const time = chatTime();
-
-    output.insertAdjacentHTML("beforeend", `
-      <div class="chat-msg msg-user">
-        <div class="msg-avatar"><i class="bi bi-person"></i></div>
-        <div class="msg-bubble">
-          <span class="msg-label">You</span>
-          <div>${escapeHtml(message)}</div>
-          <span class="msg-time">${time}</span>
-        </div>
-      </div>`);
-
-    hideTyping();
-
-    output.insertAdjacentHTML("beforeend", `
-      <div class="chat-msg msg-ai">
-        <div class="msg-avatar"><i class="bi bi-stars"></i></div>
-        <div class="msg-bubble">
-          <span class="msg-label">SkillSync AI</span>
-          <div>${escapeHtml(reply)}</div>
-          <span class="msg-time">${time}</span>
-        </div>
-      </div>`);
-
-    output.scrollTop = output.scrollHeight;
-  }
-
   /* ── Suggestion chip click ── */
   function useSuggestion(chip) {
     const text = chip.textContent.trim();
@@ -905,6 +676,176 @@
     input.focus();
     document.getElementById("chatForm").requestSubmit();
   }
+
+  /* ── Answer formatting ─────────────────────────────────────────
+     The assistant replies in plain text with occasional bullets, numbering and
+     **emphasis**. Everything is escaped first, then that small, closed set of
+     structures is turned into markup - no HTML from the model ever reaches the
+     DOM. ── */
+  function formatAnswer(text) {
+    const safe = escapeHtml(text || "").replace(/\r/g, "");
+    const blocks = [];
+    let list = null;
+
+    safe.split("\n").forEach(rawLine => {
+      const line = rawLine.trim();
+      if (!line) {
+        if (list) { blocks.push(list.html + `</${list.tag}>`); list = null; }
+        return;
+      }
+
+      const bullet = line.match(/^[-*•]\s+(.*)$/);
+      const numbered = line.match(/^(\d{1,2})[.)]\s+(.*)$/);
+
+      if (bullet || numbered) {
+        const tag = bullet ? "ul" : "ol";
+        const item = bullet ? bullet[1] : numbered[2];
+        if (!list || list.tag !== tag) {
+          if (list) blocks.push(list.html + `</${list.tag}>`);
+          list = { tag: tag, html: `<${tag}>` };
+        }
+        list.html += `<li>${inline(item)}</li>`;
+        return;
+      }
+
+      if (list) { blocks.push(list.html + `</${list.tag}>`); list = null; }
+      blocks.push(`<p>${inline(line)}</p>`);
+    });
+
+    if (list) blocks.push(list.html + `</${list.tag}>`);
+    return blocks.join("") || `<p>${inline(safe)}</p>`;
+
+    function inline(value) {
+      return value.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    }
+  }
+
+  const GROUNDING_LABELS = {
+    profile: "Profile", cv: "CV analysis", match: "Job matches",
+    skill_gap: "Skill gap", roadmap: "Roadmap", courses: "Courses",
+    applications: "Applications", saved_jobs: "Saved jobs", quiz: "Quiz",
+    activity: "Activity", market: "Job market", jobs_in_question: "Job posting"
+  };
+
+  function groundingHtml(sections) {
+    const chips = (sections || [])
+      .map(name => GROUNDING_LABELS[name])
+      .filter(Boolean)
+      .map(label => `<span class="grounding-chip">${escapeHtml(label)}</span>`);
+    if (!chips.length) return "";
+    return `<div class="msg-grounding">${chips.join("")}</div>`;
+  }
+
+  /* ── Conversation rendering ───────────────────────────────────
+     History lives in the database, so the thread is the same after a refresh,
+     on another device and in a later session. ── */
+  function stamp(value) {
+    const when = value ? new Date(value) : new Date();
+    return when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function bubbleHtml(entry) {
+    const isUser = entry.role === "user";
+    const body = isUser
+      ? `<div class="msg-text"><p>${escapeHtml(entry.content)}</p></div>`
+      : `<div class="msg-text">${formatAnswer(entry.content)}</div>${groundingHtml(entry.context_used)}`;
+
+    return `
+      <div class="chat-msg ${isUser ? "msg-user" : "msg-ai"}">
+        <div class="msg-avatar"><i class="bi ${isUser ? "bi-person" : "bi-stars"}"></i></div>
+        <div class="msg-bubble">
+          <span class="msg-label">${isUser ? "You" : "SkillSync AI"}</span>
+          ${body}
+          <span class="msg-time">${escapeHtml(stamp(entry.created_at))}</span>
+        </div>
+      </div>`;
+  }
+
+  function appendMessage(entry) {
+    const output = document.getElementById("chatOutput");
+    const initial = output.querySelector(".chat-initial");
+    if (initial) initial.remove();
+    output.insertAdjacentHTML("beforeend", bubbleHtml(entry));
+    output.scrollTop = output.scrollHeight;
+    document.getElementById("btnNewChat").style.display = "inline-flex";
+  }
+
+  function renderFollowUps(suggestions) {
+    const bar = document.getElementById("followUps");
+    if (!bar) return;
+    const items = (suggestions || []).filter(Boolean);
+    if (!items.length) {
+      bar.style.display = "none";
+      return;
+    }
+    bar.innerHTML = items.map(text =>
+      `<span class="sug-chip" onclick="useSuggestion(this)">
+         <i class="bi bi-arrow-return-right"></i> ${escapeHtml(text)}
+       </span>`).join("");
+    bar.style.display = "flex";
+  }
+
+  async function loadConversation() {
+    let data;
+    try {
+      data = await api("/api/chatbot/history/");
+    } catch (_) {
+      return;                   /* the starter screen already covers this */
+    }
+
+    const messages = data.messages || [];
+    if (messages.length) {
+      const output = document.getElementById("chatOutput");
+      output.innerHTML = messages.map(bubbleHtml).join("");
+      output.scrollTop = output.scrollHeight;
+      document.getElementById("btnNewChat").style.display = "inline-flex";
+      renderFollowUps(data.suggestions);
+      return;
+    }
+
+    /* Empty thread: the opening prompts are chosen from what this user
+       actually has on record, so they are worth clicking. */
+    const starters = document.querySelector(".chat-initial .suggestion-chips");
+    if (starters && (data.suggestions || []).length) {
+      starters.innerHTML = data.suggestions.map(text =>
+        `<span class="sug-chip" onclick="useSuggestion(this)">
+           <i class="bi bi-stars"></i> ${escapeHtml(text)}
+         </span>`).join("");
+    }
+    renderFollowUps([]);
+  }
+
+  /* Starting a new thread archives the old one - nothing is destroyed. */
+  async function startNewConversation() {
+    const btn = document.getElementById("btnNewChat");
+    btn.disabled = true;
+    try {
+      const data = await api("/api/chatbot/new/", { method: "POST" });
+      window.location.reload();
+      renderFollowUps(data.suggestions);
+    } catch (error) {
+      showToast(error.message || "Could not start a new conversation.", "danger");
+      btn.disabled = false;
+    }
+  }
+  window.startNewConversation = startNewConversation;
+
+  (function initChatPage() {
+    const store = window.SkillSyncState;
+    const input = document.querySelector('#chatForm input[name="message"]');
+
+    if (input && store) {
+      /* Restore the unsent draft, then keep it in step as it is typed. */
+      const draft = store.get("chat.draft", "");
+      if (draft) input.value = draft;
+      input.addEventListener("input", () => {
+        if (input.value.trim()) store.save("chat.draft", input.value);
+        else store.remove("chat.draft");
+      });
+    }
+
+    loadConversation();
+  })();
 
   /* ── Chat form ── */
   document.getElementById("chatForm").addEventListener("submit", async (event) => {
@@ -915,24 +856,14 @@
 
     const btn = document.getElementById("btnSend");
     input.value = "";
+    if (window.SkillSyncState) window.SkillSyncState.remove("chat.draft");
     btn.disabled = true;
 
-    /* Show user message immediately */
+    /* Show the question immediately - the answer is stored server-side, so a
+       refresh mid-request still finds both halves of the exchange. */
     const output = document.getElementById("chatOutput");
-    const initial = output.querySelector(".chat-initial");
-    if (initial) initial.remove();
-
-    const time = chatTime();
-    output.insertAdjacentHTML("beforeend", `
-      <div class="chat-msg msg-user">
-        <div class="msg-avatar"><i class="bi bi-person"></i></div>
-        <div class="msg-bubble">
-          <span class="msg-label">You</span>
-          <div>${escapeHtml(message)}</div>
-          <span class="msg-time">${time}</span>
-        </div>
-      </div>`);
-    output.scrollTop = output.scrollHeight;
+    appendMessage({ role: "user", content: message });
+    renderFollowUps([]);
 
     showTyping();
 
@@ -943,16 +874,13 @@
       });
 
       hideTyping();
-
-      output.insertAdjacentHTML("beforeend", `
-        <div class="chat-msg msg-ai">
-          <div class="msg-avatar"><i class="bi bi-stars"></i></div>
-          <div class="msg-bubble">
-            <span class="msg-label">SkillSync AI</span>
-            <div>${escapeHtml(result.reply)}</div>
-            <span class="msg-time">${chatTime()}</span>
-          </div>
-        </div>`);
+      appendMessage({
+        role: "assistant",
+        content: result.reply,
+        context_used: result.context_used,
+        created_at: result.created_at
+      });
+      renderFollowUps(result.suggestions);
 
     } catch (error) {
       hideTyping();
@@ -972,46 +900,13 @@
     input.focus();
   });
 
-  /* ── Interview form ── */
-  document.getElementById("interviewForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const role = new FormData(event.target).get("role") || "Software Developer";
-    const btn = document.getElementById("btnGenerate");
-    const orig = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating…';
-    btn.disabled = true;
-
-    try {
-      const result = await api("/api/chatbot/interview/", {
-        method: "POST",
-        body: JSON.stringify({ role })
-      });
-
-      const questions = result.questions || [];
-      document.getElementById("interviewOutput").innerHTML = questions.length
-        ? questions.map((q, i) => `
-            <div class="iq-card" style="animation-delay:${i * 0.06}s">
-              <div class="iq-num">${i + 1}</div>
-              <div class="iq-text">${escapeHtml(q)}</div>
-            </div>`).join("")
-        : `<div class="empty-block">
-            <div class="eb-icon"><i class="bi bi-list-check"></i></div>
-            <div class="eb-title">No questions</div>
-            <div class="eb-sub">Try a different role name.</div>
-          </div>`;
-    } catch (err) {
-      document.getElementById("interviewOutput").innerHTML = `
-        <div class="empty-block">
-          <div class="eb-icon" style="background:rgba(239,68,68,0.08);color:#EF4444;">
-            <i class="bi bi-exclamation-circle"></i>
-          </div>
-          <div class="eb-title">Generation failed</div>
-          <div class="eb-sub">${escapeHtml(err.message || "Please try again.")}</div>
-        </div>`;
-    } finally {
-      btn.innerHTML = orig;
-      btn.disabled = false;
-    }
-  });
+  /* Interview practice has its own page and its own sidebar entry. The
+     assistant can still send someone there mid-conversation - the deep link
+     carries the role, and that page picks it up from the query string. */
+  window.openInterviewPractice = function (role) {
+    window.location.href = role
+      ? "/interview-practice/?role=" + encodeURIComponent(role)
+      : "/interview-practice/";
+  };
 </script>
 {% endblock %}

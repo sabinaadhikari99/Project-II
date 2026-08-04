@@ -1145,10 +1145,17 @@
   }
 
   // ===== Filter & Pagination =====
-  function setFilter(filter) {
+  function applyFilterUI(filter) {
     currentFilter = filter;
-    currentPage = 1;
     document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === filter));
+  }
+
+  function setFilter(filter) {
+    applyFilterUI(filter);
+    currentPage = 1;
+    // The chosen view is the user's, not the page's: it survives navigation,
+    // refresh and a new session.
+    if (window.SkillSyncState) window.SkillSyncState.save("notifications.view", { filter: filter });
     loadNotifications(true);
   }
 
@@ -1217,8 +1224,24 @@
     }
   }
 
-  // ===== Initial Load =====
-  loadNotifications();
+  // ===== Initial Load (restoring the last view) =====
+  (function initNotificationsPage() {
+    const store = window.SkillSyncState;
+    if (!store) {
+      loadNotifications();
+      return;
+    }
+
+    let loaded = false;
+    store.restore("notifications.view", (value, meta) => {
+      const filter = (value && value.filter) || "all";
+      if (filter !== currentFilter || !loaded) {
+        applyFilterUI(filter);
+        loaded = true;
+        loadNotifications(meta.source === "remote");
+      }
+    });
+  })();
 
   // ===== Auto-refresh =====
   setInterval(() => {

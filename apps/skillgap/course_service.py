@@ -4,7 +4,7 @@ from urllib.parse import quote
 from django.conf import settings
 
 from .analysis_memo import run_once
-from .cache import get_cached, set_cached
+from .cache import analysis_fingerprint, get_analysis_cached, set_analysis_cached
 from .career import CareerAnalyzer
 from .catalog import (
     BASE_HOURS,
@@ -57,7 +57,8 @@ class CourseRecommendationService:
         service = cls(context)
         if not context.resume_text or not context.has_skills:
             return service._response([])
-        cached = get_cached("courses", user.id, context.resume_text)
+        fingerprint = analysis_fingerprint(user)
+        cached = get_analysis_cached("courses", user.id, fingerprint)
         if cached is not None and not force:
             return cached
         existing = CourseRecommendation.objects.filter(
@@ -78,7 +79,7 @@ class CourseRecommendationService:
             )
             CourseRecommendation.objects.filter(user=user).exclude(pk=obj.pk).delete()
             response = service._response(courses, obj.updated_at)
-        set_cached("courses", user.id, context.resume_text, response)
+        set_analysis_cached("courses", user.id, fingerprint, response)
         return response
 
     def generate(self):
@@ -136,7 +137,26 @@ class CourseRecommendationService:
             "is_free": bool(entry["free"]),
             "importance": info["importance"],
             "job_demand": info["job_count"],
+            # Phase 2 (#8, #12): every course states what it is worth and why.
+            "gap_category": info.get("gap_category", "important"),
+            "expected_score_gain": self._expected_gain(info),
         }
+
+    def _expected_gain(self, info):
+        """Match-score points expected from completing this course.
+
+        Uses the same weighting the match score itself uses, so the figure is
+        consistent with the score it claims to improve rather than invented.
+        """
+        from apps.jobs.services import estimate_score_gain
+
+        context = self.context
+        required = 0
+        for job in (context.jobs or [])[:3]:
+            required = max(required, len(job.required_skills or []))
+        if not required:
+            required = max(len(context.missing_skills), 1)
+        return estimate_score_gain(required)
 
     def _fallback_entry(self, info):
         context = self.context

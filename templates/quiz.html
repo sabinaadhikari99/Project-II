@@ -148,6 +148,40 @@
     border: 1px solid rgba(var(--accent-rgb), 0.14);
   }
 
+  .panel-head .btn-new-quiz {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: transparent;
+    color: var(--txt-muted);
+    border: 1px solid var(--bdr);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .panel-head .btn-new-quiz:hover {
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb), 0.4);
+  }
+
+  /* ── Resumed / completed notice ── */
+  .quiz-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 12px;
+    font-size: 13px;
+    background: rgba(var(--accent-rgb), 0.05);
+    border: 1px solid rgba(var(--accent-rgb), 0.16);
+    color: var(--txt-muted);
+  }
+  .quiz-notice i { color: var(--accent); }
+
   .panel-body { padding: 1.5rem; }
 
   /* ── Progress bar ── */
@@ -704,11 +738,20 @@
             <div class="panel-icon"><i class="bi bi-ui-checks-grid"></i></div>
             Questions
           </div>
-          <span id="qBadge" class="q-badge">
-            <i class="bi bi-question-circle"></i> Loading…
-          </span>
+          <div class="d-flex align-items-center gap-2">
+            <button id="btnNewQuiz" class="btn-new-quiz" type="button" style="display:none;"
+                    onclick="startNewQuiz()" title="Generate a fresh set of questions">
+              <i class="bi bi-arrow-repeat"></i> New quiz
+            </button>
+            <span id="qBadge" class="q-badge">
+              <i class="bi bi-question-circle"></i> Loading…
+            </span>
+          </div>
         </div>
         <div class="panel-body">
+
+          <!-- Resumed / completed notice -->
+          <div id="quizNotice" class="quiz-notice" style="display:none;"></div>
 
           <!-- Progress bar -->
           <div class="quiz-progress-wrap" id="progressWrap" style="display:none;">
@@ -782,6 +825,8 @@
 <script>
   let totalQuestions = 0;
   let answeredSet = new Set();
+  let quizAnswers = {};
+  let quizSaveTimer = null;
 
   /* ── Frontend Performance Measurement ── */
   const perfLog = (label, start) => {
@@ -895,6 +940,7 @@
     const questions = data.questions || [];
     totalQuestions  = questions.length;
     answeredSet     = new Set();
+    quizAnswers     = Object.assign({}, data.answers || {});
 
     document.getElementById("qBadge").innerHTML =
       `<i class="bi bi-question-circle"></i> ${totalQuestions} question${totalQuestions !== 1 ? "s" : ""}`;
@@ -940,6 +986,26 @@
       </button>`;
 
     perfLog("Quiz DOM Render Complete", performance.now());
+
+    /* Repaint saved answers, then the score if this quiz was already
+       submitted. Nothing the user did is asked for twice. */
+    restoreAnswers(questions);
+    document.getElementById("btnNewQuiz").style.display = "inline-flex";
+
+    if (data.completed) {
+      showQuizResult(data);
+      markQuizSubmitted();
+      showQuizNotice(
+        `<i class="bi bi-check2-circle"></i> You completed this quiz — scored <strong>${data.score}/${data.total}</strong>. Start a new quiz to try a fresh set of questions.`
+      );
+    } else if (data.restored && Object.keys(quizAnswers).length) {
+      showQuizNotice(
+        `<i class="bi bi-clock-history"></i> Resumed your quiz — <strong>${Object.keys(quizAnswers).length}</strong> answer(s) restored.`
+      );
+    } else {
+      hideQuizNotice();
+    }
+
     updateProgress();
 
     const total = (performance.now() - tStart).toFixed(1);
@@ -953,15 +1019,117 @@
       .forEach(l => l.classList.remove("selected"));
 
     label.classList.add("selected");
-    label.querySelector("input[type='radio']").checked = true;
+    const input = label.querySelector("input[type='radio']");
+    input.checked = true;
 
     /* Mark card answered */
     const card = document.getElementById(`qcard-${qIndex}`);
     card.classList.add("answered");
 
     answeredSet.add(String(qIndex));
+    quizAnswers[String(questionId)] = input.value;
+    saveQuizProgress();
     updateProgress();
   }
+
+  /* ── Persistence ───────────────────────────────────────────────
+     Answers are autosaved as they are given, so a refresh, a tab switch or a
+     new session resumes the quiz exactly where it was left. ── */
+  function showQuizNotice(html) {
+    const el = document.getElementById("quizNotice");
+    if (!el) return;
+    el.innerHTML = html;
+    el.style.display = "flex";
+  }
+
+  function hideQuizNotice() {
+    const el = document.getElementById("quizNotice");
+    if (el) el.style.display = "none";
+  }
+
+  function restoreAnswers(questions) {
+    questions.forEach((q, index) => {
+      const saved = quizAnswers[String(q.id)];
+      if (saved === undefined || saved === null) return;
+      const inputs = document.getElementsByName(String(q.id));
+      Array.prototype.forEach.call(inputs, input => {
+        if (input.value !== saved) return;
+        input.checked = true;
+        const label = input.closest(".option-label");
+        if (label) label.classList.add("selected");
+        const card = document.getElementById(`qcard-${index}`);
+        if (card) card.classList.add("answered");
+        answeredSet.add(String(index));
+      });
+    });
+  }
+
+  /* Debounced: a fast clicker produces one write, not ten. */
+  function saveQuizProgress() {
+    if (window.SkillSyncState) {
+      window.SkillSyncState.local.set("quiz.answers", quizAnswers, { ttl: 604800 });
+    }
+    if (quizSaveTimer) clearTimeout(quizSaveTimer);
+    quizSaveTimer = setTimeout(() => {
+      api("/api/quiz/progress/", {
+        method: "POST",
+        body: JSON.stringify({ answers: quizAnswers })
+      }).catch(() => { /* retried on the next answer; the local copy stands */ });
+    }, 700);
+  }
+
+  function showQuizResult(result) {
+    const pct = result.percentage || 0;
+    const ring = document.getElementById("scoreRing");
+    const display = document.getElementById("scoreDisplay");
+    ring.classList.add("has-score");
+    display.classList.add("has-score");
+    document.getElementById("scoreMetric").textContent = `${pct}%`;
+    document.getElementById("scoreDetail").textContent = `${result.score} / ${result.total} correct`;
+
+    const scoreVal = ring.querySelector(".score-value");
+    if (pct >= 80) {
+      scoreVal.style.color = "var(--success)";
+      ring.style.borderColor = "var(--success)";
+      ring.style.boxShadow = "0 0 0 6px rgba(16,185,129,0.10), 0 8px 24px rgba(16,185,129,0.18)";
+    } else if (pct >= 50) {
+      scoreVal.style.color = "var(--warn)";
+      ring.style.borderColor = "var(--warn)";
+      ring.style.boxShadow = "0 0 0 6px rgba(245,158,11,0.10), 0 8px 24px rgba(245,158,11,0.18)";
+    } else {
+      scoreVal.style.color = "var(--danger)";
+      ring.style.borderColor = "var(--danger)";
+      ring.style.boxShadow = "0 0 0 6px rgba(239,68,68,0.10), 0 8px 24px rgba(239,68,68,0.18)";
+    }
+  }
+
+  function markQuizSubmitted() {
+    const btn = document.getElementById("btnSubmitQuiz");
+    if (!btn) return;
+    btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Submitted';
+    btn.disabled = true;
+  }
+
+  /* The only way stored work is discarded: the user asks for it. */
+  async function startNewQuiz() {
+    const btn = document.getElementById("btnNewQuiz");
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Generating…';
+    try {
+      await api("/api/quiz/reset/", { method: "POST" });
+      quizAnswers = {};
+      if (window.SkillSyncState) window.SkillSyncState.local.remove("quiz.answers");
+      hideQuizNotice();
+      await loadQuiz();
+    } catch (error) {
+      showMessage(error.message || "Could not start a new quiz.", "danger");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
+  window.startNewQuiz = startNewQuiz;
 
   /* ── Form submit ── */
   document.getElementById("quizForm").addEventListener("submit", async (event) => {
@@ -991,30 +1159,11 @@
 
       const pct = result.percentage || 0;
 
-      /* Update score ring */
-      const ring    = document.getElementById("scoreRing");
-      const display = document.getElementById("scoreDisplay");
-      ring.classList.add("has-score");
-      display.classList.add("has-score");
-      document.getElementById("scoreMetric").textContent = `${pct}%`;
-      document.getElementById("scoreDetail").textContent =
-        `${result.score} / ${result.total} correct`;
-
-      /* Score color feedback */
-      const scoreVal = ring.querySelector(".score-value");
-      if (pct >= 80) {
-        scoreVal.style.color = "var(--success)";
-        ring.style.borderColor = "var(--success)";
-        ring.style.boxShadow = "0 0 0 6px rgba(16,185,129,0.10), 0 8px 24px rgba(16,185,129,0.18)";
-      } else if (pct >= 50) {
-        scoreVal.style.color = "var(--warn)";
-        ring.style.borderColor = "var(--warn)";
-        ring.style.boxShadow = "0 0 0 6px rgba(245,158,11,0.10), 0 8px 24px rgba(245,158,11,0.18)";
-      } else {
-        scoreVal.style.color = "var(--danger)";
-        ring.style.borderColor = "var(--danger)";
-        ring.style.boxShadow = "0 0 0 6px rgba(239,68,68,0.10), 0 8px 24px rgba(239,68,68,0.18)";
-      }
+      /* Update score ring (same renderer used when restoring a past result) */
+      showQuizResult(result);
+      showQuizNotice(
+        `<i class="bi bi-check2-circle"></i> Quiz submitted — your score is kept here until you start a new quiz.`
+      );
 
       showMessage(
         `Score: ${result.score}/${result.total} (${pct}%)`,
