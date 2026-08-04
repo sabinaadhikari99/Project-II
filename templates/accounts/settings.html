@@ -1779,6 +1779,12 @@ body.dark-mode .settings-icon-circle.shield {
     localStorage.setItem(STORAGE_KEYS.themePreference, selected);
     localStorage.setItem(STORAGE_KEYS.theme, resolved);
 
+    // An explicit choice is a saved preference, not a device quirk: it is kept
+    // on the account so a new session opens in the theme the user picked.
+    if (showNotification && window.SkillSyncState) {
+      window.SkillSyncState.save("settings.theme", { preference: selected });
+    }
+
     window.dispatchEvent(new CustomEvent("settings-theme-changed", {
       detail: {
         preference: selected,
@@ -1808,6 +1814,15 @@ body.dark-mode .settings-icon-circle.shield {
     }
 
     applyThemePreference(preference, false);
+
+    if (window.SkillSyncState) {
+      window.SkillSyncState.restore("settings.theme", (value) => {
+        const stored = value && value.preference;
+        if (!stored || stored === preference) return;
+        if (!["light", "dark", "system"].includes(stored)) return;
+        applyThemePreference(stored, false);
+      });
+    }
   }
 
   function bindThemeControls() {
@@ -1840,6 +1855,30 @@ body.dark-mode .settings-icon-circle.shield {
     { id: "toggleContact", key: STORAGE_KEYS.recruiterContact, defaultValue: true }
   ];
 
+  /* Preferences are mirrored to the account, not just this browser, so they
+     survive a logout and follow the user to another device. localStorage stays
+     the fast path and the offline fallback. */
+  function persistPreferences() {
+    if (!window.SkillSyncState) return;
+
+    const snapshot = {};
+    togglePreferences.forEach(({ id, key }) => {
+      const element = document.getElementById(id);
+      if (element) snapshot[key] = element.checked;
+    });
+    window.SkillSyncState.save("settings.preferences", snapshot);
+  }
+
+  function applyPreferenceSnapshot(snapshot) {
+    if (!snapshot) return;
+    togglePreferences.forEach(({ id, key }) => {
+      const element = document.getElementById(id);
+      if (!element || !(key in snapshot)) return;
+      element.checked = Boolean(snapshot[key]);
+      localStorage.setItem(key, element.checked ? "1" : "0");
+    });
+  }
+
   function restoreTogglePreferences() {
     togglePreferences.forEach(({ id, key, defaultValue }) => {
       const element = document.getElementById(id);
@@ -1849,6 +1888,10 @@ body.dark-mode .settings-icon-circle.shield {
       const saved = localStorage.getItem(key);
       element.checked = saved === null ? defaultValue : saved === "1";
     });
+
+    if (window.SkillSyncState) {
+      window.SkillSyncState.restore("settings.preferences", applyPreferenceSnapshot);
+    }
   }
 
   function bindTogglePreferences() {
@@ -1859,6 +1902,7 @@ body.dark-mode .settings-icon-circle.shield {
 
       element.addEventListener("change", () => {
         localStorage.setItem(key, element.checked ? "1" : "0");
+        persistPreferences();
       });
     });
   }

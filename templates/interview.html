@@ -1,0 +1,882 @@
+<!-- file path: templates/interview.html -->
+{% extends "base_dashboard.html" %}
+{% block title %}Interview Practice | SkillSync AI{% endblock %}
+
+{% comment %}
+  Three stages, one on screen at a time: Setup -> Interview -> Report.
+
+  The page used to show setup, a question bank, a mock interview, a report,
+  history, coaching tips and an improvement plan simultaneously - an analytics
+  dashboard that happened to contain an interview. An interview is a linear
+  thing, so the page is now linear too, and each stage shows only what that
+  stage needs.
+
+  What went, and why:
+  * Question bank - a static list that also revealed the grading rubric before
+    the candidate answered. Questions now arrive one at a time; what a strong
+    answer covers is revealed *after* the answer is submitted.
+  * Coaching tips panel - written once per session and identical on every
+    question. Replaced by per-answer coaching from the AI Coach.
+  * Improvement plan panel - duplicated the report's plan, gaps and courses.
+    Merged into the report, where it is read once at the end.
+  * Readiness sub-scores and component bars - twelve progress bars before the
+    interview had even started. Reduced to one number and the two lists a
+    candidate acts on: what they can lean on, and what will catch them out.
+{% endcomment %}
+
+{% block content %}
+<style>
+  :root {
+    --accent: var(--bs-primary, #2563EB);
+    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
+    --surface: #fff;
+    --surface-alt: #F8FAFC;
+    --txt: rgba(15,23,42,0.90);
+    --txt-soft: rgba(15,23,42,0.58);
+    --txt-muted: rgba(15,23,42,0.40);
+    --bdr: rgba(15,23,42,0.07);
+    --bdr-strong: rgba(15,23,42,0.13);
+    --success: #10B981; --success-bg: rgba(16,185,129,0.10); --success-txt: #047857;
+    --warn: #F59E0B;    --warn-bg: rgba(245,158,11,0.10);    --warn-txt: #B45309;
+    --danger: #EF4444;  --danger-bg: rgba(239,68,68,0.09);   --danger-txt: #B91C1C;
+  }
+
+  .iv { max-width: 860px; margin: 0 auto; animation: ivIn .4s ease both; }
+  @keyframes ivIn { from { opacity:0; transform:translateY(10px);} to {opacity:1;transform:none;} }
+  .hidden { display: none !important; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--bdr); border-radius: 16px;
+    padding: 1.5rem; margin-bottom: 1.25rem;
+  }
+  .card-tight { padding: 1.15rem 1.25rem; }
+
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+             color: var(--txt-muted); margin-bottom: .5rem; }
+  h2.stage-title { font-size: 21px; font-weight: 680; color: var(--txt); margin: 0 0 .3rem; letter-spacing: -.01em; }
+  .stage-sub { font-size: 14px; color: var(--txt-soft); margin: 0 0 1.5rem; line-height: 1.6; }
+
+  /* ── Readiness: one number, two lists ── */
+  .ready { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .ring { --pct: 0; width: 96px; height: 96px; flex: none; border-radius: 50%; display: grid; place-items: center;
+          background: conic-gradient(var(--accent) calc(var(--pct)*1%), rgba(15,23,42,0.07) 0); position: relative; }
+  .ring::after { content:""; position:absolute; inset:9px; background:var(--surface); border-radius:50%; }
+  .ring-in { position: relative; z-index: 1; text-align: center; }
+  .ring-val { font-size: 24px; font-weight: 700; color: var(--txt); line-height: 1; }
+  .ring-lbl { font-size: 10px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
+  .ready-body { flex: 1 1 260px; min-width: 0; }
+  .ready-role { font-size: 15px; font-weight: 650; color: var(--txt); margin-bottom: .1rem; }
+  .ready-band { font-size: 13px; color: var(--txt-soft); margin-bottom: .9rem; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .55rem; }
+  .chip-row:last-child { margin-bottom: 0; }
+  .chip-lbl { font-size: 11px; font-weight: 600; color: var(--txt-muted); text-transform: uppercase;
+              letter-spacing: .05em; width: 100%; margin-bottom: .1rem; }
+
+  .chip { display:inline-flex; align-items:center; padding:.22rem .6rem; border-radius:99px;
+          font-size:12px; font-weight:550; line-height:1.5; }
+  .chip-good { background: var(--success-bg); color: var(--success-txt); }
+  .chip-gap  { background: var(--warn-bg);    color: var(--warn-txt); }
+  .chip-plain{ background: rgba(15,23,42,0.05); color: var(--txt-soft); }
+  .chip-accent{ background: rgba(var(--accent-rgb),.10); color: var(--accent); }
+  .chip-danger{ background: var(--danger-bg); color: var(--danger-txt); }
+
+  /* ── Form ── */
+  .field { margin-bottom: 1.25rem; }
+  .field:last-child { margin-bottom: 0; }
+  .field-label { display:block; font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: .5rem; }
+  .field-hint { font-size: 12.5px; color: var(--txt-muted); margin-top: .4rem; line-height: 1.5; }
+  .input, .select {
+    width: 100%; padding: .65rem .85rem; border: 1px solid var(--bdr-strong); border-radius: 10px;
+    font-size: 14.5px; color: var(--txt); background: var(--surface); outline: none;
+    transition: border-color .15s, box-shadow .15s; font-family: inherit;
+  }
+  .input:focus, .select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.10); }
+
+  .seg { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .seg label { cursor: pointer; }
+  .seg input { position: absolute; opacity: 0; width:0; height:0; }
+  .seg span {
+    display: block; padding: .5rem .85rem; border-radius: 10px; font-size: 13.5px; font-weight: 550;
+    border: 1px solid var(--bdr-strong); color: var(--txt-soft); background: var(--surface);
+    transition: all .14s; white-space: nowrap;
+  }
+  .seg label:hover span { border-color: var(--accent); color: var(--accent); }
+  .seg input:checked + span { background: rgba(var(--accent-rgb),.09); border-color: var(--accent);
+                              color: var(--accent); font-weight: 650; }
+  .seg input:focus-visible + span { box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.18); }
+
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    padding:.7rem 1.25rem; border-radius:10px; border:1px solid transparent; background: var(--accent);
+    color:#fff; font-size:14.5px; font-weight:600; cursor:pointer; font-family:inherit;
+    transition: filter .15s, opacity .15s;
+  }
+  .btn:hover:not(:disabled) { filter: brightness(1.07); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-ghost { background: var(--surface); color: var(--txt-soft); border-color: var(--bdr-strong); }
+  .btn-ghost:hover:not(:disabled) { background: var(--surface-alt); color: var(--txt); }
+  .btn-sm { padding: .45rem .8rem; font-size: 13px; }
+  .btn-row { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; }
+
+  /* ── Interview stage ── */
+  .iv-bar {
+    display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+    padding: .85rem 1.25rem; background: var(--surface); border:1px solid var(--bdr);
+    border-radius: 14px; margin-bottom: 1rem; position: sticky; top: .5rem; z-index: 5;
+  }
+  .iv-bar-role { font-size: 14px; font-weight: 650; color: var(--txt); }
+  .iv-bar-meta { font-size: 12.5px; color: var(--txt-muted); }
+  .iv-bar-spacer { flex: 1 1 auto; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 650; color: var(--txt-soft); }
+  .timer.low { color: var(--danger-txt); }
+
+  .track { height: 4px; border-radius: 99px; background: rgba(15,23,42,0.07); overflow: hidden; width: 100%; }
+  .track > span { display:block; height:100%; background: var(--accent); border-radius:99px; transition: width .4s ease; }
+
+  .q-num { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .q-text { font-size: 19px; font-weight: 600; color: var(--txt); line-height: 1.5; margin: .55rem 0 .5rem; letter-spacing: -.01em; }
+  .q-why { font-size: 13.5px; color: var(--txt-soft); line-height: 1.6; margin-bottom: 1.1rem; }
+  .answer {
+    width:100%; min-height: 190px; padding: .9rem 1rem; border:1px solid var(--bdr-strong); border-radius:12px;
+    font-size:15px; line-height:1.7; color:var(--txt); resize:vertical; outline:none; font-family:inherit;
+  }
+  .answer:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.10); }
+  .answer:disabled { background: var(--surface-alt); color: var(--txt-soft); }
+  .answer-foot { display:flex; justify-content:space-between; align-items:center; gap:1rem;
+                 flex-wrap:wrap; margin-top: .9rem; }
+  .word-count { font-size: 12.5px; color: var(--txt-muted); font-variant-numeric: tabular-nums; }
+
+  /* ── Feedback ── */
+  .fb { border:1px solid var(--bdr); border-radius:14px; padding:1.25rem; margin-top:1rem; background: var(--surface-alt); }
+  .fb-head { display:flex; align-items:center; gap:.75rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .fb-score { font-size:32px; font-weight:700; color:var(--txt); line-height:1; }
+  .fb-of { font-size:14px; color:var(--txt-muted); }
+  .fb-sec { margin-bottom: 1rem; }
+  .fb-sec:last-child { margin-bottom: 0; }
+  .fb-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.4rem; }
+  .fb-lbl.good { color: var(--success-txt); }
+  .fb-lbl.bad  { color: var(--warn-txt); }
+  .fb-lbl.plain{ color: var(--txt-muted); }
+  .fb-list { margin:0; padding-left:1.15rem; font-size:14px; color:var(--txt-soft); line-height:1.7; }
+  .fb-list li { margin:.2rem 0; }
+  .model-answer { background:var(--surface); border:1px solid var(--bdr); border-radius:10px;
+                  padding:.9rem 1rem; font-size:14px; line-height:1.7; color:var(--txt-soft); white-space:pre-wrap; }
+
+  .coach { border:1px solid rgba(var(--accent-rgb),.22); background: rgba(var(--accent-rgb),.045);
+           border-radius:14px; padding:1.1rem 1.25rem; margin-top:1rem; }
+  .coach-head { display:flex; align-items:center; gap:.5rem; font-size:12px; font-weight:700;
+                text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin-bottom:.7rem; }
+  .coach-item { display:flex; gap:.6rem; font-size:14px; color:var(--txt); line-height:1.6; margin-bottom:.5rem; }
+  .coach-item:last-child { margin-bottom:0; }
+  .coach-item i { color: var(--accent); font-size: 13px; margin-top:.25rem; }
+
+  /* ── Report ── */
+  .score-hero { text-align:center; padding: .5rem 0 1.5rem; border-bottom:1px solid var(--bdr); margin-bottom:1.5rem; }
+  .score-hero .sh-val { font-size:52px; font-weight:730; color:var(--txt); line-height:1; letter-spacing:-.02em; }
+  .score-hero .sh-lbl { font-size:13px; color:var(--txt-muted); margin-top:.4rem; }
+  .score-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(112px,1fr)); gap:.75rem; margin-bottom:1.5rem; }
+  .score-cell { text-align:center; padding:.85rem .5rem; border:1px solid var(--bdr); border-radius:12px; }
+  .score-cell .sc-val { font-size:22px; font-weight:700; color:var(--txt); line-height:1; }
+  .score-cell .sc-lbl { font-size:11px; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.05em; margin-top:.35rem; }
+
+  .rep-sec { margin-bottom: 1.5rem; }
+  .rep-sec:last-child { margin-bottom: 0; }
+  .rep-lbl { display:flex; align-items:center; gap:.5rem; font-size:12px; font-weight:700;
+             text-transform:uppercase; letter-spacing:.06em; color:var(--txt-muted); margin-bottom:.6rem; }
+  .rep-list { margin:0; padding-left:1.2rem; font-size:14.5px; color:var(--txt-soft); line-height:1.75; }
+  .rep-list li { margin:.3rem 0; }
+  .rep-list a { color: var(--accent); text-decoration: none; }
+  .rep-list a:hover { text-decoration: underline; }
+
+  /* ── History ── */
+  .hist { display:flex; align-items:center; gap:1rem; width:100%; text-align:left; padding:.9rem .25rem;
+          border:none; border-bottom:1px solid var(--bdr); background:none; cursor:pointer; transition: background .12s; }
+  .hist:last-child { border-bottom:none; }
+  .hist:hover { background: var(--surface-alt); }
+  .hist-main { flex:1 1 auto; min-width:0; }
+  .hist-role { font-size:14.5px; font-weight:620; color:var(--txt); margin-bottom:.2rem; }
+  .hist-meta { font-size:12.5px; color:var(--txt-muted); }
+  .hist-score { flex:none; font-size:15px; font-weight:700; color:var(--txt); font-variant-numeric:tabular-nums; }
+
+  .resume-bar { display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+                background: rgba(var(--accent-rgb),.06); border:1px solid rgba(var(--accent-rgb),.2);
+                border-radius:14px; padding:.95rem 1.2rem; margin-bottom:1.25rem; }
+  .resume-txt { flex:1 1 200px; font-size:14px; color:var(--txt); }
+
+  .empty { text-align:center; padding:2rem 1rem; color:var(--txt-muted); font-size:14px; line-height:1.6; }
+  .empty i { font-size:28px; display:block; margin-bottom:.6rem; opacity:.45; }
+  .note { font-size:12.5px; color:var(--txt-muted); line-height:1.6; margin-top:1rem; }
+
+  @media (max-width: 575px) {
+    .card { padding: 1.15rem; border-radius: 14px; }
+    .q-text { font-size: 17px; }
+    .score-hero .sh-val { font-size: 42px; }
+    .iv-bar { position: static; }
+  }
+</style>
+
+<div class="iv">
+
+  <!-- ═══ STAGE 1 · SETUP ═══════════════════════════════════════════ -->
+  <section id="stage-setup">
+    <div id="resumeHost"></div>
+
+    <div class="card card-tight" id="readinessCard">
+      <div class="empty" style="padding:1rem;">Loading your readiness…</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Interview practice · Step 1 of 3</div>
+      <h2 class="stage-title">Set up your interview</h2>
+      <p class="stage-sub">Questions are written from your CV, your target role and your skill gaps.</p>
+
+      <form id="setupForm" novalidate>
+        <div class="field">
+          <label class="field-label" for="role">Target role</label>
+          <input class="input" id="role" name="role" placeholder="e.g. Flutter Developer" autocomplete="off">
+          <div class="field-hint" id="roleHint"></div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Interview type</label>
+          <div class="seg" id="typeSeg"></div>
+          <div class="field-hint" id="typeHint"></div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="difficulty">Difficulty</label>
+          <div class="seg" id="difficultySeg"></div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Questions</label>
+          <div class="seg" id="countSeg"></div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Duration</label>
+          <div class="seg" id="durationSeg"></div>
+          <div class="field-hint">The clock paces you — it never cuts an answer short.</div>
+        </div>
+
+        <div class="btn-row" style="margin-top:1.5rem;">
+          <button class="btn" type="submit" id="btnStart">
+            <i class="bi bi-play-fill"></i> Start interview
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow" style="margin-bottom:.75rem;">Past interviews</div>
+      <div id="historyHost"><div class="empty" style="padding:1.25rem;">Loading…</div></div>
+    </div>
+  </section>
+
+  <!-- ═══ STAGE 2 · INTERVIEW ═══════════════════════════════════════ -->
+  <section id="stage-interview" class="hidden">
+    <div class="iv-bar">
+      <div>
+        <div class="iv-bar-role" id="ivRole">—</div>
+        <div class="iv-bar-meta" id="ivMeta">—</div>
+      </div>
+      <div class="iv-bar-spacer"></div>
+      <div class="timer hidden" id="ivTimer">--:--</div>
+      <button class="btn btn-ghost btn-sm" type="button" id="btnEnd">
+        <i class="bi bi-flag"></i> End &amp; get report
+      </button>
+      <div class="track"><span id="ivProgress" style="width:0%"></span></div>
+    </div>
+
+    <div class="card" id="questionCard"></div>
+    <div id="feedbackHost"></div>
+  </section>
+
+  <!-- ═══ STAGE 3 · REPORT ══════════════════════════════════════════ -->
+  <section id="stage-report" class="hidden">
+    <div class="card" id="reportCard"></div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  "use strict";
+
+  var SESSION_URL  = "/api/chatbot/interview/session/";
+  var ANSWER_URL   = "/api/chatbot/interview/answer/";
+  var COMPLETE_URL = "/api/chatbot/interview/complete/";
+  var RESET_URL    = "/api/chatbot/interview/reset/";
+  var SESSIONS_URL = "/api/chatbot/interview/sessions/";
+
+  var CATEGORY_LABELS = {
+    technical: "Technical", behavioral: "Behavioral", hr: "HR",
+    scenario: "Scenario", problem_solving: "Problem solving", system_design: "System design"
+  };
+  var DIFFICULTY_LABELS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
+  var COUNT_OPTIONS = [5, 8, 10, 12, 15];
+
+  /* `index` is where the candidate is looking, which is not always where the
+     server thinks the interview is: they may step back to review an answer. */
+  var state = { session: null, options: null, readiness: null, index: 0, stage: "setup", timer: null };
+
+  function el(id) { return document.getElementById(id); }
+  function esc(v) {
+    return String(v === null || v === undefined ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function turnAt(index) {
+    return ((state.session && state.session.turns) || []).filter(function (t) {
+      return t.question_index === index;
+    })[0] || null;
+  }
+  function questionAt(index) {
+    return ((state.session && state.session.questions) || [])[index] || null;
+  }
+  function clock(seconds) {
+    var s = Math.max(0, Math.round(seconds));
+    return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }
+  function scoreWord(score) {
+    if (score >= 75) return "Strong answer";
+    if (score >= 50) return "Workable";
+    return "Needs work";
+  }
+  function scoreChip(score) {
+    return score >= 75 ? "chip-good" : score >= 50 ? "chip-accent" : "chip-gap";
+  }
+  function list(items) {
+    return (items || []).map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("");
+  }
+
+  function showStage(name) {
+    state.stage = name;
+    ["setup", "interview", "report"].forEach(function (key) {
+      el("stage-" + key).classList.toggle("hidden", key !== name);
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (window.SkillSyncState) window.SkillSyncState.save("interview.stage", name);
+    stopTimer();
+    if (name === "interview") startTimer();
+  }
+
+  function busy(button, on, label) {
+    if (!button) return;
+    button.disabled = on;
+    if (on) {
+      button.dataset.original = button.innerHTML;
+      button.innerHTML = '<i class="bi bi-arrow-repeat"></i> ' + (label || "Working…");
+    } else if (button.dataset.original) {
+      button.innerHTML = button.dataset.original;
+    }
+  }
+
+  /* ── Stage 1 · Readiness ─────────────────────────────────────────── */
+  function renderReadiness(readiness) {
+    state.readiness = readiness;
+    var host = el("readinessCard");
+    if (!readiness || !readiness.has_cv) {
+      host.innerHTML =
+        '<div class="empty"><i class="bi bi-file-earmark-arrow-up"></i>' +
+        esc((readiness && readiness.note) ||
+            "Upload your CV in AI Job Match and your questions will be built from it.") +
+        '</div>';
+      return;
+    }
+
+    function chips(label, items, cls) {
+      if (!items || !items.length) return "";
+      return '<div class="chip-row"><span class="chip-lbl">' + label + '</span>' +
+        items.map(function (i) { return '<span class="chip ' + cls + '">' + esc(i) + "</span>"; }).join("") +
+        '</div>';
+    }
+
+    host.innerHTML =
+      '<div class="ready">' +
+        '<div class="ring" style="--pct:' + readiness.overall + '"><div class="ring-in">' +
+          '<div class="ring-val">' + readiness.overall + '%</div>' +
+          '<div class="ring-lbl">Ready</div></div></div>' +
+        '<div class="ready-body">' +
+          '<div class="ready-role">' + esc(readiness.target_role || "Your target role") + '</div>' +
+          '<div class="ready-band">' + esc(readiness.band) + ' readiness' +
+          (readiness.practiced ? ' · includes your practice scores' : '') + '</div>' +
+          chips("Strengths", readiness.strengths, "chip-good") +
+          chips("To improve", readiness.focus, "chip-gap") +
+        '</div>' +
+      '</div>';
+  }
+
+  /* ── Stage 1 · Setup controls ────────────────────────────────────── */
+  function segment(hostId, name, items, current) {
+    el(hostId).innerHTML = items.map(function (item, i) {
+      var checked = String(item.value) === String(current) || (current === undefined && i === 0);
+      return '<label><input type="radio" name="' + name + '" value="' + esc(item.value) + '"' +
+             (checked ? " checked" : "") + '><span>' + esc(item.label) + "</span></label>";
+    }).join("");
+  }
+  function chosen(name, fallback) {
+    var picked = document.querySelector('input[name="' + name + '"]:checked');
+    return picked ? picked.value : fallback;
+  }
+
+  function renderSetup(options) {
+    state.options = options;
+    var session = state.session;
+
+    segment("typeSeg", "interview_type", options.interview_types || [],
+            session ? session.interview_type : "mixed");
+    segment("difficultySeg", "difficulty", options.difficulties || [],
+            session ? session.difficulty : "mixed");
+    segment("countSeg", "question_count",
+            COUNT_OPTIONS.map(function (n) { return { value: n, label: n }; }),
+            session ? session.question_count : (options.question_counts || {}).default);
+    segment("durationSeg", "duration_minutes", options.durations || [],
+            session ? session.duration_minutes : 0);
+
+    var role = el("role");
+    if (!role.value) role.value = (session && session.target_role) || options.suggested_role || "";
+    el("roleHint").textContent = options.role_family
+      ? "Matched to " + options.role_family + " — covers " + (options.topics || []).slice(0, 3).join(", ") + "."
+      : "";
+    describeType();
+  }
+
+  function describeType() {
+    var value = chosen("interview_type", "mixed");
+    var found = ((state.options && state.options.interview_types) || []).filter(function (t) {
+      return t.value === value;
+    })[0];
+    el("typeHint").textContent = found && found.categories && found.categories.length
+      ? "Questions from: " + found.categories.join(", ") + "."
+      : "";
+  }
+
+  function renderResume(session) {
+    var host = el("resumeHost");
+    if (!session || !session.total_questions || session.status === "completed") {
+      host.innerHTML = "";
+      return;
+    }
+    var left = session.total_questions - session.answered;
+    host.innerHTML =
+      '<div class="resume-bar"><div class="resume-txt">' +
+        '<b>' + esc(session.target_role) + '</b> — ' + session.answered + ' of ' +
+        session.total_questions + ' answered' + (left ? ', ' + left + ' to go.' : '.') +
+      '</div>' +
+      '<button class="btn btn-sm" type="button" id="btnResume"><i class="bi bi-arrow-right"></i> Resume</button>' +
+      '<button class="btn btn-ghost btn-sm" type="button" id="btnRestart">Restart</button></div>';
+  }
+
+  /* ── Stage 1 · History ───────────────────────────────────────────── */
+  async function loadHistory() {
+    var host = el("historyHost");
+    try {
+      var data = await api(SESSIONS_URL);
+      var sessions = data.sessions || [];
+      if (!sessions.length) {
+        host.innerHTML = '<div class="empty" style="padding:1.25rem;">' +
+          'Your finished interviews will appear here.</div>';
+        return;
+      }
+      host.innerHTML = sessions.map(function (s) {
+        var meta = [
+          new Date(s.updated_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }),
+          (CATEGORY_LABELS[s.interview_type] || s.interview_type || "Mixed"),
+          (DIFFICULTY_LABELS[s.difficulty] || s.difficulty),
+          s.answered + "/" + s.total_questions + " answered"
+        ];
+        if (s.elapsed_seconds) meta.push(Math.max(1, Math.round(s.elapsed_seconds / 60)) + " min");
+        var score = (s.overall_score === null || s.overall_score === undefined)
+          ? '<span class="chip chip-plain">Unfinished</span>'
+          : '<span class="hist-score">' + s.overall_score + '%</span>';
+        return '<button class="hist" type="button" data-session="' + s.id + '">' +
+          '<span class="hist-main"><span class="hist-role">' + esc(s.target_role) +
+          (s.is_active ? ' <span class="chip chip-accent">Current</span>' : "") + '</span>' +
+          '<span class="hist-meta">' + esc(meta.join(" · ")) + '</span></span>' + score + '</button>';
+      }).join("");
+    } catch (error) {
+      host.innerHTML = '<div class="empty" style="padding:1.25rem;">Could not load your history.</div>';
+    }
+  }
+
+  /* ── Stage 2 · One question at a time ────────────────────────────── */
+  function renderInterview() {
+    var session = state.session;
+    if (!session || !session.total_questions) return showStage("setup");
+
+    var total = session.total_questions;
+    state.index = Math.max(0, Math.min(state.index, total - 1));
+    var question = questionAt(state.index);
+    var turn = turnAt(state.index);
+    if (!question) return showStage("setup");
+
+    el("ivRole").textContent = session.target_role;
+    el("ivMeta").textContent = session.answered + " of " + total + " answered · " +
+      (DIFFICULTY_LABELS[session.difficulty] || session.difficulty);
+    el("ivProgress").style.width = Math.round((session.answered / total) * 100) + "%";
+
+    var draftKey = "interview.draft." + session.id + "." + state.index;
+    var draft = (!turn && window.SkillSyncState)
+      ? window.SkillSyncState.local.get(draftKey, "") : "";
+
+    el("questionCard").innerHTML =
+      '<div class="q-num">Question ' + (state.index + 1) + ' of ' + total + '</div>' +
+      '<div class="q-text">' + esc(question.question) + '</div>' +
+      '<div class="chip-row">' +
+        '<span class="chip chip-plain">' + esc(CATEGORY_LABELS[question.category] || question.category) + '</span>' +
+        '<span class="chip chip-plain">' + esc(DIFFICULTY_LABELS[question.difficulty] || question.difficulty) + '</span>' +
+        (question.skill ? '<span class="chip chip-accent">' + esc(question.skill) + '</span>' : "") +
+      '</div>' +
+      (question.why_asked ? '<div class="q-why">' + esc(question.why_asked) + '</div>' : '<div style="height:.6rem"></div>') +
+      '<textarea class="answer" id="answerBox" ' + (turn ? "disabled" : "") +
+        ' placeholder="Answer as you would out loud — the situation, what you did, and the result.">' +
+        esc(turn ? turn.answer : draft) + '</textarea>' +
+      '<div class="answer-foot">' +
+        '<span class="word-count" id="wordCount"></span>' +
+        '<span class="btn-row">' +
+          (state.index > 0 ? '<button class="btn btn-ghost btn-sm" type="button" data-nav="-1">' +
+            '<i class="bi bi-arrow-left"></i> Previous</button>' : "") +
+          (turn
+            ? (state.index < total - 1
+                ? '<button class="btn btn-sm" type="button" data-nav="1">Next <i class="bi bi-arrow-right"></i></button>'
+                : '<button class="btn btn-sm" type="button" id="btnEnd2"><i class="bi bi-flag"></i> Finish</button>')
+            : '<button class="btn btn-ghost btn-sm" type="button" data-nav="1">Skip</button>' +
+              '<button class="btn btn-sm" type="button" id="btnSubmit"><i class="bi bi-send"></i> Submit answer</button>') +
+        '</span>' +
+      '</div>';
+
+    renderFeedback(turn, question);
+
+    var box = el("answerBox");
+    if (!turn) {
+      countWords();
+      box.addEventListener("input", function () {
+        countWords();
+        if (window.SkillSyncState) window.SkillSyncState.local.set(draftKey, box.value, { ttl: 86400 });
+      });
+      box.focus();
+    } else {
+      el("wordCount").textContent = "Answered";
+    }
+    startTimer();
+  }
+
+  function countWords() {
+    var box = el("answerBox");
+    if (!box) return;
+    var words = box.value.trim() ? box.value.trim().split(/\s+/).length : 0;
+    el("wordCount").textContent = words ? words + " words" : "Aim for 90 seconds spoken";
+  }
+
+  /* Feedback and coaching only ever appear after an answer - showing what a
+     strong answer covers beforehand would answer the question for them. */
+  function renderFeedback(turn, question) {
+    var host = el("feedbackHost");
+    if (!turn) { host.innerHTML = ""; return; }
+
+    var coaching = (turn.coaching || []).map(function (c) {
+      return '<div class="coach-item"><i class="bi bi-arrow-right-short"></i><span>' + esc(c) + "</span></div>";
+    }).join("");
+    var expected = (question && question.expected_points) || [];
+
+    host.innerHTML =
+      '<div class="fb">' +
+        '<div class="fb-head">' +
+          '<span class="fb-score">' + turn.score + '</span><span class="fb-of">/100</span>' +
+          '<span class="chip ' + scoreChip(turn.score) + '">' + scoreWord(turn.score) + '</span>' +
+        '</div>' +
+        (turn.strengths && turn.strengths.length
+          ? '<div class="fb-sec"><div class="fb-lbl good">What worked</div><ul class="fb-list">' +
+            list(turn.strengths) + '</ul></div>' : "") +
+        (turn.weaknesses && turn.weaknesses.length
+          ? '<div class="fb-sec"><div class="fb-lbl bad">What to fix</div><ul class="fb-list">' +
+            list(turn.weaknesses) + '</ul></div>' : "") +
+        (expected.length
+          ? '<div class="fb-sec"><div class="fb-lbl plain">What a strong answer covers</div>' +
+            '<ul class="fb-list">' + list(expected) + '</ul></div>' : "") +
+        (turn.better_answer
+          ? '<div class="fb-sec"><div class="fb-lbl plain">A stronger answer</div>' +
+            '<div class="model-answer">' + esc(turn.better_answer) + '</div></div>' : "") +
+      '</div>' +
+      (coaching ? '<div class="coach"><div class="coach-head">' +
+        '<i class="bi bi-stars"></i> AI coach — for your next answer</div>' + coaching + '</div>' : "");
+  }
+
+  /* ── Timer ───────────────────────────────────────────────────────── */
+  function startTimer() {
+    stopTimer();
+    var session = state.session;
+    var host = el("ivTimer");
+    if (!session || !session.duration_minutes) { host.classList.add("hidden"); return; }
+    host.classList.remove("hidden");
+
+    var budget = session.duration_minutes * 60;
+    var base = session.elapsed_seconds || 0;
+    var startedAt = Date.now();
+
+    function tick() {
+      var left = budget - (base + Math.floor((Date.now() - startedAt) / 1000));
+      host.classList.toggle("low", left <= 120);
+      host.textContent = left > 0 ? clock(left) : "Time's up";
+    }
+    tick();
+    state.timer = setInterval(tick, 1000);
+  }
+  function stopTimer() {
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  }
+
+  /* ── Stage 3 · Report ────────────────────────────────────────────── */
+  function renderReport(session, readOnly) {
+    var host = el("reportCard");
+    var report = session && session.report;
+    if (!report) {
+      host.innerHTML = '<div class="empty"><i class="bi bi-clipboard-data"></i>' +
+        'This interview has no report yet — finish it to get one.</div>' +
+        '<div class="btn-row" style="justify-content:center;">' +
+        '<button class="btn btn-ghost" type="button" data-stage="setup">Back to setup</button></div>';
+      return;
+    }
+
+    var cells = [
+      ["Technical", report.technical_score], ["Behavioral", report.behavioral_score],
+      ["Communication", report.communication_score], ["Confidence", report.confidence_score]
+    ].map(function (pair) {
+      return '<div class="score-cell"><div class="sc-val">' + (pair[1] || 0) +
+             '</div><div class="sc-lbl">' + pair[0] + '</div></div>';
+    }).join("");
+
+    function section(label, items, icon) {
+      if (!items || !items.length) return "";
+      return '<div class="rep-sec"><div class="rep-lbl"><i class="bi ' + icon + '"></i>' + label + '</div>' +
+             '<ul class="rep-list">' + list(items) + '</ul></div>';
+    }
+
+    var plan = (session.improvement_plan) || {};
+    var courses = (report.recommended_courses || []).length
+      ? '<div class="rep-sec"><div class="rep-lbl"><i class="bi bi-mortarboard"></i>Recommended courses</div>' +
+        '<ul class="rep-list">' + report.recommended_courses.map(function (c) {
+          var label = esc(c.title) + (c.provider ? " (" + esc(c.provider) + ")" : "") +
+                      (c.closes_gap ? " — closes " + esc(c.closes_gap) : "");
+          return "<li>" + (c.url ? '<a href="' + esc(c.url) + '" target="_blank" rel="noopener">' + label + "</a>" : label) + "</li>";
+        }).join("") + "</ul></div>"
+      : "";
+
+    var minutes = session.elapsed_seconds ? Math.max(1, Math.round(session.elapsed_seconds / 60)) : 0;
+
+    host.innerHTML =
+      '<div class="eyebrow">Step 3 of 3</div>' +
+      '<h2 class="stage-title">' + esc(session.target_role) + ' — your report</h2>' +
+      '<p class="stage-sub">' + session.answered + ' of ' + session.total_questions + ' questions answered' +
+        (minutes ? ' in ' + minutes + ' min' : '') + '.</p>' +
+      '<div class="score-hero"><div class="sh-val">' + report.overall_score + '%</div>' +
+      '<div class="sh-lbl">Overall interview score</div></div>' +
+      '<div class="score-row">' + cells + '</div>' +
+      section("Strengths", report.strengths, "bi-check-circle") +
+      section("Weaknesses", report.weaknesses, "bi-exclamation-circle") +
+      section("Skills to improve", report.missing_skills, "bi-puzzle") +
+      section("Recommended projects", plan.recommended_projects, "bi-hammer") +
+      courses +
+      section("Your plan", report.improvement_plan, "bi-list-ol") +
+      section("Practise next", report.next_topics, "bi-arrow-repeat") +
+      '<div class="btn-row" style="margin-top:1.75rem;">' +
+        (readOnly
+          ? '<button class="btn" type="button" data-stage="setup">New interview</button>'
+          : '<button class="btn" type="button" id="btnAgain"><i class="bi bi-arrow-counterclockwise"></i> ' +
+            'Practise these again</button>' +
+            '<button class="btn btn-ghost" type="button" data-stage="setup">New interview</button>') +
+      '</div>' +
+      (report.is_ai_generated ? "" :
+        '<div class="note">Scored from your answers with the AI writer unavailable, so the wording is ' +
+        'templated. Every number here is from what you actually wrote.</div>');
+  }
+
+  /* ── Actions ─────────────────────────────────────────────────────── */
+  function absorb(payload) {
+    // Session first: the setup controls read it to show what was last chosen.
+    if (payload.session !== undefined) state.session = payload.session;
+    if (payload.readiness) renderReadiness(payload.readiness);
+    if (payload.options) renderSetup(payload.options);
+    renderResume(state.session);
+  }
+
+  async function start(button) {
+    busy(button, true, "Building your interview…");
+    try {
+      var payload = await api(SESSION_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          role: el("role").value.trim(),
+          interview_type: chosen("interview_type", "mixed"),
+          difficulty: chosen("difficulty", "mixed"),
+          question_count: Number(chosen("question_count", 8)),
+          duration_minutes: Number(chosen("duration_minutes", 0))
+        })
+      });
+      absorb(payload);
+      state.index = state.session ? Math.min(state.session.current_index, state.session.total_questions - 1) : 0;
+      showStage("interview");
+      renderInterview();
+    } catch (error) {
+      alert("Could not build your interview. " + (error.message || ""));
+    } finally {
+      busy(button, false);
+    }
+  }
+
+  async function submitAnswer(button) {
+    var box = el("answerBox");
+    if (!box || !box.value.trim()) { box && box.focus(); return; }
+    busy(button, true, "Evaluating…");
+    try {
+      await api(ANSWER_URL, {
+        method: "POST",
+        body: JSON.stringify({ answer: box.value, question_index: state.index })
+      });
+      if (window.SkillSyncState && state.session) {
+        window.SkillSyncState.local.remove("interview.draft." + state.session.id + "." + state.index);
+      }
+      // Re-read the session so the stored turn - not a local guess at it - is
+      // what the feedback renders from.
+      var payload = await api(SESSION_URL);
+      state.session = payload.session;
+      if (payload.readiness) state.readiness = payload.readiness;
+      renderInterview();
+      el("feedbackHost").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } catch (error) {
+      alert("Could not evaluate that answer. " + (error.message || ""));
+    } finally {
+      busy(button, false);
+    }
+  }
+
+  async function finish(button) {
+    if (!confirm("Finish this interview and generate your report?")) return;
+    busy(button, true, "Writing your report…");
+    try {
+      var payload = await api(COMPLETE_URL, { method: "POST" });
+      state.session = payload.session;
+      renderReadiness(payload.readiness);
+      renderReport(payload.session, false);
+      renderResume(payload.session);
+      showStage("report");
+      loadHistory();
+    } catch (error) {
+      alert("Could not produce your report. " + (error.message || ""));
+    } finally {
+      busy(button, false);
+    }
+  }
+
+  async function practiseAgain(button) {
+    busy(button, true, "Resetting…");
+    try {
+      var payload = await api(RESET_URL, { method: "POST" });
+      state.session = payload.session;
+      state.index = 0;
+      showStage("interview");
+      renderInterview();
+    } catch (error) {
+      alert("Could not reset this interview. " + (error.message || ""));
+    } finally {
+      busy(button, false);
+    }
+  }
+
+  async function openPastSession(id) {
+    try {
+      var payload = await api(SESSIONS_URL + id + "/");
+      renderReport(payload.session, !payload.session.is_active);
+      showStage("report");
+    } catch (error) {
+      alert("Could not open that interview. " + (error.message || ""));
+    }
+  }
+
+  /* ── Wiring ──────────────────────────────────────────────────────── */
+  document.addEventListener("click", function (event) {
+    var target = event.target.closest("button");
+    if (!target) return;
+
+    if (target.dataset.stage) {
+      if (target.dataset.stage === "setup") loadHistory();
+      return showStage(target.dataset.stage);
+    }
+    if (target.dataset.session) return openPastSession(target.dataset.session);
+    if (target.dataset.nav) {
+      state.index += Number(target.dataset.nav);
+      return renderInterview();
+    }
+    if (target.id === "btnSubmit") return submitAnswer(target);
+    if (target.id === "btnEnd" || target.id === "btnEnd2") return finish(target);
+    if (target.id === "btnAgain") return practiseAgain(target);
+    if (target.id === "btnResume") {
+      state.index = Math.min(state.session.current_index, state.session.total_questions - 1);
+      showStage("interview");
+      return renderInterview();
+    }
+    if (target.id === "btnRestart") {
+      if (!confirm("Clear your answers and start this interview again? The questions stay the same.")) return;
+      return practiseAgain(target);
+    }
+  });
+
+  document.addEventListener("change", function (event) {
+    if (event.target.name === "interview_type") describeType();
+  });
+
+  el("setupForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    start(el("btnStart"));
+  });
+
+  /* Ctrl/Cmd+Enter submits, the way every other answer box works. */
+  document.addEventListener("keydown", function (event) {
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && state.stage === "interview") {
+      var button = el("btnSubmit");
+      if (button) { event.preventDefault(); submitAnswer(button); }
+    }
+  });
+
+  /* Initial load restores the stored session without spending an AI call. */
+  (async function init() {
+    try {
+      var payload = await api(SESSION_URL);
+      absorb(payload);
+      loadHistory();
+
+      var requested = new URLSearchParams(window.location.search).get("role");
+      if (requested) {
+        el("role").value = requested;
+        // Deep-linked from the assistant with a role the stored session is not
+        // for: build it now rather than making them press the button again.
+        if (!payload.session || payload.session.target_role.toLowerCase() !== requested.toLowerCase()) {
+          return start(el("btnStart"));
+        }
+      }
+
+      var session = state.session;
+      if (session && session.status === "completed" && session.report) {
+        renderReport(session, false);
+        return showStage("report");
+      }
+      if (window.SkillSyncState) {
+        window.SkillSyncState.restore("interview.stage", function (stage) {
+          if (stage === "interview" && session && session.total_questions) {
+            state.index = Math.min(session.current_index, session.total_questions - 1);
+            showStage("interview");
+            renderInterview();
+          }
+        });
+      }
+    } catch (error) {
+      el("readinessCard").innerHTML =
+        '<div class="empty">Could not load interview practice. Refresh to try again.</div>';
+    }
+  })();
+})();
+</script>
+{% endblock %}

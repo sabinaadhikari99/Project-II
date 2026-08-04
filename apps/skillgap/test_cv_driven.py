@@ -7,6 +7,7 @@ These lock in the behaviour that was previously broken:
 """
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import TestCase
 
 from apps.accounts.models import UserProfile
@@ -76,6 +77,7 @@ class CVDrivenAnalysisTests(TestCase):
 
     def setUp(self):
         clear()
+        cache.clear()
         self._seq = 0
 
     def _analyze(self, cv):
@@ -185,6 +187,7 @@ class ExplainabilityTests(TestCase):
 
     def setUp(self):
         clear()
+        cache.clear()
 
     def _analyze(self, cv, name="exp_user"):
         """Run the real AI-Match path, stubbing only the PDF text extraction."""

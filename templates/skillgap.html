@@ -1648,68 +1648,144 @@
     </div>`;
   }
 
+  /* ── Persistence ───────────────────────────────────────────────
+     Everything on this page is derived from the CV on file, so a snapshot is
+     valid exactly as long as that CV is unchanged. Each cache entry carries
+     the CV fingerprint the backend reported; when the fingerprint moves, the
+     stale entries are dropped rather than shown. ── */
+  const SG_STORE = window.SkillSyncState || null;
+  let sgFingerprint = SG_STORE ? (SG_STORE.local.get("skillgap.fingerprint", "") || "") : "";
+
+  function sgCacheRead(name) {
+    return SG_STORE ? SG_STORE.cache.read("skillgap." + name, sgFingerprint) : null;
+  }
+
+  function sgCacheWrite(name, data) {
+    if (SG_STORE) SG_STORE.cache.write("skillgap." + name, data, sgFingerprint);
+  }
+
+  function sgSetFingerprint(fingerprint) {
+    if (!fingerprint || !SG_STORE) return;
+    if (sgFingerprint && sgFingerprint !== fingerprint) {
+      ["skillgap.gap", "skillgap.courses", "skillgap.roadmap"].forEach(k => SG_STORE.cache.drop(k));
+      SG_STORE.local.remove("skillgap.openSteps");
+    }
+    sgFingerprint = fingerprint;
+    SG_STORE.local.set("skillgap.fingerprint", fingerprint);
+  }
+
+  /* Which roadmap steps the user had expanded. */
+  function sgOpenSteps() {
+    const stored = SG_STORE ? SG_STORE.local.get("skillgap.openSteps", []) : [];
+    return Array.isArray(stored) ? stored : [];
+  }
+
+  function sgApplyOpenSteps() {
+    sgOpenSteps().forEach(n => {
+      const el = document.getElementById("sgStep" + n);
+      if (el) el.classList.add("open");
+    });
+  }
+
   window.sgToggleStep = function(n) {
     const el = document.getElementById("sgStep" + n);
-    if (el) el.classList.toggle("open");
+    if (!el) return;
+    const open = el.classList.toggle("open");
+    if (!SG_STORE) return;
+    const steps = new Set(sgOpenSteps().map(String));
+    if (open) steps.add(String(n)); else steps.delete(String(n));
+    SG_STORE.local.set("skillgap.openSteps", Array.from(steps));
   };
 
   window.sgCycleStep = async function(n, current) {
     const next = current === "not_started" ? "in_progress" : (current === "in_progress" ? "completed" : "not_started");
     try {
-      const updated = await api("/api/skillgap/roadmap/progress/", {
+      const progress = await api("/api/skillgap/roadmap/progress/", {
         method: "PATCH",
         body: JSON.stringify({ step_number: n, status: next })
       });
-      renderRoadmap(updated);
+      /* The endpoint returns the progress summary only. It is merged into the
+         roadmap already on screen so the step list keeps its phases, resources
+         and headers instead of being replaced by a bare summary. */
+      const base = sgRoadmapData || sgCacheRead("roadmap") || {};
+      const merged = Object.assign({}, base, {
+        progress: progress,
+        has_resume: base.has_resume !== undefined ? base.has_resume : true
+      });
+      sgCacheWrite("roadmap", merged);
+      renderRoadmap(merged);
     } catch (e) {
       showToast("Could not update progress: " + e.message, "danger");
     }
   };
 
-  async function loadCourses() {
-    document.getElementById("sgCourses").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-    document.getElementById("sgCourseBadge").textContent = "…";
-    let data = { courses: [] };
-    try {
-      data = await api("/api/skillgap/courses/");
-    } catch (e) {
-      document.getElementById("sgCourses").innerHTML =
-        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Course recommendations are temporarily unavailable.</div>`;
-      return;
-    }
+  function renderCourses(data) {
     const haveSkills = (window.__sgHaveSkills || []);
     const courses = data.courses || [];
     document.getElementById("sgCourseBadge").textContent = courses.length;
     document.getElementById("sgCourses").innerHTML = sgRenderCourses(haveSkills, data);
   }
 
+  async function loadCourses() {
+    const cached = sgCacheRead("courses");
+    if (cached) {
+      renderCourses(cached);
+    } else {
+      document.getElementById("sgCourses").innerHTML =
+        `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
+      document.getElementById("sgCourseBadge").textContent = "…";
+    }
+
+    let data = { courses: [] };
+    try {
+      data = await api("/api/skillgap/courses/");
+    } catch (e) {
+      if (cached) return;   /* keep the restored view rather than blanking it */
+      document.getElementById("sgCourses").innerHTML =
+        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Course recommendations are temporarily unavailable.</div>`;
+      return;
+    }
+    sgCacheWrite("courses", data);
+    renderCourses(data);
+  }
+
+  let sgRoadmapData = null;
+
   function renderRoadmap(data) {
+    sgRoadmapData = data;
     const haveSkills = (window.__sgHaveSkills || []);
     const progress = data.progress;
     document.getElementById("sgRoadmapBadge").textContent =
       progress ? progress.percentage + "%" : "–";
     document.getElementById("sgRoadmap").innerHTML = sgRenderRoadmap(haveSkills, data);
+    sgApplyOpenSteps();
   }
 
   async function loadRoadmap() {
-    document.getElementById("sgRoadmap").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-    document.getElementById("sgRoadmapBadge").textContent = "…";
+    const cached = sgCacheRead("roadmap");
+    if (cached) {
+      renderRoadmap(cached);
+    } else {
+      document.getElementById("sgRoadmap").innerHTML =
+        `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
+      document.getElementById("sgRoadmapBadge").textContent = "…";
+    }
+
     let data = {};
     try {
       data = await api("/api/skillgap/roadmap/");
     } catch (e) {
+      if (cached) return;
       document.getElementById("sgRoadmap").innerHTML =
         `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Could not load your roadmap right now. Please try again.</div>`;
       return;
     }
+    sgCacheWrite("roadmap", data);
     renderRoadmap(data);
   }
 
   /* ── Main ── */
-  async function loadSkillGap() {
-    /* Show shimmers */
+  function sgShowShimmers() {
     document.getElementById("sgCurrentSkills").innerHTML =
       `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div></div>`;
     document.getElementById("sgMissingSkills").innerHTML =
@@ -1723,9 +1799,9 @@
     document.getElementById("sgCritVal").textContent = "–";
     document.getElementById("sgMatchVal").textContent = "–";
     document.getElementById("sgMatchSub").textContent = "";
+  }
 
-    const gap = await api("/api/skillgap/");
-
+  function applyGap(gap) {
     const haveSkills = gap.user_skills || [];
     const missSkills = gap.missing_skills || [];
     const haveLen    = haveSkills.length;
@@ -1758,8 +1834,38 @@
     /* Missing Skills */
     document.getElementById("sgMissingSkills").innerHTML = sgRenderMissing(haveSkills, p);
 
-    /* Recommended Courses + Learning Roadmap */
     window.__sgHaveSkills = haveSkills;
+  }
+
+  /* Restore the last analysis instantly, then revalidate against the server.
+     The gap, courses and roadmap all describe the same CV, so one fingerprint
+     governs the whole page. */
+  async function loadSkillGap() {
+    const cached = sgCacheRead("gap");
+    if (cached) {
+      applyGap(cached);
+    } else {
+      sgShowShimmers();
+    }
+
+    let gap;
+    try {
+      gap = await api("/api/skillgap/");
+    } catch (e) {
+      if (cached) {
+        /* Serve what the user already had rather than an error screen. */
+        loadCourses();
+        loadRoadmap();
+        return;
+      }
+      throw e;
+    }
+
+    sgSetFingerprint(gap.analysis_fingerprint || "");
+    sgCacheWrite("gap", gap);
+    if (!cached || JSON.stringify(cached) !== JSON.stringify(gap)) applyGap(gap);
+
+    /* Recommended Courses + Learning Roadmap */
     loadCourses();
     loadRoadmap();
   }

@@ -6,10 +6,23 @@ from apps.shared.resume_quality import analyze_resume_quality
 from apps.shared.skill_normalizer import normalize_skill, normalize_skill_set
 
 from .analysis_memo import run_once
+from .cache import analysis_fingerprint, get_analysis_cached, set_analysis_cached
 from .career import CareerAnalyzer
 
 
-def analyze_skill_gap(user):
+def analyze_skill_gap(user, force=False):
+    """Skill gap for the user's current CV, skills and job pool.
+
+    The response is cached per analysis fingerprint, matching how courses and
+    roadmaps are already served, so returning to the page repaints the stored
+    analysis instead of re-running the pipeline. `force=True` recomputes.
+    """
+    fingerprint = analysis_fingerprint(user)
+    if not force:
+        cached = get_analysis_cached("gap", user.id, fingerprint)
+        if cached is not None:
+            return cached
+
     context = run_once(user, lambda: CareerAnalyzer.analyze(user))
     resources_path = settings.DATA_DIR / "learning_resources.json"
     resources = (
@@ -32,7 +45,7 @@ def analyze_skill_gap(user):
         required_skills=top_required, signals=context.signals or None,
     )
 
-    return {
+    response = {
         "user_skills": context.user_skills,
         "missing_skills": context.missing_names,
         "missing_skill_details": context.missing_skills,
@@ -55,4 +68,9 @@ def analyze_skill_gap(user):
         "match_score": context.match_score,
         "match_explanation": context.match_explanation,
         "has_resume": bool(context.resume_text),
+        # Lets the client tell whether a locally cached copy still describes the
+        # analysis on file, without downloading it to compare.
+        "analysis_fingerprint": fingerprint,
     }
+    set_analysis_cached("gap", user.id, fingerprint, response)
+    return response

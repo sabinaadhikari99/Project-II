@@ -330,6 +330,37 @@
     margin-bottom: 1.15rem;
   }
 
+  /* The CV on record, shown inside the upload box where a file selection
+     would normally appear. */
+  .upload-area .upload-file {
+    margin: -0.35rem 0 1rem;
+    line-height: 1.35;
+  }
+
+  .upload-area .upload-file .uf-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: 100%;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--txt);
+    word-break: break-word;
+  }
+
+  .upload-area .upload-file .uf-name i {
+    color: #DC2626;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .upload-area .upload-file .uf-meta {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 12.5px;
+    color: var(--txt-muted);
+  }
+
   .upload-area .form-control {
     height: 44px;
     border-radius: 12px;
@@ -857,6 +888,77 @@
   .skill-col-label.missing { color: var(--warn); }
   .skill-col-label i { font-size: 13px; }
 
+  /* ── Score ledger: the arithmetic behind the match percentage ── */
+  .rj-ledger {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 0.85rem 0 0.6rem;
+  }
+  @media (max-width: 720px) { .rj-ledger { grid-template-columns: 1fr; } }
+
+  .ledger-col { border-radius: 10px; padding: 0.6rem 0.75rem; }
+  .ledger-col.pos { background: rgba(16,185,129,0.07); }
+  .ledger-col.neg { background: rgba(245,158,11,0.08); }
+  .ledger-head {
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .ledger-col.pos .ledger-head { color: var(--success, #10B981); }
+  .ledger-col.neg .ledger-head { color: var(--warn, #F59E0B); }
+
+  .ledger-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .ledger-list li { font-size: 13px; line-height: 1.45; }
+  .lg-row { display: flex; align-items: baseline; gap: 0.4rem; }
+  .lg-mark { font-weight: 700; flex-shrink: 0; }
+  .lg-mark.pos { color: var(--success, #10B981); }
+  .lg-mark.neg { color: var(--warn, #F59E0B); }
+  .lg-item { flex: 1; color: var(--txt-soft); }
+  .lg-pts {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--warn, #F59E0B);
+    flex-shrink: 0;
+  }
+  .lg-reason { font-size: 12px; color: var(--txt-muted); margin-left: 1.05rem; }
+  .lg-empty { font-size: 13px; color: var(--txt-muted); }
+
+  .rj-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1.1rem;
+    padding: 0.6rem 0.9rem;
+    margin-bottom: 0.85rem;
+    border-radius: 10px;
+    border: 1px solid rgba(var(--accent-rgb), 0.14);
+    background: rgba(var(--accent-rgb), 0.04);
+    font-size: 13px;
+    color: var(--txt-muted);
+  }
+  .rj-total b { color: var(--txt-soft); font-variant-numeric: tabular-nums; }
+  .rj-total .rj-total-final {
+    margin-left: auto;
+    font-weight: 700;
+    color: var(--txt-soft);
+    font-size: 13.5px;
+  }
+  .rj-total .rj-total-final b { color: var(--accent, #6366f1); font-size: 16px; }
+  .rj-total .rj-total-note { flex-basis: 100%; font-size: 12px; }
+
   .rec-job .rj-insight {
     font-size: 14px;
     color: var(--txt-soft);
@@ -1003,6 +1105,115 @@
     .match-row.row-1 { grid-template-columns: 1fr; }
   }
 
+  /* ── Next-step CTA ──
+     Shown only once an analysis exists: it hands the user off to Skill Gap
+     Analysis, which stays a page of its own rather than being embedded here. */
+  .next-step {
+    display: none;                       /* revealed by applyAnalysis() */
+    background:
+      linear-gradient(135deg, rgba(var(--accent-rgb), 0.06) 0%, rgba(var(--accent-rgb), 0.02) 55%, transparent 100%),
+      var(--surface);
+    border: 1px solid rgba(var(--accent-rgb), 0.16);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px var(--shadow);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.5s ease both;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .next-step.is-visible { display: block; }
+  .next-step:hover {
+    box-shadow: 0 10px 30px var(--shadow-lg);
+    border-color: rgba(var(--accent-rgb), 0.28);
+  }
+
+  .next-step-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+  }
+
+  .next-step-main { display: flex; gap: 1.1rem; flex: 1 1 420px; min-width: 0; }
+
+  .next-step-icon {
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 14px;
+    background: rgba(var(--accent-rgb), 0.10);
+    color: var(--accent);
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .next-step-kicker {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+
+  .next-step-title {
+    font-size: 18px; font-weight: 650; color: var(--txt);
+    margin: 0 0 0.4rem; line-height: 1.35;
+  }
+
+  .next-step-text {
+    font-size: 14px; color: var(--txt-soft);
+    line-height: 1.6; margin: 0; max-width: 62ch;
+  }
+
+  .next-step-points {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem;
+  }
+  .next-step-points span {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.32rem 0.7rem; border-radius: 999px;
+    background: var(--surface-alt); border: 1px solid var(--bdr);
+    font-size: 12.5px; font-weight: 500; color: var(--txt-soft);
+  }
+  .next-step-points i { color: var(--accent); font-size: 12px; }
+
+  .btn-next-step {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    height: 50px; padding: 0 1.5rem;
+    border-radius: 14px; border: none;
+    background: var(--accent); color: #fff;
+    font-size: 15px; font-weight: 600; white-space: nowrap;
+    text-decoration: none;
+    position: relative; overflow: hidden;
+    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.25);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  .btn-next-step::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.20) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  .btn-next-step:hover::before { transform: translateX(100%); }
+  .btn-next-step:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(var(--accent-rgb), 0.32);
+    filter: brightness(1.08);
+    color: #fff;
+  }
+  .btn-next-step:active { transform: translateY(0); }
+  .btn-next-step .arrow { transition: transform 0.3s ease; }
+  .btn-next-step:hover .arrow { transform: translateX(3px); }
+
+  @media (max-width: 767.98px) {
+    .next-step { padding: 1.35rem; margin-bottom: 1.25rem; }
+    .next-step-inner { gap: 1.25rem; }
+    .next-step-main { flex-basis: 100%; gap: 0.9rem; }
+    .next-step-icon { width: 42px; height: 42px; font-size: 19px; border-radius: 12px; }
+    .next-step-title { font-size: 16.5px; }
+    .btn-next-step { width: 100%; }
+  }
+
   /* ── Responsive ── */
   @media (max-width: 1199.98px) {
     .rec-job .rj-skills-row { grid-template-columns: 1fr; }
@@ -1023,6 +1234,31 @@
     .rec-job { padding: 1.1rem; }
     .rec-job .rj-header { flex-direction: column; gap: 0.5rem; }
     .metric-card { padding: 1.15rem; }
+  }
+
+  /* Restored-analysis notice */
+  .restored-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.18);
+    background: rgba(var(--bs-primary-rgb), 0.05);
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--txt-muted);
+  }
+  .restored-banner i { color: rgb(var(--bs-primary-rgb)); }
+  .restored-banner .rb-action {
+    margin-left: auto;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgb(var(--bs-primary-rgb));
+    cursor: pointer;
   }
 
   @media (max-width: 575.98px) {
@@ -1062,6 +1298,17 @@
             <div class="upload-icon"><i class="bi bi-file-earmark-pdf"></i></div>
             <div class="upload-title">Upload your CV</div>
             <div class="upload-sub">PDF format only — analyzed by AI instantly</div>
+
+            <!-- A browser clears the file input on every load and cannot
+                 repopulate it, so the CV on record is shown here instead. -->
+            <div id="currentCvLine" class="upload-file" style="display:none;">
+              <span class="uf-name">
+                <i class="bi bi-file-earmark-pdf-fill"></i>
+                <span id="currentCvName" title=""></span>
+              </span>
+              <span class="uf-meta" id="currentCvDate"></span>
+            </div>
+
             <input id="resume_pdf" class="form-control" name="resume" type="file" accept="application/pdf" required>
             <div class="format-pills">
               <span class="format-pill">PDF</span>
@@ -1074,6 +1321,10 @@
           </button>
         </form>
         <div id="message" class="mt-3"></div>
+        <div id="restoredBanner" class="restored-banner" style="display:none;">
+          <i class="bi bi-clock-history"></i>
+          <span id="restoredText">Restored your last analysis.</span>
+        </div>
         <div id="detectedProfession" class="mt-2"></div>
       </div>
     </div>
@@ -1237,6 +1488,35 @@
       </div>
     </div>
   </div>
+
+  <!-- Next step: hand off to Skill Gap Analysis, which remains its own page.
+       Hidden until an analysis exists, so the pre-upload empty state is
+       unchanged. Revealed by applyAnalysis(). -->
+  <section class="next-step" id="skillGapCta" aria-hidden="true">
+    <div class="next-step-inner">
+      <div class="next-step-main">
+        <div class="next-step-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <div>
+          <div class="next-step-kicker"><i class="bi bi-stars"></i> Next step</div>
+          <h2 class="next-step-title">Continue Your AI Career Analysis</h2>
+          <p class="next-step-text">
+            Your CV has been analyzed. Go deeper to discover the skills you're missing for your
+            target roles, a personalized learning roadmap, recommended courses, and the
+            improvement opportunities that will raise your match score.
+          </p>
+          <div class="next-step-points">
+            <span><i class="bi bi-puzzle"></i> Missing skills</span>
+            <span><i class="bi bi-signpost-split"></i> Learning roadmap</span>
+            <span><i class="bi bi-mortarboard"></i> Recommended courses</span>
+            <span><i class="bi bi-arrow-up-right-circle"></i> Career opportunities</span>
+          </div>
+        </div>
+      </div>
+      <a class="btn-next-step" href="{% url 'skillgap' %}">
+        View Skill Gap Analysis <span class="arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
 </div>
 {% endblock %}
 
@@ -1341,6 +1621,65 @@
     </div>`;
   }
 
+  /* ── Score ledger ─────────────────────────────────────────────────────
+     Shows the arithmetic behind match_percentage: the weighted score, the
+     requirements THIS posting asked for that the CV did not evidence, and
+     what each one cost. Rendered only when the backend supplied the ledger,
+     so an analysis session stored before it existed still repaints using the
+     plain matched/missing chips. */
+  function hasScoreLedger(item) {
+    return Array.isArray(item.strengths) || Array.isArray(item.deductions);
+  }
+
+  function ledgerRow(entry, sign) {
+    const neg = sign === "neg";
+    const points = parseInt(entry.points) || 0;
+    const pts = (neg && points) ? `<span class="lg-pts">−${points}</span>` : "";
+    const reason = entry.reason
+      ? `<div class="lg-reason">${escapeHtml(entry.reason)}</div>` : "";
+    return `<li>
+      <div class="lg-row">
+        <span class="lg-mark ${sign}">${neg ? "−" : "✓"}</span>
+        <span class="lg-item">${escapeHtml(entry.item)}</span>
+        ${pts}
+      </div>${reason}
+    </li>`;
+  }
+
+  function renderScoreLedger(item) {
+    if (!hasScoreLedger(item)) return "";
+
+    const strengths = item.strengths || [];
+    const deductions = item.deductions || [];
+    const total = parseInt(item.total_deduction) || 0;
+    const final = parseInt(item.match_percentage) || 0;
+    /* base_score is authoritative; derive it only for older payloads. */
+    const base = parseInt(item.base_score) || (final + total);
+
+    const column = (cls, icon, title, rows, empty) => `
+      <div class="ledger-col ${cls}">
+        <div class="ledger-head"><i class="bi ${icon}"></i> ${title}</div>
+        ${rows.length
+          ? `<ul class="ledger-list">${rows.join("")}</ul>`
+          : `<div class="lg-empty">${empty}</div>`}
+      </div>`;
+
+    return `
+      <div class="rj-ledger">
+        ${column("pos", "bi-check-circle", "Strengths",
+                 strengths.map(s => ledgerRow(s, "pos")),
+                 "None of this role's requirements were found in your CV.")}
+        ${column("neg", "bi-dash-circle", "Missing Requirements",
+                 deductions.map(d => ledgerRow(d, "neg")),
+                 "Nothing this posting requires is missing from your CV.")}
+      </div>
+      <div class="rj-total">
+        <span>Weighted score <b>${base}%</b></span>
+        <span>Deductions <b>${total ? "−" + total : "0"}</b></span>
+        <span class="rj-total-final">Final Match Score <b>${final}%</b></span>
+      </div>`;
+  }
+
   /* ── Recommended job card ── */
   function renderRecommendedJob(item, index) {
     const job = item.job;
@@ -1355,6 +1694,22 @@
       .map(s => `<span class="skill-chip-modern chip-success"><i class="bi bi-check-lg"></i> ${escapeHtml(s)}</span>`).join("");
     const missing = (item.missing_skills || [])
       .map(s => `<span class="skill-chip-modern chip-warn"><i class="bi bi-x-lg"></i> ${escapeHtml(s)}</span>`).join("");
+
+    /* The ledger is the richer form of the matched/missing chips - it names the
+       same skills but prices them and explains each one. Show the chips only
+       when there is no ledger, so the two never duplicate each other. */
+    const ledger = renderScoreLedger(item);
+    const skillsRow = `
+      <div class="rj-skills-row">
+        <div>
+          <div class="skill-col-label matched"><i class="bi bi-check-circle"></i> Matched</div>
+          <div class="chip-wrap">${matched || '<span style="font-size:13px;color:var(--txt-muted)">None</span>'}</div>
+        </div>
+        <div>
+          <div class="skill-col-label missing"><i class="bi bi-exclamation-circle"></i> Missing</div>
+          <div class="chip-wrap">${missing || '<span style="font-size:13px;color:var(--txt-muted)">None</span>'}</div>
+        </div>
+      </div>`;
 
     return `<div class="rec-job" style="animation-delay:${index * 0.07}s">
       <div class="rj-header">
@@ -1380,16 +1735,7 @@
       </div>
       <div class="rj-desc">${escapeHtml(job.description)}</div>
       ${renderMatchExplanation(item.match_explanation)}
-      <div class="rj-skills-row">
-        <div>
-          <div class="skill-col-label matched"><i class="bi bi-check-circle"></i> Matched</div>
-          <div class="chip-wrap">${matched || '<span style="font-size:13px;color:var(--txt-muted)">None</span>'}</div>
-        </div>
-        <div>
-          <div class="skill-col-label missing"><i class="bi bi-exclamation-circle"></i> Missing</div>
-          <div class="chip-wrap">${missing || '<span style="font-size:13px;color:var(--txt-muted)">None</span>'}</div>
-        </div>
-      </div>
+      ${ledger || skillsRow}
       ${renderWhy(item)}
       <div class="rj-insight">${escapeHtml(item.recommendation_insight || "")}</div>
       <div class="rj-actions">
@@ -1516,6 +1862,16 @@
     });
   }
 
+  /* ── Skill Gap Analysis hand-off ──
+     The CTA is a navigation affordance, not a second copy of the feature:
+     Skill Gap Analysis stays on its own page and nothing is embedded here. ── */
+  function toggleSkillGapCta(show) {
+    const cta = document.getElementById("skillGapCta");
+    if (!cta) return;
+    cta.classList.toggle("is-visible", !!show);
+    cta.setAttribute("aria-hidden", show ? "false" : "true");
+  }
+
   /* ── Apply analysis data ── */
   function applyAnalysis(data) {
     animateValue("resumeScore", data.resume_score || 0, "%");
@@ -1546,6 +1902,10 @@
         <div class="ph-text">No summary was returned. Try uploading a more detailed CV.</div>
       </div>`;
     }
+
+    /* The CV has been analyzed, so the hand-off to Skill Gap Analysis is now
+       worth offering. Before this point the pre-upload empty state stands. */
+    toggleSkillGapCta(true);
 
     document.getElementById("skillsExtracted").innerHTML =
       chipList(data.skills_extracted, "No skills extracted yet.");
@@ -1650,13 +2010,20 @@
     uploadArea.addEventListener("drop", (e) => {
       e.preventDefault();
       uploadArea.classList.remove("drag-over");
-      if (e.dataTransfer.files.length) fileInput.files = e.dataTransfer.files;
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        previewSelectedFile();
+      }
     });
     uploadArea.addEventListener("click", (e) => { if (e.target !== fileInput) fileInput.click(); });
+    fileInput.addEventListener("change", previewSelectedFile);
   }
 
   /* ── Loading skeletons ── */
   function showSkeletons() {
+    /* A re-analysis is in flight, so the previous result no longer describes
+       the CV being processed. The CTA returns when the new one lands. */
+    toggleSkillGapCta(false);
     document.getElementById("resumeSummaryWrap").innerHTML =
       `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div><div class="skeleton-line w60"></div></div>`;
     document.getElementById("skillsExtracted").innerHTML =
@@ -1669,6 +2036,138 @@
       `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
   }
 
+  /* ── Persistence ───────────────────────────────────────────────
+     The analysis is the user's work: it is restored on every visit until a
+     new CV replaces it. The server holds the authoritative copy; the local
+     snapshot only removes the network wait on repaint. ── */
+  const ANALYSIS_CACHE = "aiMatch.analysis";
+  const CV_KEY = "recommendations.currentCv";
+
+  /* ── Current uploaded CV ──────────────────────────────────────
+     A file input is cleared by the browser on every load and cannot be
+     repopulated, so the CV on record is tracked separately: stored on upload,
+     restored from localStorage for an instant paint, and confirmed against the
+     backend. It stays on screen until another CV replaces it. ── */
+  function formatUploadStamp(value) {
+    if (!value) return "";
+    const when = new Date(value);
+    if (isNaN(when.getTime())) return "";
+    return when.toLocaleString(undefined, {
+      month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+    });
+  }
+
+  function renderCurrentCv(cv) {
+    const line = document.getElementById("currentCvLine");
+    if (!line) return;
+    if (!cv || !cv.filename) {
+      line.style.display = "none";
+      return;
+    }
+
+    const nameEl = document.getElementById("currentCvName");
+    const dateEl = document.getElementById("currentCvDate");
+    nameEl.textContent = cv.filename;
+    nameEl.title = cv.filename;
+
+    const stamp = formatUploadStamp(cv.uploaded_at);
+    dateEl.textContent = cv.pending
+      ? "Selected — press Analyze CV to run it"
+      : (stamp ? `Last uploaded • ${stamp}` : "");
+    line.style.display = "block";
+  }
+
+  function storeCurrentCv(cv) {
+    if (!cv || !cv.filename) return;
+    if (window.SkillSyncState) window.SkillSyncState.local.set(CV_KEY, cv);
+    renderCurrentCv(cv);
+  }
+
+  /* A file picked but not yet analyzed is shown straight away, without
+     becoming the stored record - that only happens once the upload succeeds. */
+  function previewSelectedFile() {
+    const input = document.getElementById("resume_pdf");
+    const file = input && input.files ? input.files[0] : null;
+    if (!file) return;
+    renderCurrentCv({ filename: file.name, pending: true });
+  }
+
+  function cachedCurrentCv() {
+    return window.SkillSyncState ? window.SkillSyncState.local.get(CV_KEY, null) : null;
+  }
+
+  function showRestoredBanner(meta) {
+    const banner = document.getElementById("restoredBanner");
+    const text = document.getElementById("restoredText");
+    if (!banner || !text) return;
+
+    /* The filename and its timestamp live in the CV card above, so this
+       notice is only raised when the stored analysis no longer describes the
+       CV on the profile. */
+    if (meta.is_current !== false) {
+      banner.style.display = "none";
+      return;
+    }
+    const file = meta.cv_filename ? escapeHtml(meta.cv_filename) : "your last CV";
+    text.innerHTML =
+      `Showing the analysis of <strong>${file}</strong> — your profile CV has changed since. Upload again to refresh.`;
+    banner.style.display = "flex";
+  }
+
+  function hideRestoredBanner() {
+    const banner = document.getElementById("restoredBanner");
+    if (banner) banner.style.display = "none";
+  }
+
+  /* Repaint the last completed analysis: local snapshot first (instant), then
+     the server copy, which wins when it differs. */
+  async function restoreAnalysis() {
+    const store = window.SkillSyncState;
+
+    /* Paint the CV on record before anything is fetched, so returning to the
+       page never shows an empty upload panel. */
+    renderCurrentCv(cachedCurrentCv());
+
+    const cached = store ? store.cache.read(ANALYSIS_CACHE, null) : null;
+    if (cached && cached.analysis) {
+      applyAnalysis(cached.analysis);
+      showRestoredBanner(cached);
+    }
+
+    let data;
+    try {
+      data = await api("/api/jobs/ai-match/");
+    } catch (_) {
+      return;              /* offline or expired session — the local repaint stands */
+    }
+    if (!data || !data.has_analysis) {
+      /* The server answered and holds nothing, so a leftover local record is
+         wrong rather than merely old. */
+      if (store) store.local.remove(CV_KEY);
+      renderCurrentCv(null);
+      /* A stale local snapshot may already have revealed the CTA; the server
+         holds no analysis, so there is nothing to continue to. */
+      toggleSkillGapCta(false);
+      if (!cached) hideRestoredBanner();
+      return;
+    }
+
+    /* The backend is the source of truth for which CV is on record. */
+    storeCurrentCv(data.cv);
+
+    const meta = {
+      analysis: data.analysis,
+      analyzed_at: data.analyzed_at,
+      cv_filename: data.cv_filename,
+      is_current: data.is_current
+    };
+    if (store) store.cache.write(ANALYSIS_CACHE, meta, data.resume_fingerprint || "");
+    if (!cached || JSON.stringify(cached.analysis) !== JSON.stringify(data.analysis)) {
+      applyAnalysis(data.analysis);
+    }
+    showRestoredBanner(meta);
+  }
+
   /* ── Form submit ── */
   document.getElementById("aiMatchForm").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -1679,6 +2178,7 @@
     const orig = button.innerHTML;
     button.disabled = true;
     button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Analyzing\u2026';
+    hideRestoredBanner();
     showSkeletons();
 
     try {
@@ -1687,6 +2187,28 @@
       const data = await api("/api/jobs/ai-match/", { method: "POST", body: formData });
       showMessage("CV analyzed successfully.", "success");
       applyAnalysis(data);
+
+      /* The new upload becomes the CV on record. `data.cv` carries the stored
+         id and timestamp; the file's own name and time cover the rare case
+         where persistence failed server-side. */
+      storeCurrentCv(data.cv || {
+        id: null,
+        filename: file.name,
+        uploaded_at: data.analyzed_at || new Date().toISOString()
+      });
+
+      /* A new CV explicitly replaces the stored analysis — and every cached
+         view derived from the previous one. */
+      if (window.SkillSyncState) {
+        window.SkillSyncState.cache.write(ANALYSIS_CACHE, {
+          analysis: data,
+          analyzed_at: data.analyzed_at,
+          cv_filename: data.cv_filename,
+          is_current: true
+        }, "");
+        ["skillgap.gap", "skillgap.courses", "skillgap.roadmap"]
+          .forEach(name => window.SkillSyncState.cache.drop(name));
+      }
     } catch (error) {
       showMessage(error.message, "danger");
     } finally {
@@ -1697,5 +2219,6 @@
 
   renderChart([]);
   renderBreakdownChart(null, []);
+  restoreAnalysis();
 </script>
 {% endblock %}

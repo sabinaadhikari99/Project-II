@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import TestCase
 
 from apps.jobs.models import JobPosting
@@ -17,6 +18,7 @@ User = get_user_model()
 class SkillGapServiceTests(TestCase):
     def setUp(self):
         clear()
+        cache.clear()
         self.user = User.objects.create_user(
             username="testuser",
             email="testuser@example.com",
@@ -113,6 +115,7 @@ class ResumeGateTests(TestCase):
 
     def setUp(self):
         clear()
+        cache.clear()
         self.recruiter = User.objects.create_user(
             username="recruiter_gate",
             email="recruiter_gate@example.com",
@@ -230,6 +233,7 @@ class JobReadyRoadmapTests(TestCase):
 
     def setUp(self):
         clear()
+        cache.clear()
         self.recruiter = User.objects.create_user(
             username="recruiter_jr",
             email="recruiter_jr@example.com",
@@ -332,6 +336,7 @@ class CourseQualityTests(TestCase):
 
     def setUp(self):
         clear()
+        cache.clear()
         self.recruiter = User.objects.create_user(
             username="recruiter_quality",
             email="recruiter_quality@example.com",

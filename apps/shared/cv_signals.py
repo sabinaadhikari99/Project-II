@@ -122,6 +122,27 @@ def _parse_education_level(text):
     return "unknown"
 
 
+def parse_education_level(text):
+    """Public wrapper: highest education level named anywhere in `text`.
+
+    Exposed so callers that hold a free-text qualification - a job posting's
+    `education_required`, or the `UserProfile.education` column - can be put on
+    the same scale as a parsed CV instead of being string-compared against it.
+    """
+    return _parse_education_level(text or "")
+
+
+def education_rank(text):
+    """Ordinal rank (0-4) of the highest education level named in `text`.
+
+    `unknown` is 0, so an unparseable or empty qualification is simply "no
+    evidence" rather than a level in its own right. Comparing ranks is what
+    lets a master's degree satisfy a bachelor's requirement; substring matching
+    between the two strings never can.
+    """
+    return EDUCATION_RANK[_parse_education_level(text or "")]
+
+
 def _count_section_items(text, section):
     """Rough item count inside a named section."""
     head = _SECTION_HEADS[section].search(text)

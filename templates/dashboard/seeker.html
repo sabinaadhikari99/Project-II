@@ -504,10 +504,43 @@
     });
   }
 
+  /* ── Application history ───────────────────────────────────────
+     Stored per user and mirrored to the server, so the list is the same after
+     a logout, on another browser, and is never mixed with another account's
+     history on a shared machine. The legacy localStorage list is imported
+     once so nothing recorded before this change is lost. ── */
+  let recentApplications = [];
+
+  function loadRecentApplications() {
+    const store = window.SkillSyncState;
+    if (!store) {
+      try { recentApplications = JSON.parse(localStorage.getItem("recentApplications") || "[]"); }
+      catch (_) { recentApplications = []; }
+      const target = document.getElementById("recentApplications");
+      if (target) target.innerHTML = renderRecentApplications();
+      return Promise.resolve(recentApplications);
+    }
+
+    const legacy = (() => {
+      try { return JSON.parse(localStorage.getItem("recentApplications") || "[]"); }
+      catch (_) { return []; }
+    })();
+
+    return store.restore("dashboard.applications", (value) => {
+      const stored = Array.isArray(value) ? value : [];
+      recentApplications = stored.length ? stored : legacy;
+      if (!stored.length && legacy.length) store.save("dashboard.applications", recentApplications);
+      const target = document.getElementById("recentApplications");
+      if (target) target.innerHTML = renderRecentApplications();
+      return recentApplications;
+    });
+  }
+
   function saveRecentApplication(app) {
-    const apps = JSON.parse(localStorage.getItem("recentApplications") || "[]");
-    apps.unshift(app);
-    localStorage.setItem("recentApplications", JSON.stringify(apps.slice(0, 20)));
+    recentApplications.unshift(app);
+    recentApplications = recentApplications.slice(0, 20);
+    if (window.SkillSyncState) window.SkillSyncState.save("dashboard.applications", recentApplications);
+    else localStorage.setItem("recentApplications", JSON.stringify(recentApplications));
   }
 
   function emptyBlock(icon, title, sub) {
@@ -580,7 +613,7 @@
   }
 
   function renderRecentApplications() {
-    const apps = JSON.parse(localStorage.getItem("recentApplications") || "[]");
+    const apps = recentApplications;
     if (!apps.length) {
       return emptyBlock("send", "No applications yet", "Start applying to jobs to see your history here.");
     }
@@ -597,17 +630,53 @@
       </div>`).join("");
   }
 
-  async function loadSeeker() {
-    setText("statMatchScore", "--");
-    setText("statSkills", "--");
-    setText("statGaps", "--");
-    setText("statSaved", "--");
-    setText("heroTitle", "Preparing your career hub");
-    setText("heroSubtitle", "Gathering the latest recommendations and progress signals.");
+  function applySeeker(snapshot) {
+    const recs = snapshot.recs || [];
+    const gap = snapshot.gap || {};
+    const jc = snapshot.recommendation_count != null ? snapshot.recommendation_count : recs.length;
+    const gc = (gap.missing_skills || []).length;
+    const sc = (gap.user_skills || []).length;
+    const best = recs[0];
+    const bestPct = best ? (best.match_percentage || Math.round((best.score || 0) * 100)) : 0;
 
-    document.getElementById("recommended").innerHTML = emptyBlock("hourglass-split", "Loading\u2026", "Fetching your recommendations.");
-    document.getElementById("resumeStatus").innerHTML = emptyBlock("hourglass-split", "Loading\u2026", "Checking your profile.");
-    document.getElementById("recentApplications").innerHTML = emptyBlock("hourglass-split", "Loading\u2026", "Checking your applications.");
+    animateValue("statMatchScore", bestPct);
+    setText("statSkills", sc);
+    setText("statGaps", gc);
+    setText("statSaved", snapshot.saved_count || 0);
+
+    setText("heroTitle", jc ? `You have ${jc} opportunities to review` : "Your next move is ready");
+    setText("heroSubtitle", jc
+      ? `The strongest next step is to review the ${jc} roles that align with your current profile.`
+      : "Add a little more profile detail and your recommendations will become sharper.");
+
+    document.getElementById("recommended").innerHTML = recs.length
+      ? recs.map(renderCompactJob).join("")
+      : emptyBlock("briefcase", "No matches yet", "Add your career signal to generate recommendations.");
+
+    document.getElementById("resumeStatus").innerHTML = renderResumeStatus(gap, snapshot.profile || null);
+  }
+
+  async function loadSeeker() {
+    const store = window.SkillSyncState;
+    /* The dashboard repaints from the last known state immediately; the live
+       figures replace it as soon as they arrive. */
+    const cached = store ? store.cache.read("dashboard.seeker", null) : null;
+
+    if (cached) {
+      applySeeker(cached);
+    } else {
+      setText("statMatchScore", "--");
+      setText("statSkills", "--");
+      setText("statGaps", "--");
+      setText("statSaved", "--");
+      setText("heroTitle", "Preparing your career hub");
+      setText("heroSubtitle", "Gathering the latest recommendations and progress signals.");
+      document.getElementById("recommended").innerHTML = emptyBlock("hourglass-split", "Loading\u2026", "Fetching your recommendations.");
+      document.getElementById("resumeStatus").innerHTML = emptyBlock("hourglass-split", "Loading\u2026", "Checking your profile.");
+      document.getElementById("recentApplications").innerHTML = emptyBlock("hourglass-split", "Loading\u2026", "Checking your applications.");
+    }
+
+    loadRecentApplications();
 
     const [recs, gap, profileResp, saved] = await Promise.all([
       api("/api/jobs/recommended/"),
@@ -616,31 +685,24 @@
       api("/api/jobs/saved/").catch(() => [])
     ]);
 
-    const jc = recs.length;
-    const gc = (gap.missing_skills || []).length;
-    const sc = (gap.user_skills || []).length;
-    const savedCount = saved.length || 0;
-    const best = recs[0];
-    const bestPct = best ? (best.match_percentage || Math.round((best.score || 0) * 100)) : 0;
+    const snapshot = {
+      recs: recs.slice(0, 3),
+      recommendation_count: recs.length,
+      gap: {
+        user_skills: gap.user_skills || [],
+        missing_skills: gap.missing_skills || []
+      },
+      profile: profileResp && profileResp.profile
+        ? {
+            resume_text: (profileResp.profile.resume_text || "").slice(0, 200),
+            experience_years: profileResp.profile.experience_years || 0
+          }
+        : null,
+      saved_count: saved.length || 0
+    };
 
-    animateValue("statMatchScore", bestPct);
-    setText("statSkills", sc);
-    setText("statGaps", gc);
-    setText("statSaved", savedCount);
-
-    setText("heroTitle", jc ? `You have ${jc} opportunities to review` : "Your next move is ready");
-    setText("heroSubtitle", jc
-      ? `The strongest next step is to review the ${jc} roles that align with your current profile.`
-      : "Add a little more profile detail and your recommendations will become sharper.");
-
-    document.getElementById("recommended").innerHTML = jc
-      ? recs.slice(0, 3).map(renderCompactJob).join("")
-      : emptyBlock("briefcase", "No matches yet", "Add your career signal to generate recommendations.");
-
-    const profileData = profileResp ? profileResp.profile : null;
-    document.getElementById("resumeStatus").innerHTML = renderResumeStatus(gap, profileData);
-
-    document.getElementById("recentApplications").innerHTML = renderRecentApplications();
+    applySeeker(snapshot);
+    if (store) store.cache.write("dashboard.seeker", snapshot, gap.analysis_fingerprint || "", 3600);
   }
 
   window.applyToJob = applyToJob;

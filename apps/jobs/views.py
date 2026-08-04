@@ -1,9 +1,12 @@
 # file path: apps/jobs/views.py
 import logging
 
+from django.utils import timezone
 from rest_framework import generics, parsers, response, views
 
+from apps.shared.fingerprint import profile_resume_fingerprint
 from apps.shared.permissions import IsJobSeeker
+from apps.state.services import AnalysisSessionService
 
 from .models import JobPosting, RecentlyViewedJob, SavedJob
 from .serializers import (
@@ -27,8 +30,20 @@ class RecommendedJobsAPIView(views.APIView):
 
 
 class AIMatchAPIView(views.APIView):
+    """Analyse an uploaded CV (POST) or replay the stored analysis (GET).
+
+    The analysis is expensive and, until now, existed only in the browser tab
+    that produced it: a refresh or a trip to another page threw it away and the
+    user had to re-upload. Every successful POST is persisted as the user's
+    single shared analysis session, and GET replays it verbatim - no models are
+    re-run, no AI calls are made - until a new upload replaces it.
+    """
+
     permission_classes = [IsJobSeeker]
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+
+    def get(self, request):
+        return response.Response(AnalysisSessionService.restore(request.user))
 
     def post(self, request):
         resume = request.FILES.get("resume")
@@ -76,6 +91,26 @@ class AIMatchAPIView(views.APIView):
         }
         if len(serialized_jobs) == 0:
             result["message"] = "No matching jobs found based on your current resume. Try updating your skills or check back later."
+
+        result["analyzed_at"] = timezone.now().isoformat()
+        result["cv_filename"] = getattr(resume, "name", "") or ""
+
+        # Persist the finished analysis as the user's shared session. A storage
+        # failure must never lose the response the user just waited for, so it
+        # is logged and the analysis is still returned.
+        try:
+            session = AnalysisSessionService.save(
+                request.user,
+                result,
+                resume_fingerprint=profile_resume_fingerprint(request.user),
+                cv_filename=result["cv_filename"],
+            )
+            # Same shape the restore endpoint returns, so the page stores one
+            # kind of CV record whether it just uploaded or is coming back.
+            result["cv"] = AnalysisSessionService.cv_metadata(session)
+        except Exception:
+            logger.exception("AI Match: could not persist analysis session for user %s", request.user.id)
+            result["cv"] = None
 
         return response.Response(result)
 

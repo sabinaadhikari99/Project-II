@@ -7,7 +7,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from .analysis_memo import run_once
-from .cache import get_cached, set_cached
+from .cache import analysis_fingerprint, get_analysis_cached, set_analysis_cached
 from .career import CareerAnalyzer
 from .catalog import (
     BASE_HOURS,
@@ -349,7 +349,8 @@ class LearningRoadmapService:
 
     def _load_or_build(self, user, force):
         context = self.context
-        cached = get_cached("roadmap", user.id, context.resume_text)
+        fingerprint = analysis_fingerprint(user)
+        cached = get_analysis_cached("roadmap", user.id, fingerprint)
         if cached is not None and not force:
             if LearningRoadmap.objects.filter(pk=cached["pk"]).exists():
                 return cached
@@ -373,7 +374,7 @@ class LearningRoadmapService:
             LearningRoadmap.objects.filter(user=user).exclude(pk=obj.pk).delete()
             self._sync_progress(obj)
             result = {"pk": obj.pk, "payload": payload}
-        set_cached("roadmap", user.id, context.resume_text, result)
+        set_analysis_cached("roadmap", user.id, fingerprint, result)
         return result
 
     def generate(self):

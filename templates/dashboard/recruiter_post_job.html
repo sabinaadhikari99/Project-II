@@ -368,6 +368,8 @@
     try {
       await api("/api/recruiter/jobs/", { method: "POST", body: JSON.stringify(form) });
       event.target.reset();
+      /* Posted successfully — the draft has served its purpose. */
+      if (window.SkillSyncState) window.SkillSyncState.remove("recruiter.jobDraft");
       showMessage("Job posted and indexed for AI matching.", "success");
     } catch (error) {
       showMessage(error.message, "danger");
@@ -376,5 +378,20 @@
       btn.disabled = false;
     }
   });
+
+  /* ── Draft autosave ───────────────────────────────────────────
+     A job post is long to write and easy to lose to a mis-click. The draft is
+     kept until the post actually succeeds. ── */
+  (function bindJobDraft() {
+    const store = window.SkillSyncState;
+    if (!store) return;
+    store.bindForm(document.getElementById("jobForm"), "recruiter.jobDraft", {
+      onRestore(values, meta) {
+        if (meta.applied && meta.source === "local" && typeof showToast === "function") {
+          showToast("Restored your unposted job draft.", "info", 3500);
+        }
+      }
+    });
+  })();
 </script>
 {% endblock %}

@@ -80,6 +80,13 @@ async function logout() {
   const refresh = localStorage.getItem("refresh");
   const access = localStorage.getItem("access");
 
+  // Anything the user changed in the last second (filters, drafts, quiz
+  // answers) is still queued client-side. Flush it while the token is still
+  // valid, otherwise the work is lost on the way out.
+  if (window.SkillSyncState) {
+    try { await window.SkillSyncState.flush(); } catch (_) {}
+  }
+
   try {
     const csrfToken = getCSRFToken();
     const headers = { "Content-Type": "application/json" };
@@ -96,7 +103,14 @@ async function logout() {
     console.debug("logout backend call failed:", e && e.message);
   }
 
+  // The theme is a device preference, not user data - clearing it makes the
+  // login page flash the wrong palette on every logout.
+  const theme = localStorage.getItem("theme");
+  const themePreference = localStorage.getItem("theme_preference");
   localStorage.clear();
+  if (theme) localStorage.setItem("theme", theme);
+  if (themePreference) localStorage.setItem("theme_preference", themePreference);
+
   window.location.href = "/login/";
 }
 

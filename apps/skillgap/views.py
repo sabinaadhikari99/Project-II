@@ -17,8 +17,9 @@ class SkillGapAPIView(APIView):
 
     def get(self, request):
         self._require_job_seeker(request.user)
+        force = request.query_params.get("refresh") == "1"
         try:
-            return Response(analyze_skill_gap(request.user))
+            return Response(analyze_skill_gap(request.user, force=force))
         finally:
             clear_analysis_memo()
 
@@ -80,6 +81,8 @@ class RoadmapProgressAPIView(APIView):
             )
         except RoadmapNotFoundError as exc:
             return Response({"detail": str(exc)}, status=404)
+        finally:
+            clear_analysis_memo()
         return Response(summary)
 
     @staticmethod

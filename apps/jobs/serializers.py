@@ -50,6 +50,16 @@ class RecommendedJobSerializer(serializers.Serializer):
     why_matched = serializers.ListField(child=serializers.CharField(), required=False)
     why_not_higher = serializers.ListField(child=serializers.CharField(), required=False)
     is_related_role = serializers.BooleanField(required=False, default=False)
+    # Phase 3: the score ledger. `base_score` is the weighted score before
+    # deductions and `total_deduction` is what the job-specific gaps cost, so
+    # base - total_deduction == match_percentage. `deductions` and `strengths`
+    # carry one entry per line item, each with the sentence that justifies it.
+    # All optional, so any caller still constructing recommendations without a
+    # ledger keeps validating.
+    base_score = serializers.IntegerField(required=False)
+    total_deduction = serializers.IntegerField(required=False)
+    deductions = serializers.ListField(child=serializers.DictField(), required=False)
+    strengths = serializers.ListField(child=serializers.DictField(), required=False)
 
 
 class SavedJobSerializer(serializers.ModelSerializer):

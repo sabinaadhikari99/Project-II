@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import include, path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 
 from apps.accounts.views import GlobalSearchAPIView, LinkedInConflictPageView, LinkedInRoleSelectPageView
 
@@ -39,6 +39,10 @@ urlpatterns = [
     path("skillgap/", DashboardTemplateView.as_view(template_name="skillgap.html"), name="skillgap"),
     path("notifications/", DashboardTemplateView.as_view(template_name="notifications.html"), name="notifications"),
     path("chat/", DashboardTemplateView.as_view(template_name="chat.html"), name="chat"),
+    path("interview-practice/", DashboardTemplateView.as_view(template_name="interview.html"), name="interview-practice"),
+    # The feature used to live here. Kept as a redirect so bookmarks and any
+    # link already shared keep working.
+    path("interview/", RedirectView.as_view(pattern_name="interview-practice", permanent=True)),
     path("quiz/", DashboardTemplateView.as_view(template_name="quiz.html"), name="quiz"),
     path("linkedin/", DashboardTemplateView.as_view(template_name="linkedin.html"), name="linkedin"),
     path("linkedin/success/", TemplateView.as_view(template_name="accounts/linkedin_success.html"), name="linkedin-success"),
@@ -53,6 +57,7 @@ urlpatterns = [
     path("api/quiz/", include("apps.quiz.urls")),
     path("api/external/", include("apps.external.urls")),
     path("api/search/", GlobalSearchAPIView.as_view(), name="global-search"),
+    path("api/state/", include("apps.state.urls")),
     path("api/notifications/", include("apps.notifications.urls")),
     path('cvgen/', include('apps.cvgen.urls', namespace='cvgen')),
 

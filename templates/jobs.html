@@ -1024,6 +1024,36 @@
     loadJobs();
   });
 
-  Promise.all([loadJobs(), loadSavedAndRecent()]);
+  /* ── Persistence ───────────────────────────────────────────────
+     Search filters follow the user: they are restored on return, after a
+     refresh and on another device, so a search never has to be retyped.
+     `loadJobs()` runs once, after the filters are back in the fields. ── */
+  (function initJobsPage() {
+    const store = window.SkillSyncState;
+    const form = document.getElementById("jobSearchForm");
+
+    if (!store || !form) {
+      Promise.all([loadJobs(), loadSavedAndRecent()]);
+      return;
+    }
+
+    let searched = false;
+    function runSearch() {
+      searched = true;
+      loadJobs();
+    }
+
+    store.bindForm(form, "jobs.filters", {
+      onRestore(values, meta) {
+        const hasFilters = values && Object.keys(values).some(k => values[k]);
+        /* The local pass paints instantly; the server pass only re-runs the
+           search if it actually changed the fields. */
+        if (meta.source === "local" || (meta.applied && hasFilters)) runSearch();
+      }
+    }).then(() => { if (!searched) runSearch(); });
+
+    store.bindScroll("jobs.scroll");
+    loadSavedAndRecent();
+  })();
 </script>
 {% endblock %}
