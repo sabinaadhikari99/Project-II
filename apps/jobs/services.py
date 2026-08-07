@@ -9,7 +9,12 @@ from django.db import transaction
 from apps.notifications.services import send_application_email
 from apps.notifications.services import notify_job_match
 from apps.shared.constants import JOB_VECTOR_PREFIX, PROFILE_VECTOR_PREFIX
-from apps.shared.cv_signals import EDUCATION_RANK, education_rank, extract_cv_signals
+from apps.shared.cv_signals import (
+    EDUCATION_RANK,
+    education_rank,
+    extract_cv_signals,
+    extract_skills_section,
+)
 from apps.shared.deductions import (
     SEVERITY_POINTS,
     build_strengths,
@@ -23,6 +28,7 @@ from apps.shared.profession_classifier import (
     classify_job,
     classify_profession_from_skills,
     classify_profession_with_resume,
+    extract_resume_sections,
     get_related_profession_titles,
     normalize_skill,
     SKILL_SYNONYMS,
@@ -30,7 +36,11 @@ from apps.shared.profession_classifier import (
     RELATED_PROFESSIONS,
 )
 from apps.shared.skill_normalizer import normalize_skill as norm_skill, normalize_skill_set
-from apps.shared.specializations import detect_specialization, get_adjacent_parents
+from apps.shared.specializations import (
+    SPECIALIZATIONS,
+    detect_specialization,
+    get_adjacent_parents,
+)
 from apps.shared.vector_db import get_vector_manager
 
 from .models import Application, JobPosting
@@ -56,6 +66,55 @@ SCORE_WEIGHTS = {
     "projects": float(getattr(settings, "AI_WEIGHT_PROJECTS", 6)),
     "certifications": float(getattr(settings, "AI_WEIGHT_CERTIFICATIONS", 4)),
 }
+
+#: How much a matched skill is worth, by where in the CV it was found.
+#:
+#: A skill listed in the SKILLS section is a claim the candidate is making; a
+#: skill that only turns up inside a sentence is weaker evidence of the same
+#: thing. Scoring them identically is why deleting "Jenkins" from a skills list
+#: changed nothing while "set up Jenkins automation servers" remained in the
+#: experience bullets - the extractor scans the whole document and could not
+#: tell the two apart.
+#: The spread is deliberately modest. A skill demonstrated in an experience
+#: bullet is genuinely good evidence - arguably better than a bare list entry -
+#: so prose is discounted, not discredited. Tune via settings if a harsher or
+#: flatter curve suits your market.
+SKILL_SOURCE_WEIGHTS = {
+    "skills_section": float(getattr(settings, "AI_SKILL_WEIGHT_DECLARED", 1.0)),
+    "experience": float(getattr(settings, "AI_SKILL_WEIGHT_EXPERIENCE", 0.85)),
+    "projects": float(getattr(settings, "AI_SKILL_WEIGHT_PROJECTS", 0.85)),
+    "summary": float(getattr(settings, "AI_SKILL_WEIGHT_SUMMARY", 0.7)),
+    "elsewhere": float(getattr(settings, "AI_SKILL_WEIGHT_ELSEWHERE", 0.7)),
+}
+
+#: normalised skill key -> every spelling that normalises to it.
+#:
+#: `extract_resume_skills` returns NORMALISED keys ("restapis", "cicd"), which
+#: never appear in a CV verbatim. Locating a skill in the document therefore has
+#: to search the words a human would write, so this reverse index is built from
+#: the vocabularies the extractor itself draws on.
+_SPELLINGS_BY_NORM = {}
+
+
+def _register_spelling(name):
+    key = norm_skill(str(name))
+    if key:
+        _SPELLINGS_BY_NORM.setdefault(key, set()).add(str(name).strip())
+
+
+for _raw, _canon in SKILL_SYNONYMS.items():
+    _register_spelling(_raw)
+    _register_spelling(_canon)
+for _config in PROFESSION_CONFIGS.values():
+    for _name in _config.get("skills", {}):
+        _register_spelling(_name)
+for _config in SPECIALIZATIONS.values():
+    for _name in _config.get("signals", {}):
+        _register_spelling(_name)
+    for _name in _config.get("core_skills", []):
+        _register_spelling(_name)
+for _name in COMMON_SKILLS:
+    _register_spelling(_name)
 
 AI_MATCH_THRESHOLD = int(getattr(settings, "AI_MATCH_THRESHOLD", 70))
 AI_MATCH_NOTIFICATION_THRESHOLD = int(getattr(settings, "AI_MATCH_NOTIFICATION_THRESHOLD", 80))
@@ -91,12 +150,21 @@ def update_job_embedding(job: JobPosting):
     )
 
 
-def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None):
+def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None,
+                            user_skills=None, skill_confidence=None):
+    """Ranked job recommendations for a user.
+
+    `user_skills` defaults to the stored `UserProfile.skills`, which is what the
+    profile-driven recommendations page wants. An AI Match analysis passes the
+    skills it just extracted from the uploaded CV instead: the stored list is a
+    running union across every upload, so scoring from it meant a skill removed
+    from a CV was still scored and the number could only ever move upward.
+    """
     profile = getattr(user, "profile", None)
     if not profile:
         return []
 
-    user_skills = profile.skills or []
+    user_skills = list(user_skills) if user_skills is not None else (profile.skills or [])
     is_debug = getattr(settings, "AI_MATCH_DEBUG", False)
     if resume_text:
         user_profession, profession_conf = classify_profession_with_resume(
@@ -119,6 +187,7 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None):
         return _semantic_fallback_recommendations(
             user, profile, resume_text, limit, request,
             user_profession=None,
+            user_skills=user_skills, skill_confidence=skill_confidence,
         )
 
     specialization, _ = detect_specialization(
@@ -153,6 +222,7 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None):
         return _semantic_fallback_recommendations(
             user, profile, resume_text, limit, request,
             user_profession=user_profession, specialization=specialization,
+            user_skills=user_skills, skill_confidence=skill_confidence,
         )
 
     if is_debug:
@@ -170,6 +240,7 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None):
         request=request,
         resume_text=resume_text,
         specialization=specialization,
+        skill_confidence=skill_confidence,
     )
 
     recommendations = []
@@ -183,6 +254,7 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None):
             request=request,
             deductions=item.get("deductions"),
             strengths=item.get("strengths"),
+            user_skills=user_skills,
         )
         if recommendation is None:
             continue
@@ -200,7 +272,8 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None):
 
 
 def _semantic_fallback_recommendations(user, profile, resume_text, limit, request,
-                                       user_profession=None, specialization=None):
+                                       user_profession=None, specialization=None,
+                                       user_skills=None, skill_confidence=None):
     """Last-resort recommendations driven purely by embedding similarity.
 
     Used only when the profession is undetectable or its categories hold no
@@ -243,16 +316,18 @@ def _semantic_fallback_recommendations(user, profile, resume_text, limit, reques
     # Same CV signals the primary path uses, so a job reached through the
     # fallback is scored on the same evidence as one reached through filtering.
     cv_signals = extract_cv_signals(resume_text or profile.resume_text or "")
+    effective_skills = list(user_skills) if user_skills is not None else (profile.skills or [])
     recommendations = []
     for job in sorted(jobs, key=lambda j: -scores.get(j.id, 0.0))[:limit]:
         result = compute_match_score(
-            user_skills=profile.skills or [],
+            user_skills=effective_skills,
             user_profession=user_profession,
             profile=profile,
             job=job,
             vector_score=scores.get(job.id, 0.0),
             cv_signals=cv_signals,
             specialization=specialization,
+            skill_confidence=skill_confidence,
         )
         recommendation = _build_recommendation(
             user=user, profile=profile, job=job,
@@ -261,6 +336,7 @@ def _semantic_fallback_recommendations(user, profile, resume_text, limit, reques
             request=request,
             deductions=result.get("deductions"),
             strengths=result.get("strengths"),
+            user_skills=effective_skills,
         )
         if recommendation is None:
             continue
@@ -270,7 +346,8 @@ def _semantic_fallback_recommendations(user, profile, resume_text, limit, reques
 
 
 def _hybrid_rank_jobs(user, profile, user_skills, user_profession, candidate_jobs, limit,
-                      request=None, resume_text=None, specialization=None):
+                      request=None, resume_text=None, specialization=None,
+                      skill_confidence=None):
     job_ids_for_vector = list(candidate_jobs.values_list("id", flat=True))
 
     from apps.src.job_recommendation import build_recommendation_text
@@ -309,11 +386,70 @@ def _hybrid_rank_jobs(user, profile, user_skills, user_profession, candidate_job
             vector_score=vector_score,
             cv_signals=cv_signals,
             specialization=specialization,
+            skill_confidence=skill_confidence,
         )
         scored_jobs.append(result)
 
     scored_jobs.sort(key=lambda x: x["final_score"], reverse=True)
     return scored_jobs[:limit]
+
+
+def locate_resume_skills(resume_text, skills):
+    """Where each extracted skill appears in the CV, and what that is worth.
+
+    Returns ``{normalised skill: {"skill", "sources", "confidence"}}`` where
+    confidence is the best SKILL_SOURCE_WEIGHTS value across the sections the
+    skill was found in. Feed the confidences to `compute_match_score` and a
+    declared skill counts fully while a passing mention counts partially, so
+    editing the SKILLS section moves the score in both directions.
+
+    Reuses the existing section extractors and synonym table rather than
+    re-parsing: `extract_resume_sections` for the prose blocks,
+    `extract_skills_section` for the skills list, `SKILL_SYNONYMS` for spelling.
+    """
+    text = resume_text or ""
+    if not text.strip() or not skills:
+        return {}
+
+    sections = extract_resume_sections(text)
+    bodies = {
+        "skills_section": extract_skills_section(text),
+        "experience": sections.get("experience") or "",
+        "projects": sections.get("projects") or "",
+        "summary": sections.get("summary") or "",
+    }
+
+    located = {}
+    for skill in skills:
+        raw = str(skill).strip()
+        if not raw:
+            continue
+        # Search every spelling that normalises to this skill, plus the value
+        # itself for anything the reverse index does not know (a job posting's
+        # own bespoke requirement, say).
+        spellings = {raw} | _SPELLINGS_BY_NORM.get(norm_skill(raw), set())
+        patterns = [
+            re.compile(r"(?<![a-z0-9+#.])" + re.escape(s.lower()) + r"(?![a-z0-9+#.])",
+                       re.IGNORECASE)
+            for s in spellings
+        ]
+        found = [name for name, body in bodies.items()
+                 if body and any(p.search(body) for p in patterns)]
+        if not found:
+            # Present in the document (the extractor found it) but outside any
+            # section this function can name - a header, a footer, a stray line.
+            found = ["elsewhere"]
+        located[norm_skill(raw)] = {
+            "skill": raw,
+            "sources": found,
+            "confidence": max(SKILL_SOURCE_WEIGHTS[name] for name in found),
+        }
+    return located
+
+
+def skill_confidence_map(located):
+    """Flatten `locate_resume_skills` output to {normalised skill: confidence}."""
+    return {key: entry["confidence"] for key, entry in (located or {}).items()}
 
 
 def split_required_skills(required_skills, user_skills):
@@ -331,7 +467,7 @@ def split_required_skills(required_skills, user_skills):
 
 
 def compute_match_score(user_skills, user_profession, profile, job, vector_score,
-                        cv_signals=None, specialization=None):
+                        cv_signals=None, specialization=None, skill_confidence=None):
     """Weighted match score, then explainable job-specific deductions.
 
     Stage 1 is the existing seven-component weighted average - unchanged, and
@@ -350,6 +486,10 @@ def compute_match_score(user_skills, user_profession, profile, job, vector_score
     `specialization` is the fine-grained role from apps.shared.specializations.
     It only sharpens how severely a missing requirement is judged; it never
     changes which jobs are considered.
+
+    `skill_confidence` maps a normalised skill to how strongly the CV evidences
+    it (see locate_resume_skills). Omit it and every matched skill counts as a
+    full 1.0, which is exactly the behaviour every existing caller had.
     """
     user_profession_lower = user_profession.lower() if user_profession else ""
 
@@ -373,7 +513,18 @@ def compute_match_score(user_skills, user_profession, profile, job, vector_score
     user_skills_norm = normalize_skill_set(user_skills)
     if required:
         matched_skills = user_skills_norm & required
-        skills_pct = len(matched_skills) / len(required)
+        # A matched skill contributes its confidence, not a flat 1.0, when the
+        # caller supplied provenance (see locate_resume_skills). Without it the
+        # sum is just the count, so every existing caller - Skill Gap Analysis
+        # included - keeps the exact behaviour it had.
+        if skill_confidence:
+            covered = sum(
+                min(1.0, max(0.0, float(skill_confidence.get(skill, 1.0))))
+                for skill in matched_skills
+            )
+        else:
+            covered = len(matched_skills)
+        skills_pct = covered / len(required)
         matched_count = len(matched_skills)
     else:
         matched_skills = set()
@@ -576,35 +727,41 @@ def analyze_resume_match(user, resume_file, request=None):
         extracted_skills = extract_resume_skills(resume_text)
         profile, _ = UserProfile.objects.get_or_create(user=user)
         profile.resume_text = resume_text
-        # Captured before the merge purely so AI_MATCH_TRACE can show which
-        # skills were scored without appearing in THIS document. Unused otherwise.
         prior_profile_skills = list(profile.skills or [])
+        # The profile keeps the cumulative list so manually added skills and
+        # earlier CVs are not destroyed. Scoring no longer reads it - see below.
         merged_skills = sorted(set(profile.skills or []) | set(extracted_skills))
         profile.skills = merged_skills
         profile.save()
-        # get_or_create() returned a NEW UserProfile instance, but
-        # recommend_jobs_for_user() reads user.profile - Django's cached reverse
-        # relation, which still holds the PRE-upload skill list. Without priming
-        # that cache the skills just extracted from the CV never reach scoring,
-        # so skills_match (the largest weighted component after profession) came
-        # out 0 for every AI Match upload.
+        # get_or_create() returned a NEW UserProfile instance; prime Django's
+        # cached reverse relation so downstream reads see the saved row.
         user.profile = profile
 
+        # An AI Match score describes THE UPLOADED DOCUMENT, so it is computed
+        # from that document's own skills. `merged_skills` stays the profile's
+        # cumulative list - it is what the profile page and manual edits rely on
+        # - but scoring from it made the number monotonically non-decreasing:
+        # a skill deleted from a CV was still scored, so removing one could
+        # never lower the score and any incidental addition could only raise it.
+        skill_sources = locate_resume_skills(resume_text, extracted_skills)
+        skill_confidence = skill_confidence_map(skill_sources)
+
         user_profession, profession_conf = classify_profession_with_resume(
-            resume_text, extracted_skills=merged_skills,
+            resume_text, extracted_skills=extracted_skills,
         )
         is_debug = getattr(settings, "AI_MATCH_DEBUG", False)
         if is_debug:
             logger.info(
-                "Resume analysis: profession=%s confidence=%d skills=%d",
-                user_profession, profession_conf, len(merged_skills),
+                "Resume analysis: profession=%s confidence=%d cv_skills=%d profile_skills=%d",
+                user_profession, profession_conf, len(extracted_skills), len(merged_skills),
             )
 
         recommendations = recommend_jobs_for_user(
             user, limit=10, request=request, resume_text=resume_text,
+            user_skills=extracted_skills, skill_confidence=skill_confidence,
         )
         specialization, specialization_conf = detect_specialization(
-            resume_text, merged_skills, user_profession or "",
+            resume_text, extracted_skills, user_profession or "",
         )
 
         # Explainability layer (Phase 2 #3, #4, #11, #12). Signals are parsed
@@ -621,7 +778,7 @@ def analyze_resume_match(user, resume_file, request=None):
         for item in recommendations[:3]:
             top_required.extend(item.get("required_skills") or [])
         quality = analyze_resume_quality(
-            resume_text, user_skills=merged_skills,
+            resume_text, user_skills=extracted_skills,
             required_skills=top_required, signals=signals,
         )
         action_plan = build_skill_action_plan(recommendations)
@@ -642,7 +799,7 @@ def analyze_resume_match(user, resume_file, request=None):
                     resume_text=resume_text,
                     extracted_skills=extracted_skills,
                     prior_skills=prior_profile_skills,
-                    effective_skills=merged_skills,
+                    effective_skills=extracted_skills,
                     profession=user_profession,
                     profession_confidence=profession_conf,
                     specialization=specialization,
@@ -664,6 +821,19 @@ def analyze_resume_match(user, resume_file, request=None):
             "resume_summary": gemini["resume_summary"],
             "resume_score": best_match,
             "skills_extracted": extracted_skills,
+            # Where each extracted skill was found, and therefore how much it
+            # counted. Lets the UI explain why a skill listed only inside an
+            # experience bullet is worth less than one in the Skills section.
+            "skill_sources": [
+                {
+                    "skill": entry["skill"],
+                    "sources": entry["sources"],
+                    "confidence": entry["confidence"],
+                    "declared": "skills_section" in entry["sources"],
+                }
+                for entry in sorted(skill_sources.values(),
+                                    key=lambda e: (-e["confidence"], e["skill"].lower()))
+            ],
             "recommended_jobs": recommendations,
             # Per-job score breakdown so the charts plot the candidate against
             # each matched role instead of re-rendering one flat percentage.
@@ -724,6 +894,7 @@ def analyze_resume_match(user, resume_file, request=None):
             "resume_summary": "",
             "resume_score": 0,
             "skills_extracted": [],
+            "skill_sources": [],
             "recommended_jobs": [],
             "match_analytics": [],
             "resume_insights": [],
@@ -772,9 +943,12 @@ def extract_resume_skills(resume_text):
 
 
 def _build_recommendation(user, profile, job, vector_score, match_explanation=None, request=None,
-                          deductions=None, strengths=None):
+                          deductions=None, strengths=None, user_skills=None):
     required_skills = list(job.required_skills or [])
-    matched_skills, missing_skills = split_required_skills(required_skills, profile.skills or [])
+    # Must be the SAME skill set the score was computed from, or the matched /
+    # missing chips would contradict the percentage next to them.
+    effective_skills = list(user_skills) if user_skills is not None else (profile.skills or [])
+    matched_skills, missing_skills = split_required_skills(required_skills, effective_skills)
 
     insight = ""
     if missing_skills:

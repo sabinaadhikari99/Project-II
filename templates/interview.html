@@ -22,196 +22,361 @@
   * Readiness sub-scores and component bars - twelve progress bars before the
     interview had even started. Reduced to one number and the two lists a
     candidate acts on: what they can lean on, and what will catch them out.
+
+  Layout note (UI only): setup is a two-column workspace - the configuration
+  form on the left, a sticky summary rail on the right holding readiness, the
+  resumable session and the choices made so far. The interview and report
+  stages stay in a single reading column, because a question and a report are
+  read top to bottom.
 {% endcomment %}
 
 {% block content %}
 <style>
   :root {
-    --accent: var(--bs-primary, #2563EB);
-    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
+    --accent: var(--ss-primary, #2563EB);
+    --accent-rgb: var(--ss-primary-rgb, 37, 99, 235);
+    --accent-hover: var(--ss-primary-hover, #1D4ED8);
     --surface: #fff;
     --surface-alt: #F8FAFC;
     --txt: rgba(15,23,42,0.90);
     --txt-soft: rgba(15,23,42,0.58);
     --txt-muted: rgba(15,23,42,0.40);
-    --bdr: rgba(15,23,42,0.07);
-    --bdr-strong: rgba(15,23,42,0.13);
+    --bdr: rgba(15,23,42,0.08);
+    --bdr-strong: rgba(15,23,42,0.14);
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
+    --shadow-md: 0 1px 2px rgba(15,23,42,0.04), 0 10px 26px -14px rgba(15,23,42,0.18);
     --success: #10B981; --success-bg: rgba(16,185,129,0.10); --success-txt: #047857;
     --warn: #F59E0B;    --warn-bg: rgba(245,158,11,0.10);    --warn-txt: #B45309;
     --danger: #EF4444;  --danger-bg: rgba(239,68,68,0.09);   --danger-txt: #B91C1C;
+    --tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.4l3 3 6-6'/%3E%3C/svg%3E");
   }
 
-  .iv { max-width: 860px; margin: 0 auto; animation: ivIn .4s ease both; }
+  html.theme-dark {
+    --surface: var(--ss-surface, #1E293B);
+    --surface-alt: var(--ss-surface-alt, #0F172A);
+    --txt: rgba(248,250,252,0.94);
+    --txt-soft: rgba(248,250,252,0.66);
+    --txt-muted: rgba(248,250,252,0.44);
+    --bdr: rgba(148,163,184,0.16);
+    --bdr-strong: rgba(148,163,184,0.28);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.30);
+    --shadow-md: 0 1px 2px rgba(0,0,0,0.30), 0 10px 26px -14px rgba(0,0,0,0.60);
+    --success-txt: #34D399;
+    --warn-txt: #FBBF24;
+    --danger-txt: #F87171;
+  }
+
+  /* ── Shell ───────────────────────────────────────────────────────── */
+  .iv { width: 100%; max-width: 1320px; margin: 0 auto; animation: ivIn .4s ease both; }
+  .iv-narrow { width: 100%; max-width: 940px; margin: 0 auto; }
   @keyframes ivIn { from { opacity:0; transform:translateY(10px);} to {opacity:1;transform:none;} }
   .hidden { display: none !important; }
+  /* Long roles, questions and CV terms must wrap rather than push the page
+     sideways - nothing on this page should scroll horizontally. */
+  .iv .row > *, .iv .card { min-width: 0; }
+  .iv .q-text, .iv .fb-list, .iv .rep-list, .iv .model-answer,
+  .iv .ready-role, .iv .hist-role, .iv .resume-txt { overflow-wrap: anywhere; }
 
+  /* ── Page header ─────────────────────────────────────────────────── */
+  .iv-head { margin-bottom: 1.75rem; }
+  .iv-kicker {
+    display: inline-flex; align-items: center; gap: .45rem; margin-bottom: .75rem;
+    padding: .3rem .7rem .3rem .55rem; border-radius: 99px;
+    background: rgba(var(--accent-rgb),.10); color: var(--accent);
+    font-size: 11.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  }
+  .iv-title { font-size: 32px; font-weight: 700; letter-spacing: -.025em; color: var(--txt); margin: 0 0 .4rem; line-height: 1.15; }
+  .iv-lede { font-size: 15px; color: var(--txt-soft); line-height: 1.6; margin: 0; max-width: 64ch; }
+
+  /* ── Stepper ─────────────────────────────────────────────────────── */
+  .stepper {
+    display: flex; align-items: center; gap: .85rem; flex-wrap: wrap;
+    list-style: none; margin: 0 0 1.75rem; padding: 1rem 1.25rem;
+    background: var(--surface); border: 1px solid var(--bdr); border-radius: 16px; box-shadow: var(--shadow-sm);
+  }
+  .step { display: flex; align-items: center; gap: .65rem; flex: 0 1 auto; }
+  .step-dot {
+    width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center;
+    font-size: 12.5px; font-weight: 700; background: var(--surface-alt);
+    border: 1px solid var(--bdr-strong); color: var(--txt-muted); transition: all .2s;
+  }
+  .step-txt { display: block; line-height: 1.25; }
+  .step-name { display: block; font-size: 13.5px; font-weight: 620; color: var(--txt-muted); }
+  .step-sub { display: block; font-size: 11.5px; color: var(--txt-muted); opacity: .8; margin-top: 1px; }
+  .step.is-active .step-dot {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.14);
+  }
+  .step.is-active .step-name { color: var(--txt); }
+  .step.is-done .step-dot { background: rgba(var(--accent-rgb),.12); border-color: rgba(var(--accent-rgb),.28); color: var(--accent); }
+  .step.is-done .step-name { color: var(--txt-soft); }
+  .step-line { flex: 1 1 20px; min-width: 16px; height: 2px; border-radius: 2px; background: var(--bdr-strong); }
+  .step-line.is-done { background: rgba(var(--accent-rgb),.45); }
+
+  /* ── Cards ───────────────────────────────────────────────────────── */
   .card {
     background: var(--surface); border: 1px solid var(--bdr); border-radius: 16px;
-    padding: 1.5rem; margin-bottom: 1.25rem;
+    padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md);
   }
-  .card-tight { padding: 1.15rem 1.25rem; }
+  .card:last-child { margin-bottom: 0; }
+  .card-tight { padding: 1.35rem 1.4rem; }
+
+  .card-head { display: flex; align-items: flex-start; gap: .85rem; margin-bottom: 1.5rem; }
+  .card-ico {
+    width: 38px; height: 38px; flex: none; border-radius: 11px; display: grid; place-items: center;
+    background: rgba(var(--accent-rgb),.10); color: var(--accent); font-size: 17px;
+  }
+  .card-h { font-size: 16.5px; font-weight: 660; color: var(--txt); margin: 0 0 .15rem; letter-spacing: -.01em; }
+  .card-p { font-size: 13px; color: var(--txt-soft); margin: 0; line-height: 1.55; }
 
   .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
              color: var(--txt-muted); margin-bottom: .5rem; }
-  h2.stage-title { font-size: 21px; font-weight: 680; color: var(--txt); margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2.stage-title { font-size: 21px; font-weight: 680; color: var(--txt); margin: 0 0 .3rem; letter-spacing: -.015em; }
   .stage-sub { font-size: 14px; color: var(--txt-soft); margin: 0 0 1.5rem; line-height: 1.6; }
 
   /* ── Readiness: one number, two lists ── */
-  .ready { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-  .ring { --pct: 0; width: 96px; height: 96px; flex: none; border-radius: 50%; display: grid; place-items: center;
-          background: conic-gradient(var(--accent) calc(var(--pct)*1%), rgba(15,23,42,0.07) 0); position: relative; }
-  .ring::after { content:""; position:absolute; inset:9px; background:var(--surface); border-radius:50%; }
+  .ready { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+  .ring { --pct: 0; width: 88px; height: 88px; flex: none; border-radius: 50%; display: grid; place-items: center;
+          background: conic-gradient(var(--accent) calc(var(--pct)*1%), rgba(var(--accent-rgb),0.12) 0); position: relative; }
+  .ring::after { content:""; position:absolute; inset:8px; background:var(--surface); border-radius:50%; }
   .ring-in { position: relative; z-index: 1; text-align: center; }
-  .ring-val { font-size: 24px; font-weight: 700; color: var(--txt); line-height: 1; }
+  .ring-val { font-size: 22px; font-weight: 700; color: var(--txt); line-height: 1; }
   .ring-lbl { font-size: 10px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
-  .ready-body { flex: 1 1 260px; min-width: 0; }
+  .ready-body { flex: 1 1 180px; min-width: 0; }
   .ready-role { font-size: 15px; font-weight: 650; color: var(--txt); margin-bottom: .1rem; }
-  .ready-band { font-size: 13px; color: var(--txt-soft); margin-bottom: .9rem; }
+  .ready-band { font-size: 12.5px; color: var(--txt-soft); margin-bottom: .85rem; line-height: 1.5; }
   .chip-row { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .55rem; }
   .chip-row:last-child { margin-bottom: 0; }
-  .chip-lbl { font-size: 11px; font-weight: 600; color: var(--txt-muted); text-transform: uppercase;
-              letter-spacing: .05em; width: 100%; margin-bottom: .1rem; }
+  .chip-lbl { font-size: 10.5px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase;
+              letter-spacing: .06em; width: 100%; margin-bottom: .1rem; }
 
-  .chip { display:inline-flex; align-items:center; padding:.22rem .6rem; border-radius:99px;
+  .chip { display:inline-flex; align-items:center; padding:.24rem .62rem; border-radius:99px;
           font-size:12px; font-weight:550; line-height:1.5; }
   .chip-good { background: var(--success-bg); color: var(--success-txt); }
   .chip-gap  { background: var(--warn-bg);    color: var(--warn-txt); }
   .chip-plain{ background: rgba(15,23,42,0.05); color: var(--txt-soft); }
   .chip-accent{ background: rgba(var(--accent-rgb),.10); color: var(--accent); }
   .chip-danger{ background: var(--danger-bg); color: var(--danger-txt); }
+  html.theme-dark .chip-plain { background: rgba(148,163,184,0.14); }
 
-  /* ── Form ── */
-  .field { margin-bottom: 1.25rem; }
+  /* ── Form ────────────────────────────────────────────────────────── */
+  .field { margin-bottom: 1.75rem; }
   .field:last-child { margin-bottom: 0; }
-  .field-label { display:block; font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: .5rem; }
-  .field-hint { font-size: 12.5px; color: var(--txt-muted); margin-top: .4rem; line-height: 1.5; }
+  .field-label { display:block; font-size: 13px; font-weight: 650; color: var(--txt); margin-bottom: .6rem;
+                 letter-spacing: -.005em; }
+  .field-hint { font-size: 12.5px; color: var(--txt-muted); margin-top: .5rem; line-height: 1.5; }
+  .field-hint:empty { display: none; }
   .input, .select {
-    width: 100%; padding: .65rem .85rem; border: 1px solid var(--bdr-strong); border-radius: 10px;
+    width: 100%; padding: .75rem .95rem; border: 1px solid var(--bdr-strong); border-radius: 12px;
     font-size: 14.5px; color: var(--txt); background: var(--surface); outline: none;
-    transition: border-color .15s, box-shadow .15s; font-family: inherit;
+    transition: border-color .15s, box-shadow .15s, background .15s; font-family: inherit;
   }
-  .input:focus, .select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.10); }
+  .input::placeholder { color: var(--txt-muted); }
+  .input:hover, .select:hover { border-color: rgba(var(--accent-rgb),.45); }
+  .input:focus, .select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.14); }
 
-  .seg { display: flex; flex-wrap: wrap; gap: .4rem; }
-  .seg label { cursor: pointer; }
+  /* Selectable option cards / pills — same markup the setup step renders. */
+  .seg { display: flex; flex-wrap: wrap; gap: .55rem; }
+  .seg label { cursor: pointer; min-width: 0; }
   .seg input { position: absolute; opacity: 0; width:0; height:0; }
   .seg span {
-    display: block; padding: .5rem .85rem; border-radius: 10px; font-size: 13.5px; font-weight: 550;
+    display: flex; align-items: center; justify-content: center; gap: .45rem;
+    padding: .62rem 1rem; border-radius: 12px; font-size: 13.5px; font-weight: 550;
     border: 1px solid var(--bdr-strong); color: var(--txt-soft); background: var(--surface);
-    transition: all .14s; white-space: nowrap;
+    transition: color .16s, border-color .16s, background .16s, box-shadow .16s, transform .16s;
+    white-space: nowrap; user-select: none;
   }
-  .seg label:hover span { border-color: var(--accent); color: var(--accent); }
-  .seg input:checked + span { background: rgba(var(--accent-rgb),.09); border-color: var(--accent);
-                              color: var(--accent); font-weight: 650; }
-  .seg input:focus-visible + span { box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.18); }
+  .seg label:hover span {
+    border-color: rgba(var(--accent-rgb),.55); color: var(--accent);
+    background: rgba(var(--accent-rgb),.05); transform: translateY(-1px);
+  }
+  .seg input:checked + span {
+    background: rgba(var(--accent-rgb),.09); border-color: var(--accent);
+    color: var(--accent); font-weight: 650; box-shadow: inset 0 0 0 1px var(--accent);
+  }
+  .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+  /* Wider option sets read as cards that share the row evenly. */
+  #typeSeg, #difficultySeg { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .55rem; }
+  #typeSeg span, #difficultySeg span { padding: .8rem .75rem; white-space: normal; text-align: center; }
+  #typeSeg input:checked + span::before, #difficultySeg input:checked + span::before {
+    content: ""; width: 15px; height: 15px; flex: none; border-radius: 50%;
+    background: var(--accent) var(--tick) center / 11px 11px no-repeat;
+  }
+  #countSeg { display: grid; grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)); gap: .5rem; }
+  #durationSeg { display: grid; grid-template-columns: repeat(auto-fit, minmax(82px, 1fr)); gap: .5rem; }
+  #countSeg span, #durationSeg span { padding: .6rem .5rem; }
+
+  /* ── Buttons ─────────────────────────────────────────────────────── */
   .btn {
     display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
-    padding:.7rem 1.25rem; border-radius:10px; border:1px solid transparent; background: var(--accent);
-    color:#fff; font-size:14.5px; font-weight:600; cursor:pointer; font-family:inherit;
-    transition: filter .15s, opacity .15s;
+    padding:.72rem 1.3rem; border-radius:12px; border:1px solid transparent; background: var(--accent);
+    color:#fff; font-size:14.5px; font-weight:600; cursor:pointer; font-family:inherit; line-height:1.4;
+    box-shadow: 0 1px 2px rgba(15,23,42,.06);
+    transition: background .16s, box-shadow .16s, transform .16s, opacity .15s, color .16s, border-color .16s;
   }
-  .btn:hover:not(:disabled) { filter: brightness(1.07); }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn:hover:not(:disabled) {
+    background: var(--accent-hover); transform: translateY(-1px);
+    box-shadow: 0 8px 18px -8px rgba(var(--accent-rgb),.65);
+  }
+  .btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
   .btn-ghost { background: var(--surface); color: var(--txt-soft); border-color: var(--bdr-strong); }
-  .btn-ghost:hover:not(:disabled) { background: var(--surface-alt); color: var(--txt); }
-  .btn-sm { padding: .45rem .8rem; font-size: 13px; }
+  .btn-ghost:hover:not(:disabled) { background: var(--surface-alt); color: var(--txt); border-color: var(--bdr-strong);
+                                    box-shadow: 0 6px 14px -10px rgba(15,23,42,.4); }
+  .btn-sm { padding: .5rem .85rem; font-size: 13px; border-radius: 10px; }
   .btn-row { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; }
 
-  /* ── Interview stage ── */
+  /* Primary call to action: full width on small screens, generous on desktop. */
+  .btn-hero { width: 100%; padding: .95rem 1.6rem; font-size: 15.5px; border-radius: 14px; }
+  @media (min-width: 576px) { .btn-hero { width: auto; min-width: 260px; } }
+
+  .start-row { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-top: 2rem;
+               padding-top: 1.5rem; border-top: 1px solid var(--bdr); }
+  .start-note { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; flex: 1 1 200px; }
+
+  /* ── Sticky summary rail ─────────────────────────────────────────── */
+  .iv-side { position: sticky; top: calc(var(--navbar-height, 60px) + 1.25rem);
+             display: flex; flex-direction: column; gap: 1.5rem; }
+  .iv-side .card { margin-bottom: 0; }
+  .iv-side > div:empty { display: none; }
+  @media (max-width: 991.98px) { .iv-side { position: static; } }
+
+  .sum-row { display:flex; align-items:center; justify-content:space-between; gap:1rem;
+             padding:.65rem 0; border-bottom:1px dashed var(--bdr); }
+  .sum-row:last-of-type { border-bottom: none; }
+  .sum-k { display:inline-flex; align-items:center; gap:.55rem; font-size:13px; color:var(--txt-soft); flex: none; }
+  .sum-k i { color: var(--txt-muted); font-size: 14px; }
+  .sum-v { font-size:13.5px; font-weight:650; color:var(--txt); text-align:right;
+           overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sum-v.is-empty { font-weight: 500; color: var(--txt-muted); }
+  .sum-total { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:1.1rem;
+               padding:.85rem 1rem; border-radius:12px;
+               background: rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.18); }
+  .sum-total-k { font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent); }
+  .sum-total-v { font-size:16px; font-weight:700; color:var(--accent); font-variant-numeric: tabular-nums; }
+  .sum-foot { font-size:12px; color:var(--txt-muted); margin-top:.7rem; line-height:1.5; }
+
+  .tip { display:flex; gap:.65rem; font-size:13px; color:var(--txt-soft); line-height:1.6; margin-bottom:.85rem; }
+  .tip:last-child { margin-bottom: 0; }
+  .tip i { color: var(--accent); font-size: 14px; margin-top: .18rem; flex: none; }
+
+  /* ── Interview stage ─────────────────────────────────────────────── */
   .iv-bar {
     display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
-    padding: .85rem 1.25rem; background: var(--surface); border:1px solid var(--bdr);
-    border-radius: 14px; margin-bottom: 1rem; position: sticky; top: .5rem; z-index: 5;
+    padding: 1rem 1.35rem; background: var(--surface); border:1px solid var(--bdr);
+    border-radius: 16px; margin-bottom: 1.5rem; box-shadow: var(--shadow-md);
+    position: sticky; top: calc(var(--navbar-height, 60px) + .75rem); z-index: 5;
   }
-  .iv-bar-role { font-size: 14px; font-weight: 650; color: var(--txt); }
-  .iv-bar-meta { font-size: 12.5px; color: var(--txt-muted); }
+  .iv-bar-role { font-size: 14.5px; font-weight: 650; color: var(--txt); }
+  .iv-bar-meta { font-size: 12.5px; color: var(--txt-muted); margin-top: .1rem; }
   .iv-bar-spacer { flex: 1 1 auto; }
-  .timer { font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 650; color: var(--txt-soft); }
-  .timer.low { color: var(--danger-txt); }
+  .timer { display:inline-flex; align-items:center; padding:.35rem .7rem; border-radius:99px;
+           background: var(--surface-alt); font-variant-numeric: tabular-nums;
+           font-size: 13.5px; font-weight: 650; color: var(--txt-soft); }
+  .timer.low { color: var(--danger-txt); background: var(--danger-bg); }
 
-  .track { height: 4px; border-radius: 99px; background: rgba(15,23,42,0.07); overflow: hidden; width: 100%; }
+  .track { height: 5px; border-radius: 99px; background: rgba(15,23,42,0.07); overflow: hidden; width: 100%; }
+  html.theme-dark .track { background: rgba(148,163,184,0.18); }
   .track > span { display:block; height:100%; background: var(--accent); border-radius:99px; transition: width .4s ease; }
 
-  .q-num { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
-  .q-text { font-size: 19px; font-weight: 600; color: var(--txt); line-height: 1.5; margin: .55rem 0 .5rem; letter-spacing: -.01em; }
-  .q-why { font-size: 13.5px; color: var(--txt-soft); line-height: 1.6; margin-bottom: 1.1rem; }
+  .q-num { font-size: 11.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); }
+  .q-text { font-size: 20px; font-weight: 600; color: var(--txt); line-height: 1.5; margin: .6rem 0 .6rem; letter-spacing: -.015em; }
+  .q-why { font-size: 13.5px; color: var(--txt-soft); line-height: 1.6; margin-bottom: 1.25rem; }
   .answer {
-    width:100%; min-height: 190px; padding: .9rem 1rem; border:1px solid var(--bdr-strong); border-radius:12px;
+    width:100%; min-height: 200px; padding: 1rem 1.1rem; border:1px solid var(--bdr-strong); border-radius:14px;
     font-size:15px; line-height:1.7; color:var(--txt); resize:vertical; outline:none; font-family:inherit;
+    background: var(--surface); transition: border-color .15s, box-shadow .15s;
   }
-  .answer:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.10); }
+  .answer::placeholder { color: var(--txt-muted); }
+  .answer:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.14); }
   .answer:disabled { background: var(--surface-alt); color: var(--txt-soft); }
   .answer-foot { display:flex; justify-content:space-between; align-items:center; gap:1rem;
-                 flex-wrap:wrap; margin-top: .9rem; }
+                 flex-wrap:wrap; margin-top: 1rem; }
   .word-count { font-size: 12.5px; color: var(--txt-muted); font-variant-numeric: tabular-nums; }
 
-  /* ── Feedback ── */
-  .fb { border:1px solid var(--bdr); border-radius:14px; padding:1.25rem; margin-top:1rem; background: var(--surface-alt); }
-  .fb-head { display:flex; align-items:center; gap:.75rem; margin-bottom:1rem; flex-wrap:wrap; }
+  /* ── Feedback ────────────────────────────────────────────────────── */
+  .fb { border:1px solid var(--bdr); border-radius:16px; padding:1.5rem; margin-top:1.5rem; background: var(--surface-alt); }
+  .fb-head { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; flex-wrap:wrap; }
   .fb-score { font-size:32px; font-weight:700; color:var(--txt); line-height:1; }
   .fb-of { font-size:14px; color:var(--txt-muted); }
-  .fb-sec { margin-bottom: 1rem; }
+  .fb-sec { margin-bottom: 1.25rem; }
   .fb-sec:last-child { margin-bottom: 0; }
-  .fb-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.4rem; }
+  .fb-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.45rem; }
   .fb-lbl.good { color: var(--success-txt); }
   .fb-lbl.bad  { color: var(--warn-txt); }
   .fb-lbl.plain{ color: var(--txt-muted); }
   .fb-list { margin:0; padding-left:1.15rem; font-size:14px; color:var(--txt-soft); line-height:1.7; }
   .fb-list li { margin:.2rem 0; }
-  .model-answer { background:var(--surface); border:1px solid var(--bdr); border-radius:10px;
-                  padding:.9rem 1rem; font-size:14px; line-height:1.7; color:var(--txt-soft); white-space:pre-wrap; }
+  .model-answer { background:var(--surface); border:1px solid var(--bdr); border-radius:12px;
+                  padding:1rem 1.1rem; font-size:14px; line-height:1.7; color:var(--txt-soft); white-space:pre-wrap; }
 
-  .coach { border:1px solid rgba(var(--accent-rgb),.22); background: rgba(var(--accent-rgb),.045);
-           border-radius:14px; padding:1.1rem 1.25rem; margin-top:1rem; }
-  .coach-head { display:flex; align-items:center; gap:.5rem; font-size:12px; font-weight:700;
-                text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin-bottom:.7rem; }
+  .coach { border:1px solid rgba(var(--accent-rgb),.22); background: rgba(var(--accent-rgb),.05);
+           border-radius:16px; padding:1.25rem 1.4rem; margin-top:1.5rem; }
+  .coach-head { display:flex; align-items:center; gap:.5rem; font-size:11.5px; font-weight:700;
+                text-transform:uppercase; letter-spacing:.07em; color:var(--accent); margin-bottom:.8rem; }
   .coach-item { display:flex; gap:.6rem; font-size:14px; color:var(--txt); line-height:1.6; margin-bottom:.5rem; }
   .coach-item:last-child { margin-bottom:0; }
   .coach-item i { color: var(--accent); font-size: 13px; margin-top:.25rem; }
 
-  /* ── Report ── */
-  .score-hero { text-align:center; padding: .5rem 0 1.5rem; border-bottom:1px solid var(--bdr); margin-bottom:1.5rem; }
-  .score-hero .sh-val { font-size:52px; font-weight:730; color:var(--txt); line-height:1; letter-spacing:-.02em; }
-  .score-hero .sh-lbl { font-size:13px; color:var(--txt-muted); margin-top:.4rem; }
-  .score-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(112px,1fr)); gap:.75rem; margin-bottom:1.5rem; }
-  .score-cell { text-align:center; padding:.85rem .5rem; border:1px solid var(--bdr); border-radius:12px; }
-  .score-cell .sc-val { font-size:22px; font-weight:700; color:var(--txt); line-height:1; }
-  .score-cell .sc-lbl { font-size:11px; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.05em; margin-top:.35rem; }
+  /* ── Report ──────────────────────────────────────────────────────── */
+  .score-hero { text-align:center; padding: .75rem 0 1.75rem; border-bottom:1px solid var(--bdr); margin-bottom:1.75rem; }
+  .score-hero .sh-val { font-size:56px; font-weight:730; color:var(--txt); line-height:1; letter-spacing:-.03em; }
+  .score-hero .sh-lbl { font-size:13px; color:var(--txt-muted); margin-top:.5rem; }
+  .score-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1rem; margin-bottom:1.75rem; }
+  .score-cell { text-align:center; padding:1.1rem .75rem; border:1px solid var(--bdr); border-radius:14px;
+                background: var(--surface-alt); transition: border-color .16s, transform .16s; }
+  .score-cell:hover { border-color: rgba(var(--accent-rgb),.35); transform: translateY(-2px); }
+  .score-cell .sc-val { font-size:24px; font-weight:700; color:var(--txt); line-height:1; }
+  .score-cell .sc-lbl { font-size:11px; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:.4rem; }
 
-  .rep-sec { margin-bottom: 1.5rem; }
+  .rep-sec { margin-bottom: 1.75rem; }
   .rep-sec:last-child { margin-bottom: 0; }
-  .rep-lbl { display:flex; align-items:center; gap:.5rem; font-size:12px; font-weight:700;
-             text-transform:uppercase; letter-spacing:.06em; color:var(--txt-muted); margin-bottom:.6rem; }
+  .rep-lbl { display:flex; align-items:center; gap:.5rem; font-size:11.5px; font-weight:700;
+             text-transform:uppercase; letter-spacing:.07em; color:var(--txt-muted); margin-bottom:.65rem; }
+  .rep-lbl i { color: var(--accent); font-size: 14px; }
   .rep-list { margin:0; padding-left:1.2rem; font-size:14.5px; color:var(--txt-soft); line-height:1.75; }
   .rep-list li { margin:.3rem 0; }
   .rep-list a { color: var(--accent); text-decoration: none; }
   .rep-list a:hover { text-decoration: underline; }
 
-  /* ── History ── */
-  .hist { display:flex; align-items:center; gap:1rem; width:100%; text-align:left; padding:.9rem .25rem;
-          border:none; border-bottom:1px solid var(--bdr); background:none; cursor:pointer; transition: background .12s; }
-  .hist:last-child { border-bottom:none; }
-  .hist:hover { background: var(--surface-alt); }
+  /* ── History ─────────────────────────────────────────────────────── */
+  .hist { display:flex; align-items:center; gap:1rem; width:100%; text-align:left; padding:.85rem .75rem;
+          border:1px solid transparent; border-radius:12px; background:none; cursor:pointer;
+          transition: background .14s, border-color .14s; }
+  .hist + .hist { margin-top: .2rem; }
+  .hist:hover { background: var(--surface-alt); border-color: var(--bdr); }
+  .hist:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .hist-main { flex:1 1 auto; min-width:0; }
-  .hist-role { font-size:14.5px; font-weight:620; color:var(--txt); margin-bottom:.2rem; }
-  .hist-meta { font-size:12.5px; color:var(--txt-muted); }
-  .hist-score { flex:none; font-size:15px; font-weight:700; color:var(--txt); font-variant-numeric:tabular-nums; }
+  .hist-role { display:block; font-size:14.5px; font-weight:620; color:var(--txt); margin-bottom:.2rem; }
+  .hist-meta { display:block; font-size:12.5px; color:var(--txt-muted); }
+  .hist-score { flex:none; font-size:16px; font-weight:700; color:var(--txt); font-variant-numeric:tabular-nums; }
 
-  .resume-bar { display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
-                background: rgba(var(--accent-rgb),.06); border:1px solid rgba(var(--accent-rgb),.2);
-                border-radius:14px; padding:.95rem 1.2rem; margin-bottom:1.25rem; }
-  .resume-txt { flex:1 1 200px; font-size:14px; color:var(--txt); }
+  .resume-bar { display:flex; align-items:center; gap:.7rem; flex-wrap:wrap;
+                background: rgba(var(--accent-rgb),.06); border:1px solid rgba(var(--accent-rgb),.22);
+                border-radius:16px; padding:1.25rem 1.35rem; }
+  .resume-txt { flex:1 1 100%; font-size:13.5px; line-height:1.6; color:var(--txt); }
 
   .empty { text-align:center; padding:2rem 1rem; color:var(--txt-muted); font-size:14px; line-height:1.6; }
   .empty i { font-size:28px; display:block; margin-bottom:.6rem; opacity:.45; }
-  .note { font-size:12.5px; color:var(--txt-muted); line-height:1.6; margin-top:1rem; }
+  .note { font-size:12.5px; color:var(--txt-muted); line-height:1.6; margin-top:1.25rem; }
 
-  @media (max-width: 575px) {
-    .card { padding: 1.15rem; border-radius: 14px; }
-    .q-text { font-size: 17px; }
-    .score-hero .sh-val { font-size: 42px; }
-    .iv-bar { position: static; }
+  @media (max-width: 1199.98px) {
+    .iv-title { font-size: 28px; }
+  }
+  @media (max-width: 575.98px) {
+    .card { padding: 1.25rem; border-radius: 14px; }
+    .card-tight { padding: 1.15rem; }
+    .stepper { padding: .85rem 1rem; gap: .6rem; }
+    .step-sub { display: none; }
+    .step-line { flex: 1 1 12px; min-width: 10px; }
+    .iv-title { font-size: 24px; }
+    .q-text { font-size: 18px; }
+    .score-hero .sh-val { font-size: 44px; }
+    .iv-bar { position: static; padding: .9rem 1rem; }
+    .answer-foot .btn-row { width: 100%; }
+    .answer-foot .btn-row .btn { flex: 1 1 auto; }
   }
 </style>
 
@@ -219,82 +384,242 @@
 
   <!-- ═══ STAGE 1 · SETUP ═══════════════════════════════════════════ -->
   <section id="stage-setup">
-    <div id="resumeHost"></div>
 
-    <div class="card card-tight" id="readinessCard">
-      <div class="empty" style="padding:1rem;">Loading your readiness…</div>
-    </div>
+    <header class="iv-head">
+      <span class="iv-kicker"><i class="bi bi-mic-fill"></i> Interview practice</span>
+      <h1 class="iv-title">Set up your interview</h1>
+      <p class="iv-lede">
+        Questions are written from your CV, your target role and your skill gaps —
+        then scored, one answer at a time, with coaching for the next one.
+      </p>
+    </header>
 
-    <div class="card">
-      <div class="eyebrow">Interview practice · Step 1 of 3</div>
-      <h2 class="stage-title">Set up your interview</h2>
-      <p class="stage-sub">Questions are written from your CV, your target role and your skill gaps.</p>
+    <ol class="stepper" aria-label="Interview progress">
+      <li class="step is-active" aria-current="step">
+        <span class="step-dot">1</span>
+        <span class="step-txt"><span class="step-name">Set up</span><span class="step-sub">Role &amp; format</span></span>
+      </li>
+      <li class="step-line" aria-hidden="true"></li>
+      <li class="step">
+        <span class="step-dot">2</span>
+        <span class="step-txt"><span class="step-name">Interview</span><span class="step-sub">Answer &amp; get scored</span></span>
+      </li>
+      <li class="step-line" aria-hidden="true"></li>
+      <li class="step">
+        <span class="step-dot">3</span>
+        <span class="step-txt"><span class="step-name">Report</span><span class="step-sub">Scores &amp; plan</span></span>
+      </li>
+    </ol>
 
-      <form id="setupForm" novalidate>
-        <div class="field">
-          <label class="field-label" for="role">Target role</label>
-          <input class="input" id="role" name="role" placeholder="e.g. Flutter Developer" autocomplete="off">
-          <div class="field-hint" id="roleHint"></div>
+    <!-- The columns stretch rather than shrink to content: the summary rail
+         needs a full-height column to stick against. -->
+    <div class="row g-4">
+
+      <!-- ── Left · configuration ── -->
+      <div class="col-12 col-lg-7">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-ico"><i class="bi bi-sliders2"></i></span>
+            <div>
+              <h2 class="card-h">Interview configuration</h2>
+              <p class="card-p">Pick the role and the round. Everything here changes the questions you get.</p>
+            </div>
+          </div>
+
+          <form id="setupForm" novalidate>
+            <div class="field">
+              <label class="field-label" for="role">Target role</label>
+              <input class="input" id="role" name="role" placeholder="e.g. Flutter Developer" autocomplete="off">
+              <div class="field-hint" id="roleHint"></div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" id="typeLabel">Interview type</label>
+              <div class="seg" id="typeSeg" role="radiogroup" aria-labelledby="typeLabel"></div>
+              <div class="field-hint" id="typeHint"></div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" id="difficultyLabel">Difficulty</label>
+              <div class="seg" id="difficultySeg" role="radiogroup" aria-labelledby="difficultyLabel"></div>
+              <div class="field-hint">Mixed ramps up as you go, the way a real panel does.</div>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-12 col-sm-6">
+                <div class="field">
+                  <label class="field-label" id="countLabel">Questions</label>
+                  <div class="seg" id="countSeg" role="radiogroup" aria-labelledby="countLabel"></div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="field">
+                  <label class="field-label" id="durationLabel">Duration</label>
+                  <div class="seg" id="durationSeg" role="radiogroup" aria-labelledby="durationLabel"></div>
+                  <div class="field-hint">The clock paces you — it never cuts an answer short.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="start-row">
+              <button class="btn btn-hero" type="submit" id="btnStart">
+                <i class="bi bi-play-fill"></i> Start interview
+              </button>
+              <span class="start-note">You can pause and come back — answers are saved as you go.</span>
+            </div>
+          </form>
         </div>
 
-        <div class="field">
-          <label class="field-label">Interview type</label>
-          <div class="seg" id="typeSeg"></div>
-          <div class="field-hint" id="typeHint"></div>
+        <div class="card">
+          <div class="card-head" style="margin-bottom:1rem;">
+            <span class="card-ico"><i class="bi bi-clock-history"></i></span>
+            <div>
+              <h2 class="card-h">Past interviews</h2>
+              <p class="card-p">Open any one to re-read its report.</p>
+            </div>
+          </div>
+          <div id="historyHost"><div class="empty" style="padding:1.25rem;">Loading…</div></div>
         </div>
+      </div>
 
-        <div class="field">
-          <label class="field-label" for="difficulty">Difficulty</label>
-          <div class="seg" id="difficultySeg"></div>
+      <!-- ── Right · sticky summary rail ── -->
+      <div class="col-12 col-lg-5">
+        <div class="iv-side">
+
+          <div id="resumeHost"></div>
+
+          <div class="card card-tight">
+            <div class="card-head" style="margin-bottom:1.1rem;">
+              <span class="card-ico"><i class="bi bi-speedometer2"></i></span>
+              <div>
+                <h2 class="card-h">AI readiness</h2>
+                <p class="card-p">From your CV, your gaps and past practice.</p>
+              </div>
+            </div>
+            <div id="readinessCard">
+              <div class="empty" style="padding:1rem;">Loading your readiness…</div>
+            </div>
+          </div>
+
+          <div class="card card-tight" id="summaryCard">
+            <div class="card-head" style="margin-bottom:1.1rem;">
+              <span class="card-ico"><i class="bi bi-clipboard-check"></i></span>
+              <div>
+                <h2 class="card-h">Interview summary</h2>
+                <p class="card-p">What you are about to sit.</p>
+              </div>
+            </div>
+
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-bullseye"></i> Target role</span>
+              <span class="sum-v is-empty" id="sumRole">Not set yet</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-layers"></i> Type</span>
+              <span class="sum-v is-empty" id="sumType">—</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-bar-chart"></i> Difficulty</span>
+              <span class="sum-v is-empty" id="sumDifficulty">—</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-list-ol"></i> Questions</span>
+              <span class="sum-v is-empty" id="sumCount">—</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-stopwatch"></i> Timer</span>
+              <span class="sum-v is-empty" id="sumTimer">—</span>
+            </div>
+
+            <div class="sum-total">
+              <span class="sum-total-k">Estimated duration</span>
+              <span class="sum-total-v" id="sumEstimate">—</span>
+            </div>
+            <p class="sum-foot">Roughly three minutes per answer, plus reading time.</p>
+          </div>
+
+          <div class="card card-tight">
+            <div class="card-head" style="margin-bottom:1.1rem;">
+              <span class="card-ico"><i class="bi bi-lightbulb"></i></span>
+              <div>
+                <h2 class="card-h">Interview tips</h2>
+                <p class="card-p">What the scoring rewards.</p>
+              </div>
+            </div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Answer out loud first, then type it — you will write the way you would speak.</span></div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Use situation → action → result. Concrete beats comprehensive.</span></div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Name the tools, numbers and trade-offs. Specifics are what score.</span></div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Aim for about 90 seconds of speech — roughly 150–200 words.</span></div>
+          </div>
+
         </div>
+      </div>
 
-        <div class="field">
-          <label class="field-label">Questions</label>
-          <div class="seg" id="countSeg"></div>
-        </div>
-
-        <div class="field">
-          <label class="field-label">Duration</label>
-          <div class="seg" id="durationSeg"></div>
-          <div class="field-hint">The clock paces you — it never cuts an answer short.</div>
-        </div>
-
-        <div class="btn-row" style="margin-top:1.5rem;">
-          <button class="btn" type="submit" id="btnStart">
-            <i class="bi bi-play-fill"></i> Start interview
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow" style="margin-bottom:.75rem;">Past interviews</div>
-      <div id="historyHost"><div class="empty" style="padding:1.25rem;">Loading…</div></div>
     </div>
   </section>
 
   <!-- ═══ STAGE 2 · INTERVIEW ═══════════════════════════════════════ -->
   <section id="stage-interview" class="hidden">
-    <div class="iv-bar">
-      <div>
-        <div class="iv-bar-role" id="ivRole">—</div>
-        <div class="iv-bar-meta" id="ivMeta">—</div>
-      </div>
-      <div class="iv-bar-spacer"></div>
-      <div class="timer hidden" id="ivTimer">--:--</div>
-      <button class="btn btn-ghost btn-sm" type="button" id="btnEnd">
-        <i class="bi bi-flag"></i> End &amp; get report
-      </button>
-      <div class="track"><span id="ivProgress" style="width:0%"></span></div>
-    </div>
+    <div class="iv-narrow">
 
-    <div class="card" id="questionCard"></div>
-    <div id="feedbackHost"></div>
+      <ol class="stepper" aria-label="Interview progress">
+        <li class="step is-done">
+          <span class="step-dot"><i class="bi bi-check-lg"></i></span>
+          <span class="step-txt"><span class="step-name">Set up</span><span class="step-sub">Done</span></span>
+        </li>
+        <li class="step-line is-done" aria-hidden="true"></li>
+        <li class="step is-active" aria-current="step">
+          <span class="step-dot">2</span>
+          <span class="step-txt"><span class="step-name">Interview</span><span class="step-sub">In progress</span></span>
+        </li>
+        <li class="step-line" aria-hidden="true"></li>
+        <li class="step">
+          <span class="step-dot">3</span>
+          <span class="step-txt"><span class="step-name">Report</span><span class="step-sub">Scores &amp; plan</span></span>
+        </li>
+      </ol>
+
+      <div class="iv-bar">
+        <div>
+          <div class="iv-bar-role" id="ivRole">—</div>
+          <div class="iv-bar-meta" id="ivMeta">—</div>
+        </div>
+        <div class="iv-bar-spacer"></div>
+        <div class="timer hidden" id="ivTimer">--:--</div>
+        <button class="btn btn-ghost btn-sm" type="button" id="btnEnd">
+          <i class="bi bi-flag"></i> End &amp; get report
+        </button>
+        <div class="track"><span id="ivProgress" style="width:0%"></span></div>
+      </div>
+
+      <div class="card" id="questionCard"></div>
+      <div id="feedbackHost"></div>
+    </div>
   </section>
 
   <!-- ═══ STAGE 3 · REPORT ══════════════════════════════════════════ -->
   <section id="stage-report" class="hidden">
-    <div class="card" id="reportCard"></div>
+    <div class="iv-narrow">
+
+      <ol class="stepper" aria-label="Interview progress">
+        <li class="step is-done">
+          <span class="step-dot"><i class="bi bi-check-lg"></i></span>
+          <span class="step-txt"><span class="step-name">Set up</span><span class="step-sub">Done</span></span>
+        </li>
+        <li class="step-line is-done" aria-hidden="true"></li>
+        <li class="step is-done">
+          <span class="step-dot"><i class="bi bi-check-lg"></i></span>
+          <span class="step-txt"><span class="step-name">Interview</span><span class="step-sub">Done</span></span>
+        </li>
+        <li class="step-line is-done" aria-hidden="true"></li>
+        <li class="step is-active" aria-current="step">
+          <span class="step-dot">3</span>
+          <span class="step-txt"><span class="step-name">Report</span><span class="step-sub">Scores &amp; plan</span></span>
+        </li>
+      </ol>
+
+      <div class="card" id="reportCard"></div>
+    </div>
   </section>
 
 </div>
@@ -877,6 +1202,76 @@
         '<div class="empty">Could not load interview practice. Refresh to try again.</div>';
     }
   })();
+})();
+</script>
+
+<script>
+/* ── Summary rail · presentation only ────────────────────────────────
+   Mirrors what the setup form currently reads into the sticky summary
+   card. It only reads the DOM and only writes to the #sum* spans - it
+   holds no state, makes no requests and touches nothing the interview
+   itself depends on. Remove it and the page still works exactly as it
+   did; the summary would simply stop updating.
+   ------------------------------------------------------------------ */
+(function () {
+  "use strict";
+
+  var form = document.getElementById("setupForm");
+  var summary = document.getElementById("summaryCard");
+  if (!form || !summary) return;
+
+  var MINUTES_PER_QUESTION = 3;
+
+  function picked(name) {
+    return form.querySelector('input[name="' + name + '"]:checked');
+  }
+  function pickedLabel(name) {
+    var input = picked(name);
+    var label = input && input.nextElementSibling;
+    return label ? label.textContent.trim() : "";
+  }
+  function pickedNumber(name) {
+    var input = picked(name);
+    return input ? Number(input.value) || 0 : 0;
+  }
+  function set(id, text, isEmpty) {
+    var node = document.getElementById(id);
+    if (!node) return;
+    node.textContent = text;
+    node.title = text;
+    node.classList.toggle("is-empty", !!isEmpty);
+  }
+
+  function refresh() {
+    var roleBox = document.getElementById("role");
+    var role = roleBox ? roleBox.value.trim() : "";
+    set("sumRole", role || "Not set yet", !role);
+
+    var type = pickedLabel("interview_type");
+    set("sumType", type || "—", !type);
+
+    var difficulty = pickedLabel("difficulty");
+    set("sumDifficulty", difficulty || "—", !difficulty);
+
+    var count = pickedNumber("question_count");
+    set("sumCount", count ? count + " questions" : "—", !count);
+
+    var timed = pickedNumber("duration_minutes");
+    set("sumTimer", timed ? timed + " min limit" : "Untimed", !timed);
+
+    // A timed interview is bounded by its clock; an untimed one is paced
+    // by the questions themselves.
+    var estimate = timed || count * MINUTES_PER_QUESTION;
+    set("sumEstimate", estimate ? "≈ " + estimate + " min" : "—", !estimate);
+  }
+
+  form.addEventListener("change", refresh);
+  form.addEventListener("input", refresh);
+
+  /* The option pills are rendered once the setup options arrive, so wait
+     for the form to be filled in rather than reading an empty one. */
+  new MutationObserver(refresh).observe(form, { childList: true, subtree: true });
+  refresh();
 })();
 </script>
 {% endblock %}

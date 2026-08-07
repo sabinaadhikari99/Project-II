@@ -62,16 +62,25 @@ def _fmt_list(values, limit=None):
 # Tracing
 # ---------------------------------------------------------------------------
 
-def trace_analysis(user, resume_text, label="A", prior_skills=None, limit=10):
+def trace_analysis(user, resume_text, label="A", prior_skills=None, limit=10,
+                   merge_prior=False):
     """Run the pipeline for one CV and capture every intermediate value.
 
-    `prior_skills` reproduces the state the real upload path carries in from
-    `UserProfile.skills`. Pass ``[]`` to trace the CV in isolation, or the
-    previous upload's effective skills to reproduce what production actually
-    does on a second upload.
+    `merge_prior=False` (default) is current production: an AI Match analysis
+    scores the skills of the document in front of it.
+
+    `merge_prior=True` reproduces the pre-fix behaviour, where the CV's skills
+    were unioned into `UserProfile.skills` and the union was scored - so a skill
+    deleted from a CV was still counted. Kept so the two can be shown side by
+    side; it is not what the app does any more.
     """
     from apps.jobs.models import JobPosting
-    from apps.jobs.services import compute_match_score, extract_resume_skills
+    from apps.jobs.services import (
+        compute_match_score,
+        extract_resume_skills,
+        locate_resume_skills,
+        skill_confidence_map,
+    )
 
     profile = getattr(user, "profile", None)
 
@@ -81,8 +90,11 @@ def trace_analysis(user, resume_text, label="A", prior_skills=None, limit=10):
         prior = list((profile.skills if profile else None) or [])
     else:
         prior = list(prior_skills)
-    # services.analyze_resume_match line ~579: the union, not a replacement.
-    effective = sorted(set(prior) | set(extracted))
+    # `prior` is always reported so a trace reveals what the profile is
+    # carrying, but it is only SCORED in the legacy comparison mode.
+    effective = sorted(set(prior) | set(extracted)) if merge_prior else list(extracted)
+    sources = locate_resume_skills(resume_text, extracted)
+    confidence = skill_confidence_map(sources)
 
     # -- stage 2: profession + specialisation ------------------------------
     profession, profession_conf = classify_profession_with_resume(
@@ -151,6 +163,7 @@ def trace_analysis(user, resume_text, label="A", prior_skills=None, limit=10):
             vector_score=vector_score,
             cv_signals=signals,
             specialization=specialization,
+            skill_confidence=confidence,
         )
         required = list(job.required_skills or [])
         user_norm = normalize_skill_set(effective)
@@ -193,6 +206,8 @@ def trace_analysis(user, resume_text, label="A", prior_skills=None, limit=10):
         "prior_profile_skills": sorted(prior),
         "extracted_skills": list(extracted),
         "effective_skills": effective,
+        "skill_sources": {k: v["sources"] for k, v in sources.items()},
+        "skill_confidence": confidence,
         "normalized_skills": sorted(normalize_skill_set(effective)),
         "merge_added": sorted(set(prior) - set(extracted)),
         "profession": profession,
@@ -287,6 +302,12 @@ def format_trace(trace, top=3):
                    f"{_fmt_list(trace['merge_added'])}")
     out.append(f"Normalized Skills ({len(trace['normalized_skills'])}) : "
                f"{_fmt_list(trace['normalized_skills'])}")
+    if trace.get("skill_sources"):
+        out.append("Skill provenance (where each was found -> what it is worth):")
+        for key in sorted(trace["skill_sources"],
+                          key=lambda k: (-trace["skill_confidence"][k], k)):
+            out.append(f"    {key:<22} {', '.join(trace['skill_sources'][key]):<28} "
+                       f"x{trace['skill_confidence'][key]:.2f}")
 
     s = trace["signals"]
     out += [
@@ -449,6 +470,15 @@ def compare_traces(a, b, top=3):
     dropped_but_kept = sorted((ex_a - ex_b) & eff_b)
     if dropped_but_kept:
         out.append("  !! removed from the CV but STILL SCORED: " + _fmt_list(dropped_but_kept))
+
+    conf_a, conf_b = a.get("skill_confidence") or {}, b.get("skill_confidence") or {}
+    moved = sorted(k for k in set(conf_a) & set(conf_b) if conf_a[k] != conf_b[k])
+    if moved:
+        out.append("\nSKILL PROVENANCE (same skill, different place in the CV)")
+        for key in moved:
+            out.append(f"  {key:<22} {', '.join(a['skill_sources'][key]):<24} -> "
+                       f"{', '.join(b['skill_sources'][key]):<24} "
+                       f"x{conf_a[key]:.2f} -> x{conf_b[key]:.2f}")
 
     # -- pipeline-level diff ------------------------------------------------
     rows = [
