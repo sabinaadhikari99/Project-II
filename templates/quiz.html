@@ -1,4 +1,3 @@
-<!-- file path: templates/quiz.html -->
 {% extends "base_dashboard.html" %}
 {% block title %}Quiz | SkillSync AI{% endblock %}
 
@@ -148,7 +147,7 @@
     border: 1px solid rgba(var(--accent-rgb), 0.14);
   }
 
-  .panel-head .btn-new-quiz {
+  .btn-new-quiz {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
@@ -161,10 +160,23 @@
     border: 1px solid var(--bdr);
     cursor: pointer;
     transition: color 0.15s ease, border-color 0.15s ease;
+    text-decoration: none;
   }
-  .panel-head .btn-new-quiz:hover {
+  .btn-new-quiz:hover {
     color: var(--accent);
     border-color: rgba(var(--accent-rgb), 0.4);
+    text-decoration: none;
+  }
+
+  .empty-block .btn-new-quiz {
+    background: rgba(var(--accent-rgb), 0.06);
+    border-color: rgba(var(--accent-rgb), 0.18);
+    color: var(--accent);
+    padding: 0.5rem 1.1rem;
+    font-size: 13px;
+  }
+  .empty-block .btn-new-quiz:hover {
+    background: rgba(var(--accent-rgb), 0.10);
   }
 
   /* ── Resumed / completed notice ── */
@@ -256,6 +268,14 @@
     border-radius: 16px 16px 0 0;
   }
 
+  .q-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
   .q-number {
     display: inline-flex;
     align-items: center;
@@ -268,13 +288,53 @@
     font-weight: 600;
     flex-shrink: 0;
     transition: all 0.3s ease;
-    margin-bottom: 0.75rem;
   }
 
   .q-card.answered .q-number {
     background: var(--accent);
     color: #fff;
     box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.25);
+  }
+
+  /* Difficulty tag */
+  .diff-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .diff-tag::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .diff-tag.diff-easy {
+    color: var(--success);
+    background: var(--success-bg);
+    border: 1px solid var(--success-bdr);
+  }
+
+  .diff-tag.diff-medium {
+    color: var(--warn);
+    background: var(--warn-bg);
+    border: 1px solid rgba(245,158,11,0.20);
+  }
+
+  .diff-tag.diff-hard {
+    color: var(--danger);
+    background: var(--danger-bg);
+    border: 1px solid rgba(239,68,68,0.20);
   }
 
   .q-text {
@@ -558,6 +618,32 @@
     transform: scale(1.05);
   }
 
+  /* Difficulty legend (status panel) */
+  .diff-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .diff-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--txt-muted);
+  }
+
+  .diff-legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 999px;
+  }
+
+  .diff-legend-dot.diff-easy { background: var(--success); }
+  .diff-legend-dot.diff-medium { background: var(--warn); }
+  .diff-legend-dot.diff-hard { background: var(--danger); }
+
   /* Tips section */
   .tips-section {
     padding-top: 1.15rem;
@@ -781,6 +867,13 @@
         </div>
         <div class="status-section">
 
+          <!-- Difficulty legend -->
+          <div class="diff-legend" id="diffLegend" style="display:none;">
+            <div class="diff-legend-item"><span class="diff-legend-dot diff-easy"></span> Easy</div>
+            <div class="diff-legend-item"><span class="diff-legend-dot diff-medium"></span> Medium</div>
+            <div class="diff-legend-item"><span class="diff-legend-dot diff-hard"></span> Hard</div>
+          </div>
+
           <!-- Score ring -->
           <div class="score-display" id="scoreDisplay">
             <div class="score-ring" id="scoreRing">
@@ -862,6 +955,118 @@
     ).join("");
   }
 
+  /* ── Difficulty tag helper ── */
+  const DIFFICULTY_META = {
+    easy:   { label: "Easy",   icon: "bi-battery-half" },
+    medium: { label: "Medium", icon: "bi-battery-charging" },
+    hard:   { label: "Hard",   icon: "bi-battery-full" },
+  };
+
+  function difficultyTag(difficulty) {
+    const key = String(difficulty || "").trim().toLowerCase();
+    const meta = DIFFICULTY_META[key];
+    if (!meta) return "";
+    return `<span class="diff-tag diff-${key}">${meta.label}</span>`;
+  }
+
+  /* ── Always show clean, situation-specific text — never raw JSON ──
+     api() may hand back error.message as either a clean string or, if the
+     server response wasn't parsed upstream, the raw response body itself
+     (e.g. the literal text {"error":"...","code":"..."}). This pulls out
+     both the message and the code so the UI can render something specific
+     to what actually went wrong, instead of one generic string for every
+     possible failure. */
+  function extractErrorInfo(rawMessage, fallbackMessage) {
+    const text = (rawMessage == null ? "" : String(rawMessage)).trim();
+    if (!text) return { message: fallbackMessage, code: null };
+
+    const looksLikeJson = text.startsWith("{") || text.startsWith("[");
+    if (looksLikeJson) {
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed && typeof parsed === "object") {
+          const message = parsed.error || parsed.detail || parsed.message || fallbackMessage;
+          const code = typeof parsed.code === "string" ? parsed.code : null;
+          return { message, code };
+        }
+      } catch (e) {
+        /* Not valid JSON after all — never render the raw braces/text. */
+      }
+      return { message: fallbackMessage, code: null };
+    }
+
+    return { message: text, code: null };
+  }
+
+  /* Situation-specific presentation, keyed by the backend's error `code`.
+     Falls through to a generic look when the code is missing or unknown
+     (e.g. a plain network failure that never reached the server). */
+  const ERROR_PRESENTATION = {
+    NO_PROFILE: {
+      icon: "bi-person-x", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "Profile not found",
+      actionLabel: "Complete your profile", actionHref: "/profile/",
+    },
+    NO_RESUME: {
+      icon: "bi-file-earmark-arrow-up", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "CV required",
+      actionLabel: "Upload your CV", actionHref: "/cv-analyzer/",
+    },
+    GENERATION_TIMEOUT: {
+      icon: "bi-hourglass-bottom", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "Taking longer than expected",
+      actionLabel: "Try again", actionFn: "loadQuiz",
+    },
+    GENERATION_BUSY: {
+      icon: "bi-hourglass-split", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "High demand right now",
+      actionLabel: "Try again", actionFn: "loadQuiz",
+    },
+    GENERATION_CONFIG_ERROR: {
+      icon: "bi-tools", bg: "rgba(239,68,68,0.08)", color: "var(--danger)",
+      title: "Quiz service unavailable",
+    },
+    GENERATION_UPSTREAM_ERROR: {
+      icon: "bi-cloud-slash", bg: "rgba(239,68,68,0.08)", color: "var(--danger)",
+      title: "Quiz service unavailable",
+      actionLabel: "Try again", actionFn: "loadQuiz",
+    },
+    GENERATION_INVALID: {
+      icon: "bi-exclamation-triangle", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "Unexpected quiz format",
+      actionLabel: "Try again", actionFn: "loadQuiz",
+    },
+    GENERATION_FAILED: {
+      icon: "bi-exclamation-triangle", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "Unable to generate quiz",
+      actionLabel: "Try again", actionFn: "loadQuiz",
+    },
+    QUIZ_EXPIRED: {
+      icon: "bi-clock-history", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "Quiz expired",
+      actionLabel: "Start a new quiz", actionFn: "startNewQuiz",
+    },
+    NO_ACTIVE_QUIZ: {
+      icon: "bi-info-circle", bg: "rgba(37,99,235,0.08)", color: "var(--accent)",
+      title: "No active quiz",
+      actionLabel: "Start a quiz", actionFn: "loadQuiz",
+    },
+  };
+
+  function presentationFor(code, isAuthError) {
+    if (isAuthError) {
+      return {
+        icon: "bi-shield-exclamation", bg: "rgba(239,68,68,0.08)", color: "var(--danger)",
+        title: "Authentication required",
+      };
+    }
+    return ERROR_PRESENTATION[code] || {
+      icon: "bi-exclamation-triangle", bg: "rgba(245,158,11,0.08)", color: "var(--warn)",
+      title: "Something went wrong",
+      actionLabel: "Try again", actionFn: "loadQuiz",
+    };
+  }
+
   /* ── Update progress ── */
   function updateProgress() {
     if (!totalQuestions) return;
@@ -903,36 +1108,31 @@
       data = await api("/api/quiz/");
       perfLog("Quiz Response Received", tStart);
     } catch (error) {
-      const message = error.message || "Unable to load quiz questions.";
-      
-      /* Check if it's an authentication error */
-      const isAuthError = message.toLowerCase().includes("authentication") || 
+      const { message, code } = extractErrorInfo(error.message, "Unable to load quiz questions.");
+
+      const isAuthError = message.toLowerCase().includes("authentication") ||
                          message.toLowerCase().includes("401") ||
                          message.toLowerCase().includes("unauthorized");
-      
-      let errorIcon = "exclamation-triangle";
-      let errorBg = "rgba(245,158,11,0.08)";
-      let errorColor = "var(--warn)";
-      let errorTitle = "Unable to load quiz";
-      let errorMsg = message;
-      
-      if (isAuthError) {
-        errorIcon = "shield-exclamation";
-        errorBg = "rgba(239,68,68,0.08)";
-        errorColor = "var(--danger)";
-        errorTitle = "Authentication required";
-        errorMsg = "Your session has expired. Please login again.";
-      }
-      
+
+      const presentation = presentationFor(code, isAuthError);
+      const finalMessage = isAuthError ? "Your session has expired. Please login again." : message;
+
+      const actionHtml = presentation.actionHref
+        ? `<a href="${presentation.actionHref}" class="btn-new-quiz mt-3" style="display:inline-flex;">${escapeHtml(presentation.actionLabel)}</a>`
+        : presentation.actionFn
+        ? `<button type="button" class="btn-new-quiz mt-3" onclick="${presentation.actionFn}()">${escapeHtml(presentation.actionLabel)}</button>`
+        : "";
+
       document.getElementById("quizForm").innerHTML = `
         <div class="empty-block">
-          <div class="eb-icon" style="background:${errorBg};color:${errorColor};"><i class="bi bi-${errorIcon}"></i></div>
-          <div class="eb-title">${errorTitle}</div>
-          <div class="eb-sub">${escapeHtml(errorMsg)}</div>
+          <div class="eb-icon" style="background:${presentation.bg};color:${presentation.color};"><i class="bi ${presentation.icon}"></i></div>
+          <div class="eb-title">${escapeHtml(presentation.title)}</div>
+          <div class="eb-sub">${escapeHtml(finalMessage)}</div>
+          ${actionHtml}
         </div>`;
       document.getElementById("qBadge").innerHTML = '<i class="bi bi-question-circle"></i> Error';
       if (typeof showMessage === "function") {
-        showMessage(message, isAuthError ? "danger" : "warning");
+        showMessage(finalMessage, isAuthError ? "danger" : "warning");
       }
       return;
     }
@@ -954,12 +1154,14 @@
         </div>`;
       document.getElementById("progressWrap").style.display    = "none";
       document.getElementById("progressTracker").style.display = "none";
+      document.getElementById("diffLegend").style.display      = "none";
       return;
     }
 
     /* Show progress elements */
     document.getElementById("progressWrap").style.display    = "block";
     document.getElementById("progressTracker").style.display = "block";
+    document.getElementById("diffLegend").style.display      = "flex";
 
     /* Build dot tracker */
     document.getElementById("ptDots").innerHTML = questions
@@ -969,7 +1171,10 @@
     /* Build questions */
     document.getElementById("quizForm").innerHTML = questions.map((q, index) => `
       <div class="q-card" id="qcard-${index}" style="animation-delay:${index * 0.07}s">
-        <div class="q-number" id="qnum-${index}">${index + 1}</div>
+        <div class="q-card-head">
+          <div class="q-number" id="qnum-${index}">${index + 1}</div>
+          ${difficultyTag(q.difficulty)}
+        </div>
         <div class="q-text">${escapeHtml(q.question)}</div>
         <div class="options-list">
           ${(q.options || []).map((opt, oi) => `
@@ -1123,7 +1328,8 @@
       hideQuizNotice();
       await loadQuiz();
     } catch (error) {
-      showMessage(error.message || "Could not start a new quiz.", "danger");
+      const { message } = extractErrorInfo(error.message, "Could not start a new quiz.");
+      showMessage(message, "danger");
     } finally {
       btn.disabled = false;
       btn.innerHTML = orig;
@@ -1179,10 +1385,15 @@
       console.log(`[Perf] ===== Quiz Submit Frontend Total: ${total} ms =====`);
 
     } catch (error) {
-      const message = error.message || "Submission failed.";
+      const { message, code } = extractErrorInfo(error.message, "Submission failed.");
       const isAuthError = message.toLowerCase().includes("authentication") || 
                          message.toLowerCase().includes("401");
-      showMessage(message, isAuthError ? "danger" : "danger");
+      const finalMessage = isAuthError
+        ? "Your session has expired. Please login again."
+        : code === "QUIZ_EXPIRED"
+        ? "This quiz has expired. Start a new one to continue."
+        : message;
+      showMessage(finalMessage, "danger");
       btn.innerHTML = orig;
       btn.disabled  = false;
     }
