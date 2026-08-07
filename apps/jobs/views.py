@@ -16,6 +16,9 @@ from .serializers import (
     RecommendedJobSerializer,
     SavedJobSerializer,
 )
+# Re-exported: `apps.accounts.views` imports `parse_terms` from here, and the
+# synonym vocabulary now lives with the search engine that uses it.
+from .search import SYNONYM_MAP, normalize, parse_terms, search_jobs  # noqa: F401
 from .services import analyze_resume_match, apply_to_job, recommend_jobs_for_user
 
 logger = logging.getLogger(__name__)
@@ -125,97 +128,54 @@ class ApplyJobAPIView(views.APIView):
         return response.Response(ApplicationSerializer(application).data, status=201)
 
 
-SYNONYM_MAP = {
-    "javascript": "js", "js": "javascript",
-    "typescript": "ts", "ts": "typescript",
-    "react": "reactjs", "reactjs": "react",
-    "next.js": "nextjs", "nextjs": "next.js",
-    "node.js": "nodejs", "nodejs": "node.js",
-    "ai": "artificial intelligence",
-    "ml": "machine learning",
-    "cybersecurity": "cyber security",
-    "cyber security": "cybersecurity",
-}
+def saved_job_ids_for(user):
+    """The ids this user has bookmarked, in one query.
+
+    `JobPostingSerializer.is_saved` otherwise asks the database once per job
+    in the list. Views that serialise more than one job hand the set in.
+    """
+    if not user or not user.is_authenticated:
+        return set()
+    return set(SavedJob.objects.filter(user=user).values_list("job_id", flat=True))
 
 
-def normalize(word):
-    w = word.strip().lower()
-    return SYNONYM_MAP.get(w, w)
+class SavedIdsContextMixin:
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["saved_job_ids"] = saved_job_ids_for(self.request.user)
+        return context
 
 
-def parse_terms(raw):
-    if not raw:
-        return []
-    return [normalize(t) for t in raw.replace(",", " ").split() if t.strip()]
+class FilterJobsAPIView(SavedIdsContextMixin, generics.ListAPIView):
+    """The job search: every filter narrows, and results come back ranked.
 
+    The query itself lives in `search.py`. This view only reads the request
+    and hands it over, so the search rules stay testable without a request.
+    """
 
-class FilterJobsAPIView(generics.ListAPIView):
     serializer_class = JobPostingSerializer
     permission_classes = [IsJobSeeker]
 
     def get_queryset(self):
-        queryset = JobPosting.objects.filter(is_active=True)
-
-        title = self.request.query_params.get("title") or self.request.query_params.get("role")
-        skill = self.request.query_params.get("skill")
-        experience = self.request.query_params.get("experience")
-        work_mode = self.request.query_params.get("work_mode")
-
-        title_terms = parse_terms(title)
-        skill_terms = parse_terms(skill)
-
-        from django.db.models import Q
-
-        title_q = None
-        if title_terms:
-            title_q = Q()
-            for t in title_terms:
-                title_q |= Q(title__icontains=t)
-
-        skill_q = None
-        if len(skill_terms) == 1:
-            skill_q = (
-                Q(required_skills__icontains=skill_terms[0])
-                | Q(title__icontains=skill_terms[0])
-                | Q(description__icontains=skill_terms[0])
-            )
-        elif len(skill_terms) >= 2:
-            from itertools import combinations
-
-            unit_qs = []
-            for t in skill_terms:
-                unit_qs.append(
-                    Q(required_skills__icontains=t)
-                    | Q(title__icontains=t)
-                    | Q(description__icontains=t)
-                )
-            skill_q = Q()
-            for a, b in combinations(unit_qs, 2):
-                skill_q |= a & b
-
-        combined = Q()
-        if title_q:
-            combined |= title_q
-        if skill_q:
-            combined |= skill_q
-
-        if combined:
-            queryset = queryset.filter(combined)
-
-        if experience:
-            queryset = queryset.filter(experience_required__lte=experience)
-        if work_mode:
-            queryset = queryset.filter(work_mode=work_mode)
-
-        return queryset.order_by("-created_at")
+        params = self.request.query_params
+        return search_jobs(
+            JobPosting.objects.filter(is_active=True),
+            role=params.get("title") or params.get("role") or "",
+            skill=params.get("skill") or "",
+            experience=params.get("experience"),
+            work_mode=params.get("work_mode"),
+            work_modes=[value for value, _ in JobPosting.WORK_MODE_CHOICES],
+        )
 
 
-class SavedJobsAPIView(generics.ListAPIView):
+class SavedJobsAPIView(SavedIdsContextMixin, generics.ListAPIView):
     serializer_class = SavedJobSerializer
     permission_classes = [IsJobSeeker]
 
     def get_queryset(self):
-        return SavedJob.objects.filter(user=self.request.user).select_related("job")
+        return SavedJob.objects.filter(user=self.request.user).select_related(
+            "job", "job__recruiter"
+        )
 
 
 class ToggleSavedJobAPIView(views.APIView):
@@ -229,12 +189,14 @@ class ToggleSavedJobAPIView(views.APIView):
         return response.Response({"saved": created})
 
 
-class RecentlyViewedJobsAPIView(generics.ListAPIView):
+class RecentlyViewedJobsAPIView(SavedIdsContextMixin, generics.ListAPIView):
     serializer_class = RecentlyViewedJobSerializer
     permission_classes = [IsJobSeeker]
 
     def get_queryset(self):
-        return RecentlyViewedJob.objects.filter(user=self.request.user).select_related("job")[:8]
+        return RecentlyViewedJob.objects.filter(user=self.request.user).select_related(
+            "job", "job__recruiter"
+        )[:8]
 
 
 class MarkRecentlyViewedJobAPIView(views.APIView):

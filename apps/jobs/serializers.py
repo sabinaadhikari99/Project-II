@@ -20,6 +20,12 @@ class JobPostingSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "recruiter", "recruiter_email", "is_saved", "created_at"]
 
     def get_is_saved(self, obj):
+        # A list view hands in every bookmarked id up front; without it this
+        # asks the database once per job on the page.
+        saved_ids = self.context.get("saved_job_ids")
+        if saved_ids is not None:
+            return obj.id in saved_ids
+
         request = self.context.get("request")
         if not request or not request.user or not request.user.is_authenticated:
             return False

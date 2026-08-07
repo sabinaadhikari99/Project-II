@@ -9,55 +9,74 @@
     --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
     --surface: #fff;
     --surface-alt: #F8FAFC;
-    --txt: rgba(15,23,42,0.88);
-    --txt-soft: rgba(15,23,42,0.55);
-    --txt-muted: rgba(15,23,42,0.38);
-    --bdr: rgba(15,23,42,0.06);
-    --bdr-hover: rgba(15,23,42,0.12);
-    --shadow: rgba(15,23,42,0.06);
-    --shadow-lg: rgba(15,23,42,0.10);
+    --surface-sunk: #F1F5F9;
+    --txt: rgba(15,23,42,0.90);
+    --txt-soft: rgba(15,23,42,0.58);
+    --txt-muted: rgba(15,23,42,0.42);
+    --bdr: rgba(15,23,42,0.08);
+    --bdr-strong: rgba(15,23,42,0.14);
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
+    --shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -14px rgba(15,23,42,0.16);
+    --shadow-lg: 0 2px 4px rgba(15,23,42,0.04), 0 18px 40px -18px rgba(15,23,42,0.24);
     --success: #10B981;
     --success-bg: rgba(16,185,129,0.10);
-    --success-bdr: rgba(16,185,129,0.18);
+    --success-bdr: rgba(16,185,129,0.20);
+    --amber: #B45309;
+    --amber-bg: rgba(245,158,11,0.12);
+    --amber-bdr: rgba(245,158,11,0.26);
   }
 
-  .jobs-page { animation: pageIn 0.6s ease both; }
+  html.theme-dark {
+    --surface: var(--ss-surface, #1E293B);
+    --surface-alt: var(--ss-surface-alt, #0F172A);
+    --surface-sunk: rgba(148,163,184,0.08);
+    --txt: rgba(248,250,252,0.94);
+    --txt-soft: rgba(248,250,252,0.66);
+    --txt-muted: rgba(248,250,252,0.46);
+    --bdr: rgba(148,163,184,0.16);
+    --bdr-strong: rgba(148,163,184,0.28);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.30);
+    --shadow: 0 1px 2px rgba(0,0,0,0.30), 0 8px 24px -14px rgba(0,0,0,0.60);
+    --shadow-lg: 0 2px 4px rgba(0,0,0,0.35), 0 18px 40px -18px rgba(0,0,0,0.70);
+    --success: #34D399;
+    --amber: #FBBF24;
+  }
+
+  .jobs-page { width: 100%; max-width: 1400px; margin: 0 auto; animation: pageIn 0.5s ease both; }
+  .jobs-page .row > *, .jobs-page .dash-panel { min-width: 0; }
 
   @keyframes pageIn {
-    from { opacity: 0; transform: translateY(14px); }
+    from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ── Header ── */
   .dash-header {
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     justify-content: space-between;
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
     flex-wrap: wrap;
-    animation: fadeDown 0.5s ease both;
-  }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-12px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 
   .dash-header .page-kicker {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    gap: 0.45rem;
+    margin-bottom: 0.65rem;
+    padding: 0.3rem 0.7rem 0.3rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(var(--accent-rgb), 0.10);
     color: var(--accent);
-    margin-bottom: 0.45rem;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
   }
 
   .dash-header .page-kicker .pulse-dot {
-    width: 7px; height: 7px;
+    width: 6px; height: 6px;
     border-radius: 999px;
     background: var(--accent);
     animation: pulseDot 2s ease-in-out infinite;
@@ -69,82 +88,71 @@
   }
 
   .dash-header .page-title {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 700;
-    margin-bottom: 0.2rem;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin-bottom: 0.35rem;
     color: var(--txt);
   }
 
   .dash-header .page-subtitle {
-    font-size: 14px;
-    max-width: 530px;
+    font-size: 15px;
+    max-width: 60ch;
+    line-height: 1.6;
     color: var(--txt-soft);
   }
 
-  .header-actions .btn {
+  /* Saved-jobs entry point: a header button, not a permanent sidebar. */
+  .btn-saved {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    height: 42px;
+    padding: 0 1.05rem;
     border-radius: 12px;
-    font-weight: 500;
+    background: var(--surface);
+    border: 1px solid var(--bdr-strong);
+    color: var(--txt);
     font-size: 14px;
-    padding: 0.5rem 1.15rem;
-    transition: all 0.25s ease;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease;
   }
 
-  .btn-outline-accent {
-    background: transparent !important;
-    border: 1.5px solid rgba(var(--accent-rgb), 0.28) !important;
-    color: var(--accent) !important;
-    transition: all 0.25s ease;
+  .btn-saved i { font-size: 15px; color: var(--accent); }
+
+  .btn-saved:hover {
+    color: var(--txt);
+    border-color: rgba(var(--accent-rgb), 0.45);
+    box-shadow: 0 8px 20px -12px rgba(var(--accent-rgb), 0.7);
+    transform: translateY(-1px);
   }
 
-  .btn-outline-accent:hover {
-    background: rgba(var(--accent-rgb), 0.06) !important;
-    border-color: rgba(var(--accent-rgb), 0.4) !important;
-    transform: translateY(-2px);
-    color: var(--accent) !important;
+  .btn-saved:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .btn-saved .count-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: rgba(var(--accent-rgb), 0.12);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
-
-  .btn-accent {
-    background: var(--accent) !important;
-    border: none !important;
-    color: #fff !important;
-    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.25);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-accent::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-
-  .btn-accent:hover::before { transform: translateX(100%); }
-
-  .btn-accent:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(var(--accent-rgb), 0.35);
-    filter: brightness(1.08);
-    color: #fff !important;
-  }
-
-  .btn-accent:active { transform: translateY(0); }
 
   /* ── Panels ── */
   .dash-panel {
     background: var(--surface);
     border: 1px solid var(--bdr);
-    border-radius: 20px;
-    box-shadow: 0 4px 14px var(--shadow);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
     overflow: hidden;
-    animation: fadeUp 0.5s ease both;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 
   .panel-head {
@@ -152,123 +160,134 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1.25rem 1.5rem;
+    flex-wrap: wrap;
+    padding: 1.1rem 1.5rem;
     border-bottom: 1px solid var(--bdr);
   }
 
   .panel-head .panel-title {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    font-size: 16px;
-    font-weight: 500;
+    gap: 0.7rem;
+    font-size: 15.5px;
+    font-weight: 650;
     margin-bottom: 0;
     color: var(--txt);
+    letter-spacing: -0.01em;
   }
 
   .panel-head .panel-icon {
-    width: 32px; height: 32px;
+    width: 34px; height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: rgba(var(--accent-rgb), 0.08);
+    background: rgba(var(--accent-rgb), 0.10);
     color: var(--accent);
-    font-size: 14px;
+    font-size: 15px;
     flex-shrink: 0;
   }
 
   .panel-head .badge-count {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.28rem 0.75rem;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
     border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 12.5px;
+    font-weight: 600;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
+    font-variant-numeric: tabular-nums;
   }
 
-  .panel-body { padding: 1.25rem 1.5rem; }
+  .panel-body { padding: 1.5rem; }
 
-  /* ── Search Bar ── */
-  .search-panel {
-    animation-delay: 0.06s;
-    margin-bottom: 1.5rem;
-  }
+  .panel-note { font-size: 12.5px; color: var(--txt-muted); }
 
-  .search-panel .panel-body {
-    padding: 1.25rem 1.5rem 1.35rem;
-  }
-
-  .search-panel .form-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--txt-soft);
-    margin-bottom: 0.4rem;
-    display: flex;
+  .link-more {
+    display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-  }
-
-  .search-panel .form-label i {
+    gap: 0.35rem;
+    padding: 0.3rem 0.2rem;
+    background: none;
+    border: none;
     font-size: 13px;
+    font-weight: 600;
     color: var(--accent);
-    opacity: 0.6;
+    transition: gap 0.2s ease;
   }
 
-  .search-panel .input-wrap {
-    position: relative;
+  .link-more:hover { gap: 0.55rem; color: var(--accent); }
+  .link-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  /* ── Recently viewed strip (above the filters) ── */
+  .recent-strip { margin-bottom: 1.5rem; }
+  .recent-strip .panel-head { padding: 0.95rem 1.5rem; }
+  .recent-strip .panel-body { padding: 1.15rem 1.5rem; }
+
+  .recent-strip #recentJobs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
   }
 
-  .search-panel .input-wrap .field-icon {
+  /* Latest six only — the full history lives behind "View all". */
+  .recent-strip #recentJobs > .mini-job:nth-child(n+7) { display: none; }
+  .recent-strip #recentJobs > .empty-block { grid-column: 1 / -1; }
+
+  /* ── Filter toolbar ── */
+  .search-panel { margin-bottom: 1.5rem; }
+  .search-panel .panel-head { padding: 0.95rem 1.5rem; }
+  .search-panel .panel-body { padding: 1.25rem 1.5rem; }
+
+  .filter-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.5fr) auto;
+    gap: 0.7rem;
+    align-items: center;
+  }
+
+  .input-wrap { position: relative; }
+
+  .input-wrap .field-icon {
     position: absolute;
-    left: 0.85rem; top: 50%;
+    left: 0.8rem; top: 50%;
     transform: translateY(-50%);
-    font-size: 15px;
-    color: rgba(15,23,42,0.24);
+    font-size: 14px;
+    color: var(--txt-muted);
     pointer-events: none;
-    transition: all 0.25s ease;
+    transition: color 0.2s ease;
     z-index: 2;
   }
 
-  .search-panel .input-wrap:focus-within .field-icon {
-    color: var(--accent);
-    transform: translateY(-50%) scale(1.08);
-  }
+  .input-wrap:focus-within .field-icon { color: var(--accent); }
 
   .search-panel .form-control,
   .search-panel .form-select {
-    height: 44px;
+    height: 42px;
     border-radius: 12px;
-    border: 1.5px solid rgba(15,23,42,0.09);
-    background: var(--surface-alt);
+    border: 1px solid var(--bdr-strong);
+    background: var(--surface);
+    color: var(--txt);
     font-size: 14px;
-    transition: all 0.25s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     box-shadow: none;
   }
 
   .search-panel .form-control.has-icon,
-  .search-panel .form-select.has-icon {
-    padding-left: 2.5rem;
-  }
+  .search-panel .form-select.has-icon { padding-left: 2.35rem; }
 
-  .search-panel .form-control::placeholder {
-    color: rgba(15,23,42,0.28);
-  }
+  .search-panel .form-control::placeholder { color: var(--txt-muted); }
 
   .search-panel .form-control:hover,
-  .search-panel .form-select:hover {
-    border-color: var(--bdr-hover);
-    background: var(--surface);
-  }
+  .search-panel .form-select:hover { border-color: rgba(var(--accent-rgb), 0.45); }
 
   .search-panel .form-control:focus,
   .search-panel .form-select:focus {
-    border-color: rgba(var(--accent-rgb), 0.5);
-    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.10);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.14);
     background: var(--surface);
     outline: none;
   }
@@ -277,121 +296,205 @@
     appearance: none;
     -webkit-appearance: none;
     cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(15,23,42,0.4)' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    padding-right: 2.1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(100,116,139,0.85)' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.85rem center;
   }
 
   .btn-search {
-    width: 100%;
-    height: 44px;
+    height: 42px;
+    min-width: 118px;
+    padding: 0 1.25rem;
     border-radius: 12px;
     background: var(--accent) !important;
     color: #fff !important;
     border: none !important;
     font-size: 14px;
-    display: flex;
+    font-weight: 600;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.22);
-    position: relative;
-    overflow: hidden;
+    gap: 0.45rem;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.08);
   }
-
-  .btn-search::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.20) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.45s ease;
-  }
-
-  .btn-search:hover::before { transform: translateX(100%); }
 
   .btn-search:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.30);
-    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -10px rgba(var(--accent-rgb), 0.85);
+    filter: brightness(1.06);
     color: #fff !important;
   }
 
-  /* ── Job Cards ── */
+  .btn-search:active { transform: translateY(0); }
+  .btn-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Mobile-only "Filters" toggle; the toolbar is always open from lg up. */
+  .btn-filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 36px;
+    padding: 0 0.9rem;
+    border-radius: 10px;
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr-strong);
+    color: var(--txt-soft);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .btn-filter-toggle:hover { color: var(--accent); border-color: rgba(var(--accent-rgb), 0.4); }
+  .btn-filter-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-filter-toggle .bi-chevron-down { transition: transform 0.25s ease; font-size: 11px; }
+  .btn-filter-toggle[aria-expanded="true"] .bi-chevron-down { transform: rotate(180deg); }
+
+  /* ── Active filter chips ── */
+  .chip-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.1rem;
+    padding-top: 1.1rem;
+    border-top: 1px dashed var(--bdr);
+  }
+
+  .chip-bar:empty { display: none; }
+
+  .chip-bar .chip-lead {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--txt-muted);
+    margin-right: 0.15rem;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.4rem 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.20);
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .filter-chip:hover { background: rgba(var(--accent-rgb), 0.13); border-color: rgba(var(--accent-rgb), 0.35); }
+
+  .filter-chip .chip-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(var(--accent-rgb), 0.14);
+    color: inherit;
+    font-size: 11px;
+    line-height: 1;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .filter-chip .chip-x:hover { background: var(--accent); color: #fff; transform: rotate(90deg); }
+  .filter-chip .chip-x:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .chip-clear {
+    background: none;
+    border: none;
+    padding: 0.3rem 0.4rem;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--txt-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .chip-clear:hover { color: var(--accent); }
+  .chip-clear:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  /* ── Results grid ── */
+  #jobsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1.25rem;
+  }
+
+  #jobsList > .empty-block { grid-column: 1 / -1; }
+
+  /* ── Job cards ── */
   .job-item {
-    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem;
     border-radius: 16px;
     border: 1px solid var(--bdr);
-    background: var(--surface-alt);
-    margin-bottom: 0.85rem;
-    transition: all 0.3s ease;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
     animation: itemSlide 0.4s ease both;
     position: relative;
   }
 
-  .job-item:last-child { margin-bottom: 0; }
-
   @keyframes itemSlide {
-    from { opacity: 0; transform: translateX(-12px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   .job-item:hover {
-    border-color: rgba(var(--accent-rgb), 0.16);
-    background: var(--surface);
-    box-shadow: 0 10px 28px var(--shadow-lg);
-    transform: translateX(3px);
+    border-color: rgba(var(--accent-rgb), 0.32);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
   }
 
   .job-item .ji-header {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .job-item .ji-info {
-    display: flex;
-    gap: 0.85rem;
-    align-items: flex-start;
-    min-width: 0;
+    gap: 0.9rem;
+    margin-bottom: 0.9rem;
   }
 
   .job-item .ji-logo {
-    width: 64px; height: 64px;
-    border-radius: 12px;
+    width: 52px; height: 52px;
+    border-radius: 13px;
     border: 1px solid var(--bdr);
     background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-sm);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    font-size: 19px;
     font-weight: 700;
     color: var(--accent);
-    transition: all 0.3s ease;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
     overflow: hidden;
-    padding: 10px;
+    padding: 8px;
   }
 
   .job-item:hover .ji-logo {
-    border-color: rgba(var(--accent-rgb), 0.2);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.12);
+    border-color: rgba(var(--accent-rgb), 0.3);
+    box-shadow: 0 6px 14px -8px rgba(var(--accent-rgb), 0.7);
   }
 
-  .job-item .ji-logo img {
-    width: 100%; height: 100%;
-    object-fit: contain;
-  }
+  .job-item .ji-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+  .job-item .ji-head { flex: 1 1 auto; min-width: 0; }
 
   .job-item .ji-title {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 16.5px;
+    font-weight: 650;
     color: var(--txt);
-    margin-bottom: 0.15rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.3rem;
+    overflow-wrap: anywhere;
   }
 
   .job-item .ji-meta {
@@ -399,90 +502,144 @@
     align-items: center;
     gap: 0.4rem;
     font-size: 13px;
-    color: var(--txt-muted);
+    color: var(--txt-soft);
     flex-wrap: wrap;
   }
 
-  .job-item .ji-meta i { font-size: 13px; opacity: 0.55; }
+  .job-item .ji-meta i { font-size: 12.5px; opacity: 0.7; }
 
   .job-item .ji-meta .meta-dot {
     width: 3px; height: 3px;
     border-radius: 999px;
-    background: rgba(15,23,42,0.2);
+    background: var(--txt-muted);
+    opacity: 0.6;
   }
 
-  .job-item .ji-tags {
+  /* Bookmark, top-right. Its text is collapsed to zero so the shared
+     toggle helper can keep rewriting the label without breaking the icon. */
+  .job-item .ji-bm,
+  .job-item .ji-bm.btn-primary,
+  .job-item .ji-bm.btn-outline-primary {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 11px;
+    border: 1px solid var(--bdr-strong);
+    background: var(--surface);
+    color: var(--txt-muted);
+    font-size: 0;
+    line-height: 0;
+    box-shadow: none;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  }
+
+  .job-item .ji-bm i { font-size: 16px; line-height: 1; margin: 0 !important; }
+
+  .job-item .ji-bm:hover {
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb), 0.45);
+    background: rgba(var(--accent-rgb), 0.07);
+    transform: translateY(-1px);
+  }
+
+  .job-item .ji-bm:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Saved state keys off the filled icon, so it stays correct whether the
+     card was rendered saved or toggled after load. */
+  .job-item .ji-bm:has(.bi-bookmark-fill) {
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.12);
+    border-color: rgba(var(--accent-rgb), 0.35);
+  }
+
+  .job-item .ji-facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 0.5rem;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
   }
 
   .tag-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
-    padding: 0.2rem 0.55rem;
-    border-radius: 7px;
-    font-size: 13px;
-    font-weight: 500;
-    background: rgba(var(--accent-rgb), 0.06);
-    color: var(--accent);
-    border: 1px solid rgba(var(--accent-rgb), 0.12);
+    gap: 0.3rem;
+    padding: 0.28rem 0.6rem;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    background: var(--surface-sunk);
+    color: var(--txt-soft);
+    border: 1px solid var(--bdr);
   }
 
-  .tag-pill i { font-size: 13px; }
+  .tag-pill i { font-size: 12px; opacity: 0.8; }
 
-  .job-item .ji-salary {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--txt);
-    white-space: nowrap;
-    display: flex;
+  .tag-pill.tag-salary { background: var(--success-bg); color: var(--success); border-color: var(--success-bdr); }
+  .tag-pill.tag-salary i { opacity: 1; }
+
+  /* Relevance badges — presentation of how the job answers the active
+     filters. Nothing here re-orders the list. */
+  .rel-badge {
+    display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+    padding: 0.24rem 0.6rem;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
   }
 
-  .job-item .ji-salary i {
-    font-size: 13px;
-    color: var(--accent);
-    opacity: 0.6;
-  }
+  .rel-best { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bdr); }
+  .rel-rec  { background: rgba(var(--accent-rgb), 0.10); color: var(--accent); border: 1px solid rgba(var(--accent-rgb), 0.22); }
+  .rel-pct  { background: var(--surface-sunk); color: var(--txt-soft); border: 1px solid var(--bdr); font-variant-numeric: tabular-nums; }
+
+  .job-item .ji-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.6rem; }
+  .job-item .ji-badges:empty { display: none; }
 
   .job-item .ji-desc {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--txt-soft);
-    line-height: 1.6;
-    margin-bottom: 0.85rem;
+    line-height: 1.65;
+    margin-bottom: 0.9rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    overflow-wrap: anywhere;
   }
 
   .job-item .ji-skills {
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
-    margin-bottom: 0.85rem;
+    margin-bottom: 1.15rem;
   }
 
   .skill-tag {
     display: inline-flex;
     align-items: center;
-    padding: 0.22rem 0.6rem;
+    padding: 0.24rem 0.6rem;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 500;
     background: rgba(var(--accent-rgb), 0.07);
     color: var(--accent);
     border: 1px solid rgba(var(--accent-rgb), 0.14);
-    transition: all 0.2s ease;
+    transition: background 0.2s ease;
   }
 
-  .skill-tag:hover {
-    background: rgba(var(--accent-rgb), 0.13);
-    transform: translateY(-1px);
+  .skill-tag:hover { background: rgba(var(--accent-rgb), 0.14); }
+
+  .skill-tag.skill-hit {
+    background: rgba(var(--accent-rgb), 0.16);
+    border-color: rgba(var(--accent-rgb), 0.4);
+    font-weight: 650;
   }
 
   .job-item .ji-actions {
@@ -490,247 +647,284 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     align-items: center;
+    margin-top: auto;
+    padding-top: 0.15rem;
   }
 
   /* Job action buttons */
   .btn-apply {
-    height: 34px;
-    padding: 0 1rem;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
+    height: 38px;
+    padding: 0 1.15rem;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 600;
     border: none;
     background: var(--accent) !important;
     color: #fff !important;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.20);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.08);
   }
-
-  .btn-apply::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.20) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.45s ease;
-  }
-
-  .btn-apply:hover::before { transform: translateX(100%); }
 
   .btn-apply:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.30);
-    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -12px rgba(var(--accent-rgb), 0.9);
+    filter: brightness(1.06);
     color: #fff !important;
   }
 
   .btn-apply:active { transform: translateY(0); }
-  .btn-apply i { margin-right: 0.3rem; }
+  .btn-apply:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-apply i { margin-right: 0.35rem; }
 
-  .btn-applied {
+  .job-item .btn-applied,
+  .job-item .btn-applied.btn-success {
+    height: 38px;
+    padding: 0 1.15rem;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--success-bg) !important;
     color: var(--success) !important;
     border: 1px solid var(--success-bdr) !important;
     box-shadow: none !important;
+    transform: none !important;
     pointer-events: none;
   }
 
-  .btn-applied::before { display: none; }
-
-  .btn-save {
-    height: 34px;
-    padding: 0 0.85rem;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.25s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  .btn-save-default {
-    background: transparent;
-    color: var(--accent);
-    border: 1.5px solid rgba(var(--accent-rgb), 0.22);
-  }
-
-  .btn-save-default:hover {
-    background: rgba(var(--accent-rgb), 0.06);
-    border-color: rgba(var(--accent-rgb), 0.4);
-    transform: translateY(-1px);
-    color: var(--accent);
-  }
-
-  .btn-save-active {
-    background: var(--accent) !important;
-    color: #fff !important;
-    border: none !important;
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.20);
-  }
-
-  .btn-save-active:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-    color: #fff !important;
-  }
-
   .btn-view {
-    height: 34px;
-    padding: 0 0.85rem;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    background: transparent;
+    height: 38px;
+    padding: 0 0.95rem;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 600;
+    background: var(--surface);
     color: var(--txt-soft);
-    border: 1.5px solid var(--bdr-hover);
-    transition: all 0.25s ease;
+    border: 1px solid var(--bdr-strong);
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
   }
 
   .btn-view:hover {
     background: var(--surface-alt);
-    border-color: rgba(var(--accent-rgb), 0.2);
+    border-color: rgba(var(--accent-rgb), 0.4);
     color: var(--accent);
     transform: translateY(-1px);
   }
 
-  /* ── Mini Job Cards (sidebar) ── */
+  .btn-view:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ── Mini job cards (recent strip + modals) ── */
   .mini-job {
     display: flex;
     gap: 0.7rem;
-    align-items: flex-start;
-    padding: 0.75rem 0.85rem;
+    align-items: center;
+    padding: 0.8rem 0.9rem;
     border-radius: 14px;
     border: 1px solid var(--bdr);
     background: var(--surface-alt);
-    margin-bottom: 0.55rem;
-    transition: all 0.25s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
     animation: itemSlide 0.35s ease both;
+    min-width: 0;
   }
 
-  .mini-job:last-child { margin-bottom: 0; }
-
   .mini-job:hover {
-    border-color: rgba(var(--accent-rgb), 0.14);
+    border-color: rgba(var(--accent-rgb), 0.3);
     background: var(--surface);
-    box-shadow: 0 4px 14px var(--shadow);
-    transform: translateX(3px);
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
   }
 
   .mini-job .mj-logo {
-    width: 36px; height: 36px;
+    width: 38px; height: 38px;
     border-radius: 10px;
     border: 1px solid var(--bdr);
     flex-shrink: 0;
-    background: var(--surface);
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--accent);
     overflow: hidden;
-    transition: all 0.25s ease;
+    padding: 5px;
   }
 
-  .mini-job:hover .mj-logo {
-    border-color: rgba(var(--accent-rgb), 0.2);
-    box-shadow: 0 3px 8px rgba(var(--accent-rgb), 0.10);
-  }
-
-  .mini-job .mj-logo img {
-    width: 100%; height: 100%;
-    object-fit: contain;
-  }
+  .mini-job .mj-logo img { width: 100%; height: 100%; object-fit: contain; }
 
   .mini-job .mj-title {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13.5px;
+    font-weight: 650;
     color: var(--txt);
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.15rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .mini-job .mj-meta {
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--txt-muted);
     display: flex;
     align-items: center;
     gap: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .mini-job .mj-meta i { font-size: 13px; opacity: 0.5; }
+  .mini-job .mj-meta i { font-size: 12px; opacity: 0.7; }
 
-  /* ── Sidebar panels ── */
-  .sidebar-panel { margin-bottom: 1rem; }
-  .sidebar-panel:last-child { margin-bottom: 0; }
+  /* Modal lists stack rather than sit in a strip. */
+  .modal-list { display: flex; flex-direction: column; gap: 0.6rem; }
 
-  /* ── Empty State ── */
+  /* ── Modals ── */
+  .jobs-modal .modal-content {
+    border: 1px solid var(--bdr);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .jobs-modal .modal-header {
+    border-bottom: 1px solid var(--bdr);
+    padding: 1.15rem 1.4rem;
+    gap: 0.7rem;
+  }
+
+  .jobs-modal .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 16px;
+    font-weight: 650;
+    color: var(--txt);
+  }
+
+  .jobs-modal .modal-body { padding: 1.4rem; max-height: 65vh; overflow-y: auto; }
+
+  /* ── Empty states ── */
   .empty-block {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 2.75rem 1.25rem;
     text-align: center;
   }
 
   .empty-block .eb-icon {
-    width: 46px; height: 46px;
+    width: 58px; height: 58px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
-    background: rgba(var(--accent-rgb), 0.07);
+    border-radius: 18px;
+    background: rgba(var(--accent-rgb), 0.09);
+    border: 1px solid rgba(var(--accent-rgb), 0.16);
     color: var(--accent);
-    font-size: 18px;
-    margin-bottom: 0.65rem;
-    animation: iconPop 0.5s 0.2s ease both;
+    font-size: 23px;
+    margin-bottom: 0.9rem;
+    animation: iconPop 0.45s 0.1s ease both;
   }
 
   @keyframes iconPop {
-    from { transform: scale(0.6); opacity: 0; }
+    from { transform: scale(0.7); opacity: 0; }
     to   { transform: scale(1); opacity: 1; }
   }
 
   .empty-block .eb-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--txt-soft);
-    margin-bottom: 0.15rem;
+    font-size: 15px;
+    font-weight: 650;
+    color: var(--txt);
+    margin-bottom: 0.3rem;
   }
 
   .empty-block .eb-sub {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--txt-muted);
-    max-width: 220px;
-    line-height: 1.5;
+    max-width: 300px;
+    line-height: 1.6;
   }
 
+  .empty-block .eb-cta { margin-top: 1.1rem; }
+  .empty-block .eb-cta:empty { display: none; }
+
+  .btn-empty-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 38px;
+    padding: 0 1.15rem;
+    border-radius: 11px;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    background: rgba(var(--accent-rgb), 0.07);
+    color: var(--accent);
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-empty-cta:hover {
+    background: rgba(var(--accent-rgb), 0.14);
+    border-color: rgba(var(--accent-rgb), 0.45);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .btn-empty-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
   /* ── Responsive ── */
+  @media (max-width: 1399.98px) {
+    #jobsList { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+  }
+
+  @media (max-width: 1199.98px) {
+    .filter-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr); }
+    .filter-grid .fg-skill { grid-column: 1 / 3; }
+    .filter-grid .fg-search { grid-column: 3 / 4; }
+    .btn-search { width: 100%; }
+  }
+
   @media (max-width: 991.98px) {
-    .search-panel .panel-body { padding: 1rem 1.15rem; }
+    #jobsList { grid-template-columns: 1fr; }
+    .dash-header .page-title { font-size: 27px; }
+    /* The filter card follows the page on small screens so search is
+       always one tap away. */
+    .search-panel { position: sticky; top: calc(var(--navbar-height, 60px) + 0.5rem); z-index: 6; }
   }
 
   @media (max-width: 767.98px) {
-    .dash-header { flex-direction: column; gap: 1rem; }
+    .dash-header { flex-direction: column; align-items: stretch; gap: 1.1rem; }
     .dash-header .page-title { font-size: 24px; }
-    .panel-head { padding: 1rem 1.15rem; }
-    .panel-body { padding: 1rem 1.15rem; }
-    .job-item .ji-header { flex-direction: column; gap: 0.5rem; }
-    .job-item .ji-salary { order: -1; }
+    .btn-saved { width: 100%; justify-content: center; }
+    .panel-head { padding: 0.95rem 1.15rem; }
+    .panel-body { padding: 1.15rem; }
+    .search-panel .panel-body { padding: 1.15rem; }
+    .recent-strip .panel-body { padding: 1rem 1.15rem; }
+    .filter-grid { grid-template-columns: 1fr 1fr; }
+    .filter-grid .fg-role,
+    .filter-grid .fg-skill,
+    .filter-grid .fg-search { grid-column: 1 / -1; }
+    .recent-strip #recentJobs { grid-template-columns: 1fr 1fr; }
+    .recent-strip #recentJobs > .mini-job:nth-child(n+5) { display: none; }
   }
 
   @media (max-width: 575.98px) {
-    .job-item { padding: 1rem; }
-    .job-item .ji-logo { width: 48px; height: 48px; border-radius: 10px; padding: 6px; font-size: 18px; }
+    .job-item { padding: 1.15rem; }
+    .job-item .ji-logo { width: 46px; height: 46px; border-radius: 11px; padding: 6px; font-size: 17px; }
+    .filter-grid { grid-template-columns: 1fr; }
+    .recent-strip #recentJobs { grid-template-columns: 1fr; }
+    .recent-strip #recentJobs > .mini-job:nth-child(n+4) { display: none; }
+    .job-item .ji-actions .btn-apply,
+    .job-item .ji-actions .btn-view { flex: 1 1 auto; }
   }
 </style>
 
@@ -739,111 +933,147 @@
   <!-- ── Header ── -->
   <div class="dash-header">
     <div>
+      <span class="page-kicker"><span class="pulse-dot"></span> Job search</span>
       <h1 class="page-title">Jobs for you</h1>
       <p class="page-subtitle mb-0">
-        Browse professional openings with filters, bookmarks, and recently viewed roles.
+        Browse openings matched to your role, skills and experience — bookmark the ones worth a second look.
       </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-saved" type="button" data-bs-toggle="modal" data-bs-target="#savedJobsModal">
+        <i class="bi bi-bookmark-heart"></i>
+        Saved jobs
+        <span class="count-pill" id="savedCount">0</span>
+      </button>
     </div>
   </div>
 
-  <!-- ── Search Panel ── -->
+  <!-- ── Recently viewed (above the filters, horizontal) ── -->
+  <div class="dash-panel recent-strip">
+    <div class="panel-head">
+      <div class="panel-title">
+        <div class="panel-icon"><i class="bi bi-clock-history"></i></div>
+        Recently viewed
+        <span id="recentCount" class="badge-count">0</span>
+      </div>
+      <button class="link-more" type="button" data-bs-toggle="modal" data-bs-target="#recentJobsModal">
+        View all <i class="bi bi-arrow-right"></i>
+      </button>
+    </div>
+    <div class="panel-body" id="recentJobs"></div>
+  </div>
+
+  <!-- ── Filter toolbar ── -->
   <div class="dash-panel search-panel">
     <div class="panel-head">
       <div class="panel-title">
         <div class="panel-icon"><i class="bi bi-funnel"></i></div>
         Filter jobs
       </div>
+      <button class="btn-filter-toggle d-lg-none" type="button"
+              data-bs-toggle="collapse" data-bs-target="#filterBody"
+              aria-expanded="false" aria-controls="filterBody">
+        <i class="bi bi-sliders2"></i> Filters <i class="bi bi-chevron-down"></i>
+      </button>
     </div>
-    <div class="panel-body">
-      <form id="jobSearchForm" class="row g-3 align-items-end">
-        <div class="col-md-4">
-          <label class="form-label" for="role"><i class="bi bi-briefcase"></i> Role</label>
+    <div class="panel-body collapse d-lg-block" id="filterBody">
+      <form id="jobSearchForm" class="filter-grid">
+        <div class="fg-role">
+          <label class="visually-hidden" for="role">Role</label>
           <div class="input-wrap">
             <i class="bi bi-briefcase field-icon"></i>
-            <input id="role" class="form-control has-icon" name="role" placeholder="e.g. Designer, Django, analyst">
+            <input id="role" class="form-control has-icon" name="role" placeholder="Job title, keyword or company">
           </div>
         </div>
-        <div class="col-md-2">
-          <label class="form-label" for="experience"><i class="bi bi-clock-history"></i> Experience</label>
+        <div class="fg-exp">
+          <label class="visually-hidden" for="experience">Experience</label>
           <div class="input-wrap">
             <i class="bi bi-clock-history field-icon"></i>
-            <input id="experience" class="form-control has-icon" name="experience" type="number" min="0" step="0.5" placeholder="Min years">
+            <input id="experience" class="form-control has-icon" name="experience" type="number" min="0" step="0.5" placeholder="Max years">
           </div>
         </div>
-        <div class="col-md-2">
-          <label class="form-label" for="work_mode"><i class="bi bi-laptop"></i> Work mode</label>
+        <div class="fg-mode">
+          <label class="visually-hidden" for="work_mode">Work mode</label>
           <div class="input-wrap">
             <i class="bi bi-laptop field-icon"></i>
             <select id="work_mode" class="form-select has-icon" name="work_mode">
-              <option value="">Any</option>
+              <option value="">Any work mode</option>
               <option value="remote">Remote</option>
               <option value="hybrid">Hybrid</option>
               <option value="onsite">On-site</option>
             </select>
           </div>
         </div>
-        <div class="col-md-3">
-          <label class="form-label" for="skill"><i class="bi bi-tools"></i> Skill</label>
+        <div class="fg-skill">
+          <label class="visually-hidden" for="skill">Skill</label>
           <div class="input-wrap">
             <i class="bi bi-tools field-icon"></i>
-            <input id="skill" class="form-control has-icon" name="skill" placeholder="Python, React (comma-separated)">
+            <input id="skill" class="form-control has-icon" name="skill" placeholder="Skills — e.g. Python, React">
           </div>
         </div>
-        <div class="col-md-1 d-grid">
-          <button class="btn-search" type="submit" aria-label="Search jobs">
-            <i class="bi bi-search"></i>
+        <div class="fg-search">
+          <button class="btn-search" type="submit">
+            <i class="bi bi-search"></i> Search
           </button>
         </div>
       </form>
+
+      <!-- Active filter chips — rendered from the fields above. -->
+      <div class="chip-bar" id="activeFilters"></div>
     </div>
   </div>
 
-  <!-- ── Main Content ── -->
-  <div class="row g-4">
-
-    <!-- Job Listings -->
-    <div class="col-xl-8">
-      <div class="dash-panel" style="animation-delay:0.12s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-collection"></i></div>
-            Matching openings
-          </div>
-          <span id="jobCount" class="badge-count">
-            <i class="bi bi-briefcase"></i> 0 jobs
-          </span>
-        </div>
-        <div class="panel-body" id="jobsList"></div>
+  <!-- ── Results ── -->
+  <div class="dash-panel">
+    <div class="panel-head">
+      <div class="panel-title">
+        <div class="panel-icon"><i class="bi bi-collection"></i></div>
+        Matching openings
+      </div>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="panel-note" id="sortNote">Newest first</span>
+        <span id="jobCount" class="badge-count">
+          <i class="bi bi-briefcase"></i> 0 jobs
+        </span>
       </div>
     </div>
+    <div class="panel-body" id="jobsList"></div>
+  </div>
 
-    <!-- Sidebar -->
-    <div class="col-xl-4">
+</div>
 
-      <!-- Bookmarked -->
-      <div class="dash-panel sidebar-panel" style="animation-delay:0.18s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-bookmark-heart"></i></div>
-            Bookmarked jobs
-          </div>
-          <span id="savedCount" class="badge-count">0</span>
-        </div>
-        <div class="panel-body" id="savedJobs"></div>
+<!-- ── Saved jobs modal ── -->
+<div class="modal fade jobs-modal" id="savedJobsModal" tabindex="-1" aria-labelledby="savedJobsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="savedJobsModalLabel">
+          <span class="panel-icon"><i class="bi bi-bookmark-heart"></i></span>
+          Saved jobs
+        </h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
-      <!-- Recently Viewed -->
-      <div class="dash-panel sidebar-panel" style="animation-delay:0.24s">
-        <div class="panel-head">
-          <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-clock-history"></i></div>
-            Recently viewed
-          </div>
-          <span id="recentCount" class="badge-count">0</span>
-        </div>
-        <div class="panel-body" id="recentJobs"></div>
+      <div class="modal-body">
+        <div class="modal-list" id="savedJobs"></div>
       </div>
+    </div>
+  </div>
+</div>
 
+<!-- ── Recently viewed modal ── -->
+<div class="modal fade jobs-modal" id="recentJobsModal" tabindex="-1" aria-labelledby="recentJobsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="recentJobsModalLabel">
+          <span class="panel-icon"><i class="bi bi-clock-history"></i></span>
+          Recently viewed
+        </h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-list" id="recentJobsAll"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -868,19 +1098,133 @@
   })();
 
   /* ── Empty state ── */
-  function emptyBlock(icon, title, sub) {
+  function emptyBlock(icon, title, sub, cta) {
     return `
       <div class="empty-block">
         <div class="eb-icon"><i class="bi bi-${icon}"></i></div>
         <div class="eb-title">${title}</div>
         <div class="eb-sub">${sub}</div>
+        <div class="eb-cta">${cta || ""}</div>
       </div>`;
+  }
+
+  /* ── Active filters ─────────────────────────────────────────────
+     Presentation only. `relevance` describes how a job answers the
+     filters the user typed so the card can say why it is there; it
+     never re-orders anything - the server decides the order. ── */
+  const FILTER_LABELS = {
+    role: value => `Role: ${value}`,
+    experience: value => `${value}+ years`,
+    work_mode: value => workModeLabel(value),
+    skill: value => `Skill: ${value}`
+  };
+
+  let relevance = { active: false, scores: [], best: -1, terms: [] };
+
+  function splitTerms(raw) {
+    return String(raw || "").toLowerCase().replace(/,/g, " ").split(/\s+/).filter(Boolean);
+  }
+
+  function prepareRelevance(jobs, filters) {
+    const terms = splitTerms(filters.skill);
+    const roleTerms = splitTerms(filters.role);
+    const mode = filters.work_mode || "";
+    const criteria = terms.length + (roleTerms.length ? 1 : 0) + (mode ? 1 : 0);
+
+    relevance = { active: criteria > 0, scores: [], best: -1, terms };
+    if (!relevance.active) return;
+
+    let bestScore = 0;
+    jobs.forEach((job, index) => {
+      const haystack = [
+        job.title, job.description, (job.required_skills || []).join(" ")
+      ].join(" ").toLowerCase();
+
+      let hits = terms.filter(t => haystack.includes(t)).length;
+      if (roleTerms.length && roleTerms.some(t => String(job.title || "").toLowerCase().includes(t))) hits += 1;
+      if (mode && job.work_mode === mode) hits += 1;
+
+      const score = criteria ? hits / criteria : 0;
+      relevance.scores.push(score);
+      if (score > bestScore) { bestScore = score; relevance.best = index; }
+    });
+
+    if (bestScore <= 0) relevance.best = -1;
+  }
+
+  function relevanceBadges(index) {
+    if (!relevance.active || !relevance.scores.length) return "";
+    const score = relevance.scores[index] || 0;
+    if (score <= 0) return "";
+
+    const pct = Math.round(score * 100);
+    const badges = [];
+
+    if (index === relevance.best) {
+      badges.push('<span class="rel-badge rel-best"><i class="bi bi-star-fill"></i> Best match</span>');
+    } else if (score >= 0.6) {
+      badges.push('<span class="rel-badge rel-rec"><i class="bi bi-hand-thumbs-up"></i> Recommended</span>');
+    }
+    badges.push(`<span class="rel-badge rel-pct">${pct}% filter match</span>`);
+    return badges.join("");
+  }
+
+  function renderActiveFilters(filters) {
+    const host = document.getElementById("activeFilters");
+    if (!host) return;
+
+    /* The API ranks by relevance once there is something to rank, and by
+       date when the boxes are empty. Say which one the user is looking at. */
+    const note = document.getElementById("sortNote");
+    if (note) note.textContent = (filters.role || filters.skill) ? "Most relevant first" : "Newest first";
+
+    const chips = Object.keys(FILTER_LABELS)
+      .filter(name => filters[name])
+      .map(name => `
+        <span class="filter-chip">
+          ${escapeHtml(FILTER_LABELS[name](filters[name]))}
+          <button class="chip-x" type="button" aria-label="Remove filter"
+            onclick="clearJobFilter('${name}')"><i class="bi bi-x-lg"></i></button>
+        </span>`);
+
+    host.innerHTML = chips.length
+      ? `<span class="chip-lead">Filters</span>${chips.join("")}
+         <button class="chip-clear" type="button" onclick="clearAllJobFilters()">Clear all</button>`
+      : "";
+  }
+
+  /* Clearing a chip goes through the same path as editing the field and
+     pressing Search, so persistence and the search run unchanged. */
+  function clearJobFilter(name) {
+    const form = document.getElementById("jobSearchForm");
+    const field = form && form.elements[name];
+    if (!field) return;
+    field.value = "";
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+    field.dispatchEvent(new Event("change", { bubbles: true }));
+    form.requestSubmit();
+  }
+
+  function clearAllJobFilters() {
+    const form = document.getElementById("jobSearchForm");
+    if (!form) return;
+    Object.keys(FILTER_LABELS).forEach(name => {
+      const field = form.elements[name];
+      if (field) field.value = "";
+    });
+    form.dispatchEvent(new Event("input", { bubbles: true }));
+    form.dispatchEvent(new Event("change", { bubbles: true }));
+    form.requestSubmit();
   }
 
   /* ── Render job card ── */
   function renderJob(job, index) {
+    const hits = relevance.active ? relevance.terms : [];
     const skills = (job.required_skills || [])
-      .map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`).join("");
+      .map(s => {
+        const hit = hits.some(t => String(s).toLowerCase().includes(t));
+        return `<span class="skill-tag${hit ? " skill-hit" : ""}">${escapeHtml(s)}</span>`;
+      }).join("");
 
     const logoHtml = (() => {
       const initial = escapeHtml((job.company || "?")[0].toUpperCase());
@@ -890,32 +1234,36 @@
     })();
 
     const isSaved = job.is_saved;
-    const saveClass = isSaved ? "btn-save btn-save-active" : "btn-save btn-save-default";
+    const saveClass = isSaved ? "ji-bm btn-primary" : "ji-bm btn-outline-primary";
     const saveIcon = isSaved ? "bi-bookmark-fill" : "bi-bookmark";
     const saveLabel = isSaved ? "Bookmarked" : "Bookmark";
 
     return `
-      <div class="job-item" style="animation-delay:${(index || 0) * 0.06}s">
+      <div class="job-item" style="animation-delay:${(index || 0) * 0.05}s">
         <div class="ji-header">
-          <div class="ji-info">
-            ${logoHtml}
-            <div>
-              <div class="ji-title">${escapeHtml(job.title)}</div>
-              <div class="ji-meta">
-                <i class="bi bi-building"></i> ${escapeHtml(job.company)}
-                <span class="meta-dot"></span>
-                <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
-              </div>
-              <div class="ji-tags">
-                <span class="tag-pill"><i class="bi bi-laptop"></i> ${workModeLabel(job.work_mode)}</span>
-                <span class="tag-pill"><i class="bi bi-clock-history"></i> ${Number(job.experience_required || 0)}+ years</span>
-              </div>
+          ${logoHtml}
+          <div class="ji-head">
+            <div class="ji-title">${escapeHtml(job.title)}</div>
+            <div class="ji-meta">
+              <i class="bi bi-building"></i> ${escapeHtml(job.company)}
+              <span class="meta-dot"></span>
+              <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
             </div>
           </div>
-          <div class="ji-salary">
-            <i class="bi bi-currency-dollar"></i>
-            ${escapeHtml(job.salary_range || "Salary not listed")}
-          </div>
+          <button class="${saveClass}" type="button"
+            onclick="toggleSavedJob(${job.id}, this).then(loadSavedAndRecent)">
+            <i class="bi ${saveIcon}"></i> ${saveLabel}
+          </button>
+        </div>
+
+        <div class="ji-badges">${relevanceBadges(index)}</div>
+
+        <div class="ji-facts">
+          <span class="tag-pill tag-salary">
+            <i class="bi bi-currency-dollar"></i> ${escapeHtml(job.salary_range || "Salary not listed")}
+          </span>
+          <span class="tag-pill"><i class="bi bi-laptop"></i> ${workModeLabel(job.work_mode)}</span>
+          <span class="tag-pill"><i class="bi bi-clock-history"></i> ${Number(job.experience_required || 0)}+ years</span>
         </div>
 
         <div class="ji-desc">${escapeHtml(job.description)}</div>
@@ -928,10 +1276,6 @@
           <button class="btn-apply" type="button"
             onclick="applyToJob(${job.id}, this)">
             <i class="bi bi-send"></i> Apply
-          </button>
-          <button class="${saveClass}" type="button"
-            onclick="toggleSavedJob(${job.id}, this).then(loadSavedAndRecent)">
-            <i class="bi ${saveIcon}"></i> ${saveLabel}
           </button>
           <button class="btn-view" type="button"
             onclick="markRecentlyViewed(${job.id}).then(loadSavedAndRecent)">
@@ -994,9 +1338,17 @@
     document.getElementById("jobCount").innerHTML =
       `<i class="bi bi-briefcase"></i> ${jobs.length} ${jobs.length === 1 ? "job" : "jobs"}`;
 
+    renderActiveFilters(form);
+    prepareRelevance(jobs, form);
+
     document.getElementById("jobsList").innerHTML = jobs.length
       ? jobs.map(renderJob).join("")
-      : emptyBlock("search", "No matching jobs", "Try adjusting your filters to find more opportunities.");
+      : emptyBlock(
+          "search",
+          "No matching jobs",
+          "Nothing matched these filters. Widen the search or clear a filter to see more openings.",
+          '<button class="btn-empty-cta" type="button" onclick="clearAllJobFilters()"><i class="bi bi-arrow-counterclockwise"></i> Clear all filters</button>'
+        );
   }
 
   /* ── Load saved & recent ── */
@@ -1011,11 +1363,19 @@
 
     document.getElementById("savedJobs").innerHTML = saved.length
       ? saved.map(renderMiniJob).join("")
-      : emptyBlock("bookmark", "No bookmarks", "Bookmarked jobs will appear here.");
+      : emptyBlock(
+          "bookmark",
+          "No saved jobs yet",
+          "Use the bookmark icon on any job card and it will be waiting for you here.",
+          '<button class="btn-empty-cta" type="button" data-bs-dismiss="modal"><i class="bi bi-search"></i> Browse openings</button>'
+        );
 
-    document.getElementById("recentJobs").innerHTML = recent.length
+    const recentHtml = recent.length
       ? recent.map(renderMiniJob).join("")
-      : emptyBlock("clock-history", "No recent views", "Viewed jobs will appear here.");
+      : emptyBlock("clock-history", "No recent views", "Open a job with “View details” and it will show up here.");
+
+    document.getElementById("recentJobs").innerHTML = recentHtml;
+    document.getElementById("recentJobsAll").innerHTML = recentHtml;
   }
 
   /* ── Form submit ── */
