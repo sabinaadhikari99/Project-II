@@ -29,21 +29,6 @@ def _format_lines(raw_text):
     return [line.strip() for line in re.split(r'[\r\n]+', raw_text or '') if line.strip()]
 
 
-def _parse_entry_blocks(raw_text):
-    """Split text into blocks separated by a blank line. Each block's first
-    line becomes a bold sub-title; the remaining lines become bullet points
-    under it. Used for the Projects field, so multiple projects can each
-    have their own bold title within a single "Projects" section."""
-    blocks = re.split(r'\n\s*\n', (raw_text or '').strip())
-    entries = []
-    for block in blocks:
-        lines = [line.strip() for line in block.splitlines() if line.strip()]
-        if not lines:
-            continue
-        entries.append({'title': lines[0], 'details': lines[1:]})
-    return entries
-
-
 def _skills_list(raw_text):
     return [skill.strip() for skill in re.split(r'[\n,]+', raw_text or '') if skill.strip()]
 
@@ -100,6 +85,10 @@ def _build_styles(accent_hex, font_key, text_color=None):
             'EntryTitle', parent=styles['BodyText'], fontName=fonts['bold'],
             fontSize=10.5, leading=14, spaceBefore=8, spaceAfter=2, textColor=body_color,
         ),
+        'entry_subtitle': ParagraphStyle(
+            'EntrySubtitle', parent=styles['BodyText'], fontName=fonts['normal'],
+            fontSize=9.5, leading=13, spaceAfter=4, textColor=colors.HexColor('#6b7280'),
+        ),
         'sidebar_title': ParagraphStyle(
             'SidebarTitle', parent=styles['Heading3'], fontName=fonts['bold'],
             fontSize=11, leading=13, textColor=colors.white, spaceBefore=12, spaceAfter=4,
@@ -107,6 +96,10 @@ def _build_styles(accent_hex, font_key, text_color=None):
         'sidebar_text': ParagraphStyle(
             'SidebarText', parent=styles['Normal'], fontName=fonts['normal'],
             fontSize=9.5, leading=13, textColor=colors.white, spaceAfter=4,
+        ),
+        'sidebar_entry_title': ParagraphStyle(
+            'SidebarEntryTitle', parent=styles['Normal'], fontName=fonts['bold'],
+            fontSize=9.5, leading=13, textColor=colors.white, spaceBefore=6, spaceAfter=1,
         ),
     }
 
@@ -150,19 +143,45 @@ def _section_bullets(title, raw_text, heading_style, s):
     return block
 
 
-def _project_entries_flowables(title, raw_text, heading_style, s):
-    """Renders the Projects section with each project's title in bold,
-    followed by its own bullet points - unlike other sections, which are a
-    single flat bullet list."""
-    entries = _parse_entry_blocks(raw_text)
+def _project_entries_flowables(title, profile, heading_style, s):
+    """Renders the Projects section using each ProjectEntry's own Title
+    (bold) and Details (bullet points) - no text parsing involved, so
+    there's nothing for a user's formatting habits to trip up."""
+    entries = list(profile.projects.all())
     if not entries:
         return []
     block = _heading_flowables(title, heading_style, s)
     for entry in entries:
-        block.append(Paragraph(entry['title'], s['entry_title']))
-        for line in entry['details']:
+        block.append(Paragraph(entry.title, s['entry_title']))
+        for line in _format_lines(entry.details):
             block.append(Paragraph(f'<bullet>&bull;</bullet> {line}', s['bullet']))
     return block
+
+
+def _education_entries_flowables(profile, s, dark=False):
+    """Renders each EducationEntry as its degree (bold) followed by an
+    'Institution • Year' line - no free-text parsing, since Degree,
+    Institution, and Year are already separate fields. `dark=True` swaps in
+    white-text styles for use inside a colored sidebar column."""
+    title_style = s['sidebar_entry_title'] if dark else s['entry_title']
+    subtitle_style = s['sidebar_text'] if dark else s['entry_subtitle']
+
+    flow = []
+    for entry in profile.education.all():
+        flow.append(Paragraph(entry.degree, title_style))
+        meta_parts = [p for p in [entry.institution, entry.year] if p]
+        if meta_parts:
+            flow.append(Paragraph(' • '.join(meta_parts), subtitle_style))
+    return flow
+
+
+def _education_section_flowables(title, profile, heading_style, s):
+    """Education section for the single/banded layouts (white background):
+    section heading (styled per heading_style) + the light-text entries."""
+    entries_flow = _education_entries_flowables(profile, s, dark=False)
+    if not entries_flow:
+        return []
+    return _heading_flowables(title, heading_style, s) + entries_flow
 
 
 def _additional_info_flowables(profile, heading_style, s):
@@ -207,8 +226,8 @@ def _build_single_column_pdf(profile, meta):
         story.append(Paragraph(', '.join(skills), s['normal']))
 
     story.extend(_section_bullets('Work Experience', profile.work_experience, heading_style, s))
-    story.extend(_section_bullets('Education', profile.education, heading_style, s))
-    story.extend(_project_entries_flowables('Projects', profile.projects, heading_style, s))
+    story.extend(_education_section_flowables('Education', profile, heading_style, s))
+    story.extend(_project_entries_flowables('Projects', profile, heading_style, s))
     story.extend(_section_bullets('Certifications', profile.certifications, heading_style, s))
     story.extend(_additional_info_flowables(profile, heading_style, s))
 
@@ -246,11 +265,10 @@ def _build_sidebar_pdf(profile, meta):
         for skill in skills:
             sidebar_flow.append(Paragraph(f'• {skill}', s['sidebar_text']))
 
-    education_items = _format_lines(profile.education)
-    if education_items:
+    education_flow = _education_entries_flowables(profile, s, dark=True)
+    if education_flow:
         sidebar_flow.append(Paragraph('Education', s['sidebar_title']))
-        for item in education_items:
-            sidebar_flow.append(Paragraph(item, s['sidebar_text']))
+        sidebar_flow.extend(education_flow)
 
     certification_items = _format_lines(profile.certifications)
     if certification_items:
@@ -262,7 +280,7 @@ def _build_sidebar_pdf(profile, meta):
     main_flow = _heading_flowables('Professional Summary', heading_style, s)
     main_flow.append(Paragraph(_summary_text(profile), s['normal']))
     main_flow.extend(_section_bullets('Work Experience', profile.work_experience, heading_style, s))
-    main_flow.extend(_project_entries_flowables('Projects', profile.projects, heading_style, s))
+    main_flow.extend(_project_entries_flowables('Projects', profile, heading_style, s))
     main_flow.extend(_additional_info_flowables(profile, heading_style, s))
 
     sidebar_col = (180, sidebar_flow)
@@ -329,14 +347,14 @@ def _build_banded_pdf(profile, meta):
     main_flow = _heading_flowables('Professional Summary', heading_style, s)
     main_flow.append(Paragraph(_summary_text(profile), s['normal']))
     main_flow.extend(_section_bullets('Work Experience', profile.work_experience, heading_style, s))
-    main_flow.extend(_project_entries_flowables('Projects', profile.projects, heading_style, s))
+    main_flow.extend(_project_entries_flowables('Projects', profile, heading_style, s))
 
     side_flow = []
     skills = _skills_list(profile.skills)
     if skills:
         side_flow.extend(_heading_flowables('Skills', heading_style, s))
         side_flow.append(Paragraph(', '.join(skills), s['normal']))
-    side_flow.extend(_section_bullets('Education', profile.education, heading_style, s))
+    side_flow.extend(_education_section_flowables('Education', profile, heading_style, s))
     side_flow.extend(_section_bullets('Certifications', profile.certifications, heading_style, s))
     side_flow.extend(_additional_info_flowables(profile, heading_style, s))
 

@@ -6,33 +6,55 @@ from django.views import View
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from .cv_templates import get_template_list, get_template_meta, is_valid_template
-from .forms import AdditionalInfoFormSet, JobSeekerProfileForm
+from .forms import AdditionalInfoFormSet, EducationFormSet, JobSeekerProfileForm, ProjectFormSet
 from .models import JobSeekerProfile
-from .pdf_builder import build_pdf_for_profile, _format_lines, _parse_entry_blocks, _skills_list
+from .pdf_builder import build_pdf_for_profile, _format_lines, _skills_list
 
 
 class CreateProfileView(LoginRequiredMixin, View):
-    """Step 1: collect CV details. Saves the profile (plus any Additional
-    Info sections), then hands off to template selection instead of
-    generating a PDF immediately."""
+    """Step 1: collect CV details. Saves the profile plus its Education
+    entries, Project entries, and Additional Info sections, then hands off
+    to template selection instead of generating a PDF immediately."""
 
     def get(self, request):
         form = JobSeekerProfileForm()
-        formset = AdditionalInfoFormSet(instance=JobSeekerProfile(), prefix='additional')
-        return render(request, 'cvgen/create_profile.html', {'form': form, 'formset': formset})
+        blank_profile = JobSeekerProfile()
+        education_formset = EducationFormSet(instance=blank_profile, prefix='education')
+        project_formset = ProjectFormSet(instance=blank_profile, prefix='project')
+        info_formset = AdditionalInfoFormSet(instance=blank_profile, prefix='additional')
+        return render(request, 'cvgen/create_profile.html', {
+            'form': form,
+            'education_formset': education_formset,
+            'project_formset': project_formset,
+            'formset': info_formset,
+        })
 
     def post(self, request):
         form = JobSeekerProfileForm(request.POST)
-        # The formset is validated against an unsaved instance (it doesn't touch
-        # the DB); once the profile itself is saved, we re-point the formset at
-        # the real profile and save it.
-        formset = AdditionalInfoFormSet(request.POST, instance=JobSeekerProfile(), prefix='additional')
-        if form.is_valid() and formset.is_valid():
+        # All formsets are validated against an unsaved instance (this never
+        # touches the DB); once the profile itself is saved, each formset is
+        # re-pointed at the real profile and saved.
+        blank_profile = JobSeekerProfile()
+        education_formset = EducationFormSet(request.POST, instance=blank_profile, prefix='education')
+        project_formset = ProjectFormSet(request.POST, instance=blank_profile, prefix='project')
+        info_formset = AdditionalInfoFormSet(request.POST, instance=blank_profile, prefix='additional')
+
+        if form.is_valid() and education_formset.is_valid() and project_formset.is_valid() and info_formset.is_valid():
             profile = form.save()
-            formset.instance = profile
-            formset.save()
+            education_formset.instance = profile
+            education_formset.save()
+            project_formset.instance = profile
+            project_formset.save()
+            info_formset.instance = profile
+            info_formset.save()
             return redirect('cvgen:choose_template', pk=profile.pk)
-        return render(request, 'cvgen/create_profile.html', {'form': form, 'formset': formset})
+
+        return render(request, 'cvgen/create_profile.html', {
+            'form': form,
+            'education_formset': education_formset,
+            'project_formset': project_formset,
+            'formset': info_formset,
+        })
 
 
 class ChooseTemplateView(LoginRequiredMixin, View):
@@ -68,15 +90,23 @@ class PreviewTemplateView(LoginRequiredMixin, View):
             {'title': entry.title, 'details': _format_lines(entry.details)}
             for entry in profile.additional_info.all()
         ]
+        projects = [
+            {'title': entry.title, 'details': _format_lines(entry.details)}
+            for entry in profile.projects.all()
+        ]
+        education = [
+            {'degree': entry.degree, 'institution': entry.institution, 'year': entry.year}
+            for entry in profile.education.all()
+        ]
 
         context = {
             'profile': profile,
             'template_id': template_id,
             'meta': get_template_meta(template_id),
             'skills': _skills_list(profile.skills),
-            'education': _format_lines(profile.education),
+            'education': education,
             'work_experience': _format_lines(profile.work_experience),
-            'projects': _parse_entry_blocks(profile.projects),
+            'projects': projects,
             'certifications': _format_lines(profile.certifications),
             'additional_info': additional_info,
         }

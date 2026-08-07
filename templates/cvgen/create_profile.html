@@ -761,17 +761,95 @@
           </div>
 
           <div class="row g-3">
-            <div class="col-12 col-md-6">
-              <label class="cv-label" for="{{ form.education.id_for_label }}">
-                <i class="bi bi-mortarboard-fill"></i> {{ form.education.label }}
+            <div class="col-12">
+              <label class="cv-label">
+                <i class="bi bi-mortarboard-fill"></i> Education
               </label>
-              <div class="field-wrap">
-                <i class="bi bi-mortarboard fw-icon" style="top:1.1rem;transform:none;"></i>
-                {{ form.education }}
+
+              {{ education_formset.management_form }}
+
+              <div id="education-info-list">
+                {% for eform in education_formset %}
+                  <div class="additional-info-row">
+                    {% for hidden in eform.hidden_fields %}{{ hidden }}{% endfor %}
+                    <div class="row g-3 align-items-start">
+                      <div class="col-12 col-md-5">
+                        <label class="cv-label" for="{{ eform.degree.id_for_label }}">
+                          <i class="bi bi-mortarboard-fill"></i> Degree
+                        </label>
+                        <div class="field-wrap">
+                          <i class="bi bi-mortarboard fw-icon"></i>
+                          {{ eform.degree }}
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-3">
+                        <label class="cv-label" for="{{ eform.institution.id_for_label }}">
+                          <i class="bi bi-bank"></i> Institution
+                        </label>
+                        <div class="field-wrap">
+                          <i class="bi bi-bank fw-icon"></i>
+                          {{ eform.institution }}
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-3">
+                        <label class="cv-label" for="{{ eform.year.id_for_label }}">
+                          <i class="bi bi-calendar3"></i> Year
+                        </label>
+                        <div class="field-wrap">
+                          <i class="bi bi-calendar3 fw-icon"></i>
+                          {{ eform.year }}
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-1 d-flex justify-content-md-center">
+                        <button type="button" class="btn-remove-additional" onclick="removeEducationRow(this)" title="Remove this degree" aria-label="Remove this degree">
+                          <i class="bi bi-trash3"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
               </div>
+
+              <button type="button" class="btn-add-additional" onclick="addEducationRow()">
+                <i class="bi bi-plus-circle"></i> Add another degree
+              </button>
+
+              <!-- Hidden blueprint used by JS to create new education rows. -->
+              <template id="education-empty-form-template">
+                <div class="additional-info-row">
+                  <div class="row g-3 align-items-start">
+                    <div class="col-12 col-md-5">
+                      <label class="cv-label"><i class="bi bi-mortarboard-fill"></i> Degree</label>
+                      <div class="field-wrap">
+                        <i class="bi bi-mortarboard fw-icon"></i>
+                        {{ education_formset.empty_form.degree }}
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                      <label class="cv-label"><i class="bi bi-bank"></i> Institution</label>
+                      <div class="field-wrap">
+                        <i class="bi bi-bank fw-icon"></i>
+                        {{ education_formset.empty_form.institution }}
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                      <label class="cv-label"><i class="bi bi-calendar3"></i> Year</label>
+                      <div class="field-wrap">
+                        <i class="bi bi-calendar3 fw-icon"></i>
+                        {{ education_formset.empty_form.year }}
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-1 d-flex justify-content-md-center">
+                      <button type="button" class="btn-remove-additional" onclick="removeEducationRow(this)" title="Remove this degree" aria-label="Remove this degree">
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
             </div>
 
-            <div class="col-12 col-md-6">
+            <div class="col-12">
               <label class="cv-label" for="{{ form.skills.id_for_label }}">
                 <i class="bi bi-lightning-charge-fill"></i> {{ form.skills.label }}
               </label>
@@ -805,13 +883,75 @@
             </div>
 
             <div class="col-12">
-              <label class="cv-label" for="{{ form.projects.id_for_label }}">
-                <i class="bi bi-folder-fill"></i> {{ form.projects.label }}
+              <label class="cv-label">
+                <i class="bi bi-folder-fill"></i> Projects
               </label>
-              <div class="field-wrap">
-                <i class="bi bi-folder fw-icon" style="top:1.1rem;transform:none;"></i>
-                {{ form.projects }}
+
+              {{ project_formset.management_form }}
+
+              <div id="project-info-list">
+                {% for pform in project_formset %}
+                  <div class="additional-info-row">
+                    {% for hidden in pform.hidden_fields %}{{ hidden }}{% endfor %}
+                    <div class="row g-3 align-items-start">
+                      <div class="col-12 col-md-4">
+                        <label class="cv-label" for="{{ pform.title.id_for_label }}">
+                          <i class="bi bi-bookmark-fill"></i> Project Title
+                        </label>
+                        <div class="field-wrap">
+                          <i class="bi bi-bookmark fw-icon"></i>
+                          {{ pform.title }}
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-7">
+                        <label class="cv-label" for="{{ pform.details.id_for_label }}">
+                          <i class="bi bi-list-ul"></i> Details
+                        </label>
+                        <div class="field-wrap">
+                          <i class="bi bi-list-ul fw-icon" style="top:1.1rem;transform:none;"></i>
+                          {{ pform.details }}
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-1 d-flex justify-content-md-center">
+                        <button type="button" class="btn-remove-additional" onclick="removeProjectRow(this)" title="Remove this project" aria-label="Remove this project">
+                          <i class="bi bi-trash3"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
               </div>
+
+              <button type="button" class="btn-add-additional" onclick="addProjectRow()">
+                <i class="bi bi-plus-circle"></i> Add another project
+              </button>
+
+              <!-- Hidden blueprint used by JS to create new project rows. -->
+              <template id="project-empty-form-template">
+                <div class="additional-info-row">
+                  <div class="row g-3 align-items-start">
+                    <div class="col-12 col-md-4">
+                      <label class="cv-label"><i class="bi bi-bookmark-fill"></i> Project Title</label>
+                      <div class="field-wrap">
+                        <i class="bi bi-bookmark fw-icon"></i>
+                        {{ project_formset.empty_form.title }}
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-7">
+                      <label class="cv-label"><i class="bi bi-list-ul"></i> Details</label>
+                      <div class="field-wrap">
+                        <i class="bi bi-list-ul fw-icon" style="top:1.1rem;transform:none;"></i>
+                        {{ project_formset.empty_form.details }}
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-1 d-flex justify-content-md-center">
+                      <button type="button" class="btn-remove-additional" onclick="removeProjectRow(this)" title="Remove this project" aria-label="Remove this project">
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
             </div>
 
             <div class="col-12">
@@ -983,6 +1123,58 @@
     });
   }
   document.querySelectorAll('textarea').forEach(initTextareaAutoResize);
+
+  /* ── Education: add/remove dynamic rows (same pattern as Projects) ── */
+  function addEducationRow() {
+    const totalInput = document.getElementById('id_education-TOTAL_FORMS');
+    if (!totalInput) return;
+    const index = parseInt(totalInput.value, 10);
+
+    const templateHtml = document.getElementById('education-empty-form-template').innerHTML;
+    const newRowHtml = templateHtml.replace(/__prefix__/g, index);
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = newRowHtml.trim();
+    const newRow = wrapper.firstElementChild;
+
+    document.getElementById('education-info-list').appendChild(newRow);
+    totalInput.value = index + 1;
+
+    newRow.querySelectorAll('textarea').forEach(initTextareaAutoResize);
+    newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function removeEducationRow(button) {
+    const row = button.closest('.additional-info-row');
+    if (row) row.remove();
+    // See note on removeAdditionalRow below - leaving a gap in indices is fine.
+  }
+
+  /* ── Projects: add/remove dynamic rows (same pattern as Additional Info) ── */
+  function addProjectRow() {
+    const totalInput = document.getElementById('id_project-TOTAL_FORMS');
+    if (!totalInput) return;
+    const index = parseInt(totalInput.value, 10);
+
+    const templateHtml = document.getElementById('project-empty-form-template').innerHTML;
+    const newRowHtml = templateHtml.replace(/__prefix__/g, index);
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = newRowHtml.trim();
+    const newRow = wrapper.firstElementChild;
+
+    document.getElementById('project-info-list').appendChild(newRow);
+    totalInput.value = index + 1;
+
+    newRow.querySelectorAll('textarea').forEach(initTextareaAutoResize);
+    newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function removeProjectRow(button) {
+    const row = button.closest('.additional-info-row');
+    if (row) row.remove();
+    // See note on removeAdditionalRow below - leaving a gap in indices is fine.
+  }
 
   /* ── Additional Info: add/remove dynamic rows ── */
   function addAdditionalRow() {
