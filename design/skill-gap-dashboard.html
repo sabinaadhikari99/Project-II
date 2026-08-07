@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Gap Dashboard · Mobile Developer</title>
+
+<!-- Google Fonts — Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+/* ════════════════════════════════════════════════════════════════════
+   THEME TOKENS
+   Every colour, radius and shadow used below resolves from here, so the
+   whole dashboard can be rethemed by editing this block alone.
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Brand */
+  --primary:        #4f46e5;
+  --primary-dark:   #4338ca;
+  --primary-soft:   rgba(79, 70, 229, 0.08);
+  --primary-line:   rgba(79, 70, 229, 0.18);
+
+  /* Phase accents */
+  --accent-purple:  #7c3aed;
+  --accent-teal:    #0d9488;
+
+  /* Status */
+  --success:        #16a34a;
+  --success-soft:   rgba(22, 163, 74, 0.10);
+  --success-line:   rgba(22, 163, 74, 0.20);
+  --warning:        #d97706;
+  --warning-soft:   rgba(217, 119, 6, 0.10);
+  --warning-line:   rgba(217, 119, 6, 0.20);
+  --danger:         #dc2626;
+  --danger-soft:    rgba(220, 38, 38, 0.08);
+  --danger-line:    rgba(220, 38, 38, 0.18);
+
+  /* Surfaces */
+  --bg:             #f6f7fb;
+  --surface:        #ffffff;
+  --surface-alt:    #f8f9fc;
+  --surface-hover:  #f1f2f7;
+
+  /* Type */
+  --text:           #0f172a;
+  --text-soft:      #475569;
+  --text-muted:     #94a3b8;
+
+  /* Lines + depth */
+  --border:         #e8eaf0;
+  --border-strong:  #d7dae4;
+  --shadow-sm:      0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md:      0 4px 14px rgba(15, 23, 42, 0.06);
+  --shadow-lg:      0 12px 28px rgba(15, 23, 42, 0.10);
+
+  /* Geometry */
+  --radius:         18px;
+  --radius-sm:      12px;
+  --radius-xs:      8px;
+
+  --transition:     0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, figure { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+button { font: inherit; cursor: pointer; }
+a { text-decoration: none; color: inherit; }
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding: 1.5rem;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   1 · HEADER
+   ════════════════════════════════════════════════════════════════════ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+
+.brand-mark {
+  width: 42px; height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+  color: #fff;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.32);
+}
+
+.brand-text h1 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+.brand-text h1 .role {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.header-meta { display: flex; align-items: center; gap: 0.6rem; }
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-line);
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.avatar {
+  width: 40px; height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+  color: var(--primary-dark);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SHARED CARD SHELL
+   ════════════════════════════════════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+.card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.card-head .head-icon {
+  width: 30px; height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+.head-icon.danger  { background: var(--danger-soft);  color: var(--danger); }
+.head-icon.success { background: var(--success-soft); color: var(--success); }
+.head-icon.primary { background: var(--primary-soft); color: var(--primary); }
+
+.card-head h2 {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.count-badge {
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.count-badge.danger  { background: var(--danger-soft);  color: var(--danger);  border-color: var(--danger-line); }
+.count-badge.success { background: var(--success-soft); color: var(--success); border-color: var(--success-line); }
+.count-badge.primary { background: var(--primary-soft); color: var(--primary); border-color: var(--primary-line); }
+
+.card-body { padding: 1.15rem 1.25rem; }
+
+/* ── Standalone section headings (roadmap, courses) ── */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.section-head .head-icon { width: 32px; height: 32px; font-size: 0.85rem; }
+.section-head h2 { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.02em; }
+
+/* ════════════════════════════════════════════════════════════════════
+   2 · MATCH SCORE
+   ════════════════════════════════════════════════════════════════════ */
+.match {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 1.75rem;
+  flex-wrap: wrap;
+}
+
+/* Ring is an SVG so the stroke can carry a gradient. */
+.ring { position: relative; width: 118px; height: 118px; flex-shrink: 0; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring .track { stroke: #eceef4; }
+.ring .value {
+  stroke: url(#ringGradient);
+  stroke-linecap: round;
+  /* 2πr where r = 52  →  326.73. 77% of that = 251.58 */
+  stroke-dasharray: 251.58 326.73;
+  transition: stroke-dasharray 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  flex-direction: column;
+}
+.ring-label .pct {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text);
+}
+.ring-label .pct sup { font-size: 0.85rem; font-weight: 700; top: -0.6em; }
+
+.match-id { flex: 1 1 220px; min-width: 0; }
+.match-id h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.2rem;
+}
+.match-id p { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+.match-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+.btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+.btn-outline {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text-soft);
+}
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 5px 14px rgba(79, 70, 229, 0.28);
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 9px 22px rgba(79, 70, 229, 0.34);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   3 · TWO-COLUMN GRID
+   ════════════════════════════════════════════════════════════════════ */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.15rem;
+  align-items: start;
+}
+
+/* Scroll container shared by both columns */
+.scroll {
+  max-height: 27rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.4rem;
+  margin-right: -0.4rem;
+}
+.scroll::-webkit-scrollbar { width: 6px; }
+.scroll::-webkit-scrollbar-track { background: transparent; }
+.scroll::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+.scroll::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+.scroll { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+/* ── Missing skills ── */
+.skill-list { display: flex; flex-direction: column; gap: 0.55rem; }
+
+.skill {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  transition: all var(--transition);
+}
+.skill:hover {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateX(2px);
+}
+
+.skill-icon {
+  width: 34px; height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+.skill.critical    .skill-icon { background: var(--danger-soft);  color: var(--danger); }
+.skill.recommended .skill-icon { background: var(--warning-soft); color: var(--warning); }
+.skill.medium      .skill-icon { background: var(--primary-soft); color: var(--primary); }
+
+.skill-main { flex: 1; min-width: 0; }
+.skill-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skill-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.55rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.skill-meta span { display: inline-flex; align-items: center; gap: 0.28rem; white-space: nowrap; }
+.skill-meta i { font-size: 0.65rem; opacity: 0.7; }
+
+.tag {
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.tag.critical    { background: var(--danger-soft);  color: var(--danger); }
+.tag.recommended { background: var(--warning-soft); color: var(--warning); }
+.tag.medium      { background: var(--primary-soft); color: var(--primary); }
+
+/* Right-hand action: a course link, or a flat "no course" marker */
+.skill-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  max-width: 8rem;
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: all var(--transition);
+}
+.skill-action.link {
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-line);
+  color: var(--primary);
+}
+.skill-action.link:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.skill-action.link i { transition: transform var(--transition); font-size: 0.65rem; }
+.skill-action.link:hover i { transform: translateX(3px); }
+.skill-action.link:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.skill-action.none {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.skill-action span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Legend under the missing-skill list ── */
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.legend-keys { display: flex; gap: 0.85rem; flex-wrap: wrap; }
+.legend-keys span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.dot.critical    { background: var(--danger); }
+.dot.recommended { background: var(--warning); }
+.dot.progress    { background: var(--success); }
+.legend-total { display: inline-flex; align-items: center; gap: 0.35rem; }
+.legend-total b { color: var(--text-soft); font-weight: 700; }
+
+/* ── Current skills, grouped by domain ── */
+.domains { display: flex; flex-direction: column; gap: 1rem; }
+
+.domain { display: flex; gap: 0.75rem; }
+
+.domain-icon {
+  width: 34px; height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.domain-body { flex: 1; min-width: 0; }
+.domain-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.4rem;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.32rem; }
+.chip {
+  padding: 0.25rem 0.6rem;
+  border-radius: 7px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: all var(--transition);
+}
+.chip:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary-line);
+  color: var(--primary);
+}
+.chip.more { font-weight: 700; color: var(--text-muted); }
+
+/* ════════════════════════════════════════════════════════════════════
+   4 · LEARNING ROADMAP
+   ════════════════════════════════════════════════════════════════════ */
+.phases { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.phase {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--phase-accent, var(--primary));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.15rem 1.35rem;
+  transition: all var(--transition);
+}
+.phase:hover {
+  border-color: var(--border-strong);
+  border-left-color: var(--phase-accent, var(--primary));
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+.phase-1 { --phase-accent: var(--primary); }
+.phase-2 { --phase-accent: var(--accent-purple); }
+.phase-3 { --phase-accent: var(--accent-teal); }
+
+.phase-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+.phase-head h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.phase-pill {
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--phase-accent) 10%, transparent);
+  color: var(--phase-accent);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.phase-why {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+.phase-why b { color: var(--text); font-weight: 700; }
+
+.phase-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.55rem; }
+.phase-row:last-child { margin-bottom: 0; }
+
+.skill-pill {
+  padding: 0.32rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  transition: all var(--transition);
+}
+.skill-pill:hover {
+  border-color: var(--phase-accent);
+  color: var(--phase-accent);
+}
+
+.resource {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--primary-line);
+  background: var(--primary-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  transition: all var(--transition);
+}
+.resource:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.resource:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.resource i { font-size: 0.72rem; }
+
+.mini-project {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  border: 1px dashed var(--border-strong);
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  line-height: 1.55;
+}
+.mini-project i { color: var(--phase-accent); flex-shrink: 0; }
+.mini-project b { color: var(--text); font-weight: 700; }
+
+/* ════════════════════════════════════════════════════════════════════
+   5 · RECOMMENDED COURSES
+   ════════════════════════════════════════════════════════════════════ */
+.courses {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-height: 30rem;
+}
+
+.course {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: all var(--transition);
+}
+.course:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.course-icon {
+  width: 40px; height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.course-icon.linkedin { background: rgba(10, 102, 194, 0.10); color: #0a66c2; }
+.course-icon.google   { background: rgba(234, 67, 53, 0.10);  color: #ea4335; }
+.course-icon.apollo   { background: rgba(49, 26, 91, 0.10);   color: #311a5b; }
+
+.course-main { flex: 1; min-width: 0; }
+.course-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.course-sub { font-size: 0.74rem; color: var(--text-muted); font-weight: 500; }
+
+.course-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.pill {
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.pill.priority { background: var(--primary-soft); color: var(--primary); border-color: var(--primary-line); }
+.pill.paid     { background: var(--warning-soft); color: var(--warning); border-color: var(--warning-line); }
+.pill.free     { background: var(--success-soft); color: var(--success); border-color: var(--success-line); }
+
+.course-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.74rem;
+  color: var(--text-soft);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.course-stat i { font-size: 0.68rem; color: var(--text-muted); }
+.course-stat b { font-weight: 700; color: var(--text); }
+
+/* ════════════════════════════════════════════════════════════════════
+   6 · FOOTER
+   ════════════════════════════════════════════════════════════════════ */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.95rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+.footer-status { display: flex; gap: 1.1rem; flex-wrap: wrap; }
+.footer-status span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.footer-status b { color: var(--text-soft); font-weight: 700; }
+
+/* ════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Tablet — columns stack, scroll caps lift so nothing nests scrollbars */
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .scroll { max-height: 24rem; }
+  .courses { max-height: none; }
+}
+
+@media (max-width: 768px) {
+  body { padding: 1rem; }
+  .match { gap: 1.15rem; padding: 1.25rem; }
+  .ring { width: 96px; height: 96px; }
+  .ring-label .pct { font-size: 1.5rem; }
+  .match-actions { width: 100%; }
+  .match-actions .btn { flex: 1; justify-content: center; }
+
+  /* Course meta drops beneath the title rather than squeezing it */
+  .course { flex-wrap: wrap; }
+  .course-meta { width: 100%; justify-content: flex-start; }
+}
+
+/* Mobile — everything single column, nothing overflows sideways */
+@media (max-width: 560px) {
+  body { padding: 0.75rem; }
+  .header { align-items: flex-start; }
+  .brand-text h1 { font-size: 1.1rem; }
+  .brand-text h1 .role { display: block; }
+
+  .skill { flex-wrap: wrap; }
+  .skill-action { max-width: none; width: 100%; justify-content: center; }
+
+  .scroll { max-height: none; }
+  .phase { padding: 1rem; }
+  .card-body, .card-head { padding-left: 1rem; padding-right: 1rem; }
+  .footer { justify-content: flex-start; }
+}
+
+/* Users who prefer less motion get no transforms */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .skill:hover, .course:hover, .phase:hover, .btn-primary:hover { transform: none; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       1 · HEADER
+       ══════════════════════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark"><i class="fa-solid fa-bolt"></i></div>
+      <div class="brand-text">
+        <h1>Skill Gap <span class="role">· Mobile Developer</span></h1>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="role-badge"><i class="fa-solid fa-briefcase"></i> Mid-Level</span>
+      <div class="avatar" title="Jane Doe">JD</div>
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       2 · MATCH SCORE
+       Ring is SVG so the stroke can carry a gradient. The arc length is
+       set with stroke-dasharray: 77% of the 326.73 circumference.
+       ══════════════════════════════════════════════════════════════ -->
+  <section class="card match" aria-label="AI match score">
+    <div class="ring">
+      <svg viewBox="0 0 120 120" role="img" aria-label="Match score: 77 percent">
+        <defs>
+          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#4f46e5"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+        <circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="9"/>
+        <circle class="value" cx="60" cy="60" r="52" fill="none" stroke-width="9"/>
+      </svg>
+      <div class="ring-label">
+        <div class="pct">77<sup>%</sup></div>
+      </div>
+    </div>
+
+    <div class="match-id">
+      <h2>AI Match Score</h2>
+      <p>Mobile Developer · Mid-Level</p>
+    </div>
+
+    <div class="match-actions">
+      <button type="button" class="btn btn-outline">
+        <i class="fa-solid fa-flag"></i> 5 gaps to close
+      </button>
+      <a href="#roadmap" class="btn btn-primary">
+        <i class="fa-solid fa-diagram-project"></i> View Roadmap
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       3 · TWO-COLUMN GRID — missing skills beside current skills
+       ══════════════════════════════════════════════════════════════ -->
+  <div class="grid">
+
+    <!-- ── Missing skills ── -->
+    <section class="card">
+      <div class="card-head">
+        <div class="head-icon danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h2>Missing Skills</h2>
+        <span class="count-badge danger">8 gaps</span>
+      </div>
+      <div class="card-body">
+        <div class="scroll">
+          <ul class="skill-list">
+
+            <li class="skill critical">
+              <div class="skill-icon"><i class="fa-solid fa-code"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">Clean Architecture</div>
+                <div class="skill-meta">
+                  <span class="tag critical">Critical</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 8/10</span>
+                  <span><i class="fa-solid fa-briefcase"></i> 9 postings</span>
+                </div>
+              </div>
+              <span class="skill-action none">No course</span>
+            </li>
+
+            <li class="skill critical">
+              <div class="skill-icon"><i class="fa-solid fa-rocket"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">Flutter Deployment</div>
+                <div class="skill-meta">
+                  <span class="tag critical">Critical</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 8/10</span>
+                  <span><i class="fa-solid fa-briefcase"></i> 2 postings</span>
+                </div>
+              </div>
+              <a href="#courses" class="skill-action link"><span>Guide</span><i class="fa-solid fa-arrow-right"></i></a>
+            </li>
+
+            <li class="skill critical">
+              <div class="skill-icon"><i class="fa-solid fa-vial"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">Flutter Testing</div>
+                <div class="skill-meta">
+                  <span class="tag critical">Critical</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 8/10</span>
+                  <span><i class="fa-solid fa-briefcase"></i> 1 posting</span>
+                </div>
+              </div>
+              <span class="skill-action none">No course</span>
+            </li>
+
+            <li class="skill critical">
+              <div class="skill-icon"><i class="fa-solid fa-circle-nodes"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">GraphQL</div>
+                <div class="skill-meta">
+                  <span class="tag critical">Critical</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 8/10</span>
+                  <span><i class="fa-solid fa-briefcase"></i> 2 postings</span>
+                </div>
+              </div>
+              <a href="#courses" class="skill-action link"><span>Apollo</span><i class="fa-solid fa-arrow-right"></i></a>
+            </li>
+
+            <li class="skill critical">
+              <div class="skill-icon"><i class="fa-solid fa-layer-group"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">Mobile Architecture</div>
+                <div class="skill-meta">
+                  <span class="tag critical">Critical</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 8/10</span>
+                  <span><i class="fa-regular fa-clock"></i> ~10h · 2 wks</span>
+                </div>
+              </div>
+              <a href="#courses" class="skill-action link"><span>LinkedIn</span><i class="fa-solid fa-arrow-right"></i></a>
+            </li>
+
+            <li class="skill recommended">
+              <div class="skill-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">Mobile Testing</div>
+                <div class="skill-meta">
+                  <span class="tag recommended">Recommended</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 8/10</span>
+                  <span><i class="fa-solid fa-briefcase"></i> 3 postings</span>
+                </div>
+              </div>
+              <a href="#courses" class="skill-action link"><span>LinkedIn</span><i class="fa-solid fa-arrow-right"></i></a>
+            </li>
+
+            <li class="skill recommended">
+              <div class="skill-icon"><i class="fa-solid fa-flask"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">Unit Testing</div>
+                <div class="skill-meta">
+                  <span class="tag recommended">Recommended</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 8/10</span>
+                  <span><i class="fa-solid fa-briefcase"></i> 7 postings</span>
+                </div>
+              </div>
+              <a href="#courses" class="skill-action link"><span>LinkedIn</span><i class="fa-solid fa-arrow-right"></i></a>
+            </li>
+
+            <li class="skill medium">
+              <div class="skill-icon"><i class="fa-solid fa-database"></i></div>
+              <div class="skill-main">
+                <div class="skill-name">State Management</div>
+                <div class="skill-meta">
+                  <span class="tag medium">Medium</span>
+                  <span><i class="fa-solid fa-chart-simple"></i> 7/10</span>
+                </div>
+              </div>
+              <span class="skill-action none">No course</span>
+            </li>
+
+          </ul>
+        </div>
+
+        <!-- Legend + total study time -->
+        <div class="legend">
+          <div class="legend-keys">
+            <span><i class="dot critical"></i> Critical</span>
+            <span><i class="dot recommended"></i> Recommended</span>
+            <span><i class="dot progress"></i> In progress</span>
+          </div>
+          <span class="legend-total"><i class="fa-regular fa-clock"></i> <b>~100h</b> total</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Current skills ── -->
+    <section class="card">
+      <div class="card-head">
+        <div class="head-icon success"><i class="fa-solid fa-circle-check"></i></div>
+        <h2>Current Skills</h2>
+        <span class="count-badge success">59</span>
+      </div>
+      <div class="card-body">
+        <div class="scroll">
+          <div class="domains">
+
+            <div class="domain">
+              <div class="domain-icon"><i class="fa-solid fa-cloud"></i></div>
+              <div class="domain-body">
+                <div class="domain-name">DevOps &amp; Cloud</div>
+                <div class="chips">
+                  <span class="chip">ansible</span>
+                  <span class="chip">aws</span>
+                  <span class="chip">azure</span>
+                  <span class="chip">docker</span>
+                  <span class="chip">gcp</span>
+                  <span class="chip more">+4</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="domain">
+              <div class="domain-icon"><i class="fa-solid fa-window-maximize"></i></div>
+              <div class="domain-body">
+                <div class="domain-name">Frontend</div>
+                <div class="chips">
+                  <span class="chip">css</span>
+                  <span class="chip">html</span>
+                  <span class="chip">javascript</span>
+                  <span class="chip">next.js</span>
+                  <span class="chip">react</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="domain">
+              <div class="domain-icon"><i class="fa-solid fa-server"></i></div>
+              <div class="domain-body">
+                <div class="domain-name">Backend</div>
+                <div class="chips">
+                  <span class="chip">django</span>
+                  <span class="chip">java</span>
+                  <span class="chip">python</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="domain">
+              <div class="domain-icon"><i class="fa-solid fa-database"></i></div>
+              <div class="domain-body">
+                <div class="domain-name">Database</div>
+                <div class="chips">
+                  <span class="chip">firebase</span>
+                  <span class="chip">postgresql</span>
+                  <span class="chip">sql</span>
+                  <span class="chip">sqlite</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="domain">
+              <div class="domain-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+              <div class="domain-body">
+                <div class="domain-name">Tools</div>
+                <div class="chips">
+                  <span class="chip">git</span>
+                  <span class="chip">postman</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="domain">
+              <div class="domain-icon"><i class="fa-solid fa-users"></i></div>
+              <div class="domain-body">
+                <div class="domain-name">Soft Skills</div>
+                <div class="chips">
+                  <span class="chip">collaboration</span>
+                  <span class="chip">communication</span>
+                  <span class="chip">teamwork</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       4 · LEARNING ROADMAP
+       ══════════════════════════════════════════════════════════════ -->
+  <section id="roadmap" aria-label="Learning roadmap">
+    <div class="section-head">
+      <div class="head-icon primary"><i class="fa-solid fa-diagram-project"></i></div>
+      <h2>Learning Roadmap</h2>
+      <span class="count-badge primary">9 remaining skills</span>
+    </div>
+
+    <div class="phases">
+
+      <!-- Phase 1 -->
+      <article class="phase phase-1">
+        <div class="phase-head">
+          <h3>Mobile App Foundations</h3>
+          <span class="phase-pill">Phase 1</span>
+        </div>
+        <p class="phase-why">
+          <b>Why this phase matters:</b> REST (7/10), React Native (6/10) and
+          Mobile Architecture (8/10) are high-priority gaps.
+        </p>
+        <div class="phase-row">
+          <span class="skill-pill">REST</span>
+          <span class="skill-pill">React Native</span>
+          <span class="skill-pill">Mobile Architecture</span>
+        </div>
+        <div class="phase-row">
+          <a href="#courses" class="resource"><i class="fa-solid fa-book"></i> Back End Development and APIs</a>
+          <a href="#courses" class="resource"><i class="fa-solid fa-book"></i> Meta React Native Specialization</a>
+          <a href="#courses" class="resource"><i class="fa-solid fa-book"></i> Mobile App Architecture</a>
+        </div>
+        <div class="mini-project">
+          <i class="fa-solid fa-laptop-code"></i>
+          <span>
+            <b>Hands-on mini project:</b> build a mobile app that puts REST,
+            React Native and Mobile Architecture into practice.
+          </span>
+        </div>
+      </article>
+
+      <!-- Phase 2 -->
+      <article class="phase phase-2">
+        <div class="phase-head">
+          <h3>Testing &amp; Deployment</h3>
+          <span class="phase-pill">Phase 2</span>
+        </div>
+        <div class="phase-row">
+          <span class="skill-pill">Mobile Testing</span>
+          <span class="skill-pill">Unit Testing</span>
+          <span class="skill-pill">Flutter Deployment</span>
+        </div>
+        <div class="phase-row">
+          <a href="#courses" class="resource"><i class="fa-solid fa-video"></i> Mobile App Testing (LinkedIn)</a>
+          <a href="#courses" class="resource"><i class="fa-solid fa-video"></i> Unit Testing Fundamentals</a>
+          <a href="#courses" class="resource"><i class="fa-solid fa-file-lines"></i> Flutter Official Deployment Guide</a>
+        </div>
+      </article>
+
+      <!-- Phase 3 -->
+      <article class="phase phase-3">
+        <div class="phase-head">
+          <h3>GraphQL &amp; State</h3>
+          <span class="phase-pill">Phase 3</span>
+        </div>
+        <div class="phase-row">
+          <span class="skill-pill">GraphQL</span>
+          <span class="skill-pill">State Management</span>
+        </div>
+        <div class="phase-row">
+          <a href="#courses" class="resource"><i class="fa-solid fa-circle-nodes"></i> Apollo GraphQL Tutorials (Free)</a>
+          <a href="#courses" class="resource"><i class="fa-solid fa-video"></i> State Management (LinkedIn)</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       5 · RECOMMENDED COURSES
+       ══════════════════════════════════════════════════════════════ -->
+  <section id="courses" aria-label="Recommended courses">
+    <div class="section-head">
+      <div class="head-icon primary"><i class="fa-solid fa-graduation-cap"></i></div>
+      <h2>Recommended Courses</h2>
+      <span class="count-badge primary">5 matches</span>
+    </div>
+
+    <div class="courses scroll">
+
+      <article class="course">
+        <div class="course-icon linkedin"><i class="fa-brands fa-linkedin-in"></i></div>
+        <div class="course-main">
+          <div class="course-title">Mobile App Architecture</div>
+          <div class="course-sub">LinkedIn Learning · Advanced</div>
+        </div>
+        <div class="course-meta">
+          <span class="pill priority">High Priority</span>
+          <span class="pill paid">Paid</span>
+          <span class="course-stat"><i class="fa-regular fa-clock"></i> 10h · 2 wks</span>
+          <span class="course-stat"><b>8/10</b> imp.</span>
+        </div>
+      </article>
+
+      <article class="course">
+        <div class="course-icon linkedin"><i class="fa-brands fa-linkedin-in"></i></div>
+        <div class="course-main">
+          <div class="course-title">Unit Testing Fundamentals</div>
+          <div class="course-sub">LinkedIn Learning · Intermediate</div>
+        </div>
+        <div class="course-meta">
+          <span class="pill priority">High Priority</span>
+          <span class="pill paid">Paid</span>
+          <span class="course-stat"><i class="fa-regular fa-clock"></i> 8h · 1.6 wks</span>
+          <span class="course-stat"><b>7</b> postings</span>
+        </div>
+      </article>
+
+      <article class="course">
+        <div class="course-icon linkedin"><i class="fa-brands fa-linkedin-in"></i></div>
+        <div class="course-main">
+          <div class="course-title">Mobile App Testing</div>
+          <div class="course-sub">LinkedIn Learning · Intermediate</div>
+        </div>
+        <div class="course-meta">
+          <span class="pill priority">High Priority</span>
+          <span class="pill paid">Paid</span>
+          <span class="course-stat"><i class="fa-regular fa-clock"></i> 8h · 1.6 wks</span>
+          <span class="course-stat"><b>3</b> postings</span>
+        </div>
+      </article>
+
+      <article class="course">
+        <div class="course-icon google"><i class="fa-brands fa-google"></i></div>
+        <div class="course-main">
+          <div class="course-title">Flutter Official Deployment Guide</div>
+          <div class="course-sub">Google · Official documentation</div>
+        </div>
+        <div class="course-meta">
+          <span class="pill priority">High Priority</span>
+          <span class="pill paid">Paid</span>
+          <span class="course-stat"><i class="fa-regular fa-clock"></i> 8h · 1.6 wks</span>
+          <span class="course-stat"><b>2</b> postings</span>
+        </div>
+      </article>
+
+      <article class="course">
+        <div class="course-icon apollo"><i class="fa-solid fa-circle-nodes"></i></div>
+        <div class="course-main">
+          <div class="course-title">Apollo GraphQL Tutorials</div>
+          <div class="course-sub">Apollo · Beginner</div>
+        </div>
+        <div class="course-meta">
+          <span class="pill priority">High Priority</span>
+          <span class="pill free">Free</span>
+          <span class="course-stat"><i class="fa-regular fa-clock"></i> 8h · 1.6 wks</span>
+          <span class="course-stat"><b>2</b> postings</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       6 · FOOTER
+       ══════════════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <span>Last updated today · 5 recommended roles</span>
+    <div class="footer-status">
+      <span><i class="dot progress"></i> <b>77%</b> match</span>
+      <span><i class="dot critical"></i> <b>7</b> gaps</span>
+      <span><i class="dot recommended"></i> <b>59</b> skills</span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
