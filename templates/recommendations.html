@@ -324,51 +324,117 @@
     background: rgba(var(--accent-rgb), 0.08);
     box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.10);
   }
-  .upload-area.drag-over .upload-icon {
-    background: var(--accent);
-    color: #fff;
-    transform: scale(1.08);
-  }
-
-  .upload-area .upload-icon {
-    width: 56px; height: 56px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-    background: rgba(var(--accent-rgb), 0.08);
+  /* Cloud glyph, unboxed — the accent carries it rather than a tinted chip. */
+  .upload-area .upload-art {
+    font-size: 46px;
+    line-height: 1;
     color: var(--accent);
-    font-size: 22px;
-    margin-bottom: 0.85rem;
-    transition: all 0.3s ease;
+    margin-bottom: 1.1rem;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
-
-  .upload-area:hover .upload-icon {
-    background: var(--accent);
-    color: #fff;
-    transform: scale(1.08);
-    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.28);
-  }
+  .upload-area:hover .upload-art { transform: translateY(-5px); }
+  .upload-area.drag-over .upload-art { transform: translateY(-8px) scale(1.06); }
 
   .upload-area .upload-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
     color: var(--txt);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
   }
 
   .upload-area .upload-sub {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--txt-muted);
-    margin-bottom: 1.15rem;
+    line-height: 1.6;
+    max-width: 40ch;
+    margin: 0 auto 1.25rem;
   }
+
+  /* Choose File beside the AI mark, as one action row. */
+  .upload-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
+  /* Kept in the layout — hidden fields cannot be focused, and a `required`
+     one that cannot be focused blocks native form validation. */
+  .visually-hidden-input {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Solid pill, matching the reference's primary upload action. */
+  .btn-choose-file {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    height: 42px;
+    padding: 0 1.3rem;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 5px 14px rgba(var(--accent-rgb), 0.26);
+    transition: all 0.25s ease;
+  }
+  .btn-choose-file:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+    box-shadow: 0 9px 22px rgba(var(--accent-rgb), 0.32);
+  }
+  .visually-hidden-input:focus-visible + .upload-actions .btn-choose-file,
+  .visually-hidden-input:focus-visible ~ .upload-actions .btn-choose-file {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* The AI mark reads as a companion pill, not a second action. */
+  .upload-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 42px;
+    padding: 0 1.1rem;
+    border-radius: 999px;
+    background: rgba(var(--accent-rgb), 0.10);
+    color: var(--accent);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .upload-badge i { font-size: 12px; }
 
   /* The CV on record, shown inside the upload box where a file selection
      would normally appear. */
   /* The CV on record sits in its own bordered row, as in the reference. */
   .upload-area .upload-file {
-    margin: -0.35rem 0 1rem;
-    line-height: 1.35;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 1.15rem;
+    padding: 0.7rem 0.95rem;
+    border: 1px solid var(--bdr-hover);
+    border-radius: 12px;
+    background: var(--surface);
+    line-height: 1.4;
   }
   .upload-area .upload-file .uf-sep { color: var(--txt-muted); opacity: 0.5; }
 
@@ -393,57 +459,8 @@
     font-size: 12.5px;
     color: var(--txt-muted);
   }
-
-  .upload-area .form-control {
-    height: 44px;
-    border-radius: 12px;
-    border: 1.5px solid rgba(15,23,42,0.09);
-    background: var(--surface);
-    font-size: 14px;
-    transition: all 0.25s ease;
-    cursor: pointer;
-  }
-
-  .upload-area .form-control::file-selector-button {
-    border: none;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 14px;
-    padding: 0.35rem 0.85rem;
-    border-radius: 8px;
-    margin-right: 0.65rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .upload-area .form-control::file-selector-button:hover {
-    background: rgba(var(--accent-rgb), 0.14);
-  }
-
-  .upload-area .form-control:focus {
-    border-color: rgba(var(--accent-rgb), 0.5);
-    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.10);
-    outline: none;
-  }
-
-  .format-pills {
-    display: flex;
-    justify-content: center;
-    gap: 0.4rem;
-    margin-top: 0.75rem;
-  }
-
-  .format-pill {
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    text-transform: uppercase;
-    background: rgba(15,23,42,0.04);
-    color: var(--txt-muted);
-    border: 1px solid var(--bdr);
-  }
+  .upload-area .upload-file .uf-meta:empty,
+  .upload-area .upload-file .uf-meta:empty + .uf-sep { display: none; }
 
   .btn-analyze {
     width: 100%;
@@ -486,6 +503,114 @@
 
   .btn-analyze:active { transform: translateY(0); }
   .btn-analyze:disabled { opacity: 0.6; pointer-events: none; }
+
+  /* ── Match Score card ──
+     The headline result: one large number, two supporting counts. Sits
+     top-right so it lands in view the moment an analysis completes. */
+  .score-panel { position: relative; overflow: hidden; }
+  .score-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.25));
+  }
+  .score-panel { background: var(--surface-alt); }
+  .score-panel .panel-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 1.75rem;
+  }
+
+  .score-hero {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Donut. --score-pct is set by applyAnalysis from resume_score.
+     Registering it lets the arc sweep rather than snap. */
+  @property --score-pct {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+  }
+  .score-ring {
+    --score-pct: 0;
+    width: 128px; height: 128px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(
+      var(--accent) calc(var(--score-pct) * 1%),
+      rgba(15,23,42,0.07) 0
+    );
+    transition: --score-pct 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .score-ring-inner {
+    width: 104px; height: 104px;
+    border-radius: 50%;
+    background: var(--surface-alt);
+    display: grid;
+    place-items: center;
+    align-content: center;
+    text-align: center;
+  }
+  .score-ring-val {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--txt);
+    font-variant-numeric: tabular-nums;
+  }
+  .score-ring-cap {
+    margin-top: 0.25rem;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--txt-muted);
+  }
+
+  .score-split {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .score-stat { min-width: 0; }
+  .score-stat .ss-value {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--txt);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 0.2rem;
+  }
+  .score-stat .ss-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--txt-soft);
+    line-height: 1.3;
+  }
+  .score-stat .ss-label i { color: var(--accent); font-size: 13px; }
+
+  @media (max-width: 575.98px) {
+    .score-hero { gap: 1.25rem; }
+    .score-ring { width: 104px; height: 104px; }
+    .score-ring-inner { width: 84px; height: 84px; }
+    .score-ring-val { font-size: 24px; }
+  }
 
   /* ── Metric Cards ── */
   .metric-card {
@@ -898,30 +1023,63 @@
   @media (max-width: 767.98px)  { #recommendedJobs .rj-grid { --cols: 1; } }
 
   .rec-job {
-    padding: 1.35rem 1.35rem;
-    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    padding: 1.35rem;
+    border-radius: 16px;
     border: 1px solid var(--bdr);
-    background: var(--surface-alt);
-    margin-bottom: 0.85rem;
+    background: var(--surface);
+    height: 100%;
     transition: all 0.3s ease;
     animation: itemSlide 0.4s ease both;
   }
 
   .rec-job:hover {
-    border-color: rgba(var(--accent-rgb), 0.16);
-    background: var(--surface);
-    box-shadow: 0 10px 28px var(--shadow-lg);
-    transform: translateX(3px);
+    border-color: rgba(var(--accent-rgb), 0.20);
+    box-shadow: 0 12px 30px var(--shadow-lg);
+    transform: translateY(-3px);
   }
 
   .rec-job .rj-header {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
-    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
   }
+
+  .rec-job .rj-company {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--txt-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Location · work mode · experience · pay — one wrapping, icon-led row */
+  .rj-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin-bottom: 0.85rem;
+  }
+  .rj-fact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--txt-soft);
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .rj-fact i { font-size: 12px; flex-shrink: 0; }
+  .rj-fact.loc i  { color: var(--accent); }
+  .rj-fact.mode i { color: #3B82F6; }
+  .rj-fact.exp i  { color: var(--warn); }
+  /* Pay reads a step stronger than the rest of the row. */
+  .rj-fact.pay    { font-size: 13px; font-weight: 600; color: var(--txt); }
+  .rj-fact.pay i  { color: var(--success); }
 
   .rec-job .rj-info {
     display: flex;
@@ -1042,7 +1200,8 @@
     line-height: 1.65;
     margin-bottom: 0.9rem;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -1453,6 +1612,439 @@
     .panel-body { padding: 1rem; }
     .panel-head { padding: 0.9rem 1rem; }
   }
+
+  /* ══════════════════════════════════════════════════════════════════
+     PROGRESSIVE DISCLOSURE — Master (job list) → Detail (one job)
+
+     Two panes share this page. Only their visibility is toggled: every
+     panel below keeps the exact id and markup its existing renderer
+     writes into, so no analysis is re-fetched when the user moves
+     between them.
+     ══════════════════════════════════════════════════════════════════ */
+  .view-pane[hidden] { display: none !important; }
+  .view-pane { animation: paneIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  @keyframes paneIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Section heading used between stacked panels ── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--txt-muted);
+    margin: 0 0 0.75rem;
+  }
+  .section-label i { color: var(--accent); font-size: 13px; }
+
+  /* ── Back navigation ── */
+  .detail-topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.35rem;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 40px;
+    padding: 0 1.05rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--bdr);
+    background: var(--surface);
+    color: var(--txt-soft);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+  .btn-back:hover {
+    border-color: rgba(var(--accent-rgb), 0.35);
+    background: rgba(var(--accent-rgb), 0.04);
+    color: var(--accent);
+  }
+  .btn-back i { transition: transform 0.25s ease; }
+  .btn-back:hover i { transform: translateX(-3px); }
+  .btn-back:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .detail-crumb {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--txt-muted);
+  }
+  .detail-crumb b {
+    color: var(--txt-soft);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Detail flow ──
+     One reading order top to bottom. Compact panels pair into two columns on
+     desktop and collapse to one on tablet and below. */
+  .detail-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    min-width: 0;
+  }
+
+  .detail-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.75rem;
+    align-items: stretch;
+  }
+  .detail-row > .dash-panel { display: flex; flex-direction: column; }
+  .detail-row > .dash-panel > .panel-body { flex: 1; }
+
+  .detail-flow .panel-body { padding: 1.75rem; }
+
+  /* These blocks carry their own margins for the old inline card. Inside a
+     panel body the panel supplies the spacing. */
+  #jobDetailBars .exp-bar-wrap { margin: 0; }
+  #jobDetailLedger .rj-ledger { margin-top: 0; }
+  #jobDetailLedger .rj-total { margin-bottom: 0; }
+  #jobDetailLedger .rj-skills-row { margin-bottom: 0; }
+  #jobDetailWhy .rj-why { margin-top: 0; }
+
+  /* ── Job hero (detail header) ── */
+  .job-hero {
+    background: var(--surface);
+    border: 1px solid var(--bdr);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px var(--shadow);
+    padding: 1.75rem;
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .job-hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.35rem;
+    flex-wrap: wrap;
+  }
+
+  .job-hero-id { display: flex; gap: 1rem; min-width: 0; flex: 1 1 320px; }
+
+  .job-hero-logo {
+    width: 68px; height: 68px;
+    border-radius: 14px;
+    border: 1px solid var(--bdr);
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    overflow: hidden;
+    padding: 10px;
+  }
+  .job-hero-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+  .job-hero-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--txt);
+    margin: 0 0 0.3rem;
+    line-height: 1.25;
+  }
+
+  .job-hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    color: var(--txt-muted);
+  }
+  .job-hero-meta i { font-size: 13px; opacity: 0.55; }
+  .job-hero-meta .sep { opacity: 0.22; }
+
+  .job-hero-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .score-ring {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.15rem;
+    padding: 0.5rem 1.05rem;
+    border-radius: 14px;
+    background: var(--success-bg);
+    border: 1px solid var(--success-bdr);
+    color: var(--success);
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .score-ring small { font-size: 15px; font-weight: 700; }
+  .score-ring-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--txt-muted);
+  }
+
+  .job-hero-desc {
+    font-size: 14.5px;
+    color: var(--txt-soft);
+    line-height: 1.75;
+    margin: 1.15rem 0 0;
+  }
+
+  .job-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.35rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid var(--bdr);
+  }
+  .job-hero-actions .btn-apply-job,
+  .job-hero-actions .btn-bookmark { height: 44px; padding: 0 1.5rem; font-size: 14.5px; }
+
+  /* ── Quick match metrics ── */
+  .qm-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px dashed var(--bdr);
+    font-size: 13.5px;
+  }
+  .qm-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .qm-row .qm-key { color: var(--txt-soft); display: inline-flex; align-items: center; gap: 0.45rem; }
+  .qm-row .qm-key i { font-size: 13px; opacity: 0.6; }
+  .qm-row .qm-val {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--txt);
+  }
+  .qm-row .qm-val.pos { color: var(--success); }
+  .qm-row .qm-val.neg { color: var(--warn); }
+
+  /* ── Recommendation insight callout ── */
+  .detail-insight {
+    display: flex;
+    gap: 0.9rem;
+    padding: 1.15rem 1.35rem;
+    border-radius: 16px;
+    background: rgba(var(--accent-rgb), 0.04);
+    border: 1px solid rgba(var(--accent-rgb), 0.14);
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--txt-soft);
+  }
+  .detail-insight .di-icon {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 11px;
+    background: rgba(var(--accent-rgb), 0.10);
+    color: var(--accent);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ── Compact job card (master list) ── */
+  .rec-job { cursor: pointer; }
+  .rec-job:focus-within {
+    border-color: rgba(var(--accent-rgb), 0.24);
+    background: var(--surface);
+  }
+
+  /* Match strength gets its own row: label, track, percentage. The fill and
+     the figure share one colour so the card is readable at a glance. */
+  .rj-match {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr);
+    margin-bottom: 0.85rem;
+  }
+  .rj-match-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--txt-soft);
+    flex-shrink: 0;
+  }
+  .rj-match-track {
+    flex: 1;
+    min-width: 0;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.09);
+    overflow: hidden;
+  }
+  .rj-match-track span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .rj-match-pct {
+    font-size: 14px;
+    font-weight: 800;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Neutral chips: on this card they list the role's skills, not a verdict. */
+  .rj-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.9rem;
+  }
+  .rj-tags .skill-chip-modern {
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr);
+    color: var(--txt-soft);
+    font-weight: 500;
+    padding: 0.28rem 0.7rem;
+    border-radius: 8px;
+  }
+  .rj-tags .skill-chip-modern i { display: none; }
+  .rj-tags .skill-chip-modern:hover {
+    background: rgba(var(--accent-rgb), 0.06);
+    border-color: rgba(var(--accent-rgb), 0.16);
+    color: var(--accent);
+    transform: none;
+  }
+  .rj-more {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--txt-muted);
+    padding: 0.28rem 0.4rem;
+  }
+
+  /* Apply is the card's primary action; View Details sits beside it as the
+     outlined secondary. Bookmark remains in the detail view only. */
+  .rec-job .rj-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bdr);
+  }
+  .rj-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    flex: 1 1 auto;
+    height: 42px;
+    padding: 0 1rem;
+    border-radius: 11px;
+    border: 1.5px solid var(--bdr-hover);
+    background: var(--surface);
+    color: var(--txt-soft);
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .rj-view:hover {
+    border-color: rgba(var(--accent-rgb), 0.45);
+    background: rgba(var(--accent-rgb), 0.04);
+    color: var(--accent);
+  }
+  .rj-view i { font-size: 13px; }
+  .rj-view:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .rec-job .btn-apply-job {
+    flex: 1 1 auto;
+    justify-content: center;
+    height: 42px;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+  .btn-apply-job:focus-visible,
+  .btn-bookmark:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ── Sticky action bar (small screens, detail pane) ── */
+  .detail-sticky-bar { display: none; }
+
+  /* Laptop: balanced two-column rows, tighter gutters. */
+  @media (max-width: 1399.98px) {
+    .detail-flow, .detail-row { gap: 1.5rem; }
+    .detail-flow .panel-body { padding: 1.5rem; }
+  }
+
+  /* Tablet and below: single column. */
+  @media (max-width: 991.98px) {
+    .detail-row { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (max-width: 767.98px) {
+    .job-hero { padding: 1.25rem; }
+    .job-hero-top { gap: 1rem; }
+    .job-hero-logo { width: 54px; height: 54px; font-size: 20px; border-radius: 12px; }
+    .job-hero-title { font-size: 19px; }
+    .job-hero-score { align-items: flex-start; }
+    .score-ring { font-size: 21px; padding: 0.4rem 0.85rem; }
+    .detail-flow, .detail-row { gap: 1.25rem; }
+    .detail-flow .panel-body { padding: 1.15rem; }
+
+    /* The primary actions stay reachable without scrolling back up. */
+    .job-hero-actions { display: none; }
+    .detail-sticky-bar {
+      display: flex;
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 1030;
+      gap: 0.5rem;
+      padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom, 0px));
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--bdr);
+      box-shadow: 0 -4px 20px rgba(15,23,42,0.07);
+    }
+    .detail-sticky-bar .btn-apply-job { flex: 1 1 auto; justify-content: center; height: 44px; }
+    .detail-sticky-bar .btn-bookmark { flex: 0 0 auto; height: 44px; }
+    /* Room so the bar never covers the last panel. */
+    #detailView { padding-bottom: 4.5rem; }
+  }
+
+  @media (max-width: 575.98px) {
+    .detail-topbar { gap: 0.6rem; }
+    .btn-back { height: 38px; padding: 0 0.9rem; }
+    .detail-crumb { flex-basis: 100%; }
+  }
 </style>
 
 <div class="ai-match-page">
@@ -1489,9 +2081,14 @@
           <!-- Drop target. The click handler forwards to the file input, so the
                whole card behaves as one control. -->
           <div class="upload-area">
-            <div class="upload-icon"><i class="bi bi-file-earmark-pdf"></i></div>
-            <div class="upload-title">Upload your CV</div>
-            <div class="upload-sub">PDF format only — analyzed by AI instantly</div>
+            <div class="upload-art" aria-hidden="true"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+
+            <div class="upload-title">Upload Resume to Get Started</div>
+
+            <div class="upload-sub">
+              Drag &amp; drop your CV here, or choose a file. Files should be in
+              PDF format and must not exceed 10&nbsp;MB in size.
+            </div>
 
             <!-- A browser clears the file input on every load and cannot
                  repopulate it, so the CV on record is shown here instead. -->
@@ -1504,13 +2101,6 @@
               <span class="uf-meta" id="currentCvDate"></span>
             </div>
 
-            <input id="resume_pdf" class="form-control" name="resume" type="file" accept="application/pdf" required>
-            <div class="format-pills">
-              <span class="format-pill">PDF</span>
-              <span class="format-pill">Max 10 MB</span>
-              <span class="format-pill">AI Powered</span>
-            </div>
-
             <!-- The input stays in the layout — visually hidden but focusable
                  and still `required`, so native validation and every existing
                  handler keep working. It is the real control: the pill beside
@@ -1520,11 +2110,12 @@
             <input id="resume_pdf" class="visually-hidden-input" name="resume"
                    type="file" accept="application/pdf" required
                    aria-label="Choose a CV file in PDF format">
-            <span class="btn-choose-file" aria-hidden="true">
-              <i class="bi bi-plus-lg"></i> Choose File
-            </span>
-
-            <div class="upload-badge"><i class="bi bi-stars"></i> AI Powered</div>
+            <div class="upload-actions">
+              <span class="btn-choose-file" aria-hidden="true">
+                <i class="bi bi-upload"></i> Choose File
+              </span>
+              <span class="upload-badge"><i class="bi bi-stars"></i> AI Powered</span>
+            </div>
           </div>
           <button id="analyzeButton" class="btn-analyze" type="submit">
             <i class="bi bi-stars"></i> Analyze CV
@@ -1548,26 +2139,22 @@
         </div>
       </div>
       <div class="panel-body">
-        <div class="row g-3">
-          <div class="col-4">
-            <div class="metric-card mc-idx-1">
-              <div class="mc-icon"><i class="bi bi-speedometer2"></i></div>
-              <div id="resumeScore" class="mc-value">--</div>
-              <div class="mc-label">CV Score</div>
+        <div class="score-hero">
+          <!-- Ring arc is driven by --score-pct, set from resume_score. -->
+          <div class="score-ring" id="scoreRing">
+            <div class="score-ring-inner">
+              <div class="score-ring-val" id="resumeScore">--</div>
+              <div class="score-ring-cap">Overall Match</div>
             </div>
           </div>
-          <div class="col-4">
-            <div class="metric-card mc-idx-2">
-              <div class="mc-icon"><i class="bi bi-tools"></i></div>
-              <div id="skillCount" class="mc-value">0</div>
-              <div class="mc-label">Skills Extracted</div>
+          <div class="score-split">
+            <div class="score-stat">
+              <div id="skillCount" class="ss-value">0</div>
+              <div class="ss-label"><i class="bi bi-code-slash"></i> Skills Extracted</div>
             </div>
-          </div>
-          <div class="col-4">
-            <div class="metric-card mc-idx-3">
-              <div class="mc-icon"><i class="bi bi-briefcase"></i></div>
-              <div id="jobCount" class="mc-value">0</div>
-              <div class="mc-label">Job Matches</div>
+            <div class="score-stat">
+              <div id="jobCount" class="ss-value">0</div>
+              <div class="ss-label"><i class="bi bi-briefcase-fill"></i> Recommended Jobs</div>
             </div>
           </div>
         </div>
@@ -1575,8 +2162,18 @@
     </div>
   </div>
 
-  <!-- Row 2: Match Analytics + Skills Extracted -->
-  <div class="match-row">
+  <!-- Job Categories — a client-side lens over the analysis already in memory.
+       Selecting one re-renders the grid below from `currentJobs`; nothing is
+       fetched and no stored state changes. Hidden until an analysis exists. -->
+  <section class="cat-section" id="jobCategories" hidden aria-labelledby="catHeading">
+    <h2 class="cat-heading" id="catHeading">
+      <i class="bi bi-collection"></i> Job Categories
+    </h2>
+    <div class="cat-bar" id="categoryBar" role="group" aria-label="Filter recommended jobs by category"></div>
+  </section>
+
+  <!-- Recommended Jobs — the entry point into the detail view -->
+  <div class="mb-4">
     <div class="dash-panel">
       <div class="panel-head">
         <div class="panel-title">
@@ -1938,40 +2535,301 @@
           <div class="chip-wrap">${missing || none}</div>
         </div>
       </div>`;
+  }
 
-    return `<div class="rec-job" style="animation-delay:${index * 0.07}s">
+  /* ── Apply / Bookmark ──
+     The same two calls the page has always made. Bookmark belongs to the
+     detail view only: it is a decision taken after reading the full posting,
+     so the summary card carries Apply alone. */
+  function jobActionsHtml(job) {
+    return `<button class="btn-apply-job" type="button" onclick="submitJobApplication(${job.id}, this)">
+        <i class="bi bi-send"></i> Apply
+      </button>
+      <button class="btn-bookmark" type="button" onclick="toggleSavedJob(${job.id}, this)">
+        <i class="bi bi-bookmark"></i> Bookmark
+      </button>`;
+  }
+
+  /* ── One fact on the summary card ── */
+  function jobFact(icon, value, tone) {
+    return `<span class="rj-fact ${tone || ""}"><i class="bi ${icon}"></i> ${escapeHtml(value)}</span>`;
+  }
+
+  /* Match strength colour. Same thresholds renderResumeQuality already uses,
+     so a percentage means the same thing everywhere on the page. */
+  function matchTone(pct) {
+    return pct >= 85 ? "#10B981" : pct >= 70 ? "#3B82F6" : pct >= 50 ? "#F59E0B" : "#EF4444";
+  }
+
+  /* ── Recommended job card (master list) ──
+     A summary only. The component bars, score ledger, reasoning and insight
+     are one click away in the detail view, painted from this same object. */
+  function renderRecommendedJob(item, index, pos) {
+    const job = item.job;
+    const pct = Math.min(100, Math.max(0, parseInt(item.match_percentage) || 0));
+    /* `index` addresses currentJobs; `pos` is the slot in the visible grid and
+       only drives the stagger, so a filtered list still animates in from 0. */
+    const slot = (pos === undefined) ? index : pos;
+    const matched = item.matched_skills || [];
+
+    /* Top matching skills only — the missing ones are part of the full
+       breakdown and would compete with the decision this card is for. */
+    const chips = matched.slice(0, 5).map(s =>
+      `<span class="skill-chip-modern chip-success"><i class="bi bi-check-lg"></i> ${escapeHtml(s)}</span>`).join("");
+    const extra = Math.max(0, matched.length - 5);
+    const more = extra ? `<span class="rj-more">+${extra} more</span>` : "";
+
+    /* Location, work mode, experience and pay flow in one wrapping row, so a
+       short set sits on a single line and a long one breaks naturally. */
+    const facts = [
+      jobFact("bi-geo-alt-fill", job.location || "Flexible", "loc"),
+      jobFact("bi-building", workModeLabel(job.work_mode), "mode"),
+      job.experience_required ? jobFact("bi-clock-history", job.experience_required, "exp") : "",
+      jobFact("bi-currency-dollar", job.salary_range || "Salary not listed", "pay"),
+    ].join("");
+
+    const tone = matchTone(pct);
+
+    return `<article class="rec-job" data-job-index="${index}"
+             style="animation-delay:${slot * 0.06}s">
       <div class="rj-header">
         <div class="rj-info">
           ${jobLogoHtml(job, "rj-logo")}
           <div style="min-width:0">
             <div class="rj-title">${escapeHtml(job.title)}</div>
-            <div class="rj-meta">
-              <i class="bi bi-building"></i> ${escapeHtml(job.company)}
-              <span style="opacity:0.2">·</span>
-              <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
-              <span style="opacity:0.2">·</span>
-              <i class="bi bi-laptop"></i> ${workModeLabel(job.work_mode)}
-            </div>
-          </div>
-        </div>
-        <div style="text-align:right;">
-          <span class="match-badge"><i class="bi bi-check-circle-fill"></i> ${item.match_percentage}%</span>
-          <div style="font-size:13px;color:var(--txt-muted);margin-top:0.3rem;">
-            ${escapeHtml(job.salary_range || "Salary not listed")}
+            <div class="rj-company">${escapeHtml(job.company)}</div>
           </div>
         </div>
       </div>
+
+      <div class="rj-match" role="img" aria-label="Match score ${pct} percent">
+        <span class="rj-match-label">Match</span>
+        <div class="rj-match-track">
+          <span style="width:${pct}%;background:${tone};"></span>
+        </div>
+        <span class="rj-match-pct" style="color:${tone};">${pct}%</span>
+      </div>
+
+      <div class="rj-facts">${facts}</div>
       <div class="rj-desc">${escapeHtml(job.description)}</div>
       ${chips ? `<div class="rj-tags">${chips}${more}</div>` : ""}
 
       <div class="rj-actions">
-        <button class="btn-apply-job" type="button" onclick="submitJobApplication(${job.id}, this)">
-          <i class="bi bi-send"></i> Apply
+        <button type="button" class="rj-view"
+                aria-label="View details for ${escapeHtml(job.title)} at ${escapeHtml(job.company)}">
+          <i class="bi bi-eye"></i> View Details
         </button>
-        <button class="btn-bookmark" type="button" onclick="toggleSavedJob(${job.id}, this)">
-          <i class="bi bi-bookmark"></i> Bookmark
+        <button class="btn-apply-job" type="button" onclick="submitJobApplication(${job.id}, this)">
+          <i class="bi bi-send-fill"></i> Apply
         </button>
       </div>
+    </article>`;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     MASTER → DETAIL NAVIGATION
+
+     Opening a job changes which sections are visible; it never navigates,
+     reloads, or calls an endpoint. Every value shown below comes from the
+     analysis already held in `currentJobs`.
+     ══════════════════════════════════════════════════════════════════ */
+  let currentJobs = [];
+  let openJobIndex = null;
+
+  /* ══════════════════════════════════════════════════════════════════
+     JOB CATEGORIES
+
+     A lens over `currentJobs` — the analysis already in memory. Selecting a
+     category re-renders the grid and nothing else: no request, no cache
+     write, no change to the stored analysis.
+     ══════════════════════════════════════════════════════════════════ */
+  const JOB_CATEGORIES = [
+    { key: "all",     label: "All Jobs",           icon: "bi-grid-fill" },
+    { key: "mobile",  label: "Mobile Development", icon: "bi-phone-fill",
+      terms: ["mobile", "ios", "android", "flutter", "react native", "kotlin", "swift", "xamarin", "ionic"] },
+    { key: "flutter", label: "Flutter",            icon: "bi-app-indicator",
+      terms: ["flutter", "dart"] },
+    { key: "android", label: "Android",            icon: "bi-android2",
+      terms: ["android", "kotlin", "jetpack", "android studio"] },
+    { key: "web",     label: "Web Development",    icon: "bi-globe2",
+      terms: ["web", "frontend", "front-end", "fullstack", "full stack", "html", "css",
+              "javascript", "typescript", "react", "angular", "vue", "next.js"] },
+    { key: "react",   label: "React",              icon: "bi-bezier2",
+      terms: ["react", "react.js", "reactjs", "redux", "next.js"] },
+    { key: "python",  label: "Python",             icon: "bi-filetype-py",
+      terms: ["python", "django", "flask", "fastapi", "pandas", "numpy"] },
+    { key: "django",  label: "Django",             icon: "bi-server",
+      terms: ["django", "drf"] },
+    { key: "aiml",    label: "AI/ML",              icon: "bi-robot",
+      terms: ["ai", "ml", "machine learning", "deep learning", "nlp", "tensorflow",
+              "pytorch", "scikit-learn", "data science", "computer vision", "llm"] },
+    { key: "uiux",    label: "UI/UX",              icon: "bi-palette-fill",
+      terms: ["ui", "ux", "user experience", "user interface", "figma", "sketch",
+              "product design", "wireframe"] },
+    { key: "devops",  label: "DevOps",             icon: "bi-gear-wide-connected",
+      terms: ["devops", "docker", "kubernetes", "ci/cd", "cicd", "terraform",
+              "jenkins", "ansible", "aws", "azure", "gcp", "sre"] },
+  ];
+
+  /* Matched on word boundaries so short terms stay honest: "ai" hits
+     "AI/ML engineer" but not "email", "ui" not "build". */
+  function categoryPattern(term) {
+    const esc = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(^|[^a-z0-9])${esc}([^a-z0-9]|$)`, "i");
+  }
+
+  const CATEGORY_PATTERNS = {};
+  JOB_CATEGORIES.forEach(c => {
+    if (c.terms) CATEGORY_PATTERNS[c.key] = c.terms.map(categoryPattern);
+  });
+
+  let activeCategory = "all";
+  let jobFields = [];         /* per job: {title, skills, description}, lowercased */
+
+  /* Where a term is found decides whether it means anything. A title says what
+     the role IS; required_skills say what it demands; a description is prose
+     that name-drops adjacent tech ("...CI/CD experience a plus") and on its own
+     proves nothing. Scoring the fields separately — instead of concatenating
+     them into one haystack — is what keeps an incidental mention from inventing
+     a category. */
+  const FIELD_TITLE = 3;
+  const FIELD_SKILLS = 2;
+  const FIELD_DESCRIPTION = 1;
+  /* Title or required_skills confer membership; a description-only hit (1)
+     falls below the bar. */
+  const CATEGORY_MIN_SCORE = FIELD_SKILLS;
+
+  function jobFieldSet(item) {
+    const job = item.job || {};
+    const skills = Array.isArray(job.required_skills) ? job.required_skills.join(" ") : "";
+    return {
+      title: (job.title || "").toLowerCase(),
+      skills: skills.toLowerCase(),
+      description: (job.description || "").toLowerCase(),
+    };
+  }
+
+  /* Strength of the strongest field this category matched in, 0 if none. */
+  function categoryScore(index, key) {
+    const pats = CATEGORY_PATTERNS[key];
+    const f = jobFields[index];
+    if (!pats || !f) return 0;
+    if (pats.some(p => p.test(f.title)))       return FIELD_TITLE;
+    if (pats.some(p => p.test(f.skills)))      return FIELD_SKILLS;
+    if (pats.some(p => p.test(f.description))) return FIELD_DESCRIPTION;
+    return 0;
+  }
+
+  function categoryHas(index, key) {
+    if (key === "all") return true;
+    return categoryScore(index, key) >= CATEGORY_MIN_SCORE;
+  }
+
+  function categoryCount(key) {
+    if (key === "all") return currentJobs.length;
+    let n = 0;
+    for (let i = 0; i < currentJobs.length; i++) if (categoryHas(i, key)) n++;
+    return n;
+  }
+
+  /* Index-preserving: the detail view looks a job up by its position in
+     `currentJobs`, so the original index travels with each card. */
+  function visibleJobs() {
+    const rows = [];
+    for (let i = 0; i < currentJobs.length; i++) {
+      if (categoryHas(i, activeCategory)) rows.push({ item: currentJobs[i], index: i });
+    }
+    return rows;
+  }
+
+  function renderCategoryBar() {
+    const section = document.getElementById("jobCategories");
+    const bar = document.getElementById("categoryBar");
+    if (!section || !bar) return;
+
+    if (!currentJobs.length) { section.hidden = true; bar.innerHTML = ""; return; }
+
+    /* A category with nothing behind it is dropped rather than rendered as a
+       dead "(0)" pill. All Jobs always stays. */
+    const shown = JOB_CATEGORIES
+      .map(cat => ({ cat: cat, count: categoryCount(cat.key) }))
+      .filter(e => e.cat.key === "all" || e.count > 0);
+
+    if (!shown.some(e => e.cat.key === activeCategory)) activeCategory = "all";
+
+    bar.innerHTML = shown.map(({ cat, count }) => `
+      <button type="button" class="cat-pill" data-cat="${cat.key}"
+              aria-pressed="${cat.key === activeCategory ? "true" : "false"}">
+        <i class="bi ${cat.icon}" aria-hidden="true"></i>
+        <span>${escapeHtml(cat.label)}</span>
+        <span class="cat-count">${count}</span>
+      </button>`).join("");
+
+    section.hidden = false;
+  }
+
+  function paintJobs() {
+    const target = document.getElementById("recommendedJobs");
+    const badge = document.getElementById("recommendedCount");
+    if (!target) return;
+
+    const rows = visibleJobs();
+    target.innerHTML = rows.length
+      ? `<div class="rj-grid">${rows.map((r, pos) => renderRecommendedJob(r.item, r.index, pos)).join("")}</div>`
+      : emptyBlock("funnel", "No jobs in this category",
+                   "Pick another category, or choose All Jobs to see every match.");
+
+    if (badge) {
+      badge.innerHTML = activeCategory === "all"
+        ? `<i class="bi bi-briefcase"></i> ${rows.length} roles`
+        : `<i class="bi bi-funnel-fill"></i> ${rows.length} of ${currentJobs.length} roles`;
+    }
+  }
+
+  /* Only the pressed state is rewritten, so the counts do not flicker and the
+     pill the user clicked keeps focus. */
+  (function bindCategoryBar() {
+    const bar = document.getElementById("categoryBar");
+    if (!bar) return;
+    bar.addEventListener("click", (event) => {
+      const pill = event.target.closest(".cat-pill[data-cat]");
+      if (!pill || pill.dataset.cat === activeCategory) return;
+      activeCategory = pill.dataset.cat;
+      bar.querySelectorAll(".cat-pill").forEach(p =>
+        p.setAttribute("aria-pressed", p.dataset.cat === activeCategory ? "true" : "false"));
+      paintJobs();
+    });
+  })();
+
+  function renderJobHero(item) {
+    const job = item.job;
+    const pct = parseInt(item.match_percentage) || 0;
+    return `<div class="job-hero">
+      <div class="job-hero-top">
+        <div class="job-hero-id">
+          ${jobLogoHtml(job, "job-hero-logo")}
+          <div style="min-width:0">
+            <h2 class="job-hero-title">${escapeHtml(job.title)}</h2>
+            <div class="job-hero-meta">
+              <i class="bi bi-building"></i> ${escapeHtml(job.company)}
+              <span class="sep">·</span>
+              <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
+              <span class="sep">·</span>
+              <i class="bi bi-laptop"></i> ${workModeLabel(job.work_mode)}
+              ${job.experience_required ? `<span class="sep">·</span>
+              <i class="bi bi-clock-history"></i> ${escapeHtml(job.experience_required)}` : ""}
+              <span class="sep">·</span>
+              <i class="bi bi-cash-coin"></i> ${escapeHtml(job.salary_range || "Salary not listed")}
+            </div>
+          </div>
+        </div>
+        <div class="job-hero-score">
+          <span class="score-ring">${pct}<small>%</small></span>
+          <span class="score-ring-label">Match Score</span>
+        </div>
+      </div>
+      <p class="job-hero-desc">${escapeHtml(job.description)}</p>
+      <div class="job-hero-actions">${jobActionsHtml(job)}</div>
     </div>`;
   }
 
@@ -2233,11 +3091,6 @@
     /* The detail view reads from here, so it never has to refetch. A fresh
        list also invalidates whichever job was open, so return to the master. */
     currentJobs = jobsList;
-    closeJobDetail();
-
-    /* The detail view reads from here, so it never has to refetch. A fresh
-       list also invalidates whichever job was open, so return to the master. */
-    currentJobs = jobsList;
     jobFields = jobsList.map(jobFieldSet);
     activeCategory = "all";       /* a new analysis is a fresh, unfiltered set */
     closeJobDetail();
@@ -2382,16 +3235,18 @@
        the CV being processed. The CTA returns when the new one lands, and an
        open job detail is left behind for the dashboard. */
     toggleSkillGapCta(false);
-    document.getElementById("resumeSummaryWrap").innerHTML =
-      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div><div class="skeleton-line w60"></div></div>`;
-    document.getElementById("skillsExtracted").innerHTML =
-      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
-    document.getElementById("recommendedJobs").innerHTML =
-      `<div><div class="skeleton-block"></div><div style="height:0.85rem"></div><div class="skeleton-block"></div></div>`;
-    document.getElementById("resumeInsights").innerHTML =
-      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
-    document.getElementById("resumeSuggestions").innerHTML =
-      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
+    closeJobDetail();
+    /* The categories describe the outgoing analysis, so they go with it. */
+    const catSection = document.getElementById("jobCategories");
+    if (catSection) catSection.hidden = true;
+    const lines = `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
+    setHtml("resumeSummaryWrap",
+      `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div><div class="skeleton-line w60"></div></div>`);
+    setHtml("skillsExtracted", lines);
+    setHtml("recommendedJobs",
+      `<div><div class="skeleton-block"></div><div style="height:0.85rem"></div><div class="skeleton-block"></div></div>`);
+    setHtml("resumeInsights", lines);
+    setHtml("resumeSuggestions", lines);
   }
 
   /* ── Persistence ───────────────────────────────────────────────
