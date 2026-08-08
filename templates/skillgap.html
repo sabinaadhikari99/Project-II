@@ -3,6 +3,13 @@
 
 {% block content %}
 <style>
+/* ══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+
+   The same 8px spacing scale, radius scale and elevation scale the AI
+   Match page uses, so the two pages read as one product rather than two
+   separately styled screens.
+   ══════════════════════════════════════════════════════════════════ */
 :root {
   --accent: #2563EB;
   --accent-rgb: 37, 99, 235;
@@ -16,6 +23,8 @@
   --bdr-hover: rgba(15,23,42,0.12);
   --shadow: rgba(15,23,42,0.04);
   --shadow-lg: rgba(15,23,42,0.08);
+  --track: rgba(15,23,42,0.07);
+  --page-bg: #F8FAFC;
   --radius: 16px;
   --radius-sm: 10px;
   --success: #16a34a;
@@ -29,6 +38,44 @@
   --danger-bdr: rgba(220,38,38,0.14);
   --purple: #7c3aed;
   --purple-bg: rgba(124,58,237,0.08);
+
+  /* 8px spacing system */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  --r-xs: 8px;
+  --r-sm: 10px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  --el-1: 0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.05);
+  --el-2: 0 2px 4px rgba(15,23,42,0.05), 0 10px 28px rgba(15,23,42,0.08);
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dark theme: surface and ink tokens only — every component reads through
+   them, so no component needs its own dark rule. */
+html.theme-dark {
+  --surface: #1E293B;
+  --surface-alt: #172033;
+  --surface-hover: #24334d;
+  --txt: rgba(248,250,252,0.92);
+  --txt-soft: rgba(248,250,252,0.62);
+  --txt-muted: rgba(248,250,252,0.42);
+  --bdr: rgba(248,250,252,0.08);
+  --bdr-hover: rgba(248,250,252,0.16);
+  --shadow: rgba(0,0,0,0.28);
+  --shadow-lg: rgba(0,0,0,0.42);
+  --track: rgba(248,250,252,0.10);
+  --page-bg: #0B1120;
+  --el-1: 0 1px 2px rgba(0,0,0,0.24), 0 4px 16px rgba(0,0,0,0.28);
+  --el-2: 0 2px 4px rgba(0,0,0,0.28), 0 10px 28px rgba(0,0,0,0.38);
 }
 
 .sg-page { animation: sgFadeIn 0.5s ease both; }
@@ -126,9 +173,10 @@
   transition: --sg-pct 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* The hero CTA jumps here; the offset clears the fixed dashboard navbar. */
+/* The hero CTA and the section nav both jump within the page. The offset
+   that clears the fixed navbar and the sticky section nav is on .sg-anchor,
+   which every jump target carries. */
 .sg-page { scroll-behavior: smooth; }
-#sgRoadmapCard { scroll-margin-top: calc(var(--navbar-height, 60px) + 1rem); }
 .sg-ring-inner {
   width: 58px; height: 58px;
   border-radius: 50%;
@@ -295,13 +343,19 @@
   margin-bottom: 0;
   flex: 1;
 }
-.sg-card-head .sgh-badge {
+.sgh-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   font-size: 0.68rem;
   font-weight: 700;
+  line-height: 1.5;
   padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  white-space: nowrap;
 }
+.sg-card-head .sgh-badge { flex-shrink: 0; }
 .sgh-badge.green { background: var(--success-bg); color: var(--success); border-color: var(--success-bdr); }
 .sgh-badge.amber { background: var(--warn-bg); color: var(--warn); border-color: var(--warn-bdr); }
 .sgh-badge.blue { background: rgba(var(--accent-rgb), 0.08); color: var(--accent); border-color: rgba(var(--accent-rgb), 0.14); }
@@ -311,7 +365,119 @@
 .sgh-badge.purple { background: var(--purple-bg); color: var(--purple); border-color: rgba(124,58,237,0.16); }
 .sgh-badge.gray { background: rgba(15,23,42,0.05); color: var(--txt-soft); border-color: rgba(15,23,42,0.10); }
 
-.sg-card-body { padding: 1rem 1.15rem; }
+.sg-card-body { padding: var(--sp-4) var(--sp-5); }
+
+/* ── Collapsible cards ──
+   The learning sections are long by nature. Each one keeps its header as a
+   button so a user scanning the page can fold away what they are not working
+   on, and the header still reads as a summary when folded. */
+.sg-card-toggle {
+  width: 100%;
+  /* The head's own bottom rule must survive the button reset. */
+  border: none;
+  border-bottom: 1px solid var(--bdr);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.sg-card-toggle:hover { background: var(--surface-alt); }
+.sg-card-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.sg-card-toggle .sgh-chevron {
+  margin-left: var(--sp-2);
+  font-size: 0.7rem;
+  color: var(--txt-muted);
+  transition: transform 0.25s var(--ease);
+  flex-shrink: 0;
+}
+.sg-card.collapsed .sgh-chevron { transform: rotate(-90deg); }
+.sg-card.collapsed .sg-card-body { display: none; }
+.sg-card.collapsed .sg-card-head { border-bottom: none; }
+
+/* ── Section nav ──
+   A long page needs a way in. Sticks under the app bar and marks which
+   section the reader is currently inside. */
+.sg-nav {
+  position: sticky;
+  /* The app navbar is fixed at 60px with z-index 1040 — sit directly under
+     it, and below it in the stack. */
+  top: var(--navbar-height, 60px);
+  z-index: 20;
+  display: flex;
+  gap: var(--sp-1);
+  overflow-x: auto;
+  padding: var(--sp-2) 0;
+  margin-bottom: var(--sp-4);
+  background: var(--page-bg);
+  border-bottom: 1px solid var(--bdr);
+  scrollbar-width: none;
+}
+.sg-nav::-webkit-scrollbar { display: none; }
+.sg-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-xs);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--txt-soft);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.sg-nav a:hover { background: var(--surface-alt); color: var(--txt); }
+.sg-nav a.active { background: rgba(var(--accent-rgb), 0.09); color: var(--accent); }
+.sg-nav a i { font-size: 0.75rem; }
+.sg-nav a .sg-nav-count {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-pill);
+  background: var(--track);
+  color: var(--txt-soft);
+}
+.sg-nav a.active .sg-nav-count {
+  background: rgba(var(--accent-rgb), 0.16);
+  color: var(--accent);
+}
+
+/* Anchored sections must clear the sticky nav when jumped to. */
+.sg-anchor { scroll-margin-top: calc(var(--navbar-height, 60px) + 56px); }
+
+@media (max-width: 767.98px) {
+  .sg-nav a { padding: var(--sp-2); font-size: 0.74rem; }
+}
+
+/* ── Show-more footer for capped lists ── */
+.sg-more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--bdr);
+}
+.sg-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-xs);
+  border: 1px solid var(--bdr-hover);
+  background: var(--surface);
+  color: var(--txt-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.sg-more-btn:hover {
+  color: var(--accent);
+  border-color: rgba(var(--accent-rgb), 0.32);
+  background: rgba(var(--accent-rgb), 0.05);
+}
+.sg-more-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ── Section spacer ── */
 .sg-section-title {
@@ -492,20 +658,6 @@
    learning time, expected match gain and recommendation. */
 
 /* ── Progress bars ── */
-.sg-progress-track {
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(15,23,42,0.06);
-  overflow: hidden;
-  flex: 1;
-}
-.sg-progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.sg-progress-fill.green { background: linear-gradient(90deg, #16a34a, #22c55e); }
-.sg-progress-fill.blue { background: linear-gradient(90deg, var(--accent), #60a5fa); }
 
 /* ── Page grid ──
    Gaps and covered skills share a row so neither owns a full screen of its
@@ -686,73 +838,163 @@
 /* ── Course rows ──
    One course per full-width row: rank, then title and badges, provider and
    covered skill, the figures, why it is recommended, and the action. */
+/* ── Recommended Courses ──
+   Card grid: cover band, provider, title, one signal line, then a footer
+   carrying the duration and the open action. */
 .sg-course-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-4);
 }
+
 .sg-course {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  background: var(--surface-alt);
+  flex-direction: column;
+  background: var(--surface);
   border: 1px solid var(--bdr);
-  border-radius: var(--radius-sm);
-  padding: 0.85rem 0.95rem;
-  transition: all 0.25s ease;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
 }
 .sg-course:hover {
+  color: inherit;
   border-color: var(--bdr-hover);
-  background: var(--surface);
-  box-shadow: 0 6px 16px var(--shadow-lg);
+  box-shadow: var(--el-2);
+  transform: translateY(-2px);
 }
+.sg-course:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Cover. The catalogue carries no artwork, so this is a generated field —
+   a hue derived from the skill name plus the provider glyph. Decorative by
+   design: it never states anything the payload did not. */
+.sg-course-cover {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sg-course-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255,255,255,0.16), rgba(0,0,0,0.10));
+}
+.sg-course-glyph {
+  position: relative;
+  z-index: 1;
+  font-size: 1.75rem;
+  color: rgba(255,255,255,0.92);
+}
+.sg-course-flag {
+  position: absolute;
+  z-index: 2;
+  top: var(--sp-2);
+  left: var(--sp-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--r-pill);
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.94);
+  color: var(--txt);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.14);
+}
+.sg-course-flag i { font-size: 0.6rem; }
+.sg-course-flag.free { color: var(--success); }
+.sg-course-flag.top  { color: var(--warn); }
+.sg-course-flag + .sg-course-flag { left: auto; right: var(--sp-2); }
+
 .sg-course-body {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
+  padding: var(--sp-3) var(--sp-4) 0;
+  flex: 1;
 }
-.sg-course-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-.sg-course-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--txt);
-  line-height: 1.35;
-  margin: 0;
-  flex: 1 1 12rem;
-  min-width: 0;
-}
-.sg-course-badges {
+.sg-course-provider {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  flex-wrap: wrap;
-}
-.sg-course-provider {
   font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--txt-muted);
+}
+.sg-course-provider i { font-size: 0.66rem; }
+.sg-course-title {
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--txt-soft);
+  color: var(--txt);
+  line-height: 1.4;
+  margin: 0;
+  /* Two lines, as in the reference, so every card in the row aligns. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The reference puts a star rating here. The catalogue supplies no ratings,
+   so this line carries what it does know: what the course is worth to the
+   match score, and how many postings ask for the skill. */
+.sg-course-signal {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
-  margin-bottom: 0;
-}
-.sg-course-provider i { color: var(--accent); font-size: 0.65rem; }
-.sg-course-dot { opacity: 0.35; }
-.sg-course-outcome {
   font-size: 0.68rem;
   color: var(--txt-muted);
-  min-width: 0;
-  flex: 1;
+  margin-top: 0.1rem;
 }
+.sg-course-signal .gain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-weight: 700;
+  color: var(--success);
+}
+.sg-course-signal .sep { opacity: 0.4; }
+
+.sg-course-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  margin-top: var(--sp-3);
+  font-size: 0.68rem;
+  color: var(--txt-muted);
+}
+.sg-course-foot .dur {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+.sg-course-foot .go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.sg-course:hover .go { text-decoration: underline; }
+
+@media (max-width: 1199.98px) { .sg-course-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 899.98px)  { .sg-course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 575.98px) {
+  .sg-course-grid { gap: var(--sp-3); }
+  .sg-course-body { padding: var(--sp-3) var(--sp-3) 0; }
+  .sg-course-foot { padding: var(--sp-3); }
+  .sg-course-glyph { font-size: 1.4rem; }
+}
+@media (max-width: 419.98px) { .sg-course-grid { grid-template-columns: minmax(0, 1fr); } }
 
 .sg-tag {
   display: inline-flex;
@@ -765,24 +1007,6 @@
   background: rgba(var(--accent-rgb), 0.07);
   color: var(--accent);
   border: 1px solid rgba(var(--accent-rgb), 0.12);
-}
-.sg-course-why {
-  font-size: 0.72rem;
-  color: var(--txt-soft);
-  line-height: 1.55;
-  margin: 0;
-  padding: 0.55rem 0.65rem;
-  background: var(--surface);
-  border: 1px dashed var(--bdr-hover);
-  border-radius: 8px;
-}
-.sg-course-cta {
-  margin-top: 0.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
 }
 .sg-btn-accent {
   display: inline-flex;
@@ -804,47 +1028,38 @@
   box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.28);
   transform: translateY(-1px);
 }
-.sg-badge-free { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-bdr); }
-.sg-badge-paid { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-bdr); }
 
-/* ── Learning Roadmap ── */
-.sg-rm-summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.6rem;
-  margin-bottom: 1rem;
-}
-.sg-rm-metric {
+/* ── Learning Roadmap ──
+   Instructions, not a metrics screen: a lead paragraph explaining how to
+   work through the phases, then the phases themselves. */
+.sg-rm-lead {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-4);
+  border-radius: var(--r-sm);
   background: var(--surface-alt);
   border: 1px solid var(--bdr);
-  border-radius: var(--radius-sm);
-  padding: 0.65rem 0.8rem;
 }
-.sg-rm-metric .val {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--txt);
-  line-height: 1.1;
-}
-.sg-rm-metric .lab {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--txt-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.sg-rm-progress-row {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  margin-bottom: 1.1rem;
-}
-.sg-rm-progress-row .pct {
-  font-size: 0.8rem;
-  font-weight: 800;
+.sg-rm-lead > i {
   color: var(--accent);
-  min-width: 40px;
-  text-align: right;
+  font-size: 0.9rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.sg-rm-lead b {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: var(--sp-1);
+}
+.sg-rm-lead p {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--txt-soft);
+  line-height: 1.6;
 }
 
 /* ── Roadmap phases ── */
@@ -933,19 +1148,16 @@
   align-items: center;
 }
 .sg-phase-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
-.sg-phase-progress-row {
-  display: flex;
+.sg-phase-done {
+  display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--sp-1);
   margin-bottom: 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--success);
 }
-.sg-phase-progress-row .pct {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--accent);
-  min-width: 32px;
-  text-align: right;
-}
+
 .sg-phase-skills {
   display: flex;
   flex-wrap: wrap;
@@ -1111,53 +1323,9 @@
 }
 
 /* ── Course rank + gap strip ── */
-.sg-course-rank {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(var(--accent-rgb), 0.08);
-  color: var(--accent);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-.sg-course-rank.top {
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
-  color: #fff;
-  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
-}
-.sg-course-gap {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--danger);
-  background: var(--danger-bg);
-  border: 1px solid var(--danger-bdr);
-  padding: 0.18rem 0.55rem;
-  border-radius: 7px;
-  align-self: flex-start;
-}
-.sg-course-stats {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  font-size: 0.68rem;
-  color: var(--txt-soft);
-}
-.sg-course-stats span { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
-.sg-course-stats i { color: var(--accent); }
-.sg-course-stats .up { color: var(--success); font-weight: 700; }
-.sg-course-stats .up i { color: var(--success); }
 
 @media (max-width: 575.98px) {
   .sg-course { padding: 0.75rem; gap: 0.6rem; }
-  .sg-course-rank { width: 28px; height: 28px; font-size: 0.7rem; border-radius: 8px; }
-  .sg-course-cta .sg-btn-accent { width: 100%; justify-content: center; }
 }
 
 /* ── Timeline (legacy flat fallback) ── */
@@ -1305,10 +1473,8 @@
   .sg-header h1 { font-size: 1.2rem; }
   .sg-ai-box { flex-direction: column; }
   .sg-ai-box .sg-ai-icon { width: 36px; height: 36px; font-size: 0.9rem; }
-  .sg-rm-summary { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 575.98px) {
-  .sg-rm-summary { grid-template-columns: 1fr; }
   .sg-phase-timeline { padding-left: 0; }
   .sg-phase-timeline::before { display: none; }
   .sg-phase-node { position: static; margin-bottom: 0.5rem; width: 38px; height: 38px; }
@@ -1353,7 +1519,10 @@
     </div>
   </div>
 
-  <!-- ── AI Recommendation ── -->
+  <!-- ── AI Recommendation ──
+       The one paragraph that tells the user what to do first. It names the
+       role and the skills to close — it does not restate the score or the
+       gap counts, which the hero above already owns. -->
   <div class="sg-ai-box" id="sgAiBox">
     <div class="sg-ai-icon"><i class="bi bi-stars"></i></div>
     <div class="sg-ai-body" id="sgAiBody">
@@ -1365,13 +1534,26 @@
     </div>
   </div>
 
+  <!-- ── Section nav ──
+       Four learning sections is more than fits a screen. This is the map. -->
+  <nav class="sg-nav" id="sgNav" aria-label="Skill gap sections">
+    <a href="#sgGapsSection"><i class="bi bi-exclamation-triangle"></i> Missing Skills
+      <span class="sg-nav-count" id="sgNavMissing">0</span></a>
+    <a href="#sgSkillsSection"><i class="bi bi-check-circle"></i> Current Skills
+      <span class="sg-nav-count" id="sgNavSkills">0</span></a>
+    <a href="#sgCoursesCard"><i class="bi bi-mortarboard-fill"></i> Courses
+      <span class="sg-nav-count" id="sgNavCourses">0</span></a>
+    <a href="#sgRoadmapCard"><i class="bi bi-signpost-split-fill"></i> Roadmap
+      <span class="sg-nav-count" id="sgNavRoadmap">0</span></a>
+  </nav>
+
   <!-- ── Gaps first, then what is already covered ──
        Paired so the actionable column and the reassurance column share one
        screen instead of stacking into two full-height sections. -->
   <div class="sg-grid">
 
     <!-- Missing Skills by Priority -->
-    <div class="sg-card">
+    <div class="sg-card sg-anchor" id="sgGapsSection">
       <div class="sg-card-head">
         <div class="sgh-icon red"><i class="bi bi-exclamation-triangle"></i></div>
         <div class="sgh-title">Missing Skills</div>
@@ -1390,7 +1572,7 @@
     </div>
 
     <!-- Current Skills -->
-    <div class="sg-card">
+    <div class="sg-card sg-anchor" id="sgSkillsSection">
       <div class="sg-card-head">
         <div class="sgh-icon green"><i class="bi bi-check-circle"></i></div>
         <div class="sgh-title">Current Skills</div>
@@ -1410,12 +1592,14 @@
   </div>
 
   <!-- ── Recommended Courses ── -->
-  <div class="sg-card mb-3">
-    <div class="sg-card-head">
+  <div class="sg-card sg-anchor mb-3" id="sgCoursesCard">
+    <button type="button" class="sg-card-head sg-card-toggle"
+            data-sg-collapse="sgCoursesCard" aria-expanded="true" aria-controls="sgCourses">
       <div class="sgh-icon purple"><i class="bi bi-mortarboard-fill"></i></div>
       <div class="sgh-title">Recommended Courses</div>
       <span class="sgh-badge purple" id="sgCourseBadge">0</span>
-    </div>
+      <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
+    </button>
     <div class="sg-card-body" id="sgCourses">
       <div class="sg-shimmer-block">
         <div class="sg-shimmer h60"></div>
@@ -1426,12 +1610,14 @@
   </div>
 
   <!-- ── Learning Roadmap ── -->
-  <div class="sg-card mb-3" id="sgRoadmapCard">
-    <div class="sg-card-head">
+  <div class="sg-card sg-anchor mb-3" id="sgRoadmapCard">
+    <button type="button" class="sg-card-head sg-card-toggle"
+            data-sg-collapse="sgRoadmapCard" aria-expanded="true" aria-controls="sgRoadmap">
       <div class="sgh-icon amber"><i class="bi bi-signpost-split-fill"></i></div>
       <div class="sgh-title">Learning Roadmap</div>
-      <span class="sgh-badge amber" id="sgRoadmapBadge">0%</span>
-    </div>
+      <span class="sgh-badge amber" id="sgRoadmapBadge">–</span>
+      <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
+    </button>
     <div class="sg-card-body" id="sgRoadmap">
       <div class="sg-shimmer-block">
         <div class="sg-shimmer h24"></div>
@@ -1695,7 +1881,11 @@
       (hours ? `<span><i class="bi bi-clock"></i> <b>~${hours}h</b> of listed courses</span>` : "");
   }
 
-  /* ── Render: AI Recommendation ── */
+  /* ── Render: AI Recommendation ──
+     One instruction: which role you are measured against, and which skills to
+     close first. The match score, the critical-gap count and the recommended
+     count are all shown in the hero above, so none of them is repeated here —
+     the box would otherwise be a second copy of the same three numbers. */
   function sgRenderAI(haveSkills, missSkills, gap, partition) {
     if (!haveSkills.length) {
       return `<div class="sg-ai-head"><i class="bi bi-upload" style="margin-right:0.25rem;"></i> No resume uploaded</div>
@@ -1704,24 +1894,90 @@
 
     const profession = gap.profession || "Your target role";
     const level = gap.career_level_label || "";
-    const score = gap.match_score || 0;
+    const heading = `${sgEscape(profession)}${level ? ` (${sgEscape(level)})` : ""}`;
     const top5 = [...partition.high, ...partition.medium, ...partition.low].slice(0, 5);
 
     if (!missSkills.length) {
-      return `<div class="sg-ai-head"><i class="bi bi-check-circle-fill" style="color:var(--success);margin-right:0.25rem;"></i> ${sgEscape(profession)}${level ? ` (${sgEscape(level)})` : ""}</div>
-        <div class="sg-ai-text">No critical skill gaps detected. Your current skills match well with active job postings — best AI match <strong>${score}%</strong>.</div>`;
+      return `<div class="sg-ai-head"><i class="bi bi-check-circle-fill" style="color:var(--success);margin-right:0.25rem;"></i> ${heading}</div>
+        <div class="sg-ai-text">No critical skill gaps detected — your current skills align with active job postings. The roadmap below keeps you competitive.</div>`;
     }
 
-    return `<div class="sg-ai-head"><i class="bi bi-person-badge-fill" style="color:var(--accent);margin-right:0.25rem;"></i> ${sgEscape(profession)}${level ? ` (${sgEscape(level)})` : ""}</div>
-      <div class="sg-ai-text">Your best AI match is <strong>${score}%</strong>. Closing these <strong>${top5.length}</strong> gaps first will qualify you for more recommended roles:</div>
+    return `<div class="sg-ai-head"><i class="bi bi-person-badge-fill" style="color:var(--accent);margin-right:0.25rem;"></i> ${heading}</div>
+      <div class="sg-ai-text">Start here — closing these ${top5.length === 1 ? "skill" : `${top5.length} skills`} first will qualify you for the most additional roles:</div>
       <div class="sg-ai-pills">
         ${top5.map(s => `<span class="sg-ai-pill"><i class="bi bi-lightning-charge-fill" style="font-size:0.5rem;"></i> ${sgEscape(s)}</span>`).join("")}
-      </div>
-      <div class="sg-ai-metrics">
-        <span><i class="bi bi-exclamation-triangle"></i> <strong>${partition.high.length}</strong> critical gaps</span>
-        <span><i class="bi bi-lightbulb"></i> <strong>${partition.medium.length}</strong> recommended</span>
-        <span><i class="bi bi-mortarboard"></i> ${sgEscape(gap.education_label || "Education not specified")}</span>
       </div>`;
+  }
+
+  /* ── Section nav ──────────────────────────────────────────────────
+     Counts mirror the card badges; the active mark follows the scroll. Both
+     are read from what is already on the page — nothing is recomputed. */
+  function sgSetNavCount(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function bindSectionNav() {
+    const nav = document.getElementById("sgNav");
+    if (!nav || !("IntersectionObserver" in window)) return;
+
+    const links = Array.from(nav.querySelectorAll("a[href^='#']"));
+    const byId = {};
+    links.forEach(a => { byId[a.getAttribute("href").slice(1)] = a; });
+
+    const sections = links
+      .map(a => document.getElementById(a.getAttribute("href").slice(1)))
+      .filter(Boolean);
+
+    /* The topmost section currently intersecting wins, so a tall section
+       being scrolled through keeps its own mark. */
+    const visible = new Set();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id);
+      });
+      const current = sections.find(s => visible.has(s.id));
+      links.forEach(a => a.classList.remove("active"));
+      if (current && byId[current.id]) byId[current.id].classList.add("active");
+    }, { rootMargin: "-72px 0px -55% 0px", threshold: 0 });
+
+    sections.forEach(s => observer.observe(s));
+  }
+
+  /* ── Collapsible cards ──
+     Which sections are folded is the user's working state, so it survives a
+     reload the same way the open roadmap steps already do. */
+  const SG_COLLAPSED_KEY = "skillgap.collapsed";
+
+  function sgCollapsedCards() {
+    const stored = SG_STORE ? SG_STORE.local.get(SG_COLLAPSED_KEY, []) : [];
+    return Array.isArray(stored) ? stored : [];
+  }
+
+  function sgSetCollapsed(cardId, collapsed) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.classList.toggle("collapsed", collapsed);
+    const toggle = card.querySelector(".sg-card-toggle");
+    if (toggle) toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  }
+
+  function bindCollapsibles() {
+    document.querySelectorAll(".sg-card-toggle[data-sg-collapse]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.sgCollapse;
+        const card = document.getElementById(id);
+        if (!card) return;
+        const collapsed = !card.classList.contains("collapsed");
+        sgSetCollapsed(id, collapsed);
+
+        if (!SG_STORE) return;
+        const set = new Set(sgCollapsedCards());
+        if (collapsed) set.add(id); else set.delete(id);
+        SG_STORE.local.set(SG_COLLAPSED_KEY, Array.from(set));
+      });
+    });
+    sgCollapsedCards().forEach(id => sgSetCollapsed(id, true));
   }
 
   /* The Match Score Progress renderer lived here. The section was removed from
@@ -1751,8 +2007,34 @@
     if (!courses.length) {
       return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-mortarboard"></i></div>No course gaps detected for this CV. Your skills align well with current job demand.</div>`;
     }
-    return `<div class="sg-course-grid">${courses.map((c, i) => sgCourseCard(c, i)).join("")}</div>`;
+
+    /* The list is ranked, so the first few are the ones worth reading. The
+       rest stay one click away rather than adding a screen of scrolling to a
+       page that already has a roadmap below it. */
+    const shown = sgCoursesExpanded ? courses.length : Math.min(SG_COURSE_PREVIEW, courses.length);
+    const rest = courses.length - shown;
+
+    return `<div class="sg-course-grid">${courses.slice(0, shown).map((c, i) => sgCourseCard(c, i)).join("")}</div>`
+      + (rest > 0 || sgCoursesExpanded && courses.length > SG_COURSE_PREVIEW
+          ? `<div class="sg-more-row">
+               <button type="button" class="sg-more-btn" onclick="sgToggleCourses()">
+                 ${rest > 0
+                   ? `<i class="bi bi-chevron-down"></i> Show ${rest} more course${rest === 1 ? "" : "s"}`
+                   : `<i class="bi bi-chevron-up"></i> Show fewer`}
+               </button>
+             </div>`
+          : "");
   }
+
+  /* How many courses are shown before the list asks to be expanded. */
+  const SG_COURSE_PREVIEW = 4;
+  let sgCoursesExpanded = false;
+
+  window.sgToggleCourses = function() {
+    sgCoursesExpanded = !sgCoursesExpanded;
+    const data = sgCacheRead("courses") || sgCoursesData;
+    if (data) renderCourses(data);
+  };
 
   function sgProviderIcon(provider) {
     const p = (provider || "").toLowerCase();
@@ -1764,55 +2046,68 @@
     return "bi-book-fill";
   }
 
-  function sgCourseCard(c, idx) {
-    const free = c.is_free
-      ? `<span class="sgh-badge sg-badge-free"><i class="bi bi-unlock-fill" style="font-size:0.55rem;"></i> Free</span>`
-      : `<span class="sgh-badge sg-badge-paid"><i class="bi bi-lock-fill" style="font-size:0.55rem;"></i> Paid</span>`;
-    const dur = c.estimated_duration || {};
-    const rank = idx === 0
-      ? `<div class="sg-course-rank top" title="Highest-impact gap for your target role"><i class="bi bi-trophy-fill" style="font-size:0.7rem;"></i></div>`
-      : `<div class="sg-course-rank">${idx + 1}</div>`;
-    const gap = c.missing_skill
-      ? `<span class="sg-course-gap"><i class="bi bi-exclamation-circle-fill" style="font-size:0.5rem;"></i> Closes your gap: ${sgEscape(c.missing_skill)}</span>`
-      : "";
-    const gain = parseInt(c.expected_score_gain) || 0;
+  /* Cover artwork. The course catalogue carries no images, so the band is
+     generated: a stable hue per skill plus the provider glyph. It is
+     decoration only — it asserts nothing the payload did not supply. */
+  function sgCoverHue(seed) {
+    let h = 0;
+    const str = String(seed || "course");
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 360;
+    return h;
+  }
 
-    /* Every figure the card used to stack vertically now sits on one meta
-       line, so a course reads at a glance and the list stays scannable. */
-    const facts = [
-      `<span><i class="bi bi-clock"></i> ${dur.hours || "–"} hrs · ~${dur.weeks || "–"} wks</span>`,
-      gain ? `<span class="up"><i class="bi bi-arrow-up-right"></i> +${gain}% match</span>` : "",
-      `<span><i class="bi bi-graph-up-arrow"></i> ${c.importance || "–"}/10 importance</span>`,
-      `<span><i class="bi bi-people-fill"></i> ${c.job_demand || 0} job posting${c.job_demand === 1 ? "" : "s"} list it</span>`,
+  function sgCoverStyle(seed) {
+    const h = sgCoverHue(seed);
+    return `background:linear-gradient(135deg,hsl(${h} 62% 52%),hsl(${(h + 42) % 360} 66% 42%));`;
+  }
+
+  function sgCourseCard(c, idx) {
+    const dur = c.estimated_duration || {};
+    const gain = parseInt(c.expected_score_gain) || 0;
+    const demand = parseInt(c.job_demand) || 0;
+
+    /* Both flags are facts from the payload: whether the course costs money,
+       and whether it closes the highest-impact gap for this CV. */
+    const flags = [
+      idx === 0
+        ? `<span class="sg-course-flag top" title="Highest-impact gap for your target role"><i class="bi bi-trophy-fill"></i> Top pick</span>`
+        : "",
+      c.is_free
+        ? `<span class="sg-course-flag free"><i class="bi bi-unlock-fill"></i> Free</span>`
+        : `<span class="sg-course-flag"><i class="bi bi-lock-fill"></i> Paid</span>`,
     ].filter(Boolean).join("");
 
-    return `<article class="sg-course">
-      ${rank}
+    /* Where the reference shows a star rating. No rating exists in the
+       catalogue, so this states what the course is actually worth here. */
+    const signal = [
+      gain ? `<span class="gain"><i class="bi bi-arrow-up-right"></i> +${gain}% match</span>` : "",
+      demand ? `<span>${demand} posting${demand === 1 ? "" : "s"}</span>` : "",
+    ].filter(Boolean).join(`<span class="sep">·</span>`);
+
+    const hours = dur.hours
+      ? `${dur.hours} hour${dur.hours === 1 ? "" : "s"}`
+      : "Self-paced";
+
+    return `<a class="sg-course" href="${sgEscape(c.url)}" target="_blank" rel="noopener noreferrer"
+              aria-label="Open ${sgEscape(c.course_title)} on ${sgEscape(c.provider)}">
+      <div class="sg-course-cover" style="${sgCoverStyle(c.skill_covered || c.course_title)}" aria-hidden="true">
+        ${flags}
+        <i class="bi ${sgProviderIcon(c.provider)} sg-course-glyph"></i>
+      </div>
       <div class="sg-course-body">
-        <div class="sg-course-top">
-          <h6 class="sg-course-title">${sgEscape(c.course_title)}</h6>
-          <div class="sg-course-badges">
-            ${sgPriBadge(sgCap(c.priority))}
-            ${sgDiffBadge(sgCap(c.difficulty))}
-            ${free}
-          </div>
-        </div>
         <div class="sg-course-provider">
           <i class="bi ${sgProviderIcon(c.provider)}"></i> ${sgEscape(c.provider)}
-          <span class="sg-course-dot">·</span>
-          <span class="sg-tag"><i class="bi bi-lightning-charge-fill" style="font-size:0.5rem;"></i> ${sgEscape(c.skill_covered)}</span>
-          ${gap}
         </div>
-        <div class="sg-course-stats">${facts}</div>
-        <p class="sg-course-why">${sgEscape(c.why_recommended)}</p>
-        <div class="sg-course-cta">
-          <span class="sg-course-outcome">${sgEscape(c.learning_outcome)}</span>
-          <a class="sg-btn-accent" href="${sgEscape(c.url)}" target="_blank" rel="noopener noreferrer"
-             aria-label="Open ${sgEscape(c.course_title)}">Open Course <i class="bi bi-box-arrow-up-right"></i></a>
-        </div>
+        <h6 class="sg-course-title">${sgEscape(c.course_title)}</h6>
+        ${signal ? `<div class="sg-course-signal">${signal}</div>` : ""}
       </div>
-    </article>`;
+      <div class="sg-course-foot">
+        <span class="dur"><i class="bi bi-clock"></i> ${hours}</span>
+        <span class="go">Open <i class="bi bi-box-arrow-up-right"></i></span>
+      </div>
+    </a>`;
   }
+
 
   /* ── Render: Learning Roadmap ── */
   function sgRenderRoadmap(haveSkills, data) {
@@ -1825,14 +2120,7 @@
       return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-signpost"></i></div>We're preparing your roadmap from your latest CV analysis — refresh in a moment.</div>`;
     }
 
-    const pct = progress.percentage;
-    const eta = progress.estimated_completion_date ? new Date(progress.estimated_completion_date) : null;
-    const etaText = eta ? eta.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "–";
-
     const jobReady = roadmap.job_ready;
-    const typeLabel = jobReady
-      ? `<span class="sgh-badge green"><i class="bi bi-award-fill" style="font-size:0.55rem;"></i> Job Ready · Advanced Topics</span>`
-      : `<span class="sgh-badge blue"><i class="bi bi-lightning-charge-fill" style="font-size:0.55rem;"></i> ${roadmap.total_steps || progress.total} Skill Gap${(roadmap.total_steps || progress.total) === 1 ? "" : "s"}</span>`;
 
     const banner = jobReady
       ? `<div class="sg-job-ready-banner">
@@ -1844,20 +2132,23 @@
         </div>`
       : "";
 
+    /* How to read the roadmap, stated once at the top. */
+    const total = progress.total;
+    const hours = progress.remaining_hours;
+    const scale = [
+      total ? `${total} skill${total === 1 ? "" : "s"}` : "",
+      hours ? `around ${hours} hours of study` : "",
+    ].filter(Boolean).join(", ");
+
     const summary = `
-      <div class="sg-rm-summary">
-        <div class="sg-rm-metric"><div class="val">${pct}%</div><div class="lab">Overall Progress</div></div>
-        <div class="sg-rm-metric"><div class="val">${progress.completed}</div><div class="lab">Completed</div></div>
-        <div class="sg-rm-metric"><div class="val">${progress.remaining}</div><div class="lab">Remaining Skills</div></div>
-        <div class="sg-rm-metric"><div class="val">~${progress.remaining_hours}h</div><div class="lab">Time Left</div></div>
-      </div>
-      <div class="sg-rm-progress-row">
-        <div class="sg-progress-track">
-          <div class="sg-progress-fill green" style="width:${pct}%"></div>
+      <div class="sg-rm-lead">
+        <i class="bi bi-list-check"></i>
+        <div>
+          <b>How to use this roadmap</b>
+          <p>Work through the phases in order. Open a skill to see what to learn
+             and why it matters, then tick it off once you can use it unaided${
+               scale ? ` — ${scale} in total` : ""}.</p>
         </div>
-        <span class="pct">${pct}%</span>
-        <span class="sgh-badge blue"><i class="bi bi-calendar-check" style="font-size:0.55rem;"></i> Est. ${etaText}</span>
-        ${typeLabel}
       </div>`;
 
     const phases = roadmap.phases || [];
@@ -1881,14 +2172,9 @@
       ? `<div class="sg-phase-node"><i class="bi bi-trophy-fill" style="font-size:0.85rem;"></i></div>`
       : `<div class="sg-phase-node"><small>Phase</small>${ph.phase_number}</div>`;
 
-    const progressBar = pr.total
-      ? `<div class="sg-phase-progress-row">
-          <div class="sg-progress-track">
-            <div class="sg-progress-fill ${pr.percentage >= 100 ? "green" : "blue"}" style="width:${pr.percentage}%"></div>
-          </div>
-          <span class="pct">${pr.percentage}%</span>
-          <span style="font-size:0.66rem;color:var(--txt-muted);">${pr.completed}/${pr.total} skill${pr.total === 1 ? "" : "s"} done</span>
-        </div>`
+    /* A phase that is fully ticked off says so in words; there is no bar. */
+    const progressBar = (pr.total && pr.completed >= pr.total)
+      ? `<div class="sg-phase-done"><i class="bi bi-check-circle-fill"></i> Phase complete</div>`
       : "";
 
     const skills = (ph.skills || []).length
@@ -2063,10 +2349,14 @@
     }
   };
 
+  let sgCoursesData = null;
+
   function renderCourses(data) {
+    sgCoursesData = data;
     const haveSkills = (window.__sgHaveSkills || []);
     const courses = data.courses || [];
     document.getElementById("sgCourseBadge").textContent = courses.length;
+    sgSetNavCount("sgNavCourses", courses.length);
     document.getElementById("sgCourses").innerHTML = sgRenderCourses(haveSkills, data);
 
     /* The gap cards borrow learning time, expected match gain and the course
@@ -2104,8 +2394,11 @@
     sgRoadmapData = data;
     const haveSkills = (window.__sgHaveSkills || []);
     const progress = data.progress;
-    document.getElementById("sgRoadmapBadge").textContent =
-      progress ? progress.percentage + "%" : "–";
+    const stepLabel = progress && progress.total
+      ? `${progress.total} step${progress.total === 1 ? "" : "s"}`
+      : "–";
+    document.getElementById("sgRoadmapBadge").textContent = stepLabel;
+    sgSetNavCount("sgNavRoadmap", progress && progress.total ? progress.total : "–");
     document.getElementById("sgRoadmap").innerHTML = sgRenderRoadmap(haveSkills, data);
     sgApplyOpenSteps();
   }
@@ -2169,9 +2462,11 @@
     const ring = document.getElementById("sgRing");
     if (ring) ring.style.setProperty("--sg-pct", matchPct);
 
-    /* Badges */
+    /* Badges — and the section nav, which mirrors them. */
     document.getElementById("sgHaveBadge").textContent = haveLen;
     document.getElementById("sgMissBadge").textContent = missLen;
+    sgSetNavCount("sgNavMissing", missLen);
+    sgSetNavCount("sgNavSkills", haveLen);
 
     /* AI Recommendation */
     document.getElementById("sgAiBody").innerHTML = sgRenderAI(haveSkills, missSkills, gap, p);
@@ -2224,6 +2519,8 @@
     loadRoadmap();
   }
 
+  bindSectionNav();
+  bindCollapsibles();
   loadSkillGap();
 </script>
 {% endblock %}

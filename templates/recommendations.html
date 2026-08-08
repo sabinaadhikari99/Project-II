@@ -24,6 +24,25 @@
     --warn-bdr: rgba(245,158,11,0.18);
     --danger: #EF4444;
     --danger-bg: rgba(239,68,68,0.08);
+
+    /* 8px spacing system — every gap, pad and margin on the dashboard is
+       one of these, so density can be retuned in one place. */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+
+    --r-sm: 10px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-pill: 999px;
+
+    --el-1: 0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.05);
+    --el-2: 0 2px 4px rgba(15,23,42,0.05), 0 10px 28px rgba(15,23,42,0.08);
+
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .ai-match-page { animation: pageIn 0.6s ease both; }
@@ -305,7 +324,7 @@
   .upload-panel { animation-delay: 0.06s; }
 
   .upload-area {
-    padding: 3.25rem 2rem;
+    padding: var(--sp-6) var(--sp-5);
     border-radius: 20px;
     border: 2px dashed rgba(var(--accent-rgb), 0.16);
     background: rgba(var(--accent-rgb), 0.015);
@@ -326,11 +345,11 @@
   }
   /* Cloud glyph, unboxed — the accent carries it rather than a tinted chip. */
   .upload-area .upload-art {
-    font-size: 46px;
+    font-size: 38px;
     line-height: 1;
     color: var(--accent);
-    margin-bottom: 1.1rem;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    margin-bottom: var(--sp-3);
+    transition: transform 0.35s var(--ease);
   }
   .upload-area:hover .upload-art { transform: translateY(-5px); }
   .upload-area.drag-over .upload-art { transform: translateY(-8px) scale(1.06); }
@@ -521,15 +540,16 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding: 1.75rem;
+    padding: var(--sp-5);
   }
 
   .score-hero {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1.75rem;
-    flex-wrap: wrap;
     justify-content: center;
+    gap: var(--sp-5);
+    width: 100%;
   }
 
   /* Donut. --score-pct is set by applyAnalysis from resume_score.
@@ -539,9 +559,9 @@
     inherits: false;
     initial-value: 0;
   }
-  .score-ring {
+  .score-panel .score-ring {
     --score-pct: 0;
-    width: 128px; height: 128px;
+    width: 156px; height: 156px;
     border-radius: 50%;
     flex-shrink: 0;
     display: grid;
@@ -553,7 +573,7 @@
     transition: --score-pct 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .score-ring-inner {
-    width: 104px; height: 104px;
+    width: 128px; height: 128px;
     border-radius: 50%;
     background: var(--surface-alt);
     display: grid;
@@ -562,7 +582,7 @@
     text-align: center;
   }
   .score-ring-val {
-    font-size: 30px;
+    font-size: 36px;
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.04em;
@@ -570,8 +590,8 @@
     font-variant-numeric: tabular-nums;
   }
   .score-ring-cap {
-    margin-top: 0.25rem;
-    font-size: 9.5px;
+    margin-top: var(--sp-1);
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
@@ -579,12 +599,15 @@
   }
 
   .score-split {
-    display: flex;
-    flex-direction: column;
-    gap: 1.15rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    width: 100%;
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--bdr);
   }
 
-  .score-stat { min-width: 0; }
+  .score-stat { min-width: 0; text-align: center; }
   .score-stat .ss-value {
     font-size: 30px;
     font-weight: 800;
@@ -597,7 +620,8 @@
   .score-stat .ss-label {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    gap: var(--sp-1);
     font-size: 13px;
     font-weight: 500;
     color: var(--txt-soft);
@@ -606,10 +630,11 @@
   .score-stat .ss-label i { color: var(--accent); font-size: 13px; }
 
   @media (max-width: 575.98px) {
-    .score-hero { gap: 1.25rem; }
-    .score-ring { width: 104px; height: 104px; }
-    .score-ring-inner { width: 84px; height: 84px; }
-    .score-ring-val { font-size: 24px; }
+    .score-hero { gap: var(--sp-4); }
+    .score-panel .score-ring { width: 116px; height: 116px; }
+    .score-ring-inner { width: 94px; height: 94px; }
+    .score-ring-val { font-size: 26px; }
+    .score-split { padding-top: var(--sp-4); }
   }
 
   /* ── Metric Cards ── */
@@ -1423,8 +1448,8 @@
   .match-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    gap: var(--sp-5);
+    margin-bottom: var(--sp-5);
     align-items: stretch;
   }
 
@@ -1455,10 +1480,10 @@
       linear-gradient(135deg, rgba(var(--accent-rgb), 0.06) 0%, rgba(var(--accent-rgb), 0.02) 55%, transparent 100%),
       var(--surface);
     border: 1px solid rgba(var(--accent-rgb), 0.16);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px var(--shadow);
-    padding: 1.75rem;
-    margin-bottom: 1.5rem;
+    border-radius: var(--r-lg);
+    box-shadow: var(--el-1);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-5);
     animation: fadeUp 0.5s ease both;
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
   }
@@ -1488,13 +1513,6 @@
     flex-shrink: 0;
   }
 
-  .next-step-kicker {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--accent);
-    margin-bottom: 0.3rem;
-  }
-
   .next-step-title {
     font-size: 18px; font-weight: 650; color: var(--txt);
     margin: 0 0 0.4rem; line-height: 1.35;
@@ -1504,17 +1522,6 @@
     font-size: 14px; color: var(--txt-soft);
     line-height: 1.6; margin: 0; max-width: 62ch;
   }
-
-  .next-step-points {
-    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem;
-  }
-  .next-step-points span {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.32rem 0.7rem; border-radius: 999px;
-    background: var(--surface-alt); border: 1px solid var(--bdr);
-    font-size: 12.5px; font-weight: 500; color: var(--txt-soft);
-  }
-  .next-step-points i { color: var(--accent); font-size: 12px; }
 
   .btn-next-step {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
@@ -1693,6 +1700,8 @@
     white-space: nowrap;
   }
 
+  .detail-flow .next-step { margin-bottom: 0; }
+
   /* ── Detail flow ──
      One reading order top to bottom. Compact panels pair into two columns on
      desktop and collapse to one on tablet and below. */
@@ -1849,28 +1858,6 @@
   }
   .qm-row .qm-val.pos { color: var(--success); }
   .qm-row .qm-val.neg { color: var(--warn); }
-
-  /* ── Recommendation insight callout ── */
-  .detail-insight {
-    display: flex;
-    gap: 0.9rem;
-    padding: 1.15rem 1.35rem;
-    border-radius: 16px;
-    background: rgba(var(--accent-rgb), 0.04);
-    border: 1px solid rgba(var(--accent-rgb), 0.14);
-    font-size: 14.5px;
-    line-height: 1.7;
-    color: var(--txt-soft);
-  }
-  .detail-insight .di-icon {
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 11px;
-    background: rgba(var(--accent-rgb), 0.10);
-    color: var(--accent);
-    font-size: 16px;
-    flex-shrink: 0;
-  }
 
   /* ── Compact job card (master list) ── */
   .rec-job { cursor: pointer; }
@@ -2192,35 +2179,6 @@
     </div>
   </div>
 
-  <!-- Next step: hand off to Skill Gap Analysis, which remains its own page.
-       Hidden until an analysis exists, so the pre-upload empty state is
-       unchanged. Revealed by applyAnalysis(). -->
-  <section class="next-step" id="skillGapCta" aria-hidden="true">
-    <div class="next-step-inner">
-      <div class="next-step-main">
-        <div class="next-step-icon"><i class="bi bi-graph-up-arrow"></i></div>
-        <div>
-          <div class="next-step-kicker"><i class="bi bi-stars"></i> Next step</div>
-          <h2 class="next-step-title">Continue Your AI Career Analysis</h2>
-          <p class="next-step-text">
-            Your CV has been analyzed. Go deeper to discover the skills you're missing for your
-            target roles, a personalized learning roadmap, recommended courses, and the
-            improvement opportunities that will raise your match score.
-          </p>
-          <div class="next-step-points">
-            <span><i class="bi bi-puzzle"></i> Missing skills</span>
-            <span><i class="bi bi-signpost-split"></i> Learning roadmap</span>
-            <span><i class="bi bi-mortarboard"></i> Recommended courses</span>
-            <span><i class="bi bi-arrow-up-right-circle"></i> Career opportunities</span>
-          </div>
-        </div>
-      </div>
-      <a class="btn-next-step" href="{% url 'skillgap' %}">
-        View Skill Gap Analysis <span class="arrow" aria-hidden="true">&rarr;</span>
-      </a>
-    </div>
-  </section>
-
   </div><!-- /#listView -->
 
 
@@ -2297,7 +2255,25 @@
         <div class="panel-body" id="jobDetailWhy"></div>
       </div>
 
-      <div id="jobDetailInsight"></div>
+      <!-- Next step: hand off to Skill Gap Analysis, which stays a page of
+           its own. Sits where the per-role AI insight used to, so the flow
+           still reaches an action before the analytics below. -->
+      <section class="next-step" id="skillGapCta" aria-hidden="true">
+        <div class="next-step-inner">
+          <div class="next-step-main">
+            <div class="next-step-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <div>
+              <h2 class="next-step-title">Ready to raise your match score?</h2>
+              <p class="next-step-text">
+                Skill Gap Analysis has your missing skills, roadmap and courses.
+              </p>
+            </div>
+          </div>
+          <a class="btn-next-step" href="{% url 'skillgap' %}">
+            View Skill Gap Analysis <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </section>
 
       <!-- 5 · Charts — match analytics across every recommended role -->
       <div class="dash-panel">
@@ -2403,14 +2379,15 @@
   }
 
   /* ── Score components (single source of truth for every chart/bar) ── */
+  /* Certifications and Semantic are still scored by the backend and still
+     counted in match_percentage — they are simply not listed, because
+     neither reads as something a candidate can act on. */
   const SCORE_COMPONENTS = [
     { key: "profession_match",    label: "Profession",     color: "#6366f1" },
     { key: "skills_match",        label: "Skills",         color: "#10B981" },
     { key: "experience_match",    label: "Experience",     color: "#F59E0B" },
     { key: "education_match",     label: "Education",      color: "#3B82F6" },
     { key: "project_match",       label: "Projects",       color: "#EC4899" },
-    { key: "certification_match", label: "Certifications", color: "#14B8A6" },
-    { key: "semantic_similarity", label: "Semantic",       color: "#8B5CF6" },
   ];
 
   /* ── Match explanation bar ── */
@@ -2884,14 +2861,6 @@
     document.getElementById("jobDetailWhy").innerHTML = why;
     document.getElementById("jobDetailWhyPanel").hidden = !why;
 
-    const insight = item.recommendation_insight || "";
-    document.getElementById("jobDetailInsight").innerHTML = insight
-      ? `<div class="detail-insight">
-           <div class="di-icon"><i class="bi bi-stars"></i></div>
-           <div>${escapeHtml(insight)}</div>
-         </div>`
-      : "";
-
     document.getElementById("quickMatchMetrics").innerHTML = renderQuickMetrics(item);
     document.getElementById("detailStickyBar").innerHTML = jobActionsHtml(job);
 
@@ -3244,7 +3213,11 @@
       `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div><div class="skeleton-line w60"></div></div>`);
     setHtml("skillsExtracted", lines);
     setHtml("recommendedJobs",
-      `<div><div class="skeleton-block"></div><div style="height:0.85rem"></div><div class="skeleton-block"></div></div>`);
+      `<div class="rj-grid">
+         <div class="skeleton-block"></div>
+         <div class="skeleton-block"></div>
+         <div class="skeleton-block"></div>
+       </div>`);
     setHtml("resumeInsights", lines);
     setHtml("resumeSuggestions", lines);
   }
