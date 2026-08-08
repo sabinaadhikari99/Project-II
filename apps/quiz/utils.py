@@ -19,10 +19,18 @@ model = genai.GenerativeModel(
     generation_config={
         "temperature": 0.4,
         "top_p": 0.95,
-        "max_output_tokens": 2048,
-        # Structured output: Gemini returns raw JSON, no markdown fences to
-        # strip and far fewer malformed-JSON failures than free-text mode.
-        "response_mime_type": "application/json",
+        # 10 questions, each with a full question string, 4 options, an
+        # answer and a difficulty tag, genuinely needs more than 2048 tokens
+        # once questions are CV-specific and reasonably detailed - 2048 was
+        # cutting Gemini off mid-object, producing truncated/invalid JSON
+        # that looked like a formatting bug but was actually a hard token
+        # limit. 8192 gives enough headroom without being wasteful.
+        "max_output_tokens": 8192,
+        # NOTE: response_mime_type="application/json" was tried here but
+        # removed - it requires a newer google-generativeai SDK version than
+        # may be installed, and an unsupported generation_config key can make
+        # EVERY call fail with a generic, hard-to-classify error. clean_json()
+        # below already strips markdown fences reliably without needing it.
     },
 )
 
@@ -52,7 +60,22 @@ def clean_json(text: str):
     text = re.sub(r"^```json", "", text, flags=re.IGNORECASE)
     text = re.sub(r"^```", "", text)
     text = re.sub(r"```$", "", text)
-    return json.loads(text)
+    text = text.strip()
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # Older SDKs (no forced JSON mode) sometimes wrap the array in
+        # conversational text, e.g. "Here is the quiz:\n\n[...]\n\nEnjoy!".
+        # Extract the first '[' through the LAST ']' and try again before
+        # giving up - this recovers the common case without masking a
+        # genuinely broken/truncated response.
+        start = text.find("[")
+        end = text.rfind("]")
+        if start != -1 and end != -1 and end > start:
+            candidate = text[start:end + 1]
+            return json.loads(candidate)
+        raise
 
 
 REQUIRED_DIFFICULTY_COUNTS = {"easy": 4, "medium": 3, "hard": 3}
@@ -75,12 +98,19 @@ def _validate_questions(questions) -> None:
         raise QuizGenerationError(
             "Gemini returned invalid or empty JSON.",
             code="GENERATION_INVALID",
+            user_message=(
+                "The quiz generator returned an empty response. Please try again."
+            ),
         )
 
     if len(questions) != 10:
         raise QuizGenerationError(
             f"Expected 10 questions, got {len(questions)}.",
             code="GENERATION_INVALID",
+            user_message=(
+                f"The quiz generator returned {len(questions)} question(s) instead "
+                f"of 10. Please try again — it usually works on a retry."
+            ),
         )
 
     for q in questions:
@@ -88,23 +118,34 @@ def _validate_questions(questions) -> None:
             raise QuizGenerationError(
                 "Gemini returned a malformed question.",
                 code="GENERATION_INVALID",
+                user_message="One of the generated questions was malformed. Please try again.",
             )
         if "id" not in q or "question" not in q or "answer" not in q:
             raise QuizGenerationError(
                 "Gemini question is missing required fields.",
                 code="GENERATION_INVALID",
+                user_message="A generated question was missing required data. Please try again.",
             )
 
         options = q.get("options")
         if not isinstance(options, list) or len(options) != 4:
+            got = len(options) if isinstance(options, list) else "none"
             raise QuizGenerationError(
                 "Gemini question does not have exactly 4 options.",
                 code="GENERATION_INVALID",
+                user_message=(
+                    f"A generated question had {got} answer option(s) instead of 4. "
+                    f"Please try again."
+                ),
             )
         if q["answer"] not in options:
             raise QuizGenerationError(
                 "Gemini answer is not among its own options.",
                 code="GENERATION_INVALID",
+                user_message=(
+                    "A generated question's answer didn't match its own options. "
+                    "Please try again."
+                ),
             )
 
 
@@ -131,8 +172,8 @@ def _normalize_difficulty(questions: list) -> list:
     return questions
 
 
-def generate_quiz_from_resume(resume_text: str):
-    """Generate a 10-question quiz from resume text via Gemini.
+def _generate_quiz_attempt(resume_text: str):
+    """A single attempt to generate a 10-question quiz via Gemini.
 
     Raises QuizGenerationError (or lets the underlying Gemini/JSON error
     propagate) on any failure — callers are responsible for deciding what
@@ -185,6 +226,10 @@ Rules:
 
 7. Return ONLY a JSON array. No markdown, no explanations, no commentary.
 
+8. The output MUST be syntactically valid JSON: every array/object element
+   except the last must be followed by a comma, and no element may have a
+   trailing comma. Double-check the JSON is valid before responding.
+
 Format:
 
 [
@@ -205,15 +250,55 @@ Format:
 
     try:
         with timer.measure("Gemini API — generate_content"):
-            response = model.generate_content(
-                prompt,
-                request_options={"timeout": GEMINI_TIMEOUT_SECONDS},
+            try:
+                response = model.generate_content(
+                    prompt,
+                    request_options={"timeout": GEMINI_TIMEOUT_SECONDS},
+                )
+            except (TypeError, ValueError) as compat_err:
+                # Older google-generativeai versions (e.g. 0.3.x) reject
+                # request_options entirely - some raise TypeError, others
+                # raise ValueError("Unknown field for GenerateContentRequest:
+                # request_options"). Either way, fall back to a plain call
+                # rather than letting an unsupported kwarg break every single
+                # generation. Only swallow errors that are actually about
+                # this specific incompatibility, so a genuine bad prompt/
+                # response ValueError still surfaces normally.
+                if "request_options" not in str(compat_err):
+                    raise
+                response = model.generate_content(prompt)
+
+        # Detect truncation explicitly: if Gemini stopped because it hit
+        # max_output_tokens, response.text will be incomplete JSON and the
+        # parse error below would otherwise look like a random formatting
+        # bug instead of what it actually is - the response got cut off.
+        try:
+            finish_reason = response.candidates[0].finish_reason
+        except Exception:
+            finish_reason = None
+        # finish_reason 2 (or the string "MAX_TOKENS") means truncated.
+        if finish_reason == 2 or str(finish_reason).upper().endswith("MAX_TOKENS"):
+            print(
+                "Gemini Quiz Error: response was TRUNCATED (hit max_output_tokens). "
+                f"finish_reason={finish_reason!r}. Raw response length="
+                f"{len(response.text or '')} chars."
+            )
+            raise QuizGenerationError(
+                "Gemini response was truncated by max_output_tokens.",
+                code="GENERATION_INVALID",
+                user_message=(
+                    "Your quiz came back incomplete. Please try again — "
+                    "it usually works on a retry."
+                ),
             )
 
         with timer.measure("Parse JSON response"):
             try:
                 questions = clean_json(response.text)
             except (json.JSONDecodeError, ValueError) as e:
+                print("Gemini Quiz Error: could not parse response as JSON.")
+                print("Raw Gemini response (first 1500 chars):")
+                print(repr((response.text or "")[:1500]))
                 raise QuizGenerationError(
                     f"Could not parse Gemini's response as JSON: {e}",
                     code="GENERATION_INVALID",
@@ -223,7 +308,13 @@ Format:
                     ),
                 ) from e
 
-        _validate_questions(questions)
+        try:
+            _validate_questions(questions)
+        except QuizGenerationError as e:
+            print(f"Gemini Quiz Error: validation failed - {e}")
+            print("Parsed questions (first 1500 chars):")
+            print(repr(str(questions)[:1500]))
+            raise
 
         with timer.measure("Normalize difficulty split"):
             questions = _normalize_difficulty(questions)
@@ -231,7 +322,18 @@ Format:
         timer.flush("generate_quiz_from_resume (success)")
         return questions
 
-    except QuizGenerationError:
+    except QuizGenerationError as exc:
+        print(f"Gemini Quiz Error (validation): code={exc.code} detail={exc}")
+        # Also show what Gemini actually sent back, truncated, so a shape
+        # mismatch (missing field, wrong option count, etc.) is visible
+        # instead of just "it failed".
+        raw_preview = ""
+        try:
+            raw_preview = (getattr(response, "text", "") or "")[:1500]
+        except Exception:
+            pass
+        if raw_preview:
+            print(f"Gemini raw response (first 1500 chars):\n{raw_preview}")
         timer.flush("generate_quiz_from_resume (validation failed)")
         raise
 
@@ -306,3 +408,40 @@ Format:
             f"Gemini quiz generation failed: {e}",
             code="GENERATION_FAILED",
         ) from e
+
+
+#: Error codes worth retrying automatically. GENERATION_INVALID covers
+#: malformed/truncated JSON from the model - a probabilistic quirk of
+#: running without forced JSON mode (see model config above), not a
+#: systemic problem, so a second attempt often just works. Codes NOT in
+#: this set (bad credentials, quota exhausted, timeout, upstream outage)
+#: would very likely fail identically again, so retrying them would only
+#: waste time and make the user wait longer for the same error.
+_RETRYABLE_CODES = {"GENERATION_INVALID"}
+
+#: Total attempts including the first. 3 attempts against an occasional
+#: malformed-JSON quirk pushes the effective failure rate down sharply
+#: without making a genuinely broken setup (bad key, etc.) retry pointlessly.
+MAX_GENERATION_ATTEMPTS = 3
+
+
+def generate_quiz_from_resume(resume_text: str):
+    """Generate a 10-question quiz, retrying automatically on transient,
+    format-only failures so the person doesn't have to click "Try again"
+    themselves for something that often succeeds on a second attempt.
+    """
+    last_error = None
+    for attempt in range(1, MAX_GENERATION_ATTEMPTS + 1):
+        try:
+            return _generate_quiz_attempt(resume_text)
+        except QuizGenerationError as exc:
+            last_error = exc
+            if exc.code not in _RETRYABLE_CODES or attempt == MAX_GENERATION_ATTEMPTS:
+                raise
+            print(
+                f"Gemini Quiz: attempt {attempt}/{MAX_GENERATION_ATTEMPTS} "
+                f"failed with retryable code={exc.code}, retrying..."
+            )
+    # Unreachable in practice (the loop always returns or raises), but keeps
+    # the function's contract explicit if MAX_GENERATION_ATTEMPTS is ever 0.
+    raise last_error

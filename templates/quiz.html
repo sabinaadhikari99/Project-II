@@ -436,6 +436,93 @@
     font-weight: 600;
   }
 
+  /* ── Post-submit review ── */
+  .option-label input[type="radio"]:disabled {
+    cursor: default;
+  }
+
+  .q-card.reviewed .option-label {
+    cursor: default;
+  }
+  .q-card.reviewed .option-label:hover {
+    transform: none;
+  }
+  .q-card.reviewed .option-label:hover::before {
+    opacity: 0;
+  }
+
+  .option-label.option-correct-answer {
+    border-color: var(--success);
+    background: var(--success-bg);
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.10);
+  }
+  .option-label.option-correct-answer .custom-radio {
+    border-color: var(--success);
+  }
+  .option-label.option-correct-answer .custom-radio::after {
+    background: var(--success);
+    transform: scale(1);
+  }
+  .option-label.option-correct-answer .option-text {
+    color: var(--success);
+    font-weight: 700;
+  }
+
+  .option-label.option-wrong-answer {
+    border-color: var(--danger);
+    background: var(--danger-bg);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.10);
+  }
+  .option-label.option-wrong-answer .custom-radio {
+    border-color: var(--danger);
+  }
+  .option-label.option-wrong-answer .custom-radio::after {
+    background: var(--danger);
+    transform: scale(1);
+  }
+  .option-label.option-wrong-answer .option-text {
+    color: var(--danger);
+    font-weight: 700;
+    text-decoration: line-through;
+    text-decoration-color: rgba(239,68,68,0.5);
+  }
+
+  .review-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .review-badge.review-correct {
+    color: var(--success);
+    background: var(--success-bg);
+    border: 1px solid var(--success-bdr);
+  }
+  .review-badge.review-incorrect {
+    color: var(--danger);
+    background: var(--danger-bg);
+    border: 1px solid rgba(239,68,68,0.20);
+  }
+
+  .q-card.reviewed-correct::before {
+    background: var(--success);
+  }
+  .q-card.reviewed-incorrect::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--danger);
+    border-radius: 16px 16px 0 0;
+  }
+
   /* Hidden native radio */
   .option-label input[type="radio"] {
     position: absolute;
@@ -1173,7 +1260,7 @@
       <div class="q-card" id="qcard-${index}" style="animation-delay:${index * 0.07}s">
         <div class="q-card-head">
           <div class="q-number" id="qnum-${index}">${index + 1}</div>
-          ${difficultyTag(q.difficulty)}
+          <div class="q-card-tags">${difficultyTag(q.difficulty)}</div>
         </div>
         <div class="q-text">${escapeHtml(q.question)}</div>
         <div class="options-list">
@@ -1200,6 +1287,7 @@
     if (data.completed) {
       showQuizResult(data);
       markQuizSubmitted();
+      renderQuizReview(data.results);
       showQuizNotice(
         `<i class="bi bi-check2-circle"></i> You completed this quiz — scored <strong>${data.score}/${data.total}</strong>. Start a new quiz to try a fresh set of questions.`
       );
@@ -1281,6 +1369,52 @@
         body: JSON.stringify({ answers: quizAnswers })
       }).catch(() => { /* retried on the next answer; the local copy stands */ });
     }, 700);
+  }
+
+  /* ── Post-submit review: show the correct answer on every question ──
+     `results` comes straight from the backend (same order as the rendered
+     question cards, index-aligned - QuizSubmitAPIView builds it by
+     iterating the same stored `questions` list the quiz was generated
+     from). Each entry has {question, your_answer, correct_answer, correct}. */
+  function renderQuizReview(results) {
+    if (!Array.isArray(results) || !results.length) return;
+
+    results.forEach((result, index) => {
+      const card = document.getElementById(`qcard-${index}`);
+      if (!card) return;
+
+      card.classList.add("reviewed");
+      card.classList.add(result.correct ? "reviewed-correct" : "reviewed-incorrect");
+
+      // Badge next to the question number: Correct / Incorrect.
+      const head = card.querySelector(".q-card-head");
+      if (head && !head.querySelector(".review-badge")) {
+        const badge = document.createElement("span");
+        badge.className = `review-badge ${result.correct ? "review-correct" : "review-incorrect"}`;
+        badge.innerHTML = result.correct
+          ? '<i class="bi bi-check-circle-fill"></i> Correct'
+          : '<i class="bi bi-x-circle-fill"></i> Incorrect';
+        head.appendChild(badge);
+      }
+
+      // Walk every option: mark the correct one green, and if the user
+      // picked a different (wrong) one, mark that red too. Lock the
+      // radios so the review can't be mistaken for an editable quiz.
+      card.querySelectorAll(".option-label").forEach(label => {
+        const input = label.querySelector("input[type='radio']");
+        if (!input) return;
+        input.disabled = true;
+
+        const isCorrectOption = input.value === result.correct_answer;
+        const isUserChoice = input.value === result.your_answer;
+
+        if (isCorrectOption) {
+          label.classList.add("option-correct-answer");
+        } else if (isUserChoice && !result.correct) {
+          label.classList.add("option-wrong-answer");
+        }
+      });
+    });
   }
 
   function showQuizResult(result) {
@@ -1367,6 +1501,7 @@
 
       /* Update score ring (same renderer used when restoring a past result) */
       showQuizResult(result);
+      renderQuizReview(result.results);
       showQuizNotice(
         `<i class="bi bi-check2-circle"></i> Quiz submitted — your score is kept here until you start a new quiz.`
       );
