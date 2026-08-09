@@ -1,4 +1,3 @@
-# file path: apps/state/services.py
 """Service layer for persistent user state.
 
 Every read goes through a short-lived cache so restoring a page costs at most
@@ -341,9 +340,19 @@ class QuizSessionService:
 
     @staticmethod
     def public_questions(questions):
-        """Questions without the correct answers."""
+        """Questions without the correct answers.
+
+        `difficulty` is intentionally included - it's a UI hint (shown as a
+        badge), not the answer itself, so exposing it doesn't let anyone
+        game the quiz the way exposing `answer` would.
+        """
         return [
-            {"id": q.get("id"), "question": q.get("question"), "options": q.get("options", [])}
+            {
+                "id": q.get("id"),
+                "question": q.get("question"),
+                "options": q.get("options", []),
+                "difficulty": q.get("difficulty"),
+            }
             for q in (questions or [])
         ]
 

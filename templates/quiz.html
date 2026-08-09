@@ -272,7 +272,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.5rem 0.75rem;
+    flex-wrap: wrap;
     margin-bottom: 0.75rem;
   }
 
@@ -522,6 +523,26 @@
     background: var(--danger);
     border-radius: 16px 16px 0 0;
   }
+
+  /* Explicit text callout on wrong answers - color alone (red/green options)
+     isn't a reliable signal for colorblind users, so the correct answer is
+     also stated in plain text. */
+  .correct-answer-note {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    background: var(--success-bg);
+    border: 1px solid var(--success-bdr);
+    color: var(--success);
+    font-size: 13px;
+    font-weight: 600;
+    animation: msgIn 0.3s ease both;
+  }
+  .correct-answer-note i { flex-shrink: 0; }
+  .correct-answer-note strong { font-weight: 700; }
 
   /* Hidden native radio */
   .option-label input[type="radio"] {
@@ -1171,7 +1192,7 @@
   }
 
   /* ── Load quiz ── */
-  async function loadQuiz() {
+  async function loadQuiz(forceRefresh = false) {
     const tStart = performance.now();
     console.log("[Perf] Quiz: Request Started");
 
@@ -1192,7 +1213,12 @@
 
     let data;
     try {
-      data = await api("/api/quiz/");
+      // The backend caches generated quizzes per (user, resume) so a normal
+      // page load / refresh doesn't re-call Gemini. "New quiz" must bypass
+      // that cache explicitly with ?refresh=1, or reset() clearing the
+      // session still leaves the OLD question set sitting in cache under
+      // the same key - and the very next load just serves it back unchanged.
+      data = await api(forceRefresh ? "/api/quiz/?refresh=1" : "/api/quiz/");
       perfLog("Quiz Response Received", tStart);
     } catch (error) {
       const { message, code } = extractErrorInfo(error.message, "Unable to load quiz questions.");
@@ -1414,6 +1440,20 @@
           label.classList.add("option-wrong-answer");
         }
       });
+
+      // Explicit text callout on a wrong answer - the green/red option
+      // highlighting communicates this visually, but stating it in plain
+      // text too means the answer is clear even without relying on color.
+      if (!result.correct && !card.querySelector(".correct-answer-note")) {
+        const optionsList = card.querySelector(".options-list");
+        if (optionsList) {
+          const note = document.createElement("div");
+          note.className = "correct-answer-note";
+          note.innerHTML =
+            `<i class="bi bi-info-circle-fill"></i> Correct answer: <strong>${escapeHtml(result.correct_answer)}</strong>`;
+          optionsList.insertAdjacentElement("afterend", note);
+        }
+      }
     });
   }
 
@@ -1460,7 +1500,7 @@
       quizAnswers = {};
       if (window.SkillSyncState) window.SkillSyncState.local.remove("quiz.answers");
       hideQuizNotice();
-      await loadQuiz();
+      await loadQuiz(true);
     } catch (error) {
       const { message } = extractErrorInfo(error.message, "Could not start a new quiz.");
       showMessage(message, "danger");
@@ -1514,6 +1554,7 @@
       btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Submitted!';
       btn.style.background = "var(--success) !important";
       btn.style.boxShadow  = "0 8px 22px rgba(16,185,129,0.25)";
+      btn.disabled = true;
 
       perfLog("Quiz Submit: DOM Render Complete", tStart);
       const total = (performance.now() - tStart).toFixed(1);
