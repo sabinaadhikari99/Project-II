@@ -2,4 +2,19 @@ __pycache__/
 *.py[cod]
 .env
 .venv/
-db.sqlite3
+
+
+# Django
+*.sqlite3
+*.db
+
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Media/static
+media/
+staticfiles/

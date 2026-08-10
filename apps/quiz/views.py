@@ -11,7 +11,19 @@ from apps.shared.performance import PerformanceTimer
 from apps.state.models import QuizSession
 from apps.state.services import QuizSessionService
 from .cache import get_cached_quiz, quiz_cache_key, set_cached_quiz
-from .utils import generate_quiz_from_resume
+from .utils import QuizGenerationError, generate_quiz_from_resume
+
+
+# Maps QuizGenerationError.code -> the HTTP status that best fits it.
+# Anything not listed here falls back to 503 (generic "try again later").
+GENERATION_ERROR_STATUS = {
+    "GENERATION_TIMEOUT": 504,
+    "GENERATION_BUSY": 429,
+    "GENERATION_CONFIG_ERROR": 503,
+    "GENERATION_UPSTREAM_ERROR": 503,
+    "GENERATION_INVALID": 502,
+    "GENERATION_FAILED": 503,
+}
 
 
 class QuizAPIView(APIView):
@@ -39,7 +51,7 @@ class QuizAPIView(APIView):
 
         if profile is None:
             return Response(
-                {"error": "Profile not found."},
+                {"error": "Profile not found.", "code": "NO_PROFILE"},
                 status=400
             )
 
@@ -47,7 +59,10 @@ class QuizAPIView(APIView):
 
         if not resume_text.strip():
             return Response(
-                {"error": "Please upload and analyze your CV first."},
+                {
+                    "error": "Please upload and analyze your CV first.",
+                    "code": "NO_RESUME",
+                },
                 status=400
             )
 
@@ -74,10 +89,18 @@ class QuizAPIView(APIView):
             with timer.measure("Quiz Generation (Gemini AI)"):
                 try:
                     questions = generate_quiz_from_resume(resume_text)
-                except Exception:
+                except QuizGenerationError as exc:
+                    # Fall back to a previously cached GOOD quiz if one
+                    # exists. We deliberately do NOT fall back to a fake
+                    # placeholder quiz here — a bad quiz must never be
+                    # cached or persisted as if it were valid.
                     questions = get_cached_quiz(cache_key)
                     if questions is None:
-                        raise
+                        timer.flush("Quiz: QuizAPIView (generation failed)")
+                        return Response(
+                            {"error": exc.user_message, "code": exc.code},
+                            status=GENERATION_ERROR_STATUS.get(exc.code, 503),
+                        )
 
             with timer.measure("Cache Save"):
                 set_cached_quiz(cache_key, questions)
@@ -115,11 +138,17 @@ class QuizProgressAPIView(APIView):
     def post(self, request):
         answers = request.data.get("answers", {})
         if not isinstance(answers, dict):
-            return Response({"error": "answers must be an object."}, status=400)
+            return Response(
+                {"error": "answers must be an object.", "code": "INVALID_ANSWERS"},
+                status=400,
+            )
 
         session = QuizSessionService.save_answers(request.user, answers)
         if session is None:
-            return Response({"error": "No active quiz to save."}, status=400)
+            return Response(
+                {"error": "No active quiz to save.", "code": "NO_ACTIVE_QUIZ"},
+                status=400,
+            )
 
         return Response({
             "saved": True,
@@ -162,7 +191,10 @@ class QuizSubmitAPIView(APIView):
 
         if not questions:
             return Response(
-                {"error": "Quiz expired. Please generate the quiz again."},
+                {
+                    "error": "Quiz expired. Please generate the quiz again.",
+                    "code": "QUIZ_EXPIRED",
+                },
                 status=400,
             )
 

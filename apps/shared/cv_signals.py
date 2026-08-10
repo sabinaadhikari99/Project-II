@@ -143,6 +143,67 @@ def education_rank(text):
     return EDUCATION_RANK[_parse_education_level(text or "")]
 
 
+#: A CV's SKILLS heading, on a line of its own.
+_SKILLS_HEAD = re.compile(
+    r"^\s*(?:technical\s+|core\s+|key\s+|professional\s+|it\s+)?"
+    r"(?:skills?|technologies|tech\s+stack|competencies|expertise|"
+    r"skills?\s*&\s*tools|tools?\s*&\s*technologies)\s*[:\-]?\s*$", re.I)
+
+#: The same heading written inline, e.g. "Skills: Python, Django, React".
+_SKILLS_INLINE = re.compile(
+    r"^\s*(?:technical\s+|core\s+|key\s+|professional\s+|it\s+)?"
+    r"(?:skills?|technologies|tech\s+stack|competencies|expertise)"
+    r"\s*[:\-]\s*(?P<body>\S.*)$", re.I)
+
+#: Headings that end the SKILLS block.
+_SECTION_NAMES = re.compile(
+    r"^(?:languages?|education|experience|work\s+experience|employment|"
+    r"certificat\w*|licen[cs]es|credentials|projects?|summary|profile|"
+    r"objective|awards?|honou?rs?|interests?|hobbies|references?|contact|"
+    r"publications?|volunteer\w*|activities|about\s+me)\s*[:\-]?$", re.I)
+
+
+def _is_heading(line):
+    """True when a line reads as a section heading rather than content.
+
+    Two independent tests, because CVs disagree: a known section name, or a
+    short all-uppercase line (LANGUAGES, EDUCATION). Deliberately NOT "looks
+    Title Case" - real skill rows such as "Docker Advanced" are Title Case and
+    must not be mistaken for the end of the section.
+    """
+    stripped = line.strip()
+    if not stripped or len(stripped) > 40:
+        return False
+    if _SECTION_NAMES.match(stripped):
+        return True
+    letters = [c for c in stripped if c.isalpha()]
+    return len(letters) >= 3 and all(c.isupper() for c in letters)
+
+
+def extract_skills_section(text):
+    """Body of the CV's SKILLS block, or "" when it has none.
+
+    Needed because a skill DECLARED in the skills section and a skill merely
+    mentioned in a sentence are not equally strong evidence, and the extractor
+    that scans the whole document cannot tell them apart.
+    """
+    lines = (text or "").splitlines()
+    body, started = [], False
+    for line in lines:
+        if not started:
+            inline = _SKILLS_INLINE.match(line)
+            if inline:
+                body.append(inline.group("body"))
+                started = True
+            elif _SKILLS_HEAD.match(line):
+                started = True
+            continue
+        if _is_heading(line):
+            break
+        body.append(line)
+    return "\n".join(body).strip()
+
+
 def _count_section_items(text, section):
     """Rough item count inside a named section."""
     head = _SECTION_HEADS[section].search(text)

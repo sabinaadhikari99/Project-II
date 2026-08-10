@@ -5,14 +5,14 @@ safe to run against the live database.
 
     python manage.py ai_match_debug --resume-a a.pdf --resume-b b.pdf --user me@example.com
 
-`--mode` decides what state the second CV is scored against:
+`--mode` decides which skill set is scored:
 
-    sequential  reproduce production - CV B is scored with the skills CV A left
-                behind in UserProfile.skills (this is what really happens when a
-                user uploads twice)
-    isolated    score each CV on its own, as if it were the user's first upload
-    both        run both and print each (default) - the difference between the
-                two is itself the diagnosis
+    cv      current production - each CV is scored on the skills IT contains
+    legacy  the pre-fix behaviour, where the CV's skills were unioned into
+            UserProfile.skills and the union was scored, so a deleted skill was
+            still counted
+    both    run both and print each (default); the gap between them is the
+            effect of the fix
 """
 
 import json
@@ -41,8 +41,7 @@ class Command(BaseCommand):
                             help="Path to resume A (.pdf or .txt)")
         parser.add_argument("--resume-b", help="Path to resume B (.pdf or .txt)")
         parser.add_argument("--user", help="Email of the job seeker to score as")
-        parser.add_argument("--mode", choices=["sequential", "isolated", "both"],
-                            default="both")
+        parser.add_argument("--mode", choices=["cv", "legacy", "both"], default="both")
         parser.add_argument("--top", type=int, default=3,
                             help="How many jobs to print per resume (default 3)")
         parser.add_argument("--limit", type=int, default=10,
@@ -98,28 +97,33 @@ class Command(BaseCommand):
         self.stdout.write(SEPARATOR)
 
         traces = {}
-        modes = ["isolated", "sequential"] if options["mode"] == "both" else [options["mode"]]
+        modes = ["cv", "legacy"] if options["mode"] == "both" else [options["mode"]]
 
         for mode in modes:
+            merge = mode == "legacy"
             self.stdout.write("")
             self.stdout.write(self.style.MIGRATE_HEADING(f"### MODE: {mode.upper()}"))
-            if mode == "isolated":
-                self.stdout.write("Each CV scored as a first upload (profile skills ignored).")
-                prior_a = []
+            if merge:
+                self.stdout.write("PRE-FIX behaviour: the CV's skills are unioned into "
+                                  "UserProfile.skills and the union is scored.")
+                prior_a = stored
             else:
-                self.stdout.write("CV B scored after CV A, exactly as production does "
-                                  "(UserProfile.skills carries forward).")
+                self.stdout.write("CURRENT behaviour: each CV is scored on the skills it "
+                                  "contains.")
                 prior_a = stored
 
-            trace_a = trace_analysis(user, text_a, label=f"A[{mode}]",
-                                     prior_skills=prior_a, limit=options["limit"])
+            trace_a = trace_analysis(user, text_a, label=f"A[{mode}]", prior_skills=prior_a,
+                                     limit=options["limit"], merge_prior=merge)
             self.stdout.write(format_trace(trace_a, top=options["top"]))
             traces[f"A_{mode}"] = trace_a
 
             if text_b:
-                prior_b = [] if mode == "isolated" else trace_a["effective_skills"]
+                # In legacy mode CV B inherits what CV A left behind, which is
+                # exactly how a second upload used to be scored.
+                prior_b = trace_a["effective_skills"] if merge else stored
                 trace_b = trace_analysis(user, text_b, label=f"B[{mode}]",
-                                         prior_skills=prior_b, limit=options["limit"])
+                                         prior_skills=prior_b, limit=options["limit"],
+                                         merge_prior=merge)
                 self.stdout.write(format_trace(trace_b, top=options["top"]))
                 self.stdout.write(compare_traces(trace_a, trace_b, top=options["top"]))
                 traces[f"B_{mode}"] = trace_b
@@ -133,7 +137,7 @@ class Command(BaseCommand):
         if options["verify"]:
             self.stdout.write("")
             self.stdout.write(self.style.MIGRATE_HEADING("### TRACER SELF-CHECK"))
-            key = "A_sequential" if "A_sequential" in traces else "A_isolated"
+            key = "A_cv" if "A_cv" in traces else "A_legacy"
             check = verify_against_production(user, text_a, traces[key], options["limit"])
             if check["verdict"] == "agree":
                 self.stdout.write(self.style.SUCCESS(

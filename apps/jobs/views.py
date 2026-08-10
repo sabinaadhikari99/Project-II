@@ -61,6 +61,23 @@ class AIMatchAPIView(views.APIView):
                 status=500,
             )
 
+        # analyze_resume_match() now ALWAYS saves the CV (resume_text) before
+        # attempting any scoring/recommendation/insight work, and reports
+        # success=False + cv_saved=True if only that heavier analysis
+        # pipeline failed. Treat that as a partial success: the CV upload
+        # itself worked (the quiz and other resume_text readers will see it),
+        # even though job matches/insights couldn't be generated this time.
+        if not data.get("success", True):
+            status_code = 200 if data.get("cv_saved") else 500
+            return response.Response({
+                "success": False,
+                "cv_saved": data.get("cv_saved", False),
+                "message": data.get(
+                    "message",
+                    "We couldn't finish analyzing your resume. Please try again.",
+                ),
+            }, status=status_code)
+
         recommended_jobs = data.get("recommended_jobs", [])
         serialized_jobs = RecommendedJobSerializer(recommended_jobs, many=True, context={"request": request}).data
 
