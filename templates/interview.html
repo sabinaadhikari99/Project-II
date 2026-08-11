@@ -1,114 +1,101 @@
 {% extends "base_dashboard.html" %}
 {% block title %}Interview Practice | SkillSync AI{% endblock %}
 
+{% comment %}
+  Three stages, one on screen at a time: Setup -> Interview -> Report.
+
+  The page used to show setup, a question bank, a mock interview, a report,
+  history, coaching tips and an improvement plan simultaneously - an analytics
+  dashboard that happened to contain an interview. An interview is a linear
+  thing, so the page is now linear too, and each stage shows only what that
+  stage needs.
+
+  What went, and why:
+  * Question bank - a static list that also revealed the grading rubric before
+    the candidate answered. Questions now arrive one at a time; what a strong
+    answer covers is revealed after the answer is submitted.
+  * Coaching tips panel - written once per session and identical on every
+    question. Replaced by per-answer coaching from the AI Coach.
+  * Improvement plan panel - duplicated the report's plan, gaps and courses.
+    Merged into the report, where it is read once at the end.
+  * Readiness sub-scores and component bars - twelve progress bars before the
+    interview had even started. Reduced to one number and the two lists a
+    candidate acts on: what they can lean on, and what will catch them out.
+
+  Layout note (UI only): setup is a two-column workspace - the configuration
+  form on the left, a sticky summary rail on the right holding readiness, the
+  resumable session and the choices made so far. The interview and report
+  stages stay in a single reading column, because a question and a report are
+  read top to bottom.
+{% endcomment %}
+
 {% block content %}
 <style>
-  /* ============================================================
-     INTERVIEW — Unified Design Tokens (matches other pages)
-     ============================================================ */
-  .interview-page {
-    animation: sgFadeIn 0.5s ease both;
-    padding-bottom: var(--sp-6);
-
-    --accent: #2563EB;
-    --accent-rgb: 37, 99, 235;
+  :root {
+    --accent: var(--ss-primary, #2563EB);
+    --accent-rgb: var(--ss-primary-rgb, 37, 99, 235);
+    --accent-hover: var(--ss-primary-hover, #1D4ED8);
     --surface: #fff;
-    --surface-alt: #f8f9fb;
-    --surface-hover: #f1f3f6;
-    --txt: rgba(15, 23, 42, 0.88);
-    --txt-soft: rgba(15, 23, 42, 0.55);
-    --txt-muted: rgba(15, 23, 42, 0.38);
-    --bdr: rgba(15, 23, 42, 0.06);
-    --bdr-hover: rgba(15, 23, 42, 0.12);
-    --shadow: rgba(15, 23, 42, 0.04);
-    --shadow-lg: rgba(15, 23, 42, 0.08);
-    --track: rgba(15, 23, 42, 0.07);
-    --page-bg: #F8FAFC;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --radius-pill: 999px;
-    --success: #16a34a;
-    --success-bg: rgba(34, 197, 94, 0.10);
-    --success-bdr: rgba(34, 197, 94, 0.18);
-    --warn: #d97706;
-    --warn-bg: rgba(217, 119, 6, 0.10);
-    --warn-bdr: rgba(217, 119, 6, 0.18);
-    --danger: #dc2626;
-    --danger-bg: rgba(220, 38, 38, 0.08);
-    --danger-bdr: rgba(220, 38, 38, 0.14);
-    --purple: #7c3aed;
-    --purple-bg: rgba(124, 58, 237, 0.08);
-
-    --sp-1: 4px;
-    --sp-2: 8px;
-    --sp-3: 12px;
-    --sp-4: 16px;
-    --sp-5: 20px;
-    --sp-6: 28px;
-
-    --el-1: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
-    --el-2: 0 2px 6px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
-    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --surface-alt: #F8FAFC;
+    --txt: rgba(15,23,42,0.90);
+    --txt-soft: rgba(15,23,42,0.58);
+    --txt-muted: rgba(15,23,42,0.40);
+    --bdr: rgba(15,23,42,0.08);
+    --bdr-strong: rgba(15,23,42,0.14);
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
+    --shadow-md: 0 1px 2px rgba(15,23,42,0.04), 0 10px 26px -14px rgba(15,23,42,0.18);
+    --success: #10B981; --success-bg: rgba(16,185,129,0.10); --success-txt: #047857;
+    --warn: #F59E0B;    --warn-bg: rgba(245,158,11,0.10);    --warn-txt: #B45309;
+    --danger: #EF4444;  --danger-bg: rgba(239,68,68,0.09);   --danger-txt: #B91C1C;
+    --tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.4l3 3 6-6'/%3E%3C/svg%3E");
   }
 
-  /* Force brand blue on this page */
-  .interview-page {
-    --bs-primary: #2563EB !important;
-    --bs-primary-rgb: 37, 99, 235 !important;
-    --accent: #2563EB !important;
-    --accent-rgb: 37, 99, 235 !important;
+  html.theme-dark {
+    --surface: var(--ss-surface, #1E293B);
+    --surface-alt: var(--ss-surface-alt, #0F172A);
+    --txt: rgba(248,250,252,0.94);
+    --txt-soft: rgba(248,250,252,0.66);
+    --txt-muted: rgba(248,250,252,0.44);
+    --bdr: rgba(148,163,184,0.16);
+    --bdr-strong: rgba(148,163,184,0.28);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.30);
+    --shadow-md: 0 1px 2px rgba(0,0,0,0.30), 0 10px 26px -14px rgba(0,0,0,0.60);
+    --success-txt: #34D399;
+    --warn-txt: #FBBF24;
+    --danger-txt: #F87171;
   }
 
-  /* Dark theme */
-  html.theme-dark .interview-page,
-  [data-theme="dark"] .interview-page {
-    --accent: #3B82F6 !important;
-    --accent-rgb: 59, 130, 246 !important;
-    --bs-primary: #3B82F6 !important;
-    --bs-primary-rgb: 59, 130, 246 !important;
+  /* ── Shell ───────────────────────────────────────────────────────── */
+  .iv { width: 100%; max-width: 1320px; margin: 0 auto; animation: ivIn .4s ease both; }
+  .iv-narrow { width: 100%; max-width: 940px; margin: 0 auto; }
+  @keyframes ivIn { from { opacity:0; transform:translateY(10px);} to {opacity:1;transform:none;} }
+  .hidden { display: none !important; }
+  /* Long roles, questions and CV terms must wrap rather than push the page
+     sideways - nothing on this page should scroll horizontally. */
+  .iv .row > *, .iv .card { min-width: 0; }
+  .iv .q-text, .iv .fb-list, .iv .rep-list, .iv .model-answer,
+  .iv .ready-role, .iv .hist-role, .iv .resume-txt { overflow-wrap: anywhere; }
 
-    --surface: #1E293B;
-    --surface-alt: #172033;
-    --surface-hover: #24334d;
-    --txt: rgba(248, 250, 252, 0.92);
-    --txt-soft: rgba(248, 250, 252, 0.62);
-    --txt-muted: rgba(248, 250, 252, 0.42);
-    --bdr: rgba(248, 250, 252, 0.08);
-    --bdr-hover: rgba(248, 250, 252, 0.16);
-    --shadow: rgba(0, 0, 0, 0.28);
-    --shadow-lg: rgba(0, 0, 0, 0.42);
-    --track: rgba(248, 250, 252, 0.10);
-    --page-bg: #0B1120;
-    --el-1: 0 1px 3px rgba(0, 0, 0, 0.24), 0 4px 12px rgba(0, 0, 0, 0.28);
-    --el-2: 0 2px 6px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.38);
-  }
-
-  @keyframes sgFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes pulseDot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.35; transform: scale(0.55); }
-  }
-
-  /* ── Page Header ── */
+  /* ── Unified Page Header ──
+     Tightened vs. the original: the icon-to-title gap and the space below
+     the whole header were both larger than anywhere else on the page
+     (compare .card-head, which uses .85rem between icon and text). */
   .page-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--sp-4);
-    margin-bottom: var(--sp-5);
+    margin-bottom: 1.25rem;
     flex-wrap: wrap;
   }
   .page-header-left {
     display: flex;
     align-items: center;
-    gap: var(--sp-3);
+    gap: .65rem;
     min-width: 0;
   }
-  .page-header-left .brand-mark {
-    width: 40px; height: 40px;
+  .brand-mark {
+    width: 38px; height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,907 +106,319 @@
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
   }
-  .page-header-left .page-title {
+  .page-title {
     font-size: 1.3rem;
     font-weight: 800;
     letter-spacing: -0.02em;
     margin: 0;
     color: var(--txt);
-    line-height: 1.15;
+    line-height: 1.1;
   }
 
-  /* ── Stepper ── */
+  /* ── Stepper ─────────────────────────────────────────────────────── */
   .stepper {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-    flex-wrap: wrap;
-    list-style: none;
-    margin: 0 0 var(--sp-4);
-    padding: var(--sp-3) var(--sp-4);
-    background: var(--surface);
-    border: 1px solid var(--bdr);
-    border-radius: var(--radius);
-    box-shadow: var(--el-1);
+    display: flex; align-items: center; gap: .85rem; flex-wrap: wrap;
+    list-style: none; margin: 0 0 1.75rem; padding: 1rem 1.25rem;
+    background: var(--surface); border: 1px solid var(--bdr); border-radius: 16px; box-shadow: var(--shadow-sm);
   }
-  .step {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-2);
-    flex: 0 1 auto;
-  }
+  .step { display: flex; align-items: center; gap: .65rem; flex: 0 1 auto; }
   .step-dot {
-    width: 30px; height: 30px;
-    flex: none;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 0.78rem;
-    font-weight: 700;
-    background: var(--surface-alt);
-    border: 1px solid var(--bdr-hover);
-    color: var(--txt-muted);
-    transition: all 0.2s ease;
+    width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center;
+    font-size: 12.5px; font-weight: 700; background: var(--surface-alt);
+    border: 1px solid var(--bdr-strong); color: var(--txt-muted); transition: all .2s;
   }
   .step-txt { display: block; line-height: 1.25; }
-  .step-name {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--txt-muted);
-  }
-  .step-sub {
-    display: block;
-    font-size: 0.65rem;
-    color: var(--txt-muted);
-    opacity: 0.8;
-    margin-top: 1px;
-  }
+  .step-name { display: block; font-size: 13.5px; font-weight: 620; color: var(--txt-muted); }
+  .step-sub { display: block; font-size: 11.5px; color: var(--txt-muted); opacity: .8; margin-top: 1px; }
   .step.is-active .step-dot {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.14);
+    background: var(--accent); border-color: var(--accent); color: #fff;
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.14);
   }
   .step.is-active .step-name { color: var(--txt); }
-  .step.is-done .step-dot {
-    background: rgba(var(--accent-rgb), 0.12);
-    border-color: rgba(var(--accent-rgb), 0.28);
-    color: var(--accent);
-  }
+  .step.is-done .step-dot { background: rgba(var(--accent-rgb),.12); border-color: rgba(var(--accent-rgb),.28); color: var(--accent); }
   .step.is-done .step-name { color: var(--txt-soft); }
-  .step-line {
-    flex: 1 1 20px;
-    min-width: 16px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--bdr-hover);
-  }
-  .step-line.is-done { background: rgba(var(--accent-rgb), 0.45); }
+  .step-line { flex: 1 1 20px; min-width: 16px; height: 2px; border-radius: 2px; background: var(--bdr-strong); }
+  .step-line.is-done { background: rgba(var(--accent-rgb),.45); }
 
-  /* ── Cards ── */
-  .dash-panel {
-    background: var(--surface);
-    border: 1px solid var(--bdr);
-    border-radius: var(--radius);
-    box-shadow: var(--el-1);
-    overflow: hidden;
-    transition: all 0.3s var(--ease);
-    height: 100%;
+  /* ── Cards ───────────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface); border: 1px solid var(--bdr); border-radius: 16px;
+    padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md);
   }
-  .dash-panel:hover {
-    box-shadow: var(--el-2);
-    border-color: var(--bdr-hover);
-  }
+  .card:last-child { margin-bottom: 0; }
+  .card-tight { padding: 1.35rem 1.4rem; }
 
-  .panel-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--sp-3);
-    padding: var(--sp-3) var(--sp-4);
-    border-bottom: 1px solid var(--bdr);
-    background: var(--surface-alt);
+  .card-head { display: flex; align-items: flex-start; gap: .85rem; margin-bottom: 1.5rem; }
+  .card-ico {
+    width: 38px; height: 38px; flex: none; border-radius: 11px; display: grid; place-items: center;
+    background: rgba(var(--accent-rgb),.10); color: var(--accent); font-size: 17px;
   }
-  .panel-head .panel-title {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-    font-size: 0.82rem;
-    font-weight: 700;
-    margin: 0;
-    color: var(--txt);
-  }
-  .panel-head .panel-icon {
-    width: 28px; height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-sm);
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 0.75rem;
-    border: 1px solid rgba(var(--accent-rgb), 0.08);
-  }
-  .panel-body {
-    padding: var(--sp-4) var(--sp-5);
-  }
+  .card-h { font-size: 16.5px; font-weight: 660; color: var(--txt); margin: 0 0 .15rem; letter-spacing: -.01em; }
+  .card-p { font-size: 13px; color: var(--txt-soft); margin: 0; line-height: 1.55; }
 
-  /* ── Form fields ── */
-  .field {
-    margin-bottom: var(--sp-4);
-  }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+             color: var(--txt-muted); margin-bottom: .5rem; }
+  h2.stage-title { font-size: 21px; font-weight: 680; color: var(--txt); margin: 0 0 .3rem; letter-spacing: -.015em; }
+  .stage-sub { font-size: 14px; color: var(--txt-soft); margin: 0 0 1.5rem; line-height: 1.6; }
+
+  /* ── Readiness: one number, two lists ── */
+  .ready { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+  .ring { --pct: 0; width: 88px; height: 88px; flex: none; border-radius: 50%; display: grid; place-items: center;
+          background: conic-gradient(var(--accent) calc(var(--pct)*1%), rgba(var(--accent-rgb),0.12) 0); position: relative; }
+  .ring::after { content:""; position:absolute; inset:8px; background:var(--surface); border-radius:50%; }
+  .ring-in { position: relative; z-index: 1; text-align: center; }
+  .ring-val { font-size: 22px; font-weight: 700; color: var(--txt); line-height: 1; }
+  .ring-lbl { font-size: 10px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
+  .ready-body { flex: 1 1 180px; min-width: 0; }
+  .ready-role { font-size: 15px; font-weight: 650; color: var(--txt); margin-bottom: .1rem; }
+  .ready-band { font-size: 12.5px; color: var(--txt-soft); margin-bottom: .85rem; line-height: 1.5; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .55rem; }
+  .chip-row:last-child { margin-bottom: 0; }
+  .chip-lbl { font-size: 10.5px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase;
+              letter-spacing: .06em; width: 100%; margin-bottom: .1rem; }
+
+  .chip { display:inline-flex; align-items:center; padding:.24rem .62rem; border-radius:99px;
+          font-size:12px; font-weight:550; line-height:1.5; }
+  .chip-good { background: var(--success-bg); color: var(--success-txt); }
+  .chip-gap  { background: var(--warn-bg);    color: var(--warn-txt); }
+  .chip-plain{ background: rgba(15,23,42,0.05); color: var(--txt-soft); }
+  .chip-accent{ background: rgba(var(--accent-rgb),.10); color: var(--accent); }
+  .chip-danger{ background: var(--danger-bg); color: var(--danger-txt); }
+  html.theme-dark .chip-plain { background: rgba(148,163,184,0.14); }
+
+  /* ── Form ────────────────────────────────────────────────────────── */
+  .field { margin-bottom: 1.75rem; }
   .field:last-child { margin-bottom: 0; }
-  .field-label {
-    display: block;
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: var(--txt);
-    margin-bottom: var(--sp-2);
-  }
-  .field-hint {
-    font-size: 0.75rem;
-    color: var(--txt-muted);
-    margin-top: var(--sp-2);
-    line-height: 1.5;
-  }
+  .field-label { display:block; font-size: 13px; font-weight: 650; color: var(--txt); margin-bottom: .6rem;
+                 letter-spacing: -.005em; }
+  .field-hint { font-size: 12.5px; color: var(--txt-muted); margin-top: .5rem; line-height: 1.5; }
   .field-hint:empty { display: none; }
   .input, .select {
-    width: 100%;
-    padding: var(--sp-2) var(--sp-3);
-    border: 1px solid var(--bdr-hover);
-    border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    color: var(--txt);
-    background: var(--surface);
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    font-family: inherit;
+    width: 100%; padding: .75rem .95rem; border: 1px solid var(--bdr-strong); border-radius: 12px;
+    font-size: 14.5px; color: var(--txt); background: var(--surface); outline: none;
+    transition: border-color .15s, box-shadow .15s, background .15s; font-family: inherit;
   }
   .input::placeholder { color: var(--txt-muted); }
-  .input:hover, .select:hover {
-    border-color: rgba(var(--accent-rgb), 0.45);
-  }
-  .input:focus, .select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.14);
-  }
+  .input:hover, .select:hover { border-color: rgba(var(--accent-rgb),.45); }
+  .input:focus, .select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.14); }
 
-  /* ── Segments (radio pills) ── */
-  .seg {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--sp-2);
-  }
+  /* Selectable option cards / pills — same markup the setup step renders. */
+  .seg { display: flex; flex-wrap: wrap; gap: .55rem; }
   .seg label { cursor: pointer; min-width: 0; }
-  .seg input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .seg input { position: absolute; opacity: 0; width:0; height:0; }
   .seg span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--sp-2);
-    padding: var(--sp-2) var(--sp-3);
-    border-radius: var(--radius-sm);
-    font-size: 0.82rem;
-    font-weight: 600;
-    border: 1px solid var(--bdr-hover);
-    color: var(--txt-soft);
-    background: var(--surface);
-    transition: all 0.2s var(--ease);
-    white-space: nowrap;
-    user-select: none;
+    display: flex; align-items: center; justify-content: center; gap: .45rem;
+    padding: .62rem 1rem; border-radius: 12px; font-size: 13.5px; font-weight: 550;
+    border: 1px solid var(--bdr-strong); color: var(--txt-soft); background: var(--surface);
+    transition: color .16s, border-color .16s, background .16s, box-shadow .16s, transform .16s;
+    white-space: nowrap; user-select: none;
   }
   .seg label:hover span {
-    border-color: rgba(var(--accent-rgb), 0.5);
-    color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.05);
-    transform: translateY(-1px);
+    border-color: rgba(var(--accent-rgb),.55); color: var(--accent);
+    background: rgba(var(--accent-rgb),.05); transform: translateY(-1px);
   }
   .seg input:checked + span {
-    background: rgba(var(--accent-rgb), 0.08);
-    border-color: var(--accent);
-    color: var(--accent);
-    font-weight: 700;
-    box-shadow: inset 0 0 0 1px var(--accent);
+    background: rgba(var(--accent-rgb),.09); border-color: var(--accent);
+    color: var(--accent); font-weight: 650; box-shadow: inset 0 0 0 1px var(--accent);
   }
-  .seg input:focus-visible + span {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+  .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  #typeSeg, #difficultySeg {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: var(--sp-2);
+  /* Wider option sets read as cards that share the row evenly. */
+  #typeSeg, #difficultySeg { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .55rem; }
+  #typeSeg span, #difficultySeg span { padding: .8rem .75rem; white-space: normal; text-align: center; }
+  #typeSeg input:checked + span::before, #difficultySeg input:checked + span::before {
+    content: ""; width: 15px; height: 15px; flex: none; border-radius: 50%;
+    background: var(--accent) var(--tick) center / 11px 11px no-repeat;
   }
-  #typeSeg span, #difficultySeg span {
-    padding: var(--sp-2) var(--sp-3);
-    white-space: normal;
-    text-align: center;
-  }
-  #typeSeg input:checked + span::before,
-  #difficultySeg input:checked + span::before {
-    content: "";
-    width: 14px; height: 14px;
-    flex: none;
-    border-radius: 50%;
-    background: var(--accent) var(--tick) center / 10px 10px no-repeat;
-  }
-  #countSeg, #durationSeg {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
-    gap: var(--sp-2);
-  }
-  #countSeg span, #durationSeg span {
-    padding: var(--sp-2) var(--sp-2);
-    text-align: center;
-  }
+  #countSeg { display: grid; grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)); gap: .5rem; }
+  #durationSeg { display: grid; grid-template-columns: repeat(auto-fit, minmax(82px, 1fr)); gap: .5rem; }
+  #countSeg span, #durationSeg span { padding: .6rem .5rem; }
 
-  /* ── Buttons ── */
+  /* ── Buttons ─────────────────────────────────────────────────────── */
   .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--sp-2);
-    padding: var(--sp-2) var(--sp-4);
-    border-radius: var(--radius-sm);
-    border: 1px solid transparent;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    line-height: 1.4;
-    transition: all 0.25s var(--ease);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    padding:.72rem 1.3rem; border-radius:12px; border:1px solid transparent; background: var(--accent);
+    color:#fff; font-size:14.5px; font-weight:600; cursor:pointer; font-family:inherit; line-height:1.4;
+    box-shadow: 0 1px 2px rgba(15,23,42,.06);
+    transition: background .16s, box-shadow .16s, transform .16s, opacity .15s, color .16s, border-color .16s;
   }
   .btn:hover:not(:disabled) {
-    background: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.35);
-    color: #fff;
+    background: var(--accent-hover); transform: translateY(-1px);
+    box-shadow: 0 8px 18px -8px rgba(var(--accent-rgb),.65);
   }
-  .btn:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-    transform: none;
-  }
-  .btn-ghost {
-    background: var(--surface);
-    color: var(--txt-soft);
-    border-color: var(--bdr-hover);
-    box-shadow: none;
-  }
-  .btn-ghost:hover:not(:disabled) {
-    background: var(--surface-alt);
-    color: var(--txt);
-    border-color: var(--bdr-hover);
-    box-shadow: var(--el-1);
-  }
-  .btn-sm {
-    padding: var(--sp-1) var(--sp-3);
-    font-size: 0.78rem;
-    border-radius: var(--radius-sm);
-  }
-  .btn-hero {
-    width: 100%;
-    padding: var(--sp-3) var(--sp-5);
-    font-size: 0.95rem;
-    border-radius: var(--radius-sm);
-  }
-  @media (min-width: 576px) {
-    .btn-hero { width: auto; min-width: 220px; }
-  }
-  .btn-row {
-    display: flex;
-    gap: var(--sp-2);
-    flex-wrap: wrap;
-    align-items: center;
-  }
+  .btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+  .btn-ghost { background: var(--surface); color: var(--txt-soft); border-color: var(--bdr-strong); }
+  .btn-ghost:hover:not(:disabled) { background: var(--surface-alt); color: var(--txt); border-color: var(--bdr-strong);
+                                    box-shadow: 0 6px 14px -10px rgba(15,23,42,.4); }
+  .btn-sm { padding: .5rem .85rem; font-size: 13px; border-radius: 10px; }
+  .btn-row { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; }
 
-  /* ── Start row ── */
-  .start-row {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-4);
-    flex-wrap: wrap;
-    margin-top: var(--sp-4);
-    padding-top: var(--sp-4);
-    border-top: 1px solid var(--bdr);
-  }
-  .start-note {
-    font-size: 0.78rem;
-    color: var(--txt-muted);
-    line-height: 1.5;
-    flex: 1 1 200px;
-  }
+  /* Primary call to action: full width on small screens, generous on desktop. */
+  .btn-hero { width: 100%; padding: .95rem 1.6rem; font-size: 15.5px; border-radius: 14px; }
+  @media (min-width: 576px) { .btn-hero { width: auto; min-width: 260px; } }
 
-  /* ── Sticky summary ── */
-  .iv-side {
-    position: sticky;
-    top: calc(var(--navbar-height, 60px) + 1.25rem);
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-4);
-  }
-  .iv-side .dash-panel { margin-bottom: 0; }
+  .start-row { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-top: 2rem;
+               padding-top: 1.5rem; border-top: 1px solid var(--bdr); }
+  .start-note { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; flex: 1 1 200px; }
+
+  /* ── Sticky summary rail ─────────────────────────────────────────── */
+  .iv-side { position: sticky; top: calc(var(--navbar-height, 60px) + 1.25rem);
+             display: flex; flex-direction: column; gap: 1.5rem; }
+  .iv-side .card { margin-bottom: 0; }
   .iv-side > div:empty { display: none; }
-  @media (max-width: 991.98px) {
-    .iv-side { position: static; }
-  }
+  @media (max-width: 991.98px) { .iv-side { position: static; } }
 
-  .sum-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--sp-3);
-    padding: var(--sp-2) 0;
-    border-bottom: 1px dashed var(--bdr);
-  }
+  .sum-row { display:flex; align-items:center; justify-content:space-between; gap:1rem;
+             padding:.65rem 0; border-bottom:1px dashed var(--bdr); }
   .sum-row:last-of-type { border-bottom: none; }
-  .sum-k {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-2);
-    font-size: 0.8rem;
-    color: var(--txt-soft);
-    flex: none;
-  }
-  .sum-k i { color: var(--txt-muted); font-size: 0.85rem; }
-  .sum-v {
-    font-size: 0.82rem;
-    font-weight: 650;
-    color: var(--txt);
-    text-align: right;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .sum-v.is-empty {
-    font-weight: 500;
-    color: var(--txt-muted);
-  }
-  .sum-total {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--sp-3);
-    margin-top: var(--sp-3);
-    padding: var(--sp-2) var(--sp-3);
-    border-radius: var(--radius-sm);
-    background: rgba(var(--accent-rgb), 0.06);
-    border: 1px solid rgba(var(--accent-rgb), 0.12);
-  }
-  .sum-total-k {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  .sum-total-v {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .sum-foot {
-    font-size: 0.72rem;
-    color: var(--txt-muted);
-    margin-top: var(--sp-2);
-    line-height: 1.5;
-  }
+  .sum-k { display:inline-flex; align-items:center; gap:.55rem; font-size:13px; color:var(--txt-soft); flex: none; }
+  .sum-k i { color: var(--txt-muted); font-size: 14px; }
+  .sum-v { font-size:13.5px; font-weight:650; color:var(--txt); text-align:right;
+           overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sum-v.is-empty { font-weight: 500; color: var(--txt-muted); }
+  .sum-total { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:1.1rem;
+               padding:.85rem 1rem; border-radius:12px;
+               background: rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.18); }
+  .sum-total-k { font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent); }
+  .sum-total-v { font-size:16px; font-weight:700; color:var(--accent); font-variant-numeric: tabular-nums; }
+  .sum-foot { font-size:12px; color:var(--txt-muted); margin-top:.7rem; line-height:1.5; }
 
-  /* ── Tips ── */
-  .tip {
-    display: flex;
-    gap: var(--sp-2);
-    font-size: 0.8rem;
-    color: var(--txt-soft);
-    line-height: 1.6;
-    margin-bottom: var(--sp-2);
-  }
+  .tip { display:flex; gap:.65rem; font-size:13px; color:var(--txt-soft); line-height:1.6; margin-bottom:.85rem; }
   .tip:last-child { margin-bottom: 0; }
-  .tip i {
-    color: var(--accent);
-    font-size: 0.85rem;
-    margin-top: 0.1rem;
-    flex: none;
-  }
+  .tip i { color: var(--accent); font-size: 14px; margin-top: .18rem; flex: none; }
 
-  /* ── Chips ── */
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.1rem 0.6rem;
-    border-radius: var(--radius-pill);
-    font-size: 0.7rem;
-    font-weight: 600;
-    line-height: 1.6;
-  }
-  .chip-good { background: var(--success-bg); color: var(--success); }
-  .chip-gap  { background: var(--warn-bg); color: var(--warn); }
-  .chip-plain{ background: rgba(15, 23, 42, 0.05); color: var(--txt-soft); }
-  .chip-accent{ background: rgba(var(--accent-rgb), 0.08); color: var(--accent); }
-  .chip-danger{ background: var(--danger-bg); color: var(--danger); }
-  html.theme-dark .chip-plain { background: rgba(148, 163, 184, 0.14); }
-
-  /* ── Readiness ── */
-  .ready {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-4);
-    flex-wrap: wrap;
-  }
-  .ring {
-    --pct: 0;
-    width: 80px; height: 80px;
-    flex: none;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: conic-gradient(var(--accent) calc(var(--pct) * 1%), rgba(var(--accent-rgb), 0.12) 0);
-    position: relative;
-  }
-  .ring::after {
-    content: "";
-    position: absolute;
-    inset: 6px;
-    background: var(--surface);
-    border-radius: 50%;
-  }
-  .ring-in {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-  }
-  .ring-val {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--txt);
-    line-height: 1;
-  }
-  .ring-lbl {
-    font-size: 0.6rem;
-    color: var(--txt-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-top: 2px;
-  }
-  .ready-body { flex: 1 1 180px; min-width: 0; }
-  .ready-role {
-    font-size: 0.9rem;
-    font-weight: 650;
-    color: var(--txt);
-    margin-bottom: 0.1rem;
-  }
-  .ready-band {
-    font-size: 0.75rem;
-    color: var(--txt-soft);
-    margin-bottom: var(--sp-2);
-    line-height: 1.5;
-  }
-  .chip-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--sp-1);
-    margin-bottom: var(--sp-1);
-  }
-  .chip-row:last-child { margin-bottom: 0; }
-  .chip-lbl {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: var(--txt-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    width: 100%;
-    margin-bottom: 0.1rem;
-  }
-
-  /* ── Resume bar ── */
-  .resume-bar {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-    flex-wrap: wrap;
-    background: rgba(var(--accent-rgb), 0.04);
-    border: 1px solid rgba(var(--accent-rgb), 0.12);
-    border-radius: var(--radius-sm);
-    padding: var(--sp-3) var(--sp-4);
-  }
-  .resume-txt {
-    flex: 1 1 100%;
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: var(--txt);
-  }
-  .resume-txt b { color: var(--txt); }
-
-  /* ── Interview stage bar ── */
+  /* ── Interview stage ─────────────────────────────────────────────── */
   .iv-bar {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-    flex-wrap: wrap;
-    padding: var(--sp-3) var(--sp-4);
-    background: var(--surface);
-    border: 1px solid var(--bdr);
-    border-radius: var(--radius);
-    margin-bottom: var(--sp-4);
-    box-shadow: var(--el-1);
-    position: sticky;
-    top: calc(var(--navbar-height, 60px) + 0.75rem);
-    z-index: 5;
+    display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+    padding: 1rem 1.35rem; background: var(--surface); border:1px solid var(--bdr);
+    border-radius: 16px; margin-bottom: 1.5rem; box-shadow: var(--shadow-md);
+    position: sticky; top: calc(var(--navbar-height, 60px) + .75rem); z-index: 5;
   }
-  .iv-bar-role {
-    font-size: 0.85rem;
-    font-weight: 650;
-    color: var(--txt);
-  }
-  .iv-bar-meta {
-    font-size: 0.72rem;
-    color: var(--txt-muted);
-    margin-top: 0.1rem;
-  }
+  .iv-bar-role { font-size: 14.5px; font-weight: 650; color: var(--txt); }
+  .iv-bar-meta { font-size: 12.5px; color: var(--txt-muted); margin-top: .1rem; }
   .iv-bar-spacer { flex: 1 1 auto; }
-  .timer {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.15rem 0.6rem;
-    border-radius: var(--radius-pill);
-    background: var(--surface-alt);
-    font-size: 0.8rem;
-    font-weight: 650;
-    color: var(--txt-soft);
-    border: 1px solid var(--bdr);
-  }
-  .timer.low { color: var(--danger); background: var(--danger-bg); }
-  .track {
-    height: 5px;
-    border-radius: var(--radius-pill);
-    background: rgba(15, 23, 42, 0.07);
-    overflow: hidden;
-    width: 100%;
-  }
-  html.theme-dark .track { background: rgba(148, 163, 184, 0.18); }
-  .track > span {
-    display: block;
-    height: 100%;
-    background: var(--accent);
-    border-radius: var(--radius-pill);
-    transition: width 0.4s ease;
-  }
+  .timer { display:inline-flex; align-items:center; padding:.35rem .7rem; border-radius:99px;
+           background: var(--surface-alt); font-variant-numeric: tabular-nums;
+           font-size: 13.5px; font-weight: 650; color: var(--txt-soft); }
+  .timer.low { color: var(--danger-txt); background: var(--danger-bg); }
 
-  /* ── Question ── */
-  .q-num {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: var(--sp-2);
-  }
-  .q-text {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: var(--txt);
-    line-height: 1.5;
-    margin-bottom: var(--sp-2);
-  }
-  .q-why {
-    font-size: 0.82rem;
-    color: var(--txt-soft);
-    line-height: 1.6;
-    margin-bottom: var(--sp-3);
-  }
+  .track { height: 5px; border-radius: 99px; background: rgba(15,23,42,0.07); overflow: hidden; width: 100%; }
+  html.theme-dark .track { background: rgba(148,163,184,0.18); }
+  .track > span { display:block; height:100%; background: var(--accent); border-radius:99px; transition: width .4s ease; }
+
+  .q-num { font-size: 11.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); }
+  .q-text { font-size: 20px; font-weight: 600; color: var(--txt); line-height: 1.5; margin: .6rem 0 .6rem; letter-spacing: -.015em; }
+  .q-why { font-size: 13.5px; color: var(--txt-soft); line-height: 1.6; margin-bottom: 1.25rem; }
   .answer {
-    width: 100%;
-    min-height: 160px;
-    padding: var(--sp-3);
-    border: 1px solid var(--bdr-hover);
-    border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--txt);
-    resize: vertical;
-    outline: none;
-    font-family: inherit;
-    background: var(--surface);
-    transition: border-color 0.15s, box-shadow 0.15s;
+    width:100%; min-height: 200px; padding: 1rem 1.1rem; border:1px solid var(--bdr-strong); border-radius:14px;
+    font-size:15px; line-height:1.7; color:var(--txt); resize:vertical; outline:none; font-family:inherit;
+    background: var(--surface); transition: border-color .15s, box-shadow .15s;
   }
   .answer::placeholder { color: var(--txt-muted); }
-  .answer:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.14);
-  }
-  .answer:disabled {
-    background: var(--surface-alt);
-    color: var(--txt-soft);
-  }
-  .answer-foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--sp-3);
-    flex-wrap: wrap;
-    margin-top: var(--sp-3);
-  }
-  .word-count {
-    font-size: 0.75rem;
-    color: var(--txt-muted);
-  }
+  .answer:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.14); }
+  .answer:disabled { background: var(--surface-alt); color: var(--txt-soft); }
+  .answer-foot { display:flex; justify-content:space-between; align-items:center; gap:1rem;
+                 flex-wrap:wrap; margin-top: 1rem; }
+  .word-count { font-size: 12.5px; color: var(--txt-muted); font-variant-numeric: tabular-nums; }
 
-  /* ── Feedback ── */
-  .fb {
-    border: 1px solid var(--bdr);
-    border-radius: var(--radius);
-    padding: var(--sp-4);
-    margin-top: var(--sp-4);
-    background: var(--surface-alt);
-  }
-  .fb-head {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-2);
-    flex-wrap: wrap;
-    margin-bottom: var(--sp-3);
-  }
-  .fb-score {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--txt);
-    line-height: 1;
-  }
-  .fb-of { font-size: 0.85rem; color: var(--txt-muted); }
-  .fb-sec { margin-bottom: var(--sp-3); }
+  /* ── Feedback ────────────────────────────────────────────────────── */
+  .fb { border:1px solid var(--bdr); border-radius:16px; padding:1.5rem; margin-top:1.5rem; background: var(--surface-alt); }
+  .fb-head { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; flex-wrap:wrap; }
+  .fb-score { font-size:32px; font-weight:700; color:var(--txt); line-height:1; }
+  .fb-of { font-size:14px; color:var(--txt-muted); }
+  .fb-sec { margin-bottom: 1.25rem; }
   .fb-sec:last-child { margin-bottom: 0; }
-  .fb-lbl {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-bottom: var(--sp-1);
-  }
-  .fb-lbl.good { color: var(--success); }
-  .fb-lbl.bad  { color: var(--warn); }
+  .fb-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.45rem; }
+  .fb-lbl.good { color: var(--success-txt); }
+  .fb-lbl.bad  { color: var(--warn-txt); }
   .fb-lbl.plain{ color: var(--txt-muted); }
-  .fb-list {
-    margin: 0;
-    padding-left: 1.2rem;
-    font-size: 0.85rem;
-    color: var(--txt-soft);
-    line-height: 1.7;
-  }
-  .fb-list li { margin: 0.1rem 0; }
-  .model-answer {
-    background: var(--surface);
-    border: 1px solid var(--bdr);
-    border-radius: var(--radius-sm);
-    padding: var(--sp-3);
-    font-size: 0.85rem;
-    line-height: 1.7;
-    color: var(--txt-soft);
-    white-space: pre-wrap;
-  }
+  .fb-list { margin:0; padding-left:1.15rem; font-size:14px; color:var(--txt-soft); line-height:1.7; }
+  .fb-list li { margin:.2rem 0; }
+  .model-answer { background:var(--surface); border:1px solid var(--bdr); border-radius:12px;
+                  padding:1rem 1.1rem; font-size:14px; line-height:1.7; color:var(--txt-soft); white-space:pre-wrap; }
 
-  .coach {
-    border: 1px solid rgba(var(--accent-rgb), 0.18);
-    background: rgba(var(--accent-rgb), 0.04);
-    border-radius: var(--radius);
-    padding: var(--sp-4);
-    margin-top: var(--sp-4);
-  }
-  .coach-head {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-2);
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--accent);
-    margin-bottom: var(--sp-2);
-  }
-  .coach-item {
-    display: flex;
-    gap: var(--sp-2);
-    font-size: 0.85rem;
-    color: var(--txt);
-    line-height: 1.6;
-    margin-bottom: var(--sp-1);
-  }
-  .coach-item:last-child { margin-bottom: 0; }
-  .coach-item i {
-    color: var(--accent);
-    font-size: 0.8rem;
-    margin-top: 0.2rem;
-  }
+  .coach { border:1px solid rgba(var(--accent-rgb),.22); background: rgba(var(--accent-rgb),.05);
+           border-radius:16px; padding:1.25rem 1.4rem; margin-top:1.5rem; }
+  .coach-head { display:flex; align-items:center; gap:.5rem; font-size:11.5px; font-weight:700;
+                text-transform:uppercase; letter-spacing:.07em; color:var(--accent); margin-bottom:.8rem; }
+  .coach-item { display:flex; gap:.6rem; font-size:14px; color:var(--txt); line-height:1.6; margin-bottom:.5rem; }
+  .coach-item:last-child { margin-bottom:0; }
+  .coach-item i { color: var(--accent); font-size: 13px; margin-top:.25rem; }
 
-  /* ── Report ── */
-  .score-hero {
-    text-align: center;
-    padding: var(--sp-1) 0 var(--sp-4);
-    border-bottom: 1px solid var(--bdr);
-    margin-bottom: var(--sp-4);
-  }
-  .score-hero .sh-val {
-    font-size: 3.2rem;
-    font-weight: 730;
-    color: var(--txt);
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-  .score-hero .sh-lbl {
-    font-size: 0.8rem;
-    color: var(--txt-muted);
-    margin-top: var(--sp-1);
-  }
-  .score-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: var(--sp-3);
-    margin-bottom: var(--sp-4);
-  }
-  .score-cell {
-    text-align: center;
-    padding: var(--sp-3) var(--sp-2);
-    border: 1px solid var(--bdr);
-    border-radius: var(--radius-sm);
-    background: var(--surface-alt);
-    transition: border-color 0.16s, transform 0.16s;
-  }
-  .score-cell:hover {
-    border-color: rgba(var(--accent-rgb), 0.35);
-    transform: translateY(-2px);
-  }
-  .score-cell .sc-val {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--txt);
-    line-height: 1;
-  }
-  .score-cell .sc-lbl {
-    font-size: 0.65rem;
-    color: var(--txt-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-top: var(--sp-1);
-  }
+  /* ── Report ──────────────────────────────────────────────────────── */
+  .score-hero { text-align:center; padding: .75rem 0 1.75rem; border-bottom:1px solid var(--bdr); margin-bottom:1.75rem; }
+  .score-hero .sh-val { font-size:56px; font-weight:730; color:var(--txt); line-height:1; letter-spacing:-.03em; }
+  .score-hero .sh-lbl { font-size:13px; color:var(--txt-muted); margin-top:.5rem; }
+  .score-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1rem; margin-bottom:1.75rem; }
+  .score-cell { text-align:center; padding:1.1rem .75rem; border:1px solid var(--bdr); border-radius:14px;
+                background: var(--surface-alt); transition: border-color .16s, transform .16s; }
+  .score-cell:hover { border-color: rgba(var(--accent-rgb),.35); transform: translateY(-2px); }
+  .score-cell .sc-val { font-size:24px; font-weight:700; color:var(--txt); line-height:1; }
+  .score-cell .sc-lbl { font-size:11px; color:var(--txt-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:.4rem; }
 
-  .rep-sec {
-    margin-bottom: var(--sp-4);
-  }
+  .rep-sec { margin-bottom: 1.75rem; }
   .rep-sec:last-child { margin-bottom: 0; }
-  .rep-lbl {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-2);
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--txt-muted);
-    margin-bottom: var(--sp-1);
-  }
-  .rep-lbl i { color: var(--accent); font-size: 0.85rem; }
-  .rep-list {
-    margin: 0;
-    padding-left: 1.2rem;
-    font-size: 0.85rem;
-    color: var(--txt-soft);
-    line-height: 1.7;
-  }
-  .rep-list li { margin: 0.15rem 0; }
-  .rep-list a {
-    color: var(--accent);
-    text-decoration: none;
-  }
+  .rep-lbl { display:flex; align-items:center; gap:.5rem; font-size:11.5px; font-weight:700;
+             text-transform:uppercase; letter-spacing:.07em; color:var(--txt-muted); margin-bottom:.65rem; }
+  .rep-lbl i { color: var(--accent); font-size: 14px; }
+  .rep-list { margin:0; padding-left:1.2rem; font-size:14.5px; color:var(--txt-soft); line-height:1.75; }
+  .rep-list li { margin:.3rem 0; }
+  .rep-list a { color: var(--accent); text-decoration: none; }
   .rep-list a:hover { text-decoration: underline; }
 
-  .note {
-    font-size: 0.75rem;
-    color: var(--txt-muted);
-    line-height: 1.6;
-    margin-top: var(--sp-4);
-  }
+  /* ── History ─────────────────────────────────────────────────────── */
+  .hist { display:flex; align-items:center; gap:1rem; width:100%; text-align:left; padding:.85rem .75rem;
+          border:1px solid transparent; border-radius:12px; background:none; cursor:pointer;
+          transition: background .14s, border-color .14s; }
+  .hist + .hist { margin-top: .2rem; }
+  .hist:hover { background: var(--surface-alt); border-color: var(--bdr); }
+  .hist:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hist-main { flex:1 1 auto; min-width:0; }
+  .hist-role { display:block; font-size:14.5px; font-weight:620; color:var(--txt); margin-bottom:.2rem; }
+  .hist-meta { display:block; font-size:12.5px; color:var(--txt-muted); }
+  .hist-score { flex:none; font-size:16px; font-weight:700; color:var(--txt); font-variant-numeric:tabular-nums; }
 
-  /* ── History ── */
-  .hist {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-    width: 100%;
-    text-align: left;
-    padding: var(--sp-2) var(--sp-3);
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    background: none;
-    cursor: pointer;
-    transition: background 0.14s, border-color 0.14s;
-  }
-  .hist + .hist { margin-top: 0.1rem; }
-  .hist:hover {
-    background: var(--surface-alt);
-    border-color: var(--bdr);
-  }
-  .hist:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  .hist-main {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-  .hist-role {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 620;
-    color: var(--txt);
-    margin-bottom: 0.1rem;
-  }
-  .hist-meta {
-    display: block;
-    font-size: 0.72rem;
-    color: var(--txt-muted);
-  }
-  .hist-score {
-    flex: none;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--txt);
-  }
+  .resume-bar { display:flex; align-items:center; gap:.7rem; flex-wrap:wrap;
+                background: rgba(var(--accent-rgb),.06); border:1px solid rgba(var(--accent-rgb),.22);
+                border-radius:16px; padding:1.25rem 1.35rem; }
+  .resume-txt { flex:1 1 100%; font-size:13.5px; line-height:1.6; color:var(--txt); }
 
-  /* ── Empty states ── */
-  .empty {
-    text-align: center;
-    padding: var(--sp-5) var(--sp-3);
-    color: var(--txt-muted);
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-  .empty i {
-    font-size: 1.6rem;
-    display: block;
-    margin-bottom: var(--sp-2);
-    opacity: 0.45;
-  }
+  .empty { text-align:center; padding:2rem 1rem; color:var(--txt-muted); font-size:14px; line-height:1.6; }
+  .empty i { font-size:28px; display:block; margin-bottom:.6rem; opacity:.45; }
+  .note { font-size:12.5px; color:var(--txt-muted); line-height:1.6; margin-top:1.25rem; }
 
-  /* ── Responsive ── */
   @media (max-width: 1199.98px) {
     .page-title { font-size: 1.1rem; }
   }
-  @media (max-width: 991.98px) {
-    .iv-side { position: static; }
-  }
-  @media (max-width: 767.98px) {
-    .page-header { flex-direction: column; align-items: stretch; gap: var(--sp-3); }
-    .stepper { padding: var(--sp-2) var(--sp-3); gap: var(--sp-2); }
+  @media (max-width: 575.98px) {
+    .card { padding: 1.25rem; border-radius: 14px; }
+    .card-tight { padding: 1.15rem; }
+    .stepper { padding: .85rem 1rem; gap: .6rem; }
     .step-sub { display: none; }
     .step-line { flex: 1 1 12px; min-width: 10px; }
-    .panel-body { padding: var(--sp-3); }
-    .q-text { font-size: 1rem; }
-    .iv-bar { position: static; padding: var(--sp-2) var(--sp-3); }
+    .iv-title { font-size: 24px; }
+    .q-text { font-size: 18px; }
+    .score-hero .sh-val { font-size: 44px; }
+    .iv-bar { position: static; padding: .9rem 1rem; }
     .answer-foot .btn-row { width: 100%; }
     .answer-foot .btn-row .btn { flex: 1 1 auto; }
   }
-  @media (max-width: 575.98px) {
-    .score-hero .sh-val { font-size: 2.6rem; }
-    .iv-bar-role { font-size: 0.8rem; }
-  }
 </style>
 
-<div class="interview-page">
-
-  <!-- ===== Page Header ===== -->
-  <div class="page-header">
-    <div class="page-header-left">
-      <div class="brand-mark"><i class="bi bi-mic-fill"></i></div>
-      <h1 class="page-title">Interview Practice</h1>
-    </div>
-  </div>
+<div class="iv">
 
   <!-- ═══ STAGE 1 · SETUP ═══════════════════════════════════════════ -->
   <section id="stage-setup">
+
+    <!-- Unified Page Header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="brand-mark"><i class="bi bi-mic-fill"></i></div>
+        <h1 class="page-title">Set up your interview</h1>
+      </div>
+    </div>
 
     <ol class="stepper" aria-label="Interview progress">
       <li class="step is-active" aria-current="step">
@@ -1029,7 +428,7 @@
       <li class="step-line" aria-hidden="true"></li>
       <li class="step">
         <span class="step-dot">2</span>
-        <span class="step-txt"><span class="step-name">Interview</span><span class="step-sub">Answer &amp; score</span></span>
+        <span class="step-txt"><span class="step-name">Interview</span><span class="step-sub">Answer &amp; get scored</span></span>
       </li>
       <li class="step-line" aria-hidden="true"></li>
       <li class="step">
@@ -1038,73 +437,74 @@
       </li>
     </ol>
 
+    <!-- The columns stretch rather than shrink to content: the summary rail
+         needs a full-height column to stick against. -->
     <div class="row g-4">
 
       <!-- ── Left · configuration ── -->
       <div class="col-12 col-lg-7">
-        <div class="dash-panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="panel-icon"><i class="bi bi-sliders2"></i></div>
-              Interview Configuration
+        <div class="card">
+          <div class="card-head">
+            <span class="card-ico"><i class="bi bi-sliders2"></i></span>
+            <div>
+              <h2 class="card-h">Interview configuration</h2>
+              <p class="card-p">Pick the role and the round. Everything here changes the questions you get.</p>
             </div>
           </div>
-          <div class="panel-body">
-            <form id="setupForm" novalidate>
-              <div class="field">
-                <label class="field-label" for="role">Target role</label>
-                <input class="input" id="role" name="role" placeholder="e.g. Flutter Developer" autocomplete="off">
-                <div class="field-hint" id="roleHint"></div>
-              </div>
 
-              <div class="field">
-                <label class="field-label" id="typeLabel">Interview type</label>
-                <div class="seg" id="typeSeg" role="radiogroup" aria-labelledby="typeLabel"></div>
-                <div class="field-hint" id="typeHint"></div>
-              </div>
+          <form id="setupForm" novalidate>
+            <div class="field">
+              <label class="field-label" for="role">Target role</label>
+              <input class="input" id="role" name="role" placeholder="e.g. Flutter Developer" autocomplete="off">
+              <div class="field-hint" id="roleHint"></div>
+            </div>
 
-              <div class="field">
-                <label class="field-label" id="difficultyLabel">Difficulty</label>
-                <div class="seg" id="difficultySeg" role="radiogroup" aria-labelledby="difficultyLabel"></div>
-                <div class="field-hint">Mixed ramps up as you go, the way a real panel does.</div>
-              </div>
+            <div class="field">
+              <label class="field-label" id="typeLabel">Interview type</label>
+              <div class="seg" id="typeSeg" role="radiogroup" aria-labelledby="typeLabel"></div>
+              <div class="field-hint" id="typeHint"></div>
+            </div>
 
-              <div class="row g-3">
-                <div class="col-12 col-sm-6">
-                  <div class="field">
-                    <label class="field-label" id="countLabel">Questions</label>
-                    <div class="seg" id="countSeg" role="radiogroup" aria-labelledby="countLabel"></div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-6">
-                  <div class="field">
-                    <label class="field-label" id="durationLabel">Duration</label>
-                    <div class="seg" id="durationSeg" role="radiogroup" aria-labelledby="durationLabel"></div>
-                    <div class="field-hint">The clock paces you — it never cuts an answer short.</div>
-                  </div>
+            <div class="field">
+              <label class="field-label" id="difficultyLabel">Difficulty</label>
+              <div class="seg" id="difficultySeg" role="radiogroup" aria-labelledby="difficultyLabel"></div>
+              <div class="field-hint">Mixed ramps up as you go, the way a real panel does.</div>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-12 col-sm-6">
+                <div class="field">
+                  <label class="field-label" id="countLabel">Questions</label>
+                  <div class="seg" id="countSeg" role="radiogroup" aria-labelledby="countLabel"></div>
                 </div>
               </div>
-
-              <div class="start-row">
-                <button class="btn btn-hero" type="submit" id="btnStart">
-                  <i class="bi bi-play-fill"></i> Start Interview
-                </button>
-                <span class="start-note">You can pause and come back — answers are saved as you go.</span>
+              <div class="col-12 col-sm-6">
+                <div class="field">
+                  <label class="field-label" id="durationLabel">Duration</label>
+                  <div class="seg" id="durationSeg" role="radiogroup" aria-labelledby="durationLabel"></div>
+                  <div class="field-hint">The clock paces you — it never cuts an answer short.</div>
+                </div>
               </div>
-            </form>
-          </div>
+            </div>
+
+            <div class="start-row">
+              <button class="btn btn-hero" type="submit" id="btnStart">
+                <i class="bi bi-play-fill"></i> Start interview
+              </button>
+              <span class="start-note">You can pause and come back — answers are saved as you go.</span>
+            </div>
+          </form>
         </div>
 
-        <div class="dash-panel" style="margin-top:var(--sp-4);">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="panel-icon"><i class="bi bi-clock-history"></i></div>
-              Past Interviews
+        <div class="card">
+          <div class="card-head" style="margin-bottom:1rem;">
+            <span class="card-ico"><i class="bi bi-clock-history"></i></span>
+            <div>
+              <h2 class="card-h">Past interviews</h2>
+              <p class="card-p">Open any one to re-read its report.</p>
             </div>
           </div>
-          <div class="panel-body">
-            <div id="historyHost"><div class="empty">Loading…</div></div>
-          </div>
+          <div id="historyHost"><div class="empty" style="padding:1.25rem;">Loading…</div></div>
         </div>
       </div>
 
@@ -1114,67 +514,68 @@
 
           <div id="resumeHost"></div>
 
-          <div class="dash-panel">
-            <div class="panel-head">
-              <div class="panel-title">
-                <div class="panel-icon"><i class="bi bi-speedometer2"></i></div>
-                AI Readiness
+          <div class="card card-tight">
+            <div class="card-head" style="margin-bottom:1.1rem;">
+              <span class="card-ico"><i class="bi bi-speedometer2"></i></span>
+              <div>
+                <h2 class="card-h">AI readiness</h2>
+                <p class="card-p">From your CV, your gaps and past practice.</p>
               </div>
             </div>
-            <div class="panel-body" id="readinessCard">
-              <div class="empty">Loading your readiness…</div>
-            </div>
-          </div>
-
-          <div class="dash-panel" id="summaryCard">
-            <div class="panel-head">
-              <div class="panel-title">
-                <div class="panel-icon"><i class="bi bi-clipboard-check"></i></div>
-                Interview Summary
-              </div>
-            </div>
-            <div class="panel-body">
-              <div class="sum-row">
-                <span class="sum-k"><i class="bi bi-bullseye"></i> Target role</span>
-                <span class="sum-v is-empty" id="sumRole">Not set yet</span>
-              </div>
-              <div class="sum-row">
-                <span class="sum-k"><i class="bi bi-layers"></i> Type</span>
-                <span class="sum-v is-empty" id="sumType">—</span>
-              </div>
-              <div class="sum-row">
-                <span class="sum-k"><i class="bi bi-bar-chart"></i> Difficulty</span>
-                <span class="sum-v is-empty" id="sumDifficulty">—</span>
-              </div>
-              <div class="sum-row">
-                <span class="sum-k"><i class="bi bi-list-ol"></i> Questions</span>
-                <span class="sum-v is-empty" id="sumCount">—</span>
-              </div>
-              <div class="sum-row">
-                <span class="sum-k"><i class="bi bi-stopwatch"></i> Timer</span>
-                <span class="sum-v is-empty" id="sumTimer">—</span>
-              </div>
-              <div class="sum-total">
-                <span class="sum-total-k">Estimated duration</span>
-                <span class="sum-total-v" id="sumEstimate">—</span>
-              </div>
-              <p class="sum-foot">Roughly three minutes per answer, plus reading time.</p>
+            <div id="readinessCard">
+              <div class="empty" style="padding:1rem;">Loading your readiness…</div>
             </div>
           </div>
 
-          <div class="dash-panel">
-            <div class="panel-head">
-              <div class="panel-title">
-                <div class="panel-icon"><i class="bi bi-lightbulb"></i></div>
-                Interview Tips
+          <div class="card card-tight" id="summaryCard">
+            <div class="card-head" style="margin-bottom:1.1rem;">
+              <span class="card-ico"><i class="bi bi-clipboard-check"></i></span>
+              <div>
+                <h2 class="card-h">Interview summary</h2>
+                <p class="card-p">What you are about to sit.</p>
               </div>
             </div>
-            <div class="panel-body">
-              <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Answer out loud first, then type it — you will write the way you would speak.</span></div>
-              <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Use situation → action → result. Concrete beats comprehensive.</span></div>
-              <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Name the tools, numbers and trade-offs. Specifics are what score.</span></div>
-              <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Aim for about 90 seconds of speech — roughly 150–200 words.</span></div>
+
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-bullseye"></i> Target role</span>
+              <span class="sum-v is-empty" id="sumRole">Not set yet</span>
             </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-layers"></i> Type</span>
+              <span class="sum-v is-empty" id="sumType">—</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-bar-chart"></i> Difficulty</span>
+              <span class="sum-v is-empty" id="sumDifficulty">—</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-list-ol"></i> Questions</span>
+              <span class="sum-v is-empty" id="sumCount">—</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-k"><i class="bi bi-stopwatch"></i> Timer</span>
+              <span class="sum-v is-empty" id="sumTimer">—</span>
+            </div>
+
+            <div class="sum-total">
+              <span class="sum-total-k">Estimated duration</span>
+              <span class="sum-total-v" id="sumEstimate">—</span>
+            </div>
+            <p class="sum-foot">Roughly three minutes per answer, plus reading time.</p>
+          </div>
+
+          <div class="card card-tight">
+            <div class="card-head" style="margin-bottom:1.1rem;">
+              <span class="card-ico"><i class="bi bi-lightbulb"></i></span>
+              <div>
+                <h2 class="card-h">Interview tips</h2>
+                <p class="card-p">What the scoring rewards.</p>
+              </div>
+            </div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Answer out loud first, then type it — you will write the way you would speak.</span></div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Use situation → action → result. Concrete beats comprehensive.</span></div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Name the tools, numbers and trade-offs. Specifics are what score.</span></div>
+            <div class="tip"><i class="bi bi-check-circle-fill"></i><span>Aim for about 90 seconds of speech — roughly 150–200 words.</span></div>
           </div>
 
         </div>
@@ -1185,7 +586,7 @@
 
   <!-- ═══ STAGE 2 · INTERVIEW ═══════════════════════════════════════ -->
   <section id="stage-interview" class="hidden">
-    <div class="iv-narrow" style="max-width:820px;margin:0 auto;">
+    <div class="iv-narrow">
 
       <ol class="stepper" aria-label="Interview progress">
         <li class="step is-done">
@@ -1212,21 +613,19 @@
         <div class="iv-bar-spacer"></div>
         <div class="timer hidden" id="ivTimer">--:--</div>
         <button class="btn btn-ghost btn-sm" type="button" id="btnEnd">
-          <i class="bi bi-flag"></i> End &amp; Report
+          <i class="bi bi-flag"></i> End &amp; get report
         </button>
         <div class="track"><span id="ivProgress" style="width:0%"></span></div>
       </div>
 
-      <div class="dash-panel">
-        <div class="panel-body" id="questionCard"></div>
-      </div>
+      <div class="card" id="questionCard"></div>
       <div id="feedbackHost"></div>
     </div>
   </section>
 
   <!-- ═══ STAGE 3 · REPORT ══════════════════════════════════════════ -->
   <section id="stage-report" class="hidden">
-    <div class="iv-narrow" style="max-width:820px;margin:0 auto;">
+    <div class="iv-narrow">
 
       <ol class="stepper" aria-label="Interview progress">
         <li class="step is-done">
@@ -1245,9 +644,7 @@
         </li>
       </ol>
 
-      <div class="dash-panel">
-        <div class="panel-body" id="reportCard"></div>
-      </div>
+      <div class="card" id="reportCard"></div>
     </div>
   </section>
 
@@ -1272,6 +669,8 @@
   var DIFFICULTY_LABELS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
   var COUNT_OPTIONS = [5, 8, 10, 12, 15];
 
+  /* index is where the candidate is looking, which is not always where the
+     server thinks the interview is: they may step back to review an answer. */
   var state = { session: null, options: null, readiness: null, index: 0, stage: "setup", timer: null };
 
   function el(id) { return document.getElementById(id); }
@@ -1326,7 +725,7 @@
     }
   }
 
-  /* ── Stage 1 · Readiness ── */
+  /* ── Stage 1 · Readiness ─────────────────────────────────────────── */
   function renderReadiness(readiness) {
     state.readiness = readiness;
     var host = el("readinessCard");
@@ -1361,7 +760,7 @@
       '</div>';
   }
 
-  /* ── Stage 1 · Setup controls ── */
+  /* ── Stage 1 · Setup controls ────────────────────────────────────── */
   function segment(hostId, name, items, current) {
     el(hostId).innerHTML = items.map(function (item, i) {
       var checked = String(item.value) === String(current) || (current === undefined && i === 0);
@@ -1422,14 +821,15 @@
       '<button class="btn btn-ghost btn-sm" type="button" id="btnRestart">Restart</button></div>';
   }
 
-  /* ── Stage 1 · History ── */
+  /* ── Stage 1 · History ───────────────────────────────────────────── */
   async function loadHistory() {
     var host = el("historyHost");
     try {
       var data = await api(SESSIONS_URL);
       var sessions = data.sessions || [];
       if (!sessions.length) {
-        host.innerHTML = '<div class="empty">Your finished interviews will appear here.</div>';
+        host.innerHTML = '<div class="empty" style="padding:1.25rem;">' +
+          'Your finished interviews will appear here.</div>';
         return;
       }
       host.innerHTML = sessions.map(function (s) {
@@ -1449,11 +849,11 @@
           '<span class="hist-meta">' + esc(meta.join(" · ")) + '</span></span>' + score + '</button>';
       }).join("");
     } catch (error) {
-      host.innerHTML = '<div class="empty">Could not load your history.</div>';
+      host.innerHTML = '<div class="empty" style="padding:1.25rem;">Could not load your history.</div>';
     }
   }
 
-  /* ── Stage 2 · One question at a time ── */
+  /* ── Stage 2 · One question at a time ────────────────────────────── */
   function renderInterview() {
     var session = state.session;
     if (!session || !session.total_questions) return showStage("setup");
@@ -1473,16 +873,15 @@
     var draft = (!turn && window.SkillSyncState)
       ? window.SkillSyncState.local.get(draftKey, "") : "";
 
-    var card = el("questionCard");
-    card.innerHTML =
+    el("questionCard").innerHTML =
       '<div class="q-num">Question ' + (state.index + 1) + ' of ' + total + '</div>' +
       '<div class="q-text">' + esc(question.question) + '</div>' +
-      '<div class="chip-row" style="margin-bottom:var(--sp-2);">' +
+      '<div class="chip-row">' +
         '<span class="chip chip-plain">' + esc(CATEGORY_LABELS[question.category] || question.category) + '</span>' +
         '<span class="chip chip-plain">' + esc(DIFFICULTY_LABELS[question.difficulty] || question.difficulty) + '</span>' +
         (question.skill ? '<span class="chip chip-accent">' + esc(question.skill) + '</span>' : "") +
       '</div>' +
-      (question.why_asked ? '<div class="q-why">' + esc(question.why_asked) + '</div>' : '') +
+      (question.why_asked ? '<div class="q-why">' + esc(question.why_asked) + '</div>' : '<div style="height:.6rem"></div>') +
       '<textarea class="answer" id="answerBox" ' + (turn ? "disabled" : "") +
         ' placeholder="Answer as you would out loud — the situation, what you did, and the result.">' +
         esc(turn ? turn.answer : draft) + '</textarea>' +
@@ -1496,7 +895,7 @@
                 ? '<button class="btn btn-sm" type="button" data-nav="1">Next <i class="bi bi-arrow-right"></i></button>'
                 : '<button class="btn btn-sm" type="button" id="btnEnd2"><i class="bi bi-flag"></i> Finish</button>')
             : '<button class="btn btn-ghost btn-sm" type="button" data-nav="1">Skip</button>' +
-              '<button class="btn btn-sm" type="button" id="btnSubmit"><i class="bi bi-send"></i> Submit</button>') +
+              '<button class="btn btn-sm" type="button" id="btnSubmit"><i class="bi bi-send"></i> Submit answer</button>') +
         '</span>' +
       '</div>';
 
@@ -1523,6 +922,8 @@
     el("wordCount").textContent = words ? words + " words" : "Aim for 90 seconds spoken";
   }
 
+  /* Feedback and coaching only ever appear after an answer - showing what a
+     strong answer covers beforehand would answer the question for them. */
   function renderFeedback(turn, question) {
     var host = el("feedbackHost");
     if (!turn) { host.innerHTML = ""; return; }
@@ -1555,7 +956,7 @@
         '<i class="bi bi-stars"></i> AI coach — for your next answer</div>' + coaching + '</div>' : "");
   }
 
-  /* ── Timer ── */
+  /* ── Timer ───────────────────────────────────────────────────────── */
   function startTimer() {
     stopTimer();
     var session = state.session;
@@ -1579,7 +980,7 @@
     if (state.timer) { clearInterval(state.timer); state.timer = null; }
   }
 
-  /* ── Stage 3 · Report ── */
+  /* ── Stage 3 · Report ────────────────────────────────────────────── */
   function renderReport(session, readOnly) {
     var host = el("reportCard");
     var report = session && session.report;
@@ -1618,9 +1019,9 @@
     var minutes = session.elapsed_seconds ? Math.max(1, Math.round(session.elapsed_seconds / 60)) : 0;
 
     host.innerHTML =
-      '<div class="eyebrow" style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--txt-muted);margin-bottom:var(--sp-2);">Step 3 of 3</div>' +
-      '<h2 style="font-size:1.2rem;font-weight:680;color:var(--txt);margin:0 0 var(--sp-1);">' + esc(session.target_role) + ' — your report</h2>' +
-      '<p style="font-size:0.85rem;color:var(--txt-soft);margin:0 0 var(--sp-4);">' + session.answered + ' of ' + session.total_questions + ' questions answered' +
+      '<div class="eyebrow">Step 3 of 3</div>' +
+      '<h2 class="stage-title">' + esc(session.target_role) + ' — your report</h2>' +
+      '<p class="stage-sub">' + session.answered + ' of ' + session.total_questions + ' questions answered' +
         (minutes ? ' in ' + minutes + ' min' : '') + '.</p>' +
       '<div class="score-hero"><div class="sh-val">' + report.overall_score + '%</div>' +
       '<div class="sh-lbl">Overall interview score</div></div>' +
@@ -1632,7 +1033,7 @@
       courses +
       section("Your plan", report.improvement_plan, "bi-list-ol") +
       section("Practise next", report.next_topics, "bi-arrow-repeat") +
-      '<div class="btn-row" style="margin-top:var(--sp-5);">' +
+      '<div class="btn-row" style="margin-top:1.75rem;">' +
         (readOnly
           ? '<button class="btn" type="button" data-stage="setup">New interview</button>'
           : '<button class="btn" type="button" id="btnAgain"><i class="bi bi-arrow-counterclockwise"></i> ' +
@@ -1644,8 +1045,9 @@
         'templated. Every number here is from what you actually wrote.</div>');
   }
 
-  /* ── Actions ── */
+  /* ── Actions ─────────────────────────────────────────────────────── */
   function absorb(payload) {
+    // Session first: the setup controls read it to show what was last chosen.
     if (payload.session !== undefined) state.session = payload.session;
     if (payload.readiness) renderReadiness(payload.readiness);
     if (payload.options) renderSetup(payload.options);
@@ -1688,6 +1090,8 @@
       if (window.SkillSyncState && state.session) {
         window.SkillSyncState.local.remove("interview.draft." + state.session.id + "." + state.index);
       }
+      // Re-read the session so the stored turn - not a local guess at it - is
+      // what the feedback renders from.
       var payload = await api(SESSION_URL);
       state.session = payload.session;
       if (payload.readiness) state.readiness = payload.readiness;
@@ -1743,7 +1147,7 @@
     }
   }
 
-  /* ── Wiring ── */
+  /* ── Wiring ──────────────────────────────────────────────────────── */
   document.addEventListener("click", function (event) {
     var target = event.target.closest("button");
     if (!target) return;
@@ -1780,6 +1184,7 @@
     start(el("btnStart"));
   });
 
+  /* Ctrl/Cmd+Enter submits, the way every other answer box works. */
   document.addEventListener("keydown", function (event) {
     if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && state.stage === "interview") {
       var button = el("btnSubmit");
@@ -1787,6 +1192,7 @@
     }
   });
 
+  /* Initial load restores the stored session without spending an AI call. */
   (async function init() {
     try {
       var payload = await api(SESSION_URL);
@@ -1796,6 +1202,8 @@
       var requested = new URLSearchParams(window.location.search).get("role");
       if (requested) {
         el("role").value = requested;
+        // Deep-linked from the assistant with a role the stored session is not
+        // for: build it now rather than making them press the button again.
         if (!payload.session || payload.session.target_role.toLowerCase() !== requested.toLowerCase()) {
           return start(el("btnStart"));
         }
@@ -1824,8 +1232,16 @@
 </script>
 
 <script>
-/* ── Summary rail ──────────────────────────────────────────────── */
+/* ── Summary rail · presentation only ────────────────────────────────
+   Mirrors what the setup form currently reads into the sticky summary
+   card. It only reads the DOM and only writes to the #sum* spans - it
+   holds no state, makes no requests and touches nothing the interview
+   itself depends on. Remove it and the page still works exactly as it
+   did; the summary would simply stop updating.
+   ------------------------------------------------------------------ */
 (function () {
+  "use strict";
+
   var form = document.getElementById("setupForm");
   var summary = document.getElementById("summaryCard");
   if (!form || !summary) return;
@@ -1869,12 +1285,17 @@
     var timed = pickedNumber("duration_minutes");
     set("sumTimer", timed ? timed + " min limit" : "Untimed", !timed);
 
+    // A timed interview is bounded by its clock; an untimed one is paced
+    // by the questions themselves.
     var estimate = timed || count * MINUTES_PER_QUESTION;
     set("sumEstimate", estimate ? "≈ " + estimate + " min" : "—", !estimate);
   }
 
   form.addEventListener("change", refresh);
   form.addEventListener("input", refresh);
+
+  /* The option pills are rendered once the setup options arrive, so wait
+     for the form to be filled in rather than reading an empty one. */
   new MutationObserver(refresh).observe(form, { childList: true, subtree: true });
   refresh();
 })();
