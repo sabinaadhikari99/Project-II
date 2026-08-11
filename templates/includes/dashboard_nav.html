@@ -990,8 +990,8 @@
 
     <div class="ng-breadcrumb d-none d-md-flex" data-auth-only>
       <a href="#">SkillSync</a>
-      <span class="bc-sep"><i class="bi bi-chevron-right"></i></span>
-      <span class="bc-current" id="bcCurrent">Dashboard</span>
+      <!-- ═══ FIXED: Dynamic breadcrumb ═══ -->
+      <span class="bc-current" id="bcCurrent" data-page="Dashboard">Dashboard</span>
     </div>
   </div>
 
@@ -1086,9 +1086,11 @@
     <span class="brand-name">SkillSync AI</span>
   </a>
 
-  <nav class="sidebar-nav">
+  <!-- ═══ FIXED: Scrollable container ═══ -->
+  <div class="sidebar-scroll" style="flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:0.5rem;">
+    <nav class="sidebar-nav">
 
-    <!-- ═══ JOB SEEKER NAV ═══ -->
+      <!-- ═══ JOB SEEKER NAV ═══ -->
     <div data-role="job_seeker">
       <div class="sn-label">Main</div>
       <a class="nav-link" href="{% url 'seeker-dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -1173,7 +1175,8 @@
       <a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Settings</a>
     </div>
 
-  </nav>
+    </nav>
+  </div>
 </aside>
 
 <script>
@@ -1481,6 +1484,48 @@
 
   window.addEventListener('popstate', highlightActiveLink);
 
+  /* ═══════════════════════════════════════════════
+     DYNAMIC BREADCRUMB
+     Derives the current page name from whichever
+     sidebar link exactly matches the current path —
+     the same matching logic as highlightActiveLink,
+     so the breadcrumb can never disagree with the
+     highlighted sidebar item.
+  ═══════════════════════════════════════════════ */
+  function updateBreadcrumb() {
+    var bcElement = document.getElementById('bcCurrent');
+    if (!bcElement) return;
+
+    var currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+    var pageName = 'Dashboard';
+
+    var links = document.querySelectorAll('.sidebar-nav .nav-link');
+    for (var i = 0; i < links.length; i++) {
+      var href = links[i].getAttribute('href');
+      if (!href) continue;
+      var normalized = href.replace(/\/+$/, '') || '/';
+      if (normalized === currentPath) {
+        var clone = links[i].cloneNode(true);
+        var icon = clone.querySelector('i');
+        if (icon) icon.remove();
+        var badge = clone.querySelector('.sn-badge');
+        if (badge) badge.remove();
+        pageName = clone.textContent.replace(/\s+/g, ' ').trim();
+        break;
+      }
+    }
+
+    bcElement.textContent = pageName;
+    bcElement.setAttribute('data-page', pageName);
+
+    var titleEl = document.querySelector('title');
+    if (titleEl && !titleEl.textContent.includes(pageName)) {
+      titleEl.textContent = pageName + ' | SkillSync AI';
+    }
+  }
+
+  window.addEventListener('popstate', updateBreadcrumb);
+
   function updateSearchPlaceholder() {
     var role  = localStorage.getItem('role');
     var input = document.getElementById('ngSearchInput');
@@ -1627,6 +1672,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     updateSidebarState();
     highlightActiveLink();
+    updateBreadcrumb();
     updateSearchPlaceholder();
     updateThemeDropdownActive();
     // ═══ FIXED: Update breadcrumb on page load ═══
