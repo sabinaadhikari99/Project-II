@@ -112,6 +112,14 @@ def notify_new_application(application):
         job=job,
         priority=Notification.Priority.HIGH,
     )
+
+    # The candidate's CV link, so the recruiter can open it straight from the
+    # email instead of having to log in first. Empty string (not None) if
+    # they haven't uploaded one yet - the template shows a fallback notice
+    # for that case rather than a broken/missing link.
+    applicant_profile = getattr(applicant, "profile", None)
+    cv_url = (applicant_profile.cv_url if applicant_profile else "") or ""
+
     send_email_notification(
         recruiter,
         f"New Application Received: {job.title}",
@@ -121,6 +129,7 @@ def notify_new_application(application):
             "applicant": applicant,
             "job": job,
             "message": message,
+            "cv_url": cv_url,
         },
     )
 
@@ -143,6 +152,8 @@ def notify_applicant_status_change(application):
         job=job,
         priority=Notification.Priority.HIGH,
     )
+    applicant_profile = getattr(applicant, "profile", None)
+    cv_url = (applicant_profile.cv_url if applicant_profile else "") or ""
     send_email_notification(
         applicant,
         f"Application {status_display}: {job.title}",
@@ -152,6 +163,7 @@ def notify_applicant_status_change(application):
             "job": job,
             "status": status_display,
             "message": message,
+            "cv_url": cv_url,
         },
     )
 
@@ -655,6 +667,8 @@ def send_application_email(application):
     if not application or not application.applicant or not application.job:
         logger.warning("send_application_email skipped: missing data")
         return
+    applicant_profile = getattr(application.applicant, "profile", None)
+    cv_url = (applicant_profile.cv_url if applicant_profile else "") or ""
     send_email_notification(
         application.applicant,
         f"Application received: {application.job.title}",
@@ -664,6 +678,7 @@ def send_application_email(application):
             "job": application.job,
             "status": "Submitted",
             "message": f"Your application for {application.job.title} at {application.job.company} was submitted.",
+            "cv_url": cv_url,
         },
     )
 

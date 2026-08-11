@@ -8,6 +8,7 @@ from django.db import transaction
 
 from apps.notifications.services import send_application_email
 from apps.notifications.services import notify_job_match
+from apps.notifications.services import notify_new_application
 from apps.shared.constants import JOB_VECTOR_PREFIX, PROFILE_VECTOR_PREFIX
 from apps.shared.cv_signals import (
     EDUCATION_RANK,
@@ -15,6 +16,7 @@ from apps.shared.cv_signals import (
     extract_cv_signals,
     extract_skills_section,
 )
+from apps.shared.cv_storage import save_resume_file
 from apps.shared.deductions import (
     SEVERITY_POINTS,
     build_strengths,
@@ -565,7 +567,8 @@ def apply_to_job(user, job, cover_letter=""):
         job=job, applicant=user, defaults={"cover_letter": cover_letter},
     )
     if created:
-        send_application_email(application)
+        send_application_email(application)      # confirmation -> candidate
+        notify_new_application(application)       # notification (+ CV link) -> recruiter
     return application
 
 
@@ -593,6 +596,10 @@ def analyze_resume_match(user, resume_file, request=None):
     prior_profile_skills = list(profile.skills or [])
     merged_skills = sorted(set(profile.skills or []) | set(extracted_skills))
     profile.skills = merged_skills
+    # Save the actual uploaded file (not just its extracted text) and sync
+    # profile.cv_url, so recruiters can open the real CV from notification
+    # emails instead of only seeing text SkillSync extracted from it.
+    save_resume_file(profile, resume_file, request=request)
     profile.save()
     # get_or_create() returned a NEW UserProfile instance; prime Django's
     # cached reverse relation so downstream reads see the saved row.
