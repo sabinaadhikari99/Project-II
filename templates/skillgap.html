@@ -1479,6 +1479,157 @@ html.theme-dark {
   .sg-phase-timeline::before { display: none; }
   .sg-phase-node { position: static; margin-bottom: 0.5rem; width: 38px; height: 38px; }
 }
+
+/* ── Roadmap lede + view tabs ──
+   The three radios live just before #sgRoadmap, so the checked one can reach
+   the rendered phases with a sibling selector. No script involved. ── */
+.lr-lede { margin: 0 1.1rem 0.6rem; font-size: 0.78rem; color: var(--txt-muted, #64748b); }
+.lr-lede b { color: var(--accent, #2563eb); font-weight: 600; }
+
+.lr-tabin { position: absolute; opacity: 0; pointer-events: none; }
+.lr-tabs {
+  display: flex; align-items: center; gap: 6px; margin: 0 1.1rem;
+  border-bottom: 1px solid var(--bdr, #e8edf7); overflow-x: auto; scrollbar-width: none;
+}
+.lr-tabs::-webkit-scrollbar { display: none; }
+.lr-tab {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  padding: 0.6rem 0.9rem; margin-bottom: -1px; white-space: nowrap;
+  font-size: 0.78rem; font-weight: 600; color: var(--txt-muted, #64748b);
+  border-bottom: 2px solid transparent;
+}
+.lr-tab:hover { color: var(--txt, #0f172a); }
+/* Collapsing the card takes the lede and tabs with the phase list. */
+.sg-card.collapsed .lr-lede,
+.sg-card.collapsed .lr-tabs { display: none; }
+#sgRmAll:checked  ~ .lr-tabs label[for="sgRmAll"],
+#sgRmPath:checked ~ .lr-tabs label[for="sgRmPath"],
+#sgRmDone:checked ~ .lr-tabs label[for="sgRmDone"] {
+  color: var(--accent, #2563eb); border-bottom-color: var(--accent, #2563eb);
+}
+
+/* Completed — only phases already worked through. */
+#sgRmDone:checked ~ #sgRoadmap .lr-row:not(.lr-done) { display: none; }
+/* Learning Path — every phase as a flat list, no side column or rail. */
+#sgRmPath:checked ~ #sgRoadmap .lr-row { grid-template-columns: minmax(0, 1fr); }
+#sgRmPath:checked ~ #sgRoadmap .lr-rail,
+#sgRmPath:checked ~ #sgRoadmap .lr-side,
+#sgRmPath:checked ~ #sgRoadmap .lr-locked-side,
+#sgRmPath:checked ~ #sgRoadmap .lr-mark { display: none; }
+#sgRmPath:checked ~ #sgRoadmap .lr-card { grid-template-columns: minmax(0, 1fr); }
+#sgRmPath:checked ~ #sgRoadmap .lr-details { display: block; }
+
+/* ══════════════════════════════════════════════════════════════
+   Roadmap phase cards — timeline rail, tinted state cards.
+   Prefixed lr- so it sits alongside the older sg- rules untouched.
+   ══════════════════════════════════════════════════════════════ */
+.lr-timeline { display: flex; flex-direction: column; }
+
+.lr-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 14px; }
+.lr-rail { position: relative; display: flex; justify-content: center; }
+.lr-rail::after {
+  content: ""; position: absolute; top: 40px; bottom: -16px; left: 50%;
+  width: 2px; margin-left: -1px; background: #22c55e; border-radius: 2px;
+}
+.lr-row.lr-locked .lr-rail::after,
+.lr-row.lr-cur .lr-rail::after { background: var(--bdr, #e2e8f0); }
+.lr-row:last-child .lr-rail::after { display: none; }
+
+.lr-node {
+  position: relative; width: 38px; height: 38px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font-size: 0.85rem; font-weight: 700;
+  color: #fff; background: #22c55e; z-index: 1;
+}
+.lr-row.lr-cur .lr-node { background: var(--accent, #2563eb); box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.12); }
+.lr-row.lr-locked .lr-node { background: #e8edf5; color: #94a3b8; }
+.lr-node .lr-badge {
+  position: absolute; top: -3px; right: -4px; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--card, #fff); display: grid; place-items: center;
+  font-size: 0.5rem; color: #16a34a; border: 1px solid #d6f0e2;
+}
+.lr-row.lr-cur .lr-node .lr-badge { color: var(--accent, #2563eb); border-color: #d5e2fb; }
+.lr-rail .lr-lock { position: absolute; top: 44px; font-size: 0.65rem; color: #94a3b8; }
+
+.lr-card {
+  margin-bottom: 16px; padding: 16px 18px; border-radius: 14px;
+  background: var(--card, #fff); border: 1px solid var(--bdr, #e8edf7);
+  display: grid; grid-template-columns: 30px minmax(0, 1fr) 250px;
+  gap: 16px; align-items: start;
+}
+.lr-row.lr-done .lr-card { background: #f6fdf9; border-color: #d6f0e2; }
+.lr-row.lr-cur  .lr-card { background: #f6f9ff; border-color: #d5e2fb; }
+html.theme-dark .lr-row.lr-done .lr-card { background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.22); }
+html.theme-dark .lr-row.lr-cur  .lr-card { background: rgba(37, 99, 235, 0.07); border-color: rgba(37, 99, 235, 0.25); }
+
+.lr-mark { font-size: 1.15rem; line-height: 1; margin-top: 14px; }
+.lr-row.lr-done .lr-mark { color: #16a34a; }
+.lr-row.lr-cur  .lr-mark { color: var(--accent, #2563eb); }
+
+.lr-label { font-size: 0.68rem; font-weight: 600; color: var(--txt-muted, #94a3b8); }
+.lr-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 5px; }
+.lr-desc  { font-size: 0.78rem; color: var(--txt-muted, #64748b); margin-top: 3px; }
+.lr-prog  { margin-top: 14px; max-width: 230px; }
+.lr-pct   { font-size: 0.68rem; font-weight: 700; margin-bottom: 6px; }
+.lr-bar   { display: block; height: 5px; border-radius: 99px; background: #e9eef6; overflow: hidden; }
+.lr-bar > span { display: block; height: 100%; border-radius: 99px; }
+.lr-fill-green { background: linear-gradient(90deg, #34d399, #16a34a); }
+.lr-fill-blue  { background: linear-gradient(90deg, #60a5fa, #2563eb); }
+
+.lr-side {
+  border-left: 1px solid var(--bdr, #e8edf7); padding-left: 18px;
+  display: flex; flex-direction: column; gap: 11px; align-self: stretch;
+}
+.lr-row.lr-done .lr-side { border-left-color: #d6f0e2; }
+.lr-row.lr-cur  .lr-side { border-left-color: #d5e2fb; }
+.lr-item { display: flex; align-items: center; gap: 9px; font-size: 0.75rem; font-weight: 500; }
+.lr-item .lr-tick { cursor: pointer; font-size: 0.8rem; line-height: 1; }
+.lr-item .lr-tick.is-done { color: #16a34a; }
+.lr-item .lr-tick.is-active { color: var(--accent, #2563eb); }
+.lr-item .lr-tick.is-todo { color: #cbd5e1; }
+.lr-item .lr-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lr-item .lr-chev { margin-left: auto; color: #94a3b8; font-size: 0.6rem; cursor: pointer; }
+
+.lr-action { margin-top: auto; padding-top: 8px; display: flex; justify-content: flex-end; }
+.lr-btn {
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+  font-size: 0.7rem; font-weight: 600; padding: 6px 12px; border-radius: 7px;
+}
+.lr-btn-done     { background: #e9fbf1; color: #16a34a; border: 1px solid #d6f0e2; }
+.lr-btn-continue { background: var(--card, #fff); color: #16a34a; border: 1px solid #d6f0e2; }
+.lr-btn-continue:hover { background: #e9fbf1; color: #16a34a; }
+.lr-btn-start    { background: var(--accent, #2563eb); color: #fff; }
+.lr-btn-start:hover { background: #1d4ed8; color: #fff; }
+
+.lr-locked-side {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; text-align: center; font-size: 0.68rem; color: #94a3b8;
+  border-left: 1px solid var(--bdr, #e8edf7); padding-left: 18px; align-self: stretch;
+}
+.lr-locked-side i { font-size: 0.85rem; }
+
+/* Full step detail keeps working, tucked under the card header. */
+.lr-details { grid-column: 1 / -1; margin-top: 4px; }
+.lr-details > summary {
+  cursor: pointer; list-style: none; font-size: 0.7rem; font-weight: 600;
+  color: var(--accent, #2563eb); padding: 6px 0;
+}
+.lr-details > summary::-webkit-details-marker { display: none; }
+.lr-details[open] > summary { margin-bottom: 8px; }
+
+@media (max-width: 767.98px) {
+  .lr-card { grid-template-columns: 26px minmax(0, 1fr); }
+  .lr-side, .lr-locked-side {
+    grid-column: 1 / -1; border-left: 0; padding-left: 0;
+    border-top: 1px solid var(--bdr, #e8edf7); padding-top: 12px;
+  }
+  .lr-locked-side { flex-direction: row; justify-content: flex-start; }
+}
+@media (max-width: 575.98px) {
+  .lr-row { grid-template-columns: 44px minmax(0, 1fr); gap: 10px; }
+  .lr-node { width: 32px; height: 32px; font-size: 0.75rem; }
+  .lr-rail::after { top: 34px; }
+  .lr-prog { max-width: none; }
+}
 </style>
 
 <div class="sg-page">
@@ -1618,6 +1769,19 @@ html.theme-dark {
       <span class="sgh-badge amber" id="sgRoadmapBadge">–</span>
       <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
     </button>
+
+    {# Tabs filter the phase list below with CSS alone — the radios are the
+       state, so nothing here depends on the roadmap having loaded yet. #}
+    <p class="lr-lede">Your personalized roadmap to become <b id="sgRmRole">your target role</b></p>
+    <input type="radio" name="sgRmView" id="sgRmAll" class="lr-tabin" checked>
+    <input type="radio" name="sgRmView" id="sgRmPath" class="lr-tabin">
+    <input type="radio" name="sgRmView" id="sgRmDone" class="lr-tabin">
+    <div class="lr-tabs" role="tablist">
+      <label for="sgRmAll"  class="lr-tab"><i class="bi bi-diagram-3"></i> Roadmap</label>
+      <label for="sgRmPath" class="lr-tab"><i class="bi bi-list-task"></i> Learning Path</label>
+      <label for="sgRmDone" class="lr-tab"><i class="bi bi-check-circle"></i> Completed</label>
+    </div>
+
     <div class="sg-card-body" id="sgRoadmap">
       <div class="sg-shimmer-block">
         <div class="sg-shimmer h24"></div>
@@ -2162,20 +2326,86 @@ html.theme-dark {
       if (!stepsByPhase[key]) stepsByPhase[key] = [];
       stepsByPhase[key].push(step);
     }
-    return banner + summary + `<div class="sg-phase-timeline">${phases.map(ph => sgPhase(ph, stepsByPhase)).join("")}</div>`;
+    /* The phase being worked on is the deepest one with any progress on it;
+       everything above it reads as reached, everything below is still locked.
+       A partly-finished earlier phase therefore stays green rather than
+       dragging the "current" marker backwards. */
+    let curIdx = 0;
+    phases.forEach((ph, i) => {
+      if ((ph.progress || {}).completed > 0) curIdx = i;
+    });
+
+    return banner + summary + `<div class="lr-timeline">${
+      phases.map((ph, i) => sgPhase(ph, stepsByPhase, i, curIdx, phases.length)).join("")
+    }</div>`;
   }
 
-  function sgPhase(ph, stepsByPhase) {
+  function sgPhase(ph, stepsByPhase, idx, curIdx, count) {
     const capstone = ph.phase_number === "capstone";
     const pr = ph.progress || {};
-    const node = capstone
-      ? `<div class="sg-phase-node"><i class="bi bi-trophy-fill" style="font-size:0.85rem;"></i></div>`
-      : `<div class="sg-phase-node"><small>Phase</small>${ph.phase_number}</div>`;
+    const total = pr.total || 0;
+    const completed = pr.completed || 0;
+    const pctNum = total ? Math.round((completed / total) * 100) : 0;
 
-    /* A phase that is fully ticked off says so in words; there is no bar. */
-    const progressBar = (pr.total && pr.completed >= pr.total)
-      ? `<div class="sg-phase-done"><i class="bi bi-check-circle-fill"></i> Phase complete</div>`
-      : "";
+    const isCur = idx === curIdx;
+    const isLocked = idx > curIdx;
+    const isDone = idx < curIdx;
+    const isFull = total > 0 && completed >= total;
+    const state = isDone ? "lr-done" : (isCur ? "lr-cur" : "lr-locked");
+    const isLast = idx === count - 1;
+
+    /* Rail node: number plus a small status badge, lock icon when not reachable. */
+    const nodeInner = capstone ? `<i class="bi bi-trophy-fill"></i>` : (idx + 1);
+    const badge = isDone
+      ? `<span class="lr-badge"><i class="bi bi-check-lg"></i></span>`
+      : (isCur && !isLocked ? `<span class="lr-badge"><i class="bi bi-lightning-charge-fill"></i></span>` : "");
+    const rail = `
+      <div class="lr-rail">
+        <div class="lr-node">${nodeInner}${badge}</div>
+        ${isLocked && !isLast ? `<i class="bi bi-lock-fill lr-lock"></i>` : ""}
+      </div>`;
+
+    const mark = isLocked ? `<span></span>` : `<i class="bi bi-check-circle-fill lr-mark"></i>`;
+
+    const progressBlock = isLocked ? "" : `
+      <div class="lr-prog">
+        <div class="lr-pct" style="color:${isCur ? "var(--accent)" : "#16a34a"};">${pctNum}% Completed</div>
+        <span class="lr-bar"><span class="${isCur ? "lr-fill-blue" : "lr-fill-green"}" style="width:${pctNum}%"></span></span>
+      </div>`;
+
+    /* Right column lists this phase's steps. The tick stays wired to the same
+       status cycle the old list used, so progress still saves. */
+    const phaseStepList = stepsByPhase[String(ph.phase_number)] || [];
+    const itemSource = phaseStepList.length
+      ? phaseStepList.slice(0, 4).map(s => ({
+          name: s.skill_name,
+          status: s.status,
+          num: s.step_number,
+        }))
+      : (ph.skills || []).slice(0, 4).map(s => ({ name: s, status: "pending", num: null }));
+
+    const items = itemSource.map(it => {
+      const cls = it.status === "completed" ? "is-done" : (it.status === "in_progress" ? "is-active" : "is-todo");
+      const icon = it.status === "completed" ? "bi-check-circle-fill"
+                 : (it.status === "in_progress" ? "bi-record-circle" : "bi-circle");
+      const tick = it.num
+        ? `<i class="bi ${icon} lr-tick ${cls}" onclick="sgCycleStep(${it.num}, '${it.status}')" title="Toggle status"></i>`
+        : `<i class="bi ${icon} lr-tick ${cls}"></i>`;
+      const jump = it.num ? `<i class="bi bi-chevron-down lr-chev" onclick="sgToggleStep(${it.num})"></i>` : "";
+      return `<span class="lr-item">${tick}<span class="lr-name">${sgEscape(it.name)}</span>${jump}</span>`;
+    }).join("");
+
+    const firstOpen = phaseStepList.find(s => s.status !== "completed");
+    const jumpTo = firstOpen ? `#sgStep${firstOpen.step_number}` : "#sgRoadmapCard";
+    const action = isCur
+      ? `<a class="lr-btn lr-btn-start" href="${jumpTo}">Start Phase</a>`
+      : (isFull
+          ? `<span class="lr-btn lr-btn-done"><i class="bi bi-check-lg"></i> Completed</span>`
+          : `<a class="lr-btn lr-btn-continue" href="${jumpTo}"><i class="bi bi-check-lg"></i> Continue</a>`);
+
+    const sideCol = isLocked
+      ? `<div class="lr-locked-side"><i class="bi bi-lock-fill"></i><span>Complete previous phase to unlock</span></div>`
+      : `<div class="lr-side">${items}<div class="lr-action">${action}</div></div>`;
 
     const skills = (ph.skills || []).length
       ? `<div class="sg-phase-skills">${ph.skills.map(s => `<span class="sg-tag"><i class="bi bi-lightning-charge-fill" style="font-size:0.5rem;"></i> ${sgEscape(s)}</span>`).join("")}</div>`
@@ -2213,24 +2443,36 @@ html.theme-dark {
       ? `<div class="sg-phase-steps">${phaseSteps.map(sgRoadmapStep).join("")}</div>`
       : `<div class="sg-phase-empty">${capstone ? "This capstone unlocks once every phase above is complete." : "No individual steps for this phase."}</div>`;
 
-    return `<div class="sg-phase ${capstone ? "sg-phase-capstone" : ""}">
-      ${node}
-      <div class="sg-phase-card">
-        <div class="sg-phase-head">
-          <div class="sg-phase-title">${capstone ? `<i class="bi bi-trophy-fill" style="color:#a855f7;font-size:0.75rem;"></i>` : ""}${sgEscape(ph.title)}</div>
-          <div class="sg-phase-meta">
-            ${ph.priority ? sgPriBadge(sgCap(ph.priority)) : ""}
-            <span><i class="bi bi-clock"></i> ~${ph.estimated_weeks} wks</span>
-            <span><i class="bi bi-hourglass-split"></i> ${ph.estimated_hours}h</span>
-          </div>
+    /* Everything the old card showed still ships, folded away under the
+       header so the summary stays as compact as the design calls for. */
+    const detail = isLocked ? "" : `
+      <details class="lr-details">
+        <summary>Phase details <i class="bi bi-chevron-down" style="font-size:0.6rem;"></i></summary>
+        <div class="sg-phase-meta" style="margin-bottom:0.5rem;">
+          ${ph.priority ? sgPriBadge(sgCap(ph.priority)) : ""}
+          <span><i class="bi bi-clock"></i> ~${ph.estimated_weeks} wks</span>
+          <span><i class="bi bi-hourglass-split"></i> ${ph.estimated_hours}h</span>
         </div>
-        ${progressBar}
         ${skills}
         ${why}
         ${resources}
         ${objectives}
         ${project}
         ${stepsHtml}
+      </details>`;
+
+    return `<div class="lr-row ${state}">
+      ${rail}
+      <div class="lr-card">
+        ${mark}
+        <div>
+          <div class="lr-label">${capstone ? "Capstone" : `Phase ${idx + 1}`}</div>
+          <div class="lr-title">${sgEscape(ph.title)}</div>
+          <p class="lr-desc">${sgEscape(ph.description || (ph.objectives || [])[0] || "")}</p>
+          ${progressBlock}
+        </div>
+        ${sideCol}
+        ${detail}
       </div>
     </div>`;
   }
@@ -2399,6 +2641,8 @@ html.theme-dark {
       : "–";
     document.getElementById("sgRoadmapBadge").textContent = stepLabel;
     sgSetNavCount("sgNavRoadmap", progress && progress.total ? progress.total : "–");
+    const role = (data.roadmap && data.roadmap.profession) || "";
+    document.getElementById("sgRmRole").textContent = role || "your target role";
     document.getElementById("sgRoadmap").innerHTML = sgRenderRoadmap(haveSkills, data);
     sgApplyOpenSteps();
   }
