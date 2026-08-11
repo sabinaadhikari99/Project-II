@@ -8,6 +8,7 @@ from django.db import transaction
 
 from apps.notifications.services import send_application_email
 from apps.notifications.services import notify_job_match
+from apps.notifications.services import notify_new_application
 from apps.shared.constants import JOB_VECTOR_PREFIX, PROFILE_VECTOR_PREFIX
 from apps.shared.cv_signals import (
     EDUCATION_RANK,
@@ -15,6 +16,7 @@ from apps.shared.cv_signals import (
     extract_cv_signals,
     extract_skills_section,
 )
+from apps.shared.cv_storage import save_resume_file
 from apps.shared.deductions import (
     SEVERITY_POINTS,
     build_strengths,
@@ -60,25 +62,10 @@ SCORE_WEIGHTS = {
     "experience": float(getattr(settings, "AI_WEIGHT_EXPERIENCE", 15)),
     "education": float(getattr(settings, "AI_WEIGHT_EDUCATION", 10)),
     "semantic": float(getattr(settings, "AI_WEIGHT_SEMANTIC", 5)),
-    # Evidence components read straight off the CV. Without these the score had
-    # no way to distinguish a portfolio-rich certified candidate from a bare
-    # skills list, so most candidates collapsed onto the same few values.
     "projects": float(getattr(settings, "AI_WEIGHT_PROJECTS", 6)),
     "certifications": float(getattr(settings, "AI_WEIGHT_CERTIFICATIONS", 4)),
 }
 
-#: How much a matched skill is worth, by where in the CV it was found.
-#:
-#: A skill listed in the SKILLS section is a claim the candidate is making; a
-#: skill that only turns up inside a sentence is weaker evidence of the same
-#: thing. Scoring them identically is why deleting "Jenkins" from a skills list
-#: changed nothing while "set up Jenkins automation servers" remained in the
-#: experience bullets - the extractor scans the whole document and could not
-#: tell the two apart.
-#: The spread is deliberately modest. A skill demonstrated in an experience
-#: bullet is genuinely good evidence - arguably better than a bare list entry -
-#: so prose is discounted, not discredited. Tune via settings if a harsher or
-#: flatter curve suits your market.
 SKILL_SOURCE_WEIGHTS = {
     "skills_section": float(getattr(settings, "AI_SKILL_WEIGHT_DECLARED", 1.0)),
     "experience": float(getattr(settings, "AI_SKILL_WEIGHT_EXPERIENCE", 0.85)),
@@ -87,12 +74,6 @@ SKILL_SOURCE_WEIGHTS = {
     "elsewhere": float(getattr(settings, "AI_SKILL_WEIGHT_ELSEWHERE", 0.7)),
 }
 
-#: normalised skill key -> every spelling that normalises to it.
-#:
-#: `extract_resume_skills` returns NORMALISED keys ("restapis", "cicd"), which
-#: never appear in a CV verbatim. Locating a skill in the document therefore has
-#: to search the words a human would write, so this reverse index is built from
-#: the vocabularies the extractor itself draws on.
 _SPELLINGS_BY_NORM = {}
 
 
@@ -119,9 +100,6 @@ for _name in COMMON_SKILLS:
 AI_MATCH_THRESHOLD = int(getattr(settings, "AI_MATCH_THRESHOLD", 70))
 AI_MATCH_NOTIFICATION_THRESHOLD = int(getattr(settings, "AI_MATCH_NOTIFICATION_THRESHOLD", 80))
 
-#: Profession sub-score used when the classifier could not identify the CV at
-#: all. Neutral on purpose: claiming a perfect profession match would be a lie,
-#: and claiming zero would punish the candidate for our classifier failing.
 UNKNOWN_PROFESSION_MATCH = 0.5
 
 
@@ -152,14 +130,6 @@ def update_job_embedding(job: JobPosting):
 
 def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None,
                             user_skills=None, skill_confidence=None):
-    """Ranked job recommendations for a user.
-
-    `user_skills` defaults to the stored `UserProfile.skills`, which is what the
-    profile-driven recommendations page wants. An AI Match analysis passes the
-    skills it just extracted from the uploaded CV instead: the stored list is a
-    running union across every upload, so scoring from it meant a skill removed
-    from a CV was still scored and the number could only ever move upward.
-    """
     profile = getattr(user, "profile", None)
     if not profile:
         return []
@@ -178,9 +148,6 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None,
     else:
         user_profession = classify_profession_from_skills(user_skills)
 
-    # A CV that cannot be classified used to return an empty list outright -
-    # that is the "Data Analyst CV shows empty results" symptom. Fall back to
-    # semantic similarity instead so the user always gets something relevant.
     if not user_profession:
         if is_debug:
             logger.info("No profession detected; using semantic-only fallback")
@@ -206,9 +173,6 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None,
         job_category__in=profession_titles,
     )
     if not candidate_jobs.exists():
-        # Widen to the specialisation's declared adjacent categories only.
-        # Never to the whole table: that is what put Frontend roles in front of
-        # Flutter and Graphic Design candidates.
         adjacent = set(get_adjacent_parents(specialization)) | set(profession_titles)
         candidate_jobs = JobPosting.objects.filter(
             is_active=True, job_category__in=adjacent,
@@ -274,20 +238,6 @@ def recommend_jobs_for_user(user, limit=10, request=None, resume_text=None,
 def _semantic_fallback_recommendations(user, profile, resume_text, limit, request,
                                        user_profession=None, specialization=None,
                                        user_skills=None, skill_confidence=None):
-    """Last-resort recommendations driven purely by embedding similarity.
-
-    Used only when the profession is undetectable or its categories hold no
-    postings. Returning an empty list here was the "CV shows empty results"
-    bug: the user got a blank page with no explanation. Results are flagged
-    is_related_role so the UI can label them as broader suggestions.
-
-    `user_profession` is the profession actually detected for the CV (None when
-    the classifier could not decide). It MUST be passed through rather than
-    substituted with the job's own category: doing the latter made the
-    comparison inside compute_match_score self-referential, awarding a perfect
-    profession sub-score - the single largest weighted component - to precisely
-    the results we are least confident about.
-    """
     from apps.src.job_recommendation import build_recommendation_text
 
     text = resume_text or build_recommendation_text(profile)
@@ -313,8 +263,6 @@ def _semantic_fallback_recommendations(user, profile, resume_text, limit, reques
         return []
 
     jobs = JobPosting.objects.filter(is_active=True, id__in=list(scores))
-    # Same CV signals the primary path uses, so a job reached through the
-    # fallback is scored on the same evidence as one reached through filtering.
     cv_signals = extract_cv_signals(resume_text or profile.resume_text or "")
     effective_skills = list(user_skills) if user_skills is not None else (profile.skills or [])
     recommendations = []
@@ -367,12 +315,6 @@ def _hybrid_rank_jobs(user, profile, user_skills, user_profession, candidate_job
             continue
         vector_scores[job_id] = score
 
-    # Parse the CV itself, never `rec_text` - build_recommendation_text() wraps
-    # the document in "Skills: ... Headline: ..." scaffolding that skews the
-    # section and project counts. Falling back to the stored resume_text is what
-    # makes /api/jobs/recommended/ score a CV the same way AI Match does; that
-    # path used to pass "" and silently lose the project, certification,
-    # experience and education evidence entirely.
     cv_signals = extract_cv_signals(resume_text or profile.resume_text or "")
 
     scored_jobs = []
@@ -395,18 +337,6 @@ def _hybrid_rank_jobs(user, profile, user_skills, user_profession, candidate_job
 
 
 def locate_resume_skills(resume_text, skills):
-    """Where each extracted skill appears in the CV, and what that is worth.
-
-    Returns ``{normalised skill: {"skill", "sources", "confidence"}}`` where
-    confidence is the best SKILL_SOURCE_WEIGHTS value across the sections the
-    skill was found in. Feed the confidences to `compute_match_score` and a
-    declared skill counts fully while a passing mention counts partially, so
-    editing the SKILLS section moves the score in both directions.
-
-    Reuses the existing section extractors and synonym table rather than
-    re-parsing: `extract_resume_sections` for the prose blocks,
-    `extract_skills_section` for the skills list, `SKILL_SYNONYMS` for spelling.
-    """
     text = resume_text or ""
     if not text.strip() or not skills:
         return {}
@@ -424,9 +354,6 @@ def locate_resume_skills(resume_text, skills):
         raw = str(skill).strip()
         if not raw:
             continue
-        # Search every spelling that normalises to this skill, plus the value
-        # itself for anything the reverse index does not know (a job posting's
-        # own bespoke requirement, say).
         spellings = {raw} | _SPELLINGS_BY_NORM.get(norm_skill(raw), set())
         patterns = [
             re.compile(r"(?<![a-z0-9+#.])" + re.escape(s.lower()) + r"(?![a-z0-9+#.])",
@@ -436,8 +363,6 @@ def locate_resume_skills(resume_text, skills):
         found = [name for name, body in bodies.items()
                  if body and any(p.search(body) for p in patterns)]
         if not found:
-            # Present in the document (the extractor found it) but outside any
-            # section this function can name - a header, a footer, a stray line.
             found = ["elsewhere"]
         located[norm_skill(raw)] = {
             "skill": raw,
@@ -448,17 +373,10 @@ def locate_resume_skills(resume_text, skills):
 
 
 def skill_confidence_map(located):
-    """Flatten `locate_resume_skills` output to {normalised skill: confidence}."""
     return {key: entry["confidence"] for key, entry in (located or {}).items()}
 
 
 def split_required_skills(required_skills, user_skills):
-    """Split a posting's requirements into (matched, missing), original spelling.
-
-    Single source of truth for "does this candidate have this requirement",
-    shared by the scorer, the deduction layer and the recommendation builder so
-    the three can never disagree about what is missing.
-    """
     user_norm = normalize_skill_set(user_skills)
     required_raw = list(required_skills or [])
     matched = [s for s in required_raw if norm_skill(s) in user_norm]
@@ -468,37 +386,11 @@ def split_required_skills(required_skills, user_skills):
 
 def compute_match_score(user_skills, user_profession, profile, job, vector_score,
                         cv_signals=None, specialization=None, skill_confidence=None):
-    """Weighted match score, then explainable job-specific deductions.
-
-    Stage 1 is the existing seven-component weighted average - unchanged, and
-    still the foundation of the number.
-
-    Stage 2 subtracts named penalties for requirements THIS posting lists and
-    THIS CV does not evidence (see apps.shared.deductions). Deductions are
-    capped, always job-specific and always carry their justification, so the
-    final score is both better separated and fully explainable.
-
-    `cv_signals` (from apps.shared.cv_signals.extract_cv_signals) is optional and
-    backwards compatible: when supplied, experience / education / projects /
-    certifications are read from the UPLOADED CV rather than from static
-    UserProfile columns, so the score actually moves between different CVs.
-
-    `specialization` is the fine-grained role from apps.shared.specializations.
-    It only sharpens how severely a missing requirement is judged; it never
-    changes which jobs are considered.
-
-    `skill_confidence` maps a normalised skill to how strongly the CV evidences
-    it (see locate_resume_skills). Omit it and every matched skill counts as a
-    full 1.0, which is exactly the behaviour every existing caller had.
-    """
     user_profession_lower = user_profession.lower() if user_profession else ""
 
     job_profession = (job.job_category or "").lower()
     related_professions = {p.lower() for p in get_related_profession_titles(user_profession or "")}
     if not user_profession_lower:
-        # Unknown profession. Guarded explicitly because two empty strings
-        # compare equal, which used to hand an unclassifiable CV a perfect
-        # profession match against an uncategorised posting.
         profession_match = UNKNOWN_PROFESSION_MATCH
     elif user_profession_lower == job_profession:
         profession_match = 1.0
@@ -513,10 +405,6 @@ def compute_match_score(user_skills, user_profession, profile, job, vector_score
     user_skills_norm = normalize_skill_set(user_skills)
     if required:
         matched_skills = user_skills_norm & required
-        # A matched skill contributes its confidence, not a flat 1.0, when the
-        # caller supplied provenance (see locate_resume_skills). Without it the
-        # sum is just the count, so every existing caller - Skill Gap Analysis
-        # included - keeps the exact behaviour it had.
         if skill_confidence:
             covered = sum(
                 min(1.0, max(0.0, float(skill_confidence.get(skill, 1.0))))
@@ -534,46 +422,31 @@ def compute_match_score(user_skills, user_profession, profile, job, vector_score
 
     signals = cv_signals or {}
 
-    # CV-parsed experience wins over the static profile column when available.
     user_exp = float(signals.get("experience_years") or 0) or float(
         getattr(profile, "experience_years", 0) or 0
     )
     job_exp = float(job.experience_required or 0)
     if job_exp == 0:
-        # Graded rather than a flat 1.0: an open-ended posting still rewards a
-        # candidate who actually has experience, so the sub-score varies by CV.
         exp_pct = min(1.0, 0.6 + user_exp / 10.0)
     else:
         exp_pct = min(1.0, 0.5 + user_exp / (job_exp * 2)) if user_exp >= job_exp \
             else max(0.1, user_exp / job_exp)
     experience_score = round(exp_pct * 100)
 
-    # Education is compared on the EDUCATION_RANK ordinal scale, never by
-    # substring. The old string test asked whether one qualification contained
-    # the other, so a master's or a PhD failed a "Bachelor's degree"
-    # requirement - neither string contains the other - and scored 0.3 while a
-    # bachelor's scored 1.0. Over-qualification was penalised. Ranks make the
-    # comparison directional: meeting or exceeding the requirement is always
-    # full marks.
     user_level = signals.get("education_level") or ""
     if user_level and user_level != "unknown":
         user_rank = EDUCATION_RANK.get(user_level, 0)
     else:
-        # No parsed CV (e.g. the profile-only recommendation path): read the
-        # free-text profile column through the same parser.
         user_rank = education_rank(getattr(profile, "education", "") or "")
     job_rank = education_rank(getattr(job, "education_required", "") or "")
 
     if job_rank == 0:
-        # The posting states no requirement: scale with the candidate's level.
         education_pct = 0.55 + 0.1 * user_rank
     elif user_rank >= job_rank:
         education_pct = 1.0
     elif user_rank == 0:
-        # Nothing recognisable in the CV to compare against a stated requirement.
         education_pct = 0.3
     else:
-        # Below the requirement, graded by how far below rather than a flat floor.
         education_pct = max(0.3, 1.0 - 0.25 * (job_rank - user_rank))
     education_pct = max(0.0, min(education_pct, 1.0))
     education_score = round(education_pct * 100)
@@ -581,7 +454,6 @@ def compute_match_score(user_skills, user_profession, profile, job, vector_score
     semantic_pct = max(0.0, min(float(vector_score), 1.0))
     semantic_score = round(semantic_pct * 100)
 
-    # Demonstrated delivery: projects + supporting evidence in the document.
     project_pct = min(1.0, 0.25 * min(int(signals.get("project_count") or 0), 3))
     if signals.get("has_portfolio"):
         project_pct = min(1.0, project_pct + 0.15)
@@ -611,7 +483,6 @@ def compute_match_score(user_skills, user_profession, profile, job, vector_score
     )
     base_score = max(1, min(base_score, 100))
 
-    # --- stage 2: explainable, job-specific deductions ---------------------
     deduction_report = evaluate_deductions(
         job=job,
         missing_skills=missing_raw,
@@ -636,9 +507,6 @@ def compute_match_score(user_skills, user_profession, profile, job, vector_score
         "semantic_similarity": semantic_score,
         "project_match": project_score,
         "certification_match": certification_score,
-        # The weighted score before deductions, kept alongside the final one so
-        # the UI can show the arithmetic rather than just the answer. Both are
-        # plain ints, which keeps the existing DictField(IntegerField) contract.
         "base_score": base_score,
         "total_deduction": deduction_report["total"],
         "final_score": final_score,
@@ -670,19 +538,6 @@ _compute_weighted_score = compute_match_score
 
 
 def estimate_score_gain(required_skill_count, skills_learned=1, deduction_recovered=0):
-    """Points the overall match score would gain by learning N missing skills.
-
-    Derived from the real weighting rather than guessed: the skills component is
-    matched/required, so each newly acquired required skill lifts that component
-    by 1/required, which contributes (w_skills / total_weight) of that lift to
-    the final score.
-
-    `deduction_recovered` is the stage-2 penalty that acquiring the skill also
-    removes (see apps.shared.deductions). Learning a critical requirement is now
-    worth its weighted contribution PLUS the 5 points it stops costing, which is
-    why the two terms are added here. The result stays a lower bound: with
-    several gaps closed at once the deduction cap may already have been binding.
-    """
     if not required_skill_count:
         return int(round(max(0, deduction_recovered)))
     total_weight = sum(SCORE_WEIGHTS.values()) or 1
@@ -712,37 +567,50 @@ def apply_to_job(user, job, cover_letter=""):
         job=job, applicant=user, defaults={"cover_letter": cover_letter},
     )
     if created:
-        send_application_email(application)
+        send_application_email(application)      # confirmation -> candidate
+        notify_new_application(application)       # notification (+ CV link) -> recruiter
     return application
 
 
 def analyze_resume_match(user, resume_file, request=None):
     from apps.accounts.models import UserProfile
 
+    # --- Stage 1: extract + persist the CV -------------------------------
+    # This is the ONLY part that must never be lost to a downstream failure.
+    # It is isolated from the analysis pipeline below on purpose: previously,
+    # a single broad `except Exception` wrapped extraction AND scoring AND
+    # Gemini insights AND recommendations together, so a failure ANYWHERE in
+    # that pipeline (including ones happening before profile.save() ran)
+    # returned a silent empty-but-"successful" response. The CV would never
+    # be saved to profile.resume_text, but the view had no way to know that -
+    # it always returned {"success": True}. This is what caused a real upload
+    # to "succeed" on screen while apps reading profile.resume_text (like the
+    # quiz) never saw anything.
+    resume_text = extract_pdf_text(resume_file)
+    if len(resume_text.strip()) < 80:
+        raise ValueError("The uploaded PDF text looks empty or unclear.")
+
+    extracted_skills = extract_resume_skills(resume_text)
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile.resume_text = resume_text
+    prior_profile_skills = list(profile.skills or [])
+    merged_skills = sorted(set(profile.skills or []) | set(extracted_skills))
+    profile.skills = merged_skills
+    # Save the actual uploaded file (not just its extracted text) and sync
+    # profile.cv_url, so recruiters can open the real CV from notification
+    # emails instead of only seeing text SkillSync extracted from it.
+    save_resume_file(profile, resume_file, request=request)
+    profile.save()
+    # get_or_create() returned a NEW UserProfile instance; prime Django's
+    # cached reverse relation so downstream reads see the saved row.
+    user.profile = profile
+
+    # From this point on, resume_text and skills are durably saved. Anything
+    # below is "nice to have" analysis - if it fails, the CV upload itself
+    # must still count as a success.
+
+    # --- Stage 2: scoring, recommendations, insights ----------------------
     try:
-        resume_text = extract_pdf_text(resume_file)
-        if len(resume_text.strip()) < 80:
-            raise ValueError("The uploaded PDF text looks empty or unclear.")
-
-        extracted_skills = extract_resume_skills(resume_text)
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-        profile.resume_text = resume_text
-        prior_profile_skills = list(profile.skills or [])
-        # The profile keeps the cumulative list so manually added skills and
-        # earlier CVs are not destroyed. Scoring no longer reads it - see below.
-        merged_skills = sorted(set(profile.skills or []) | set(extracted_skills))
-        profile.skills = merged_skills
-        profile.save()
-        # get_or_create() returned a NEW UserProfile instance; prime Django's
-        # cached reverse relation so downstream reads see the saved row.
-        user.profile = profile
-
-        # An AI Match score describes THE UPLOADED DOCUMENT, so it is computed
-        # from that document's own skills. `merged_skills` stays the profile's
-        # cumulative list - it is what the profile page and manual edits rely on
-        # - but scoring from it made the number monotonically non-decreasing:
-        # a skill deleted from a CV was still scored, so removing one could
-        # never lower the score and any incidental addition could only raise it.
         skill_sources = locate_resume_skills(resume_text, extracted_skills)
         skill_confidence = skill_confidence_map(skill_sources)
 
@@ -764,9 +632,6 @@ def analyze_resume_match(user, resume_file, request=None):
             resume_text, extracted_skills, user_profession or "",
         )
 
-        # Explainability layer (Phase 2 #3, #4, #11, #12). Signals are parsed
-        # once here and threaded into everything below, so none of this re-reads
-        # or re-embeds the CV.
         signals = extract_cv_signals(resume_text)
         gemini = _gemini_resume_insights(
             resume_text, extracted_skills, recommendations, specialization,
@@ -787,10 +652,6 @@ def analyze_resume_match(user, resume_file, request=None):
             specialization, quality, signals,
         )
 
-        # TEMPORARY diagnostic hook (settings.AI_MATCH_TRACE, off by default).
-        # Formats values this call already produced - it re-runs nothing, scores
-        # nothing, and returns nothing, so it cannot alter the response. Remove
-        # together with apps.shared.match_debug once scoring is settled.
         if getattr(settings, "AI_MATCH_TRACE", False):
             try:
                 from apps.shared.match_debug import format_live_trace
@@ -811,19 +672,14 @@ def analyze_resume_match(user, resume_file, request=None):
                 logger.warning("AI match trace failed (analysis unaffected)", exc_info=True)
 
         return {
+            "success": True,
             "profession": user_profession or "Not determined",
-            # Fine-grained role from the CV (e.g. "Flutter Developer"). The
-            # coarse `profession` is unchanged so existing consumers keep
-            # working; `specialization` is what makes the UI role-specific.
             "specialization": specialization or user_profession or "",
             "specialization_confidence": specialization_conf,
             "profession_confidence": profession_conf,
             "resume_summary": gemini["resume_summary"],
             "resume_score": best_match,
             "skills_extracted": extracted_skills,
-            # Where each extracted skill was found, and therefore how much it
-            # counted. Lets the UI explain why a skill listed only inside an
-            # experience bullet is worth less than one in the Skills section.
             "skill_sources": [
                 {
                     "skill": entry["skill"],
@@ -835,8 +691,6 @@ def analyze_resume_match(user, resume_file, request=None):
                                     key=lambda e: (-e["confidence"], e["skill"].lower()))
             ],
             "recommended_jobs": recommendations,
-            # Per-job score breakdown so the charts plot the candidate against
-            # each matched role instead of re-rendering one flat percentage.
             "match_analytics": [
                 {
                     "title": item["job"].title,
@@ -850,8 +704,6 @@ def analyze_resume_match(user, resume_file, request=None):
                     "matched_skills": item.get("matched_skills", []),
                     "missing_skills": item.get("missing_skills", []),
                     "is_related_role": item.get("is_related_role", False),
-                    # base - deductions = match_percentage, so the charts can
-                    # show what the gaps actually cost on this role.
                     "base_score": item.get("base_score", item["match_percentage"]),
                     "total_deduction": item.get("total_deduction", 0),
                 }
@@ -859,7 +711,6 @@ def analyze_resume_match(user, resume_file, request=None):
             ],
             "resume_insights": gemini["resume_insights"],
             "resume_improvement_suggestions": gemini["resume_improvement_suggestions"],
-            # --- Phase 2 explainability additions -------------------------
             "structured_insights": structured_insights,
             "skill_action_plan": action_plan,
             "resume_quality": quality,
@@ -882,18 +733,30 @@ def analyze_resume_match(user, resume_file, request=None):
                 recommendations[0]["match_explanation"] if recommendations else {}
             ),
         }
-    except ValueError:
-        raise
     except Exception:
-        logger.exception("analyze_resume_match: unexpected error for user %s", user.id)
+        # The CV WAS saved (Stage 1 already committed and returned normally).
+        # Only the analysis/recommendation pipeline failed. Say so explicitly
+        # instead of pretending everything succeeded - the view uses
+        # `success` to decide what message to show, and `cv_saved` tells it
+        # the resume upload itself is NOT the thing that failed.
+        logger.exception(
+            "analyze_resume_match: CV saved but analysis pipeline failed for user %s",
+            user.id,
+        )
         return {
+            "success": False,
+            "cv_saved": True,
+            "message": (
+                "Your CV was uploaded and saved, but we couldn't finish analyzing "
+                "it right now. Please try again in a moment to see your job matches."
+            ),
             "profession": "",
             "specialization": "",
             "specialization_confidence": 0,
             "profession_confidence": 0,
             "resume_summary": "",
             "resume_score": 0,
-            "skills_extracted": [],
+            "skills_extracted": extracted_skills,
             "skill_sources": [],
             "recommended_jobs": [],
             "match_analytics": [],
@@ -945,8 +808,6 @@ def extract_resume_skills(resume_text):
 def _build_recommendation(user, profile, job, vector_score, match_explanation=None, request=None,
                           deductions=None, strengths=None, user_skills=None):
     required_skills = list(job.required_skills or [])
-    # Must be the SAME skill set the score was computed from, or the matched /
-    # missing chips would contradict the percentage next to them.
     effective_skills = list(user_skills) if user_skills is not None else (profile.skills or [])
     matched_skills, missing_skills = split_required_skills(required_skills, effective_skills)
 
@@ -963,7 +824,6 @@ def _build_recommendation(user, profile, job, vector_score, match_explanation=No
         "job": job,
         "score": match_pct / 100,
         "match_percentage": match_pct,
-        # The arithmetic behind match_percentage: base - deductions = final.
         "base_score": explanation.get("base_score", match_pct),
         "total_deduction": explanation.get("total_deduction", 0),
         "required_skills": required_skills,
@@ -978,7 +838,6 @@ def _build_recommendation(user, profile, job, vector_score, match_explanation=No
     }
 
 
-#: Human labels for score components, used to explain a job match.
 _COMPONENT_LABELS = (
     ("profession_match", "profession alignment"),
     ("skills_match", "skills coverage"),
@@ -991,7 +850,6 @@ _COMPONENT_LABELS = (
 
 
 def _why_matched(matched_skills, explanation):
-    """Positive drivers behind this job's score (Phase 2 #5, #12)."""
     reasons = []
     strong = [label for key, label in _COMPONENT_LABELS
               if explanation.get(key, 0) >= 75]
@@ -1008,7 +866,6 @@ def _why_matched(matched_skills, explanation):
 
 
 def _why_not_higher(missing_skills, explanation):
-    """Weakest components, so the user knows exactly what caps the score."""
     reasons = []
     weak = sorted(
         ((explanation.get(key, 0), label) for key, label in _COMPONENT_LABELS
@@ -1106,16 +963,6 @@ def _career_level_label(years):
 
 def _fallback_summary(resume_text, skills, specialization="", recommendations=None,
                       signals=None):
-    """Structured, CV-derived professional summary.
-
-    Every clause below is computed from the uploaded document: role, career
-    level, years, strongest skills, weak areas and employability. The previous
-    version emitted one fixed sentence with the skill list interpolated, which
-    is why summaries looked identical across candidates.
-
-    `signals` is accepted so the caller can pass the parse it already holds
-    rather than making this re-read the whole document.
-    """
     signals = signals or extract_cv_signals(resume_text)
     years = signals["experience_years"]
     role = specialization or "Professional"
@@ -1239,17 +1086,10 @@ def _fallback_improvement_suggestions(resume_text, skills, recommendations):
     return suggestions[:6]
 
 
-#: Rough self-study effort per difficulty tier, in weeks.
 _LEARN_WEEKS = {"beginner": 2, "intermediate": 4, "advanced": 8}
 
 
 def build_skill_action_plan(recommendations, limit=6):
-    """Actionable, explainable plan entries for the top missing skills.
-
-    Each entry answers: why is this missing, how important is it, which jobs
-    need it, how long will it take, and what will it do to my score
-    (Phase 2 #4). Every number is computed from the live recommendation set.
-    """
     from apps.skillgap.catalog import get_skill_difficulty
 
     recs = [r for r in (recommendations or []) if r.get("job") is not None]
@@ -1272,8 +1112,6 @@ def build_skill_action_plan(recommendations, limit=6):
         return []
 
     avg_required = max(1, round(sum(required_counts) / len(required_counts)))
-    # Judge severity under the profession the recommendations belong to, so a
-    # gap is rated the way the deduction layer actually charges it.
     top_job = recs[0].get("job")
     profession = getattr(top_job, "job_category", "") or None
 
@@ -1290,8 +1128,6 @@ def build_skill_action_plan(recommendations, limit=6):
             "required_by_jobs": count,
             "difficulty": difficulty,
             "estimated_weeks": _LEARN_WEEKS.get(difficulty, 4),
-            # How the deduction layer bands this gap, and therefore how many
-            # penalty points learning it recovers on top of the weighted lift.
             "severity": severity,
             "expected_score_gain": estimate_score_gain(
                 avg_required, deduction_recovered=SEVERITY_POINTS[severity],
@@ -1304,11 +1140,6 @@ def build_skill_action_plan(recommendations, limit=6):
 
 def build_structured_insights(resume_text, skills, recommendations,
                               specialization="", quality=None, signals=None):
-    """Categorised CV insights (Phase 2 #3).
-
-    Returns a list of {category, items[]} where every item is derived from the
-    uploaded document or the live recommendation set - never a fixed sentence.
-    """
     signals = signals or extract_cv_signals(resume_text)
     role = specialization or "your target"
     best = max((r.get("match_percentage", 0) for r in (recommendations or [])), default=0)
