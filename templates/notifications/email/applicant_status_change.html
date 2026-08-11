@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,6 +100,20 @@
                             </tr>
 
                         </table>
+
+                        <!-- CV Receipt Link -->
+                        {% if cv_url %}
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;">
+                            <tr>
+                                <td align="center">
+                                    <a href="{{ cv_url }}" target="_blank" rel="noopener"
+                                       style="display:inline-block; background:#2563EB; color:#ffffff; text-decoration:none; font-size:14px; font-weight:bold; padding:12px 28px; border-radius:10px;">
+                                        📄 View Your Submitted CV
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        {% endif %}
 
                         <p style="margin:35px 0 20px; font-size:16px; line-height:1.8; color:#475569;">
                             Thank you for your interest in this opportunity and for taking the time to apply. We appreciate your effort and wish you continued success in your career journey.
