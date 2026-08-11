@@ -1,178 +1,210 @@
-<!-- file path: templates/ai_match.html -->
 {% extends "base_dashboard.html" %}
 {% block title %}AI Match | SkillSync AI{% endblock %}
 
 {% block content %}
 <style>
   :root {
-    --accent: var(--bs-primary, #2563EB);
-    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
+    /* ═══ UNIFIED BRAND BLUE — matches landing page exactly ═══ */
+    --brand: #2563EB;
+    --brand-dark: #1D4ED8;
+    --brand-deep: #1A3A7A;
+    --brand-darkest: #0B2A5E;
+    --brand-light: #3B82F6;
+    --brand-lighter: #4F8CF7;
+    --brand-rgb: 37, 99, 235;
+
+    /* Keep --accent as alias so existing selectors resolve */
+    --accent: #2563EB;
+    --accent-rgb: 37, 99, 235;
+    --accent-dark: #1D4ED8;
+
+    /* Override any inherited --bs-primary just for this page */
+    --bs-primary: #2563EB;
+    --bs-primary-rgb: 37, 99, 235;
+
     --surface: #fff;
     --surface-alt: #F8FAFC;
-    --txt: rgba(15,23,42,0.88);
-    --txt-soft: rgba(15,23,42,0.55);
-    --txt-muted: rgba(15,23,42,0.38);
-    --bdr: rgba(15,23,42,0.06);
-    --bdr-hover: rgba(15,23,42,0.12);
-    --shadow: rgba(15,23,42,0.06);
-    --shadow-lg: rgba(15,23,42,0.10);
+    --txt: rgba(11,29,58,0.92);
+    --txt-soft: rgba(11,29,58,0.62);
+    --txt-muted: rgba(11,29,58,0.42);
+    --bdr: rgba(15,23,42,0.08);
+    --bdr-hover: rgba(15,23,42,0.16);
+    --shadow: rgba(15,23,42,0.05);
+    --shadow-lg: rgba(37,99,235,0.10);
     --success: #10B981;
     --success-bg: rgba(16,185,129,0.10);
-    --success-bdr: rgba(16,185,129,0.18);
+    --success-bdr: rgba(16,185,129,0.20);
     --warn: #F59E0B;
     --warn-bg: rgba(245,158,11,0.10);
-    --warn-bdr: rgba(245,158,11,0.18);
+    --warn-bdr: rgba(245,158,11,0.20);
     --danger: #EF4444;
     --danger-bg: rgba(239,68,68,0.08);
 
-    /* 8px spacing system — every gap, pad and margin on the dashboard is
-       one of these, so density can be retuned in one place. */
-    --sp-1: 4px;
-    --sp-2: 8px;
-    --sp-3: 12px;
-    --sp-4: 16px;
-    --sp-5: 24px;
-    --sp-6: 32px;
-
-    --r-sm: 10px;
-    --r-md: 12px;
-    --r-lg: 16px;
-    --r-pill: 999px;
-
-    --el-1: 0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.05);
-    --el-2: 0 2px 4px rgba(15,23,42,0.05), 0 10px 28px rgba(15,23,42,0.08);
-
+    /* Reduced spacing scale — more compact */
+    --sp-1: 3px; --sp-2: 6px; --sp-3: 10px; --sp-4: 14px; --sp-5: 18px; --sp-6: 24px;
+    --r-sm: 8px; --r-md: 10px; --r-lg: 14px; --r-xl: 16px; --r-pill: 999px;
+    --el-1: 0 1px 3px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.05);
+    --el-2: 0 4px 12px rgba(15,23,42,0.06), 0 12px 40px rgba(37,99,235,0.10);
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .ai-match-page { animation: pageIn 0.6s ease both; }
+  /* ═══ Force the accent to brand blue even if user picked a different one
+         in preferences — this page ships in unified brand blue. ═══ */
+  .ai-match-page {
+    --bs-primary: #2563EB !important;
+    --bs-primary-rgb: 37, 99, 235 !important;
+    --accent: #2563EB !important;
+    --accent-rgb: 37, 99, 235 !important;
+  }
+
+  /* ═══ DARK THEME ═══ */
+  html.theme-dark .ai-match-page,
+  [data-theme="dark"] .ai-match-page {
+    /* Slightly brighter blue reads better on dark surfaces */
+    --accent: #3B82F6 !important;
+    --accent-rgb: 59, 130, 246 !important;
+    --accent-dark: #2563EB;
+    --brand: #3B82F6;
+    --brand-rgb: 59, 130, 246;
+    --brand-dark: #2563EB;
+    --bs-primary: #3B82F6 !important;
+    --bs-primary-rgb: 59, 130, 246 !important;
+
+    --surface: #1E293B;
+    --surface-alt: #0F172A;
+    --txt: rgba(241,245,249,0.94);
+    --txt-soft: rgba(241,245,249,0.72);
+    --txt-muted: rgba(241,245,249,0.48);
+    --bdr: rgba(148,163,184,0.16);
+    --bdr-hover: rgba(148,163,184,0.30);
+    --shadow: rgba(0,0,0,0.28);
+    --shadow-lg: rgba(0,0,0,0.44);
+    --success-bg: rgba(16,185,129,0.16);
+    --success-bdr: rgba(52,211,153,0.30);
+    --warn-bg: rgba(245,158,11,0.16);
+    --warn-bdr: rgba(251,191,36,0.30);
+    --danger-bg: rgba(239,68,68,0.16);
+  }
+
+  html.theme-dark .detail-sticky-bar,
+  [data-theme="dark"] .detail-sticky-bar {
+    background: rgba(15,23,42,0.94) !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.30) !important;
+  }
+
+  html.theme-dark .skeleton-line,
+  html.theme-dark .skeleton-block,
+  [data-theme="dark"] .skeleton-line,
+  [data-theme="dark"] .skeleton-block {
+    background: linear-gradient(90deg,
+      rgba(51,65,85,0.55) 25%,
+      rgba(71,85,105,0.75) 50%,
+      rgba(51,65,85,0.55) 75%) !important;
+    background-size: 200% 100% !important;
+  }
+
+  .ai-match-page { animation: pageIn 0.6s var(--ease) both; }
 
   @keyframes pageIn {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── Header ── */
+  /* ═══════════════════════════════════════════════════════════════
+     PAGE HERO
+     ═══════════════════════════════════════════════════════════════ */
   .dash-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.25rem;
+    gap: 1.5rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
-    animation: fadeDown 0.5s ease both;
+    animation: fadeDown 0.5s var(--ease) both;
   }
-
-  /* Identity bar: mark, page name, section — all on one line. */
-  .dash-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    min-width: 0;
-  }
-  .dash-brand-mark {
-    width: 42px; height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 13px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 19px;
-    flex-shrink: 0;
-    box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.30);
-  }
-  .dash-brand-sub {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--txt-muted);
-  }
-  .dash-brand-sub::before { content: "· "; opacity: 0.55; }
 
   @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-12px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .dash-header .page-kicker {
-    display: inline-flex;
+  .dash-brand {
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.45rem;
+    gap: 0.7rem;
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
-  .dash-header .page-kicker .pulse-dot {
-    width: 7px; height: 7px;
-    border-radius: 999px;
-    background: var(--accent);
-    animation: pulseDot 2s ease-in-out infinite;
+  .dash-brand-mark {
+    width: 38px; height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #2563EB, #1D4ED8);
+    color: #fff;
+    font-size: 17px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+    transition: transform 0.3s var(--ease);
   }
 
-  @keyframes pulseDot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50%     { opacity: 0.35; transform: scale(0.55); }
+  .dash-brand:hover .dash-brand-mark {
+    transform: rotate(-4deg) scale(1.05);
   }
+
+  .dash-brand-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  /* Removed .dash-brand-kicker and its pulse dot entirely */
 
   .dash-header .page-title {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 800;
-    letter-spacing: -0.025em;
-    margin-bottom: 0;
+    letter-spacing: -0.03em;
+    margin: 0;
     color: var(--txt);
+    line-height: 1.15;
   }
 
   .dash-header .page-subtitle {
-    font-size: 13.5px;
+    font-size: 12px;
     color: var(--txt-muted);
     line-height: 1.6;
-    max-width: 42ch;
+    max-width: 44ch;
     text-align: right;
+    margin: 0;
+    font-weight: 500;
   }
 
   @media (max-width: 991.98px) {
     .dash-header .page-subtitle { display: none; }
   }
 
-  .btn-outline-accent {
-    background: transparent !important;
-    border: 1.5px solid rgba(var(--accent-rgb), 0.28) !important;
-    color: var(--accent) !important;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 14px;
-    padding: 0.5rem 1.15rem;
-    transition: all 0.25s ease;
-  }
-
-  .btn-outline-accent:hover {
-    background: rgba(var(--accent-rgb), 0.06) !important;
-    border-color: rgba(var(--accent-rgb), 0.4) !important;
-    transform: translateY(-2px);
-    color: var(--accent) !important;
-  }
-
-  /* ── Panels ── */
+  /* ═══════════════════════════════════════════════════════════════
+     PANELS
+     ═══════════════════════════════════════════════════════════════ */
   .dash-panel {
     background: var(--surface);
     border: 1px solid var(--bdr);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px var(--shadow);
+    border-radius: var(--r-xl);
+    box-shadow: var(--el-1);
     overflow: hidden;
-    animation: fadeUp 0.5s ease both;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    animation: fadeUp 0.5s var(--ease) both;
+    transition: box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
   }
   .dash-panel:hover {
-    box-shadow: 0 10px 30px var(--shadow-lg);
-    border-color: var(--bdr-hover);
+    box-shadow: var(--el-2);
+    border-color: rgba(37, 99, 235, 0.16);
   }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
+    from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
@@ -180,86 +212,101 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1.35rem 1.75rem;
+    gap: 0.8rem;
+    padding: 0.9rem 1.2rem;
     border-bottom: 1px solid var(--bdr);
+    background: var(--surface-alt);
+  }
+
+  html.theme-dark .panel-head,
+  [data-theme="dark"] .panel-head {
+    background: rgba(15, 23, 42, 0.40);
   }
 
   .panel-head .panel-title {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 0;
+    gap: 0.6rem;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
     color: var(--txt);
+    letter-spacing: -0.01em;
   }
 
   .panel-head .panel-icon {
-    width: 32px; height: 32px;
+    width: 30px; height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 15px;
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.04));
+    color: #2563EB;
+    font-size: 14px;
     flex-shrink: 0;
+    border: 1px solid rgba(37, 99, 235, 0.08);
+  }
+
+  html.theme-dark .panel-head .panel-icon,
+  [data-theme="dark"] .panel-head .panel-icon {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.06));
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.16);
   }
 
   .panel-head .badge-count {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.3rem 0.8rem;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
+    padding: 0.25rem 0.7rem;
+    border-radius: var(--r-pill);
+    font-size: 11px;
+    font-weight: 700;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
+    letter-spacing: 0.02em;
   }
 
-  .panel-body { padding: 1.5rem 1.75rem; }
+  .panel-body { padding: 1.2rem 1.4rem; }
 
-  /* ── Placeholder Text ── */
-  .placeholder-hint {
+  /* ═══════════════════════════════════════════════════════════════
+     PLACEHOLDER / CONTENT
+     ═══════════════════════════════════════════════════════════════ */
+  .placeholder-hint,
+  .placeholder-block {
     display: flex;
     align-items: flex-start;
-    gap: 0.85rem;
-    padding: 1.15rem 1.25rem;
-    border-radius: 14px;
-    border: 1px dashed rgba(var(--accent-rgb), 0.15);
-    background: transparent;
+    gap: 0.8rem;
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    border: 1px dashed rgba(37, 99, 235, 0.22);
+    background: rgba(37, 99, 235, 0.02);
     color: var(--txt-muted);
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.6;
   }
 
-  .placeholder-hint .ph-icon {
-    width: 36px; height: 36px;
+  .placeholder-hint .ph-icon,
+  .placeholder-block .ph-icon {
+    width: 34px; height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: rgba(var(--accent-rgb), 0.06);
-    color: var(--accent);
-    font-size: 15px;
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.04));
+    color: #2563EB;
+    font-size: 14px;
     flex-shrink: 0;
-    opacity: 0.7;
   }
 
-  .placeholder-hint .ph-text {
-    padding-top: 0.15rem;
-  }
+  .placeholder-hint .ph-text,
+  .placeholder-block .ph-text { padding-top: 0.1rem; }
 
-  /* Filled content text (after analysis) */
   .content-text {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--txt-soft);
     line-height: 1.8;
-    background: transparent;
-    padding: 0;
   }
 
   .content-text.filled {
@@ -267,46 +314,20 @@
     font-weight: 500;
   }
 
-  /* ── Placeholder Block ── */
-  .placeholder-block {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    padding: 1.15rem 1.25rem;
-    border-radius: 14px;
-    border: 1px dashed rgba(var(--accent-rgb), 0.15);
-    color: var(--txt-muted);
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  .placeholder-block .ph-icon {
-    width: 36px; height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    background: rgba(var(--accent-rgb), 0.06);
-    color: var(--accent);
-    font-size: 15px;
-    flex-shrink: 0;
-    opacity: 0.7;
-  }
-  .placeholder-block .ph-text {
-    padding-top: 0.15rem;
-  }
-
-  /* ── Loading Skeleton ── */
+  /* ═══════════════════════════════════════════════════════════════
+     SKELETON
+     ═══════════════════════════════════════════════════════════════ */
   @keyframes shimmer {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
   }
   .skeleton-line {
-    height: 14px;
-    border-radius: 8px;
+    height: 12px;
+    border-radius: 6px;
     background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
   }
   .skeleton-line:last-child { margin-bottom: 0; }
   .skeleton-line.w60 { width: 60%; }
@@ -320,68 +341,82 @@
     animation: shimmer 1.5s ease-in-out infinite;
   }
 
-  /* ── Upload Panel ── */
+  /* ═══════════════════════════════════════════════════════════════
+     UPLOAD PANEL
+     ═══════════════════════════════════════════════════════════════ */
   .upload-panel { animation-delay: 0.06s; }
 
   .upload-area {
-    padding: var(--sp-6) var(--sp-5);
-    border-radius: 20px;
-    border: 2px dashed rgba(var(--accent-rgb), 0.16);
-    background: rgba(var(--accent-rgb), 0.015);
-    transition: all 0.3s ease;
+    padding: 2rem 1.5rem;
+    border-radius: var(--r-xl);
+    border: 2px dashed rgba(37, 99, 235, 0.22);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.06) 0%, transparent 60%),
+      rgba(37, 99, 235, 0.015);
+    transition: all 0.3s var(--ease);
     text-align: center;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
 
-  .upload-area:hover,
-  .upload-area.drag-over {
-    border-color: rgba(var(--accent-rgb), 0.30);
-    background: rgba(var(--accent-rgb), 0.04);
+  .upload-area:hover {
+    border-color: rgba(37, 99, 235, 0.38);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.09) 0%, transparent 60%),
+      rgba(37, 99, 235, 0.03);
+    transform: translateY(-2px);
   }
+
   .upload-area.drag-over {
-    border-color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.08);
-    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.10);
+    border-color: #2563EB;
+    background: rgba(37, 99, 235, 0.08);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    transform: scale(1.005);
   }
-  /* Cloud glyph, unboxed — the accent carries it rather than a tinted chip. */
+
   .upload-area .upload-art {
-    font-size: 38px;
-    line-height: 1;
-    color: var(--accent);
-    margin-bottom: var(--sp-3);
-    transition: transform 0.35s var(--ease);
+    width: 60px; height: 60px;
+    margin: 0 auto var(--sp-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #2563EB, #1D4ED8);
+    color: #fff;
+    font-size: 26px;
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.32);
+    transition: transform 0.4s var(--ease);
   }
-  .upload-area:hover .upload-art { transform: translateY(-5px); }
-  .upload-area.drag-over .upload-art { transform: translateY(-8px) scale(1.06); }
+  .upload-area:hover .upload-art { transform: translateY(-6px) rotate(-4deg); }
+  .upload-area.drag-over .upload-art { transform: translateY(-10px) scale(1.08); }
 
   .upload-area .upload-title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.015em;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     line-height: 1.3;
     color: var(--txt);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
   }
 
   .upload-area .upload-sub {
-    font-size: 13.5px;
+    font-size: 12.5px;
     color: var(--txt-muted);
-    line-height: 1.6;
-    max-width: 40ch;
-    margin: 0 auto 1.25rem;
+    line-height: 1.65;
+    max-width: 42ch;
+    margin: 0 auto 1.1rem;
+    font-weight: 500;
   }
 
-  /* Choose File beside the AI mark, as one action row. */
   .upload-actions {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.55rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
   }
 
-  /* Kept in the layout — hidden fields cannot be focused, and a `required`
-     one that cannot be focused blocks native form validation. */
   .visually-hidden-input {
     position: absolute;
     width: 1px; height: 1px;
@@ -392,68 +427,78 @@
     border: 0;
   }
 
-  /* Solid pill, matching the reference's primary upload action. */
   .btn-choose-file {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
-    height: 42px;
-    padding: 0 1.3rem;
-    border-radius: 999px;
+    gap: 0.4rem;
+    height: 38px;
+    padding: 0 1.2rem;
+    border-radius: var(--r-pill);
     border: none;
-    background: var(--accent);
+    background: linear-gradient(145deg, #2563EB, #1D4ED8);
     color: #fff;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 5px 14px rgba(var(--accent-rgb), 0.26);
-    transition: all 0.25s ease;
+    box-shadow: 0 5px 16px rgba(37, 99, 235, 0.28);
+    transition: all 0.3s var(--ease);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.01em;
   }
+  .btn-choose-file::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  .btn-choose-file:hover::before { transform: translateX(100%); }
   .btn-choose-file:hover {
-    filter: brightness(1.08);
-    transform: translateY(-2px);
-    box-shadow: 0 9px 22px rgba(var(--accent-rgb), 0.32);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.38);
   }
-  .visually-hidden-input:focus-visible + .upload-actions .btn-choose-file,
-  .visually-hidden-input:focus-visible ~ .upload-actions .btn-choose-file {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
+  .btn-choose-file:active { transform: translateY(0) scale(1); }
 
-  /* The AI mark reads as a companion pill, not a second action. */
   .upload-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    height: 42px;
-    padding: 0 1.1rem;
-    border-radius: 999px;
-    background: rgba(var(--accent-rgb), 0.10);
-    color: var(--accent);
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
+    gap: 0.3rem;
+    height: 38px;
+    padding: 0 1rem;
+    border-radius: var(--r-pill);
+    background: rgba(37, 99, 235, 0.10);
+    color: #2563EB;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     white-space: nowrap;
+    border: 1px solid rgba(37, 99, 235, 0.18);
   }
-  .upload-badge i { font-size: 12px; }
+  .upload-badge i { font-size: 11px; }
 
-  /* The CV on record, shown inside the upload box where a file selection
-     would normally appear. */
-  /* The CV on record sits in its own bordered row, as in the reference. */
+  html.theme-dark .upload-badge,
+  [data-theme="dark"] .upload-badge {
+    background: rgba(59, 130, 246, 0.14);
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.22);
+  }
+
   .upload-area .upload-file {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 0 0 1.15rem;
-    padding: 0.7rem 0.95rem;
+    gap: 0.4rem;
+    margin: 0 0 1rem;
+    padding: 0.6rem 0.8rem;
     border: 1px solid var(--bdr-hover);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--surface);
     line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   }
   .upload-area .upload-file .uf-sep { color: var(--txt-muted); opacity: 0.5; }
 
@@ -462,8 +507,8 @@
     align-items: center;
     gap: 0.4rem;
     max-width: 100%;
-    font-size: 14.5px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     color: var(--txt);
     word-break: break-word;
   }
@@ -474,39 +519,46 @@
     flex-shrink: 0;
   }
 
+  html.theme-dark .upload-area .upload-file .uf-name i,
+  [data-theme="dark"] .upload-area .upload-file .uf-name i {
+    color: #F87171;
+  }
+
   .upload-area .upload-file .uf-meta {
-    font-size: 12.5px;
+    font-size: 11.5px;
     color: var(--txt-muted);
+    font-weight: 500;
   }
   .upload-area .upload-file .uf-meta:empty,
   .upload-area .upload-file .uf-meta:empty + .uf-sep { display: none; }
 
   .btn-analyze {
     width: 100%;
-    height: 52px;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 15.5px;
+    height: 46px;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+    font-size: 14px;
     border: none;
-    background: var(--accent) !important;
+    background: linear-gradient(145deg, #2563EB, #1D4ED8) !important;
     color: #fff !important;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.25);
-    margin-top: 1.35rem;
+    transition: all 0.3s var(--ease);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.30);
+    margin-top: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    letter-spacing: 0.02em;
   }
-  .btn-analyze:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn-analyze:focus-visible { outline: 2px solid #2563EB; outline-offset: 3px; }
 
   .btn-analyze::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.20) 50%, transparent 100%);
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
     transform: translateX(-100%);
     transition: transform 0.5s ease;
   }
@@ -514,33 +566,32 @@
   .btn-analyze:hover::before { transform: translateX(100%); }
 
   .btn-analyze:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 26px rgba(var(--accent-rgb), 0.32);
-    filter: brightness(1.08);
+    transform: translateY(-3px) scale(1.005);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.40);
     color: #fff !important;
   }
 
-  .btn-analyze:active { transform: translateY(0); }
+  .btn-analyze:active { transform: translateY(0) scale(1); }
   .btn-analyze:disabled { opacity: 0.6; pointer-events: none; }
 
-  /* ── Match Score card ──
-     The headline result: one large number, two supporting counts. Sits
-     top-right so it lands in view the moment an analysis completes. */
+  /* ═══════════════════════════════════════════════════════════════
+     MATCH SCORE PANEL
+     ═══════════════════════════════════════════════════════════════ */
   .score-panel { position: relative; overflow: hidden; }
   .score-panel::before {
     content: "";
     position: absolute;
     inset: 0 0 auto 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.25));
+    background: linear-gradient(90deg, #2563EB, #1D4ED8, rgba(37, 99, 235, 0.25));
+    z-index: 2;
   }
-  .score-panel { background: var(--surface-alt); }
   .score-panel .panel-body {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding: var(--sp-5);
+    padding: var(--sp-5) var(--sp-4);
   }
 
   .score-hero {
@@ -548,12 +599,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--sp-5);
+    gap: var(--sp-4);
     width: 100%;
   }
 
-  /* Donut. --score-pct is set by applyAnalysis from resume_score.
-     Registering it lets the arc sweep rather than snap. */
   @property --score-pct {
     syntax: "<number>";
     inherits: false;
@@ -561,39 +610,63 @@
   }
   .score-panel .score-ring {
     --score-pct: 0;
-    width: 156px; height: 156px;
+    width: 150px; height: 150px;
     border-radius: 50%;
     flex-shrink: 0;
     display: grid;
     place-items: center;
     background: conic-gradient(
-      var(--accent) calc(var(--score-pct) * 1%),
-      rgba(15,23,42,0.07) 0
+      #2563EB calc(var(--score-pct) * 1%),
+      rgba(148, 163, 184, 0.18) 0
     );
-    transition: --score-pct 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: --score-pct 0.9s var(--ease);
+    box-shadow: 0 10px 34px rgba(37, 99, 235, 0.18);
   }
+
+  html.theme-dark .score-panel .score-ring,
+  [data-theme="dark"] .score-panel .score-ring {
+    background: conic-gradient(
+      #3B82F6 calc(var(--score-pct) * 1%),
+      rgba(148, 163, 184, 0.18) 0
+    );
+  }
+
   .score-ring-inner {
-    width: 128px; height: 128px;
+    width: 124px; height: 124px;
     border-radius: 50%;
-    background: var(--surface-alt);
+    background: var(--surface);
     display: grid;
     place-items: center;
     align-content: center;
     text-align: center;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
   }
   .score-ring-val {
-    font-size: 36px;
+    font-size: 34px;
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.04em;
     color: var(--txt);
     font-variant-numeric: tabular-nums;
+    background: linear-gradient(145deg, var(--txt) 0%, #2563EB 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
+
+  html.theme-dark .score-ring-val,
+  [data-theme="dark"] .score-ring-val {
+    background: linear-gradient(145deg, var(--txt) 0%, #3B82F6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   .score-ring-cap {
     margin-top: var(--sp-1);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.09em;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
     text-transform: uppercase;
     color: var(--txt-muted);
   }
@@ -601,54 +674,63 @@
   .score-split {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--sp-4);
+    gap: var(--sp-3);
     width: 100%;
-    padding-top: var(--sp-5);
+    padding-top: var(--sp-4);
     border-top: 1px solid var(--bdr);
   }
 
   .score-stat { min-width: 0; text-align: center; }
   .score-stat .ss-value {
-    font-size: 30px;
+    font-size: 26px;
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.03em;
     color: var(--txt);
     font-variant-numeric: tabular-nums;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
   }
   .score-stat .ss-label {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--sp-1);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--txt-soft);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--txt-muted);
     line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
-  .score-stat .ss-label i { color: var(--accent); font-size: 13px; }
+  .score-stat .ss-label i { color: #2563EB; font-size: 12px; }
+
+  html.theme-dark .score-stat .ss-label i,
+  [data-theme="dark"] .score-stat .ss-label i {
+    color: #3B82F6;
+  }
 
   @media (max-width: 575.98px) {
-    .score-hero { gap: var(--sp-4); }
-    .score-panel .score-ring { width: 116px; height: 116px; }
-    .score-ring-inner { width: 94px; height: 94px; }
+    .score-hero { gap: var(--sp-3); }
+    .score-panel .score-ring { width: 120px; height: 120px; }
+    .score-ring-inner { width: 98px; height: 98px; }
     .score-ring-val { font-size: 26px; }
-    .score-split { padding-top: var(--sp-4); }
+    .score-split { padding-top: var(--sp-3); }
   }
 
-  /* ── Metric Cards ── */
+  /* ═══════════════════════════════════════════════════════════════
+     METRIC CARDS
+     ═══════════════════════════════════════════════════════════════ */
   .metric-card {
     background: var(--surface);
     border: 1px solid var(--bdr);
     border-radius: 14px;
-    padding: 1.5rem 1.25rem;
+    padding: 1.2rem 1rem;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px var(--shadow);
+    transition: all 0.35s var(--ease);
+    box-shadow: var(--el-1);
     height: 100%;
-    animation: fadeUp 0.5s ease both;
+    animation: fadeUp 0.5s var(--ease) both;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -665,170 +747,190 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: var(--accent);
+    background: linear-gradient(90deg, #2563EB, rgba(37, 99, 235, 0.4));
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.35s ease;
+    transition: transform 0.4s var(--ease);
   }
-
   .metric-card:hover::before { transform: scaleX(1); }
-
   .metric-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px var(--shadow-lg);
-    border-color: rgba(var(--accent-rgb), 0.14);
+    transform: translateY(-4px);
+    box-shadow: var(--el-2);
+    border-color: rgba(37, 99, 235, 0.16);
   }
 
   .metric-card .mc-icon {
-    width: 44px; height: 44px;
+    width: 42px; height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 13px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.04));
+    color: #2563EB;
     font-size: 18px;
     margin-bottom: 0.7rem;
-    transition: all 0.3s ease;
+    transition: all 0.35s var(--ease);
+    border: 1px solid rgba(37, 99, 235, 0.08);
   }
-
   .metric-card:hover .mc-icon {
-    background: var(--accent);
+    background: linear-gradient(145deg, #2563EB, #1D4ED8);
     color: #fff;
-    transform: scale(1.06) rotate(-3deg);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
+    transform: scale(1.08) rotate(-4deg);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.30);
   }
 
   .metric-card .mc-value {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
     line-height: 1;
     color: var(--txt);
     margin-bottom: 0.2rem;
     transition: color 0.3s ease;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
   }
+  .metric-card:hover .mc-value { color: #2563EB; }
 
-  .metric-card:hover .mc-value { color: var(--accent); }
+  html.theme-dark .metric-card:hover .mc-value,
+  [data-theme="dark"] .metric-card:hover .mc-value {
+    color: #3B82F6;
+  }
 
   .metric-card .mc-label {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
     color: var(--txt-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
   }
 
-  /* ── Skill Chips ── */
+  /* ═══════════════════════════════════════════════════════════════
+     SKILL CHIPS
+     ═══════════════════════════════════════════════════════════════ */
   .chip-wrap {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.45rem;
+    gap: 0.4rem;
   }
 
   .skill-chip-modern {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 9px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s ease;
+    padding: 0.25rem 0.65rem;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.25s var(--ease);
     cursor: default;
+    letter-spacing: 0.01em;
   }
 
-  .skill-chip-modern i { font-size: 13px; }
+  .skill-chip-modern i { font-size: 11px; }
 
   .chip-success {
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
   }
-
-  .chip-success:hover { background: rgba(16,185,129,0.16); transform: translateY(-1px); }
+  .chip-success:hover { background: rgba(16,185,129,0.18); transform: translateY(-1px); }
 
   .chip-warn {
     background: var(--warn-bg);
     color: var(--warn);
     border: 1px solid var(--warn-bdr);
   }
+  .chip-warn:hover { background: rgba(245,158,11,0.18); transform: translateY(-1px); }
 
-  .chip-warn:hover { background: rgba(245,158,11,0.16); transform: translateY(-1px); }
-
-  /* ── Skill action plan (Phase 2 #4) ── */
+  /* ═══════════════════════════════════════════════════════════════
+     PLAN / QUALITY / INSIGHTS
+     ═══════════════════════════════════════════════════════════════ */
   .plan-item {
-    border: 1px solid var(--line);
+    border: 1px solid var(--bdr);
     border-radius: 12px;
-    padding: 0.75rem 0.9rem;
+    padding: 0.7rem 0.9rem;
     margin-bottom: 0.6rem;
+    background: var(--surface-alt);
+    transition: all 0.25s var(--ease);
+  }
+  .plan-item:hover {
+    border-color: rgba(37, 99, 235, 0.22);
+    transform: translateX(3px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
   }
   .plan-head {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 0.5rem; margin-bottom: 0.35rem;
+    gap: 0.4rem; margin-bottom: 0.3rem;
   }
-  .plan-skill { font-weight: 700; font-size: 14px; }
+  .plan-skill { font-weight: 800; font-size: 13px; color: var(--txt); letter-spacing: -0.01em; }
   .plan-gain {
-    font-size: 12px; font-weight: 700; color: #10B981;
-    background: rgba(16,185,129,0.10); border-radius: 999px; padding: 2px 8px;
+    font-size: 10.5px; font-weight: 800; color: var(--success);
+    background: var(--success-bg); border-radius: var(--r-pill); padding: 2px 8px;
+    border: 1px solid var(--success-bdr);
   }
-  .plan-why { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
+  .plan-why { font-size: 11.5px; color: var(--txt-muted); line-height: 1.5; }
   .plan-meta {
-    display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.45rem;
-    font-size: 11.5px; font-weight: 600;
+    display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.45rem;
+    font-size: 10px; font-weight: 700;
   }
   .plan-tag {
-    border-radius: 999px; padding: 2px 8px;
-    background: rgba(99,102,241,0.10); color: #6366f1;
+    border-radius: var(--r-pill); padding: 2px 8px;
+    background: rgba(37, 99, 235, 0.12); color: #2563EB;
   }
-  .plan-tag.high { background: rgba(239,68,68,0.10); color: #EF4444; }
-  .plan-tag.medium { background: rgba(245,158,11,0.12); color: #F59E0B; }
-  .plan-tag.low { background: rgba(100,116,139,0.12); color: #64748B; }
+  html.theme-dark .plan-tag,
+  [data-theme="dark"] .plan-tag {
+    background: rgba(59, 130, 246, 0.18); color: #3B82F6;
+  }
+  .plan-tag.high { background: rgba(239,68,68,0.12); color: var(--danger); }
+  .plan-tag.medium { background: rgba(245,158,11,0.14); color: var(--warn); }
+  .plan-tag.low { background: rgba(100,116,139,0.14); color: #64748B; }
 
-  /* ── Resume quality (Phase 2 #11) ── */
   .rq-row { margin-bottom: 0.7rem; }
   .rq-top {
     display: flex; justify-content: space-between; align-items: baseline;
-    font-size: 13px; font-weight: 600; margin-bottom: 0.25rem;
+    font-size: 12px; font-weight: 700; margin-bottom: 0.2rem; color: var(--txt);
   }
-  .rq-track { height: 7px; border-radius: 999px; background: rgba(15,23,42,0.07); overflow: hidden; }
-  .rq-fill { height: 100%; border-radius: 999px; transition: width 0.7s ease; }
-  .rq-detail { font-size: 12px; color: var(--txt-muted); margin-top: 0.25rem; line-height: 1.45; }
+  .rq-track { height: 6px; border-radius: var(--r-pill); background: rgba(148,163,184,0.20); overflow: hidden; }
+  .rq-fill { height: 100%; border-radius: var(--r-pill); transition: width 0.8s var(--ease); }
+  .rq-detail { font-size: 11px; color: var(--txt-muted); margin-top: 0.2rem; line-height: 1.5; }
 
-  /* ── Why matched / why not higher (Phase 2 #5) ── */
-  .rj-why { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.6rem; }
+  .rj-why { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.6rem; }
   @media (max-width: 720px) { .rj-why { grid-template-columns: 1fr; } }
-  .why-box { border-radius: 10px; padding: 0.55rem 0.7rem; font-size: 12.5px; line-height: 1.5; }
-  .why-box.pos { background: rgba(16,185,129,0.07); }
-  .why-box.neg { background: rgba(245,158,11,0.08); }
-  .why-box .why-title { font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.25rem; }
-  .why-box.pos .why-title { color: #10B981; }
-  .why-box.neg .why-title { color: #F59E0B; }
-  .why-box ul { margin: 0; padding-left: 1rem; }
+  .why-box { border-radius: 10px; padding: 0.6rem 0.75rem; font-size: 11.5px; line-height: 1.5; }
+  .why-box.pos { background: var(--success-bg); border: 1px solid var(--success-bdr); }
+  .why-box.neg { background: var(--warn-bg); border: 1px solid var(--warn-bdr); }
+  .why-box .why-title { font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+  .why-box.pos .why-title { color: var(--success); }
+  .why-box.neg .why-title { color: var(--warn); }
+  .why-box ul { margin: 0; padding-left: 1.05rem; color: var(--txt-soft); }
 
-  /* ── Structured insights (Phase 2 #3) ── */
-  .insight-group { margin-bottom: 0.85rem; }
+  .insight-group { margin-bottom: 0.8rem; }
   .insight-group-title {
-    font-size: 11.5px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.04em; color: var(--txt-muted); margin-bottom: 0.3rem;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--txt-muted); margin-bottom: 0.3rem;
   }
-  .insight-group ul { margin: 0; padding-left: 1.05rem; font-size: 13px; line-height: 1.6; }
+  .insight-group ul { margin: 0; padding-left: 1.1rem; font-size: 12px; line-height: 1.6; color: var(--txt-soft); }
 
   .badge-spec {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 12px; font-weight: 700; border-radius: 999px;
-    padding: 3px 10px; background: rgba(139,92,246,0.12); color: #8B5CF6;
-    margin-left: 0.4rem;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 11px; font-weight: 800; border-radius: var(--r-pill);
+    padding: 3px 10px; background: rgba(139,92,246,0.14); color: #8B5CF6;
+    margin-left: 0.3rem;
+    border: 1px solid rgba(139,92,246,0.20);
   }
 
-  /* ── Chart ── */
+  /* ═══════════════════════════════════════════════════════════════
+     CHART
+     ═══════════════════════════════════════════════════════════════ */
   .chart-wrap {
     position: relative;
-    height: 260px;
+    height: 240px;
     width: 100%;
   }
 
-  /* ── Modern List ── */
+  /* ═══════════════════════════════════════════════════════════════
+     MODERN LIST
+     ═══════════════════════════════════════════════════════════════ */
   .modern-list {
     list-style: none;
     padding: 0;
@@ -839,155 +941,177 @@
   .modern-list li {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.8rem 0.9rem;
-    border-radius: 12px;
+    gap: 0.6rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 10px;
     background: var(--surface-alt);
     border: 1px solid var(--bdr);
-    margin-bottom: 0.5rem;
-    font-size: 14px;
+    margin-bottom: 0.45rem;
+    font-size: 13px;
     color: var(--txt-soft);
     line-height: 1.6;
-    transition: all 0.2s ease;
-    animation: itemSlide 0.35s ease both;
+    transition: all 0.25s var(--ease);
+    animation: itemSlide 0.4s var(--ease) both;
     counter-increment: listCounter;
   }
 
   .modern-list li:last-child { margin-bottom: 0; }
 
   @keyframes itemSlide {
-    from { opacity: 0; transform: translateX(-10px); }
+    from { opacity: 0; transform: translateX(-12px); }
     to   { opacity: 1; transform: translateX(0); }
   }
 
   .modern-list li:hover {
     background: var(--surface);
-    border-color: rgba(var(--accent-rgb), 0.12);
-    transform: translateX(3px);
+    border-color: rgba(37, 99, 235, 0.18);
+    transform: translateX(4px);
   }
 
   .modern-list li::before {
     content: counter(listCounter);
-    min-width: 24px; height: 24px;
+    min-width: 22px; height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 600;
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.04));
+    color: #2563EB;
+    font-size: 11px;
+    font-weight: 800;
     flex-shrink: 0;
     margin-top: 1px;
+    border: 1px solid rgba(37, 99, 235, 0.10);
+  }
+
+  html.theme-dark .modern-list li::before,
+  [data-theme="dark"] .modern-list li::before {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.06));
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.18);
   }
 
   .bullet-list li::before {
     content: "";
-    min-width: 8px; height: 8px;
+    min-width: 6px; height: 6px;
     border-radius: 999px;
-    background: var(--accent);
-    margin-top: 6px;
+    background: #2563EB;
+    margin-top: 7px;
+    border: none;
   }
 
-  /* ── Job Categories ────────────────────────────────────────────────
-     A pill bar above the job grid. Pure presentation over data already in
-     memory — selecting a pill only changes which cards are rendered. */
+  /* ═══════════════════════════════════════════════════════════════
+     JOB CATEGORIES
+     ═══════════════════════════════════════════════════════════════ */
   .cat-section {
-    margin-bottom: 1.25rem;
-    animation: fadeUp 0.45s ease both;
+    margin-bottom: 1.1rem;
+    animation: fadeUp 0.5s var(--ease) both;
   }
   .cat-section[hidden] { display: none !important; }
 
   .cat-heading {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    gap: 0.45rem;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--txt-muted);
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.7rem;
   }
-  .cat-heading i { color: var(--accent); font-size: 13px; }
+  .cat-heading i { color: #2563EB; font-size: 12px; }
+
+  html.theme-dark .cat-heading i,
+  [data-theme="dark"] .cat-heading i { color: #3B82F6; }
 
   .cat-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    padding: 0.55rem;
-    border-radius: 16px;
+    gap: 0.45rem;
+    padding: 0.5rem;
+    border-radius: 14px;
     background: var(--surface-alt);
     border: 1px solid var(--bdr);
+  }
+
+  html.theme-dark .cat-bar,
+  [data-theme="dark"] .cat-bar {
+    background: rgba(15, 23, 42, 0.40);
   }
 
   .cat-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    height: 38px;
-    padding: 0 0.95rem;
-    border-radius: 999px;
+    gap: 0.4rem;
+    height: 34px;
+    padding: 0 0.9rem;
+    border-radius: var(--r-pill);
     border: 1px solid transparent;
     background: transparent;
     color: var(--txt-soft);
-    font-size: 13.5px;
-    font-weight: 600;
+    font-size: 12.5px;
+    font-weight: 700;
     white-space: nowrap;
     cursor: pointer;
-    transition: background 0.22s ease, color 0.22s ease,
-                border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+    transition: all 0.25s var(--ease);
+    letter-spacing: 0.01em;
   }
-  .cat-pill i { font-size: 13px; opacity: 0.75; }
+  .cat-pill i { font-size: 12px; opacity: 0.75; }
 
   .cat-pill:hover {
     background: var(--surface);
     border-color: var(--bdr-hover);
     color: var(--txt);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
   }
-  .cat-pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cat-pill:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
 
-  /* Active pill carries the theme accent. */
   .cat-pill[aria-pressed="true"] {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: linear-gradient(145deg, #2563EB, #1D4ED8);
+    border-color: #2563EB;
     color: #fff;
-    box-shadow: 0 5px 14px rgba(var(--accent-rgb), 0.26);
+    box-shadow: 0 5px 16px rgba(37, 99, 235, 0.32);
   }
+
+  html.theme-dark .cat-pill[aria-pressed="true"],
+  [data-theme="dark"] .cat-pill[aria-pressed="true"] {
+    background: linear-gradient(145deg, #3B82F6, #2563EB);
+    border-color: #3B82F6;
+    box-shadow: 0 5px 16px rgba(59, 130, 246, 0.36);
+  }
+
   .cat-pill[aria-pressed="true"] i { opacity: 1; }
-  .cat-pill[aria-pressed="true"]:hover { transform: translateY(-1px); filter: brightness(1.06); }
+  .cat-pill[aria-pressed="true"]:hover { transform: translateY(-2px); filter: brightness(1.06); }
 
   .cat-count {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 21px;
-    height: 21px;
+    min-width: 20px;
+    height: 20px;
     padding: 0 0.35rem;
-    border-radius: 999px;
-    background: rgba(15,23,42,0.07);
+    border-radius: var(--r-pill);
+    background: rgba(148,163,184,0.20);
     color: var(--txt-muted);
-    font-size: 11.5px;
-    font-weight: 700;
+    font-size: 10.5px;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
-    transition: background 0.22s ease, color 0.22s ease;
+    transition: all 0.25s ease;
   }
   .cat-pill[aria-pressed="true"] .cat-count {
-    background: rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.24);
     color: #fff;
   }
 
-  /* Grid fades in on every category switch. */
   @keyframes gridSwap {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  #recommendedJobs .rj-grid { animation: gridSwap 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  #recommendedJobs .rj-grid { animation: gridSwap 0.35s var(--ease) both; }
 
   @media (max-width: 767.98px) {
-    /* One scrolling row rather than a tall wrapped block; the page itself
-       never scrolls sideways. */
     .cat-bar {
       flex-wrap: nowrap;
       overflow-x: auto;
@@ -1003,28 +1127,19 @@
     #recommendedJobs .rj-grid { animation: none; }
   }
 
-  /* ── Recommended Job Card ── */
-  /* Cards sit in a responsive grid rather than one full-width column. */
-  /* auto-FIT, not auto-fill: auto-fill holds empty tracks open and the cards
-     bunch to the left; auto-fit collapses them so the row is always filled.
-     --card-min steers how many columns fit and is retuned per breakpoint
-     below, because the 260px sidebar eats into the usable width. */
+  /* ═══════════════════════════════════════════════════════════════
+     RECOMMENDED JOBS GRID + CARDS
+     ═══════════════════════════════════════════════════════════════ */
   #recommendedJobs .rj-grid {
     --gap: 1rem;
-    --cols: 4;          /* ceiling, not a fixed count */
-    --card-min: 240px;  /* floor, so cards never get unreadably narrow */
+    --cols: 4;
+    --card-min: 220px;
 
     display: grid;
     gap: var(--gap);
     align-items: stretch;
     width: 100%;
 
-    /* The track floor is the LARGER of --card-min and an even 1/--cols share
-       of the row. Raising the floor to that share is what caps the column
-       count: a fifth track can never fit. auto-fit (never auto-fill) then
-       collapses any track it has no card for, so the cards always stretch
-       across the full width instead of bunching left. The outer min() keeps
-       the floor from exceeding the container on very narrow screens. */
     grid-template-columns: repeat(
       auto-fit,
       minmax(
@@ -1039,8 +1154,6 @@
       )
     );
   }
-  /* A grid item defaults to min-width:auto, so one long unbroken string would
-     widen its track and squeeze the others. */
   #recommendedJobs .rec-job { min-width: 0; }
 
   @media (max-width: 1399.98px) { #recommendedJobs .rj-grid { --cols: 3; } }
@@ -1050,156 +1163,524 @@
   .rec-job {
     display: flex;
     flex-direction: column;
-    padding: 1.35rem;
+    padding: 1.1rem;
     border-radius: 16px;
     border: 1px solid var(--bdr);
     background: var(--surface);
     height: 100%;
-    transition: all 0.3s ease;
-    animation: itemSlide 0.4s ease both;
+    transition: all 0.35s var(--ease);
+    animation: itemSlide 0.4s var(--ease) both;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
 
+  .rec-job::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2563EB, rgba(37, 99, 235, 0.4));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease);
+  }
+
+  .rec-job:hover::before { transform: scaleX(1); }
   .rec-job:hover {
-    border-color: rgba(var(--accent-rgb), 0.20);
-    box-shadow: 0 12px 30px var(--shadow-lg);
-    transform: translateY(-3px);
+    border-color: rgba(37, 99, 235, 0.24);
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.12);
+    transform: translateY(-4px);
   }
 
   .rec-job .rj-header {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    margin-bottom: 0.85rem;
+    gap: 0.7rem;
+    margin-bottom: 0.7rem;
   }
 
   .rec-job .rj-company {
-    font-size: 13.5px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     color: var(--txt-muted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  /* Location · work mode · experience · pay — one wrapping, icon-led row */
   .rj-facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem 1rem;
-    margin-bottom: 0.85rem;
+    gap: 0.3rem 0.9rem;
+    margin-bottom: 0.7rem;
   }
   .rj-fact {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 12.5px;
-    font-weight: 500;
+    gap: 0.3rem;
+    font-size: 11.5px;
+    font-weight: 600;
     color: var(--txt-soft);
     white-space: nowrap;
     min-width: 0;
   }
-  .rj-fact i { font-size: 12px; flex-shrink: 0; }
-  .rj-fact.loc i  { color: var(--accent); }
+  .rj-fact i { font-size: 11px; flex-shrink: 0; }
+  .rj-fact.loc i  { color: #2563EB; }
   .rj-fact.mode i { color: #3B82F6; }
   .rj-fact.exp i  { color: var(--warn); }
-  /* Pay reads a step stronger than the rest of the row. */
-  .rj-fact.pay    { font-size: 13px; font-weight: 600; color: var(--txt); }
+  .rj-fact.pay    { font-size: 12px; font-weight: 700; color: var(--txt); }
   .rj-fact.pay i  { color: var(--success); }
+
+  html.theme-dark .rj-fact.loc i,
+  [data-theme="dark"] .rj-fact.loc i { color: #3B82F6; }
 
   .rec-job .rj-info {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.7rem;
     min-width: 0;
   }
 
   .rec-job .rj-logo {
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    border: none;
-    background: rgba(var(--accent-rgb), 0.08);
-    box-shadow: none;
+    width: 44px; height: 44px;
+    border-radius: 11px;
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.04));
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--accent);
+    font-size: 18px;
+    font-weight: 800;
+    color: #2563EB;
     overflow: hidden;
-    transition: all 0.3s ease;
-    padding: 10px;
+    transition: all 0.35s var(--ease);
+    padding: 8px;
+    border: 1px solid rgba(37, 99, 235, 0.10);
+  }
+
+  html.theme-dark .rec-job .rj-logo,
+  [data-theme="dark"] .rec-job .rj-logo {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.06));
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.16);
   }
 
   .rec-job:hover .rj-logo {
-    border-color: rgba(var(--accent-rgb), 0.2);
-    box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.10);
+    border-color: rgba(37, 99, 235, 0.30);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.18);
+    transform: scale(1.06);
   }
 
   .rec-job .rj-logo img { width: 100%; height: 100%; object-fit: contain; }
 
   .rec-job .rj-title {
-    font-size: 16.5px;
-    font-weight: 700;
-    letter-spacing: -0.015em;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     color: var(--txt);
     margin-bottom: 0.1rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: color 0.25s ease;
   }
 
+  .rec-job:hover .rj-title { color: #2563EB; }
+
+  html.theme-dark .rec-job:hover .rj-title,
+  [data-theme="dark"] .rec-job:hover .rj-title { color: #3B82F6; }
+
   .rec-job .rj-meta {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--txt-muted);
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     flex-wrap: wrap;
   }
 
-  .rec-job .rj-meta i { font-size: 13px; opacity: 0.5; }
+  .rec-job .rj-meta i { font-size: 12px; opacity: 0.55; }
 
-  /* The flat green .match-badge that sat in the card header was replaced by the
-     .rj-match row below, which grades the score by colour instead of showing
-     every match in the same green. */
+  .rj-match {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--r-pill);
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr);
+    margin-bottom: 0.7rem;
+  }
+  .rj-match-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--txt-muted);
+    flex-shrink: 0;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .rj-match-track {
+    flex: 1;
+    min-width: 0;
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: rgba(148,163,184,0.22);
+    overflow: hidden;
+  }
+  .rj-match-track span {
+    display: block;
+    height: 100%;
+    border-radius: var(--r-pill);
+    transition: width 0.8s var(--ease);
+    box-shadow: 0 0 8px currentColor;
+  }
+  .rj-match-pct {
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
 
-  .exp-bar-wrap {
-    padding: 1.1rem 1.35rem;
-    background: var(--surface-alt, #F8FAFC);
-    border-radius: 12px;
-    margin: 0.85rem 0;
+  .rj-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.8rem;
+  }
+  .rj-tags .skill-chip-modern {
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr);
+    color: var(--txt-soft);
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 7px;
+  }
+  .rj-tags .skill-chip-modern i { display: none; }
+  .rj-tags .skill-chip-modern:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.20);
+    color: #2563EB;
+    transform: none;
+  }
+
+  html.theme-dark .rj-tags .skill-chip-modern:hover,
+  [data-theme="dark"] .rj-tags .skill-chip-modern:hover {
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(59, 130, 246, 0.26);
+    color: #3B82F6;
+  }
+
+  .rj-more {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--txt-muted);
+    padding: 0.2rem 0.4rem;
+  }
+
+  .rec-job .rj-desc {
+    font-size: 12.5px;
+    color: var(--txt-soft);
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── Actions ── */
+  .rec-job .rj-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: auto;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--bdr);
+  }
+
+  .rj-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    flex: 1 1 auto;
+    height: 38px;
+    padding: 0 0.8rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--bdr);
+    background: transparent;
+    color: var(--txt-soft);
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+    letter-spacing: 0.01em;
+  }
+  .rj-view:hover {
+    border-color: #2563EB;
+    background: rgba(37, 99, 235, 0.06);
+    color: #2563EB;
+    transform: translateY(-2px);
+  }
+
+  html.theme-dark .rj-view:hover,
+  [data-theme="dark"] .rj-view:hover {
+    border-color: #3B82F6;
+    background: rgba(59, 130, 246, 0.10);
+    color: #3B82F6;
+  }
+
+  .rj-view i { font-size: 12px; }
+  .rj-view:focus-visible { outline: 2px solid #2563EB; outline-offset: 3px; }
+
+  .btn-apply-job {
+    height: 38px;
+    padding: 0 1rem;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    border: none;
+    background: linear-gradient(145deg, #2563EB, #1D4ED8) !important;
+    color: #fff !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s var(--ease);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    flex: 1 1 auto;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-apply-job::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+    pointer-events: none;
+  }
+
+  .btn-apply-job:hover::before { transform: translateX(100%); }
+  .btn-apply-job:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.38);
+    color: #fff !important;
+  }
+
+  .btn-bookmark {
+    height: 38px;
+    padding: 0 1rem;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    background: transparent;
+    color: #2563EB;
+    border: 1.5px solid rgba(37, 99, 235, 0.30);
+    transition: all 0.25s var(--ease);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+
+  html.theme-dark .btn-bookmark,
+  [data-theme="dark"] .btn-bookmark {
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.30);
+  }
+
+  .btn-bookmark:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: #2563EB;
+    transform: translateY(-2px);
+    color: #2563EB;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.16);
+  }
+
+  html.theme-dark .btn-bookmark:hover,
+  [data-theme="dark"] .btn-bookmark:hover {
+    background: rgba(59, 130, 246, 0.12);
+    border-color: #3B82F6;
+    color: #3B82F6;
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.20);
+  }
+
+  .btn-apply-job:focus-visible,
+  .btn-bookmark:focus-visible { outline: 2px solid #2563EB; outline-offset: 3px; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LEDGER / EXP BAR
+     ═══════════════════════════════════════════════════════════════ */
+  .rec-job .rj-skills-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .skill-col-label {
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .skill-col-label.matched { color: var(--success); }
+  .skill-col-label.missing { color: var(--warn); }
+  .skill-col-label i { font-size: 12px; }
+
+  .rj-ledger {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 0.7rem 0 0.6rem;
+  }
+  @media (max-width: 720px) { .rj-ledger { grid-template-columns: 1fr; } }
+
+  .ledger-col { border-radius: 10px; padding: 0.6rem 0.7rem; }
+  .ledger-col.pos { background: var(--success-bg); border: 1px solid var(--success-bdr); }
+  .ledger-col.neg { background: var(--warn-bg); border: 1px solid var(--warn-bdr); }
+  .ledger-head {
+    font-weight: 800;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .ledger-col.pos .ledger-head { color: var(--success); }
+  .ledger-col.neg .ledger-head { color: var(--warn); }
+
+  .ledger-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 0.35rem;
+  }
+  .ledger-list li { font-size: 12px; line-height: 1.5; }
+  .lg-row { display: flex; align-items: baseline; gap: 0.35rem; }
+  .lg-mark { font-weight: 800; flex-shrink: 0; }
+  .lg-mark.pos { color: var(--success); }
+  .lg-mark.neg { color: var(--warn); }
+  .lg-item { flex: 1; color: var(--txt-soft); }
+  .lg-pts {
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--warn);
+    flex-shrink: 0;
+  }
+  .lg-reason { font-size: 11px; color: var(--txt-muted); margin-left: 1.1rem; }
+  .lg-empty { font-size: 12px; color: var(--txt-muted); }
+
+  .rj-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.7rem;
+    border-radius: 10px;
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    background: rgba(37, 99, 235, 0.04);
+    font-size: 12px;
+    color: var(--txt-muted);
+  }
+
+  html.theme-dark .rj-total,
+  [data-theme="dark"] .rj-total {
+    border-color: rgba(59, 130, 246, 0.24);
+    background: rgba(59, 130, 246, 0.08);
+  }
+
+  .rj-total b { color: var(--txt-soft); font-variant-numeric: tabular-nums; }
+  .rj-total .rj-total-final {
+    margin-left: auto;
+    font-weight: 800;
+    color: var(--txt-soft);
+    font-size: 12.5px;
+  }
+  .rj-total .rj-total-final b { color: #2563EB; font-size: 14px; }
+
+  html.theme-dark .rj-total .rj-total-final b,
+  [data-theme="dark"] .rj-total .rj-total-final b { color: #3B82F6; }
+
+  .rj-total .rj-total-note { flex-basis: 100%; font-size: 11px; }
+
+  .rec-job .rj-insight {
+    font-size: 13px;
+    color: var(--txt-soft);
+    padding: 0.7rem 0.8rem;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    margin-bottom: 0.7rem;
+    line-height: 1.6;
+  }
+
+  html.theme-dark .rec-job .rj-insight,
+  [data-theme="dark"] .rec-job .rj-insight {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.18);
+  }
+
+  .exp-bar-wrap {
+    padding: 1rem 1.1rem;
+    background: var(--surface-alt);
+    border-radius: 12px;
+    margin: 0.7rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--bdr);
   }
   .exp-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 13px;
+    font-size: 12px;
   }
   .exp-label {
     width: 80px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--txt-soft);
     flex-shrink: 0;
+    letter-spacing: 0.01em;
   }
   .exp-track {
     flex: 1;
-    height: 8px;
-    background: rgba(15,23,42,0.06);
-    border-radius: 999px;
+    height: 7px;
+    background: rgba(148,163,184,0.20);
+    border-radius: var(--r-pill);
     overflow: hidden;
   }
   .exp-fill {
     height: 100%;
-    border-radius: 999px;
-    transition: width 0.6s ease;
+    border-radius: var(--r-pill);
+    transition: width 0.8s var(--ease);
   }
   .exp-val {
     width: 36px;
     text-align: right;
-    font-weight: 700;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
     color: var(--txt);
     flex-shrink: 0;
@@ -1209,203 +1690,31 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 0.35rem 0.95rem;
-    border-radius: 999px;
-    background: rgba(var(--accent-rgb), 0.1);
-    color: var(--accent);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
-  .badge-profession i { font-size: 15px; }
-
-  .rec-job .rj-desc {
-    font-size: 13.5px;
-    color: var(--txt-soft);
-    line-height: 1.65;
-    margin-bottom: 0.9rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--r-pill);
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.14), rgba(37, 99, 235, 0.06));
+    color: #2563EB;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    border: 1px solid rgba(37, 99, 235, 0.22);
   }
 
-  .rec-job .rj-skills-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.85rem;
-    margin-bottom: 0.85rem;
+  html.theme-dark .badge-profession,
+  [data-theme="dark"] .badge-profession {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.20), rgba(59, 130, 246, 0.08));
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.28);
   }
 
-  .skill-col-label {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.45rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
+  .badge-profession i { font-size: 14px; }
 
-  .skill-col-label.matched { color: var(--success); }
-  .skill-col-label.missing { color: var(--warn); }
-  .skill-col-label i { font-size: 13px; }
-
-  /* ── Score ledger: the arithmetic behind the match percentage ── */
-  .rj-ledger {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    margin: 0.85rem 0 0.6rem;
-  }
-  @media (max-width: 720px) { .rj-ledger { grid-template-columns: 1fr; } }
-
-  .ledger-col { border-radius: 10px; padding: 0.6rem 0.75rem; }
-  .ledger-col.pos { background: rgba(16,185,129,0.07); }
-  .ledger-col.neg { background: rgba(245,158,11,0.08); }
-  .ledger-head {
-    font-weight: 700;
-    font-size: 11.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.45rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-  .ledger-col.pos .ledger-head { color: var(--success, #10B981); }
-  .ledger-col.neg .ledger-head { color: var(--warn, #F59E0B); }
-
-  .ledger-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .ledger-list li { font-size: 13px; line-height: 1.45; }
-  .lg-row { display: flex; align-items: baseline; gap: 0.4rem; }
-  .lg-mark { font-weight: 700; flex-shrink: 0; }
-  .lg-mark.pos { color: var(--success, #10B981); }
-  .lg-mark.neg { color: var(--warn, #F59E0B); }
-  .lg-item { flex: 1; color: var(--txt-soft); }
-  .lg-pts {
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: var(--warn, #F59E0B);
-    flex-shrink: 0;
-  }
-  .lg-reason { font-size: 12px; color: var(--txt-muted); margin-left: 1.05rem; }
-  .lg-empty { font-size: 13px; color: var(--txt-muted); }
-
-  .rj-total {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem 1.1rem;
-    padding: 0.6rem 0.9rem;
-    margin-bottom: 0.85rem;
-    border-radius: 10px;
-    border: 1px solid rgba(var(--accent-rgb), 0.14);
-    background: rgba(var(--accent-rgb), 0.04);
-    font-size: 13px;
-    color: var(--txt-muted);
-  }
-  .rj-total b { color: var(--txt-soft); font-variant-numeric: tabular-nums; }
-  .rj-total .rj-total-final {
-    margin-left: auto;
-    font-weight: 700;
-    color: var(--txt-soft);
-    font-size: 13.5px;
-  }
-  .rj-total .rj-total-final b { color: var(--accent, #6366f1); font-size: 16px; }
-  .rj-total .rj-total-note { flex-basis: 100%; font-size: 12px; }
-
-  .rec-job .rj-insight {
-    font-size: 14px;
-    color: var(--txt-soft);
-    padding: 0.75rem 0.95rem;
-    border-radius: 10px;
-    background: rgba(var(--accent-rgb), 0.03);
-    border: 1px solid rgba(var(--accent-rgb), 0.08);
-    margin-bottom: 0.85rem;
-    line-height: 1.55;
-  }
-
-  .rec-job .rj-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-  }
-
-  .btn-apply-job {
-    height: 36px;
-    padding: 0 1rem;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    background: var(--accent) !important;
-    color: #fff !important;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.20);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .btn-apply-job::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.20) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform 0.45s ease;
-  }
-
-  .btn-apply-job:hover::before { transform: translateX(100%); }
-
-  .btn-apply-job:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.30);
-    filter: brightness(1.08);
-    color: #fff !important;
-  }
-
-  .btn-bookmark {
-    height: 36px;
-    padding: 0 1rem;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    background: transparent;
-    color: var(--accent);
-    border: 1.5px solid rgba(var(--accent-rgb), 0.22);
-    transition: all 0.25s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .btn-bookmark:hover {
-    background: rgba(var(--accent-rgb), 0.06);
-    border-color: rgba(var(--accent-rgb), 0.4);
-    transform: translateY(-1px);
-    color: var(--accent);
-  }
-
-  /* ── Empty State ── */
   .empty-block {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2.25rem 1.25rem;
+    padding: 2.25rem 1.1rem;
     text-align: center;
   }
 
@@ -1415,286 +1724,286 @@
     align-items: center;
     justify-content: center;
     border-radius: 14px;
-    background: rgba(var(--accent-rgb), 0.07);
-    color: var(--accent);
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.04));
+    color: #2563EB;
     font-size: 20px;
     margin-bottom: 0.7rem;
+    border: 1px solid rgba(37, 99, 235, 0.10);
+  }
+
+  html.theme-dark .empty-block .eb-icon,
+  [data-theme="dark"] .empty-block .eb-icon {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.06));
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.18);
   }
 
   .empty-block .eb-title {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     color: var(--txt-soft);
     margin-bottom: 0.2rem;
+    letter-spacing: -0.01em;
   }
 
   .empty-block .eb-sub {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--txt-muted);
-    max-width: 220px;
-    line-height: 1.5;
+    max-width: 240px;
+    line-height: 1.55;
   }
 
-  /* ── Message ── */
   #message:not(:empty) {
-    padding: 0.8rem 1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 14px;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 12.5px;
     animation: fadeUp 0.3s ease both;
   }
 
-  /* ── Row-based Layout ── */
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT
+     ═══════════════════════════════════════════════════════════════ */
   .match-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--sp-5);
-    margin-bottom: var(--sp-5);
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-4);
     align-items: stretch;
   }
-
-  /* Upload and score share the row evenly, as in the reference. */
-  .match-row.row-1 {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .match-row.row-1 .dash-panel {
-    height: 100%;
-  }
+  .match-row.row-1 { grid-template-columns: 1fr 1fr; }
+  .match-row.row-1 .dash-panel { height: 100%; }
 
   @media (max-width: 991.98px) {
-    .match-row { gap: 1.25rem; margin-bottom: 1.25rem; }
+    .match-row { gap: 1rem; margin-bottom: 1rem; }
   }
-
   @media (max-width: 767.98px) {
-    .match-row { grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .match-row { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem; }
     .match-row.row-1 { grid-template-columns: 1fr; }
   }
 
-  /* ── Next-step CTA ──
-     Shown only once an analysis exists: it hands the user off to Skill Gap
-     Analysis, which stays a page of its own rather than being embedded here. */
+  /* ═══════════════════════════════════════════════════════════════
+     NEXT-STEP CTA
+     ═══════════════════════════════════════════════════════════════ */
   .next-step {
-    display: none;                       /* revealed by applyAnalysis() */
+    display: none;
     background:
-      linear-gradient(135deg, rgba(var(--accent-rgb), 0.06) 0%, rgba(var(--accent-rgb), 0.02) 55%, transparent 100%),
+      linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.02) 55%, transparent 100%),
       var(--surface);
-    border: 1px solid rgba(var(--accent-rgb), 0.16);
-    border-radius: var(--r-lg);
+    border: 1px solid rgba(37, 99, 235, 0.20);
+    border-radius: var(--r-xl);
     box-shadow: var(--el-1);
-    padding: var(--sp-5);
-    margin-bottom: var(--sp-5);
-    animation: fadeUp 0.5s ease both;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    padding: 1.4rem;
+    margin-bottom: var(--sp-4);
+    animation: fadeUp 0.5s var(--ease) both;
+    transition: all 0.3s var(--ease);
   }
   .next-step.is-visible { display: block; }
   .next-step:hover {
-    box-shadow: 0 10px 30px var(--shadow-lg);
-    border-color: rgba(var(--accent-rgb), 0.28);
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.16);
+    border-color: rgba(37, 99, 235, 0.32);
+  }
+
+  html.theme-dark .next-step,
+  [data-theme="dark"] .next-step {
+    background:
+      linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.04) 55%, transparent 100%),
+      var(--surface);
+    border-color: rgba(59, 130, 246, 0.24);
   }
 
   .next-step-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.75rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
   }
 
-  .next-step-main { display: flex; gap: 1.1rem; flex: 1 1 420px; min-width: 0; }
+  .next-step-main { display: flex; gap: 1rem; flex: 1 1 360px; min-width: 0; }
 
   .next-step-icon {
-    width: 48px; height: 48px;
+    width: 44px; height: 44px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 14px;
-    background: rgba(var(--accent-rgb), 0.10);
-    color: var(--accent);
-    font-size: 22px;
+    border-radius: 13px;
+    background: linear-gradient(145deg, #2563EB, #1D4ED8);
+    color: #fff;
+    font-size: 19px;
     flex-shrink: 0;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.32);
   }
 
   .next-step-title {
-    font-size: 18px; font-weight: 650; color: var(--txt);
-    margin: 0 0 0.4rem; line-height: 1.35;
+    font-size: 16px; font-weight: 800; color: var(--txt);
+    margin: 0 0 0.3rem; line-height: 1.3;
+    letter-spacing: -0.02em;
   }
 
   .next-step-text {
-    font-size: 14px; color: var(--txt-soft);
-    line-height: 1.6; margin: 0; max-width: 62ch;
+    font-size: 13px; color: var(--txt-soft);
+    line-height: 1.6; margin: 0; max-width: 56ch;
+    font-weight: 500;
   }
 
   .btn-next-step {
-    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    height: 50px; padding: 0 1.5rem;
-    border-radius: 14px; border: none;
-    background: var(--accent); color: #fff;
-    font-size: 15px; font-weight: 600; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+    height: 44px; padding: 0 1.4rem;
+    border-radius: 12px; border: none;
+    background: linear-gradient(145deg, #2563EB, #1D4ED8);
+    color: #fff;
+    font-size: 13.5px; font-weight: 700; white-space: nowrap;
     text-decoration: none;
     position: relative; overflow: hidden;
-    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.25);
-    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.28);
+    transition: all 0.3s var(--ease);
     flex-shrink: 0;
+    letter-spacing: 0.01em;
   }
   .btn-next-step::before {
     content: "";
     position: absolute; inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.20) 50%, transparent 100%);
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
     transform: translateX(-100%);
     transition: transform 0.5s ease;
   }
   .btn-next-step:hover::before { transform: translateX(100%); }
   .btn-next-step:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 26px rgba(var(--accent-rgb), 0.32);
-    filter: brightness(1.08);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.40);
     color: #fff;
   }
-  .btn-next-step:active { transform: translateY(0); }
+  .btn-next-step:active { transform: translateY(0) scale(1); }
   .btn-next-step .arrow { transition: transform 0.3s ease; }
-  .btn-next-step:hover .arrow { transform: translateX(3px); }
+  .btn-next-step:hover .arrow { transform: translateX(4px); }
 
   @media (max-width: 767.98px) {
-    .next-step { padding: 1.35rem; margin-bottom: 1.25rem; }
-    .next-step-inner { gap: 1.25rem; }
-    .next-step-main { flex-basis: 100%; gap: 0.9rem; }
-    .next-step-icon { width: 42px; height: 42px; font-size: 19px; border-radius: 12px; }
-    .next-step-title { font-size: 16.5px; }
+    .next-step { padding: 1.2rem; margin-bottom: 1rem; }
+    .next-step-inner { gap: 1rem; }
+    .next-step-main { flex-basis: 100%; gap: 0.8rem; }
+    .next-step-icon { width: 40px; height: 40px; font-size: 17px; border-radius: 11px; }
+    .next-step-title { font-size: 15px; }
     .btn-next-step { width: 100%; }
   }
 
-  /* ── Responsive ── */
-  @media (max-width: 1199.98px) {
-    .rec-job .rj-skills-row { grid-template-columns: 1fr; }
-    .panel-body { padding: 1.35rem 1.25rem; }
-    .panel-head { padding: 1.2rem 1.25rem; }
-  }
-
-  @media (max-width: 991.98px) {
-    .panel-body { padding: 1.25rem 1.15rem; }
-    .panel-head { padding: 1.1rem 1.15rem; }
-  }
-
-  @media (max-width: 767.98px) {
-    .dash-header { flex-direction: column; gap: 1rem; }
-    .dash-header .page-title { font-size: 24px; }
-    .panel-head { padding: 1rem 1.1rem; }
-    .panel-body { padding: 1.15rem; }
-    .rec-job { padding: 1.1rem; }
-    .metric-card { padding: 1.15rem; }
-  }
-
-  /* Restored-analysis notice */
+  /* ═══════════════════════════════════════════════════════════════
+     RESTORED BANNER
+     ═══════════════════════════════════════════════════════════════ */
   .restored-banner {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.85rem;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid rgba(var(--bs-primary-rgb), 0.18);
-    background: rgba(var(--bs-primary-rgb), 0.05);
-    border-radius: 12px;
-    font-size: 13px;
+    gap: 0.45rem;
+    margin-top: 0.8rem;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid rgba(37, 99, 235, 0.22);
+    background: rgba(37, 99, 235, 0.05);
+    border-radius: 10px;
+    font-size: 12px;
     color: var(--txt-muted);
+    font-weight: 500;
   }
-  .restored-banner i { color: rgb(var(--bs-primary-rgb)); }
+  .restored-banner i { color: #2563EB; }
+
+  html.theme-dark .restored-banner,
+  [data-theme="dark"] .restored-banner {
+    background: rgba(59, 130, 246, 0.10);
+    border-color: rgba(59, 130, 246, 0.28);
+  }
+  html.theme-dark .restored-banner i,
+  [data-theme="dark"] .restored-banner i { color: #3B82F6; }
+
   .restored-banner .rb-action {
     margin-left: auto;
     background: none;
     border: none;
     padding: 0;
-    font-size: 12px;
-    font-weight: 700;
-    color: rgb(var(--bs-primary-rgb));
+    font-size: 11px;
+    font-weight: 800;
+    color: #2563EB;
     cursor: pointer;
   }
 
-  @media (max-width: 575.98px) {
-    .metric-card { padding: 1rem 0.85rem; }
-    .metric-card .mc-value { font-size: 22px; }
-    .upload-area { padding: 2.25rem 1.15rem; }
-    .upload-area .upload-title { font-size: 21px; margin-bottom: 1.5rem; }
-    .upload-area .upload-art { width: 68px; margin-bottom: 1.5rem; }
-    .btn-choose-file { min-width: 0; width: 100%; }
-    .dash-header .page-title { font-size: 22px; }
-    .panel-body { padding: 1rem; }
-    .panel-head { padding: 0.9rem 1rem; }
-  }
+  html.theme-dark .restored-banner .rb-action,
+  [data-theme="dark"] .restored-banner .rb-action { color: #3B82F6; }
 
-  /* ══════════════════════════════════════════════════════════════════
-     PROGRESSIVE DISCLOSURE — Master (job list) → Detail (one job)
-
-     Two panes share this page. Only their visibility is toggled: every
-     panel below keeps the exact id and markup its existing renderer
-     writes into, so no analysis is re-fetched when the user moves
-     between them.
-     ══════════════════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════════
+     VIEW PANES + DETAIL VIEW
+     ═══════════════════════════════════════════════════════════════ */
   .view-pane[hidden] { display: none !important; }
-  .view-pane { animation: paneIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .view-pane { animation: paneIn 0.4s var(--ease) both; }
 
   @keyframes paneIn {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── Section heading used between stacked panels ── */
   .section-label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    gap: 0.45rem;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--txt-muted);
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.7rem;
   }
-  .section-label i { color: var(--accent); font-size: 13px; }
+  .section-label i { color: #2563EB; font-size: 12px; }
 
-  /* ── Back navigation ── */
   .detail-topbar {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.7rem;
     flex-wrap: wrap;
-    margin-bottom: 1.35rem;
+    margin-bottom: 1.1rem;
   }
 
   .btn-back {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    height: 40px;
-    padding: 0 1.05rem;
-    border-radius: 12px;
+    gap: 0.45rem;
+    height: 36px;
+    padding: 0 0.9rem;
+    border-radius: 10px;
     border: 1.5px solid var(--bdr);
     background: var(--surface);
     color: var(--txt-soft);
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.25s var(--ease);
     flex-shrink: 0;
+    letter-spacing: 0.01em;
   }
   .btn-back:hover {
-    border-color: rgba(var(--accent-rgb), 0.35);
-    background: rgba(var(--accent-rgb), 0.04);
-    color: var(--accent);
+    border-color: #2563EB;
+    background: rgba(37, 99, 235, 0.06);
+    color: #2563EB;
+    transform: translateY(-2px);
   }
+
+  html.theme-dark .btn-back:hover,
+  [data-theme="dark"] .btn-back:hover {
+    border-color: #3B82F6;
+    background: rgba(59, 130, 246, 0.10);
+    color: #3B82F6;
+  }
+
   .btn-back i { transition: transform 0.25s ease; }
-  .btn-back:hover i { transform: translateX(-3px); }
-  .btn-back:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-back:hover i { transform: translateX(-4px); }
+  .btn-back:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
 
   .detail-crumb {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     min-width: 0;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--txt-muted);
+    font-weight: 500;
   }
   .detail-crumb b {
     color: var(--txt-soft);
-    font-weight: 600;
+    font-weight: 700;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1702,371 +2011,281 @@
 
   .detail-flow .next-step { margin-bottom: 0; }
 
-  /* ── Detail flow ──
-     One reading order top to bottom. Compact panels pair into two columns on
-     desktop and collapse to one on tablet and below. */
   .detail-flow {
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
+    gap: 1.4rem;
     min-width: 0;
   }
 
   .detail-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 1.75rem;
+    gap: 1.4rem;
     align-items: stretch;
   }
   .detail-row > .dash-panel { display: flex; flex-direction: column; }
   .detail-row > .dash-panel > .panel-body { flex: 1; }
 
-  .detail-flow .panel-body { padding: 1.75rem; }
+  .detail-flow .panel-body { padding: 1.4rem; }
 
-  /* These blocks carry their own margins for the old inline card. Inside a
-     panel body the panel supplies the spacing. */
   #jobDetailBars .exp-bar-wrap { margin: 0; }
   #jobDetailLedger .rj-ledger { margin-top: 0; }
   #jobDetailLedger .rj-total { margin-bottom: 0; }
   #jobDetailLedger .rj-skills-row { margin-bottom: 0; }
   #jobDetailWhy .rj-why { margin-top: 0; }
 
-  /* ── Job hero (detail header) ── */
+  /* ── Job hero (detail) ── */
   .job-hero {
     background: var(--surface);
     border: 1px solid var(--bdr);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px var(--shadow);
-    padding: 1.75rem;
-    animation: fadeUp 0.45s ease both;
+    border-radius: var(--r-xl);
+    box-shadow: var(--el-1);
+    padding: 1.4rem;
+    animation: fadeUp 0.45s var(--ease) both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .job-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2563EB, #1D4ED8, rgba(37, 99, 235, 0.4));
   }
 
   .job-hero-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 1.35rem;
+    gap: 1.2rem;
     flex-wrap: wrap;
   }
 
-  .job-hero-id { display: flex; gap: 1rem; min-width: 0; flex: 1 1 320px; }
+  .job-hero-id { display: flex; gap: 1rem; min-width: 0; flex: 1 1 280px; }
 
   .job-hero-logo {
-    width: 68px; height: 68px;
+    width: 60px; height: 60px;
     border-radius: 14px;
     border: 1px solid var(--bdr);
     background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--accent);
+    font-size: 22px;
+    font-weight: 800;
+    color: #2563EB;
     overflow: hidden;
-    padding: 10px;
+    padding: 8px;
   }
+
+  html.theme-dark .job-hero-logo,
+  [data-theme="dark"] .job-hero-logo {
+    background: var(--surface);
+    color: #3B82F6;
+  }
+
   .job-hero-logo img { width: 100%; height: 100%; object-fit: contain; }
 
   .job-hero-title {
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     color: var(--txt);
-    margin: 0 0 0.3rem;
+    margin: 0 0 0.25rem;
     line-height: 1.25;
   }
 
   .job-hero-meta {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     flex-wrap: wrap;
-    font-size: 13.5px;
+    font-size: 12.5px;
     color: var(--txt-muted);
+    font-weight: 500;
   }
-  .job-hero-meta i { font-size: 13px; opacity: 0.55; }
-  .job-hero-meta .sep { opacity: 0.22; }
+  .job-hero-meta i { font-size: 12px; opacity: 0.55; }
+  .job-hero-meta .sep { opacity: 0.25; }
 
   .job-hero-score {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.35rem;
+    gap: 0.3rem;
     flex-shrink: 0;
   }
 
   .score-ring {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.15rem;
-    padding: 0.5rem 1.05rem;
-    border-radius: 14px;
+    gap: 0.1rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 12px;
     background: var(--success-bg);
     border: 1px solid var(--success-bdr);
     color: var(--success);
     font-weight: 800;
-    font-size: 26px;
+    font-size: 22px;
     line-height: 1;
     letter-spacing: -0.02em;
   }
-  .score-ring small { font-size: 15px; font-weight: 700; }
+  .score-ring small { font-size: 13px; font-weight: 800; }
   .score-ring-label {
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--txt-muted);
   }
 
   .job-hero-desc {
-    font-size: 14.5px;
+    font-size: 13.5px;
     color: var(--txt-soft);
-    line-height: 1.75;
-    margin: 1.15rem 0 0;
+    line-height: 1.8;
+    margin: 1rem 0 0;
+    font-weight: 500;
   }
 
   .job-hero-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
-    margin-top: 1.35rem;
-    padding-top: 1.35rem;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
     border-top: 1px solid var(--bdr);
   }
   .job-hero-actions .btn-apply-job,
-  .job-hero-actions .btn-bookmark { height: 44px; padding: 0 1.5rem; font-size: 14.5px; }
+  .job-hero-actions .btn-bookmark { height: 40px; padding: 0 1.3rem; font-size: 13.5px; }
 
-  /* ── Quick match metrics ── */
+  /* Quick match metrics */
   .qm-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.55rem 0;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
     border-bottom: 1px dashed var(--bdr);
-    font-size: 13.5px;
+    font-size: 12.5px;
   }
   .qm-row:last-child { border-bottom: none; padding-bottom: 0; }
-  .qm-row .qm-key { color: var(--txt-soft); display: inline-flex; align-items: center; gap: 0.45rem; }
-  .qm-row .qm-key i { font-size: 13px; opacity: 0.6; }
+  .qm-row .qm-key { color: var(--txt-soft); display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 500; }
+  .qm-row .qm-key i { font-size: 12px; opacity: 0.6; color: #2563EB; }
+
+  html.theme-dark .qm-row .qm-key i,
+  [data-theme="dark"] .qm-row .qm-key i { color: #3B82F6; }
+
   .qm-row .qm-val {
-    font-weight: 700;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
     color: var(--txt);
   }
   .qm-row .qm-val.pos { color: var(--success); }
   .qm-row .qm-val.neg { color: var(--warn); }
 
-  /* ── Compact job card (master list) ── */
-  .rec-job { cursor: pointer; }
-  .rec-job:focus-within {
-    border-color: rgba(var(--accent-rgb), 0.24);
-    background: var(--surface);
-  }
-
-  /* Match strength gets its own row: label, track, percentage. The fill and
-     the figure share one colour so the card is readable at a glance. */
-  .rj-match {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.5rem 0.85rem;
-    border-radius: 999px;
-    background: var(--surface-alt);
-    border: 1px solid var(--bdr);
-    margin-bottom: 0.85rem;
-  }
-  .rj-match-label {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--txt-soft);
-    flex-shrink: 0;
-  }
-  .rj-match-track {
-    flex: 1;
-    min-width: 0;
-    height: 6px;
-    border-radius: 999px;
-    background: rgba(15,23,42,0.09);
-    overflow: hidden;
-  }
-  .rj-match-track span {
-    display: block;
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .rj-match-pct {
-    font-size: 14px;
-    font-weight: 800;
-    flex-shrink: 0;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-  }
-
-  /* Neutral chips: on this card they list the role's skills, not a verdict. */
-  .rj-tags {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem;
-    margin-bottom: 0.9rem;
-  }
-  .rj-tags .skill-chip-modern {
-    background: var(--surface-alt);
-    border: 1px solid var(--bdr);
-    color: var(--txt-soft);
-    font-weight: 500;
-    padding: 0.28rem 0.7rem;
-    border-radius: 8px;
-  }
-  .rj-tags .skill-chip-modern i { display: none; }
-  .rj-tags .skill-chip-modern:hover {
-    background: rgba(var(--accent-rgb), 0.06);
-    border-color: rgba(var(--accent-rgb), 0.16);
-    color: var(--accent);
-    transform: none;
-  }
-  .rj-more {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--txt-muted);
-    padding: 0.28rem 0.4rem;
-  }
-
-  /* Apply is the card's primary action; View Details sits beside it as the
-     outlined secondary. Bookmark remains in the detail view only. */
-  .rec-job .rj-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid var(--bdr);
-  }
-  .rj-view {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    flex: 1 1 auto;
-    height: 42px;
-    padding: 0 1rem;
-    border-radius: 11px;
-    border: 1.5px solid var(--bdr-hover);
-    background: var(--surface);
-    color: var(--txt-soft);
-    font-size: 13.5px;
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-  .rj-view:hover {
-    border-color: rgba(var(--accent-rgb), 0.45);
-    background: rgba(var(--accent-rgb), 0.04);
-    color: var(--accent);
-  }
-  .rj-view i { font-size: 13px; }
-  .rj-view:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-  .rec-job .btn-apply-job {
-    flex: 1 1 auto;
-    justify-content: center;
-    height: 42px;
-    border-radius: 11px;
-    font-size: 13.5px;
-    font-weight: 600;
-  }
-  .btn-apply-job:focus-visible,
-  .btn-bookmark:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-  /* ── Sticky action bar (small screens, detail pane) ── */
   .detail-sticky-bar { display: none; }
 
-  /* Laptop: balanced two-column rows, tighter gutters. */
   @media (max-width: 1399.98px) {
-    .detail-flow, .detail-row { gap: 1.5rem; }
-    .detail-flow .panel-body { padding: 1.5rem; }
+    .detail-flow, .detail-row { gap: 1.2rem; }
+    .detail-flow .panel-body { padding: 1.2rem; }
   }
 
-  /* Tablet and below: single column. */
   @media (max-width: 991.98px) {
     .detail-row { grid-template-columns: minmax(0, 1fr); }
   }
 
   @media (max-width: 767.98px) {
-    .job-hero { padding: 1.25rem; }
-    .job-hero-top { gap: 1rem; }
-    .job-hero-logo { width: 54px; height: 54px; font-size: 20px; border-radius: 12px; }
-    .job-hero-title { font-size: 19px; }
+    .job-hero { padding: 1.1rem; }
+    .job-hero-top { gap: 0.8rem; }
+    .job-hero-logo { width: 50px; height: 50px; font-size: 19px; border-radius: 11px; }
+    .job-hero-title { font-size: 18px; }
     .job-hero-score { align-items: flex-start; }
-    .score-ring { font-size: 21px; padding: 0.4rem 0.85rem; }
-    .detail-flow, .detail-row { gap: 1.25rem; }
-    .detail-flow .panel-body { padding: 1.15rem; }
+    .score-ring { font-size: 19px; padding: 0.3rem 0.7rem; }
+    .detail-flow, .detail-row { gap: 1rem; }
+    .detail-flow .panel-body { padding: 1rem; }
 
-    /* The primary actions stay reachable without scrolling back up. */
     .job-hero-actions { display: none; }
     .detail-sticky-bar {
       display: flex;
       position: fixed;
       left: 0; right: 0; bottom: 0;
       z-index: 1030;
-      gap: 0.5rem;
-      padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom, 0px));
-      background: rgba(255,255,255,0.94);
-      backdrop-filter: blur(10px);
+      gap: 0.45rem;
+      padding: 0.6rem 0.8rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
       border-top: 1px solid var(--bdr);
-      box-shadow: 0 -4px 20px rgba(15,23,42,0.07);
+      box-shadow: 0 -4px 24px rgba(15,23,42,0.08);
     }
-    .detail-sticky-bar .btn-apply-job { flex: 1 1 auto; justify-content: center; height: 44px; }
-    .detail-sticky-bar .btn-bookmark { flex: 0 0 auto; height: 44px; }
-    /* Room so the bar never covers the last panel. */
-    #detailView { padding-bottom: 4.5rem; }
+    .detail-sticky-bar .btn-apply-job { flex: 1 1 auto; justify-content: center; height: 40px; }
+    .detail-sticky-bar .btn-bookmark { flex: 0 0 auto; height: 40px; }
+    #detailView { padding-bottom: 3.8rem; }
   }
 
   @media (max-width: 575.98px) {
-    .detail-topbar { gap: 0.6rem; }
-    .btn-back { height: 38px; padding: 0 0.9rem; }
+    .detail-topbar { gap: 0.5rem; }
+    .btn-back { height: 34px; padding: 0 0.8rem; }
     .detail-crumb { flex-basis: 100%; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     GLOBAL RESPONSIVE
+     ═══════════════════════════════════════════════════════════════ */
+  @media (max-width: 1199.98px) {
+    .rec-job .rj-skills-row { grid-template-columns: 1fr; }
+    .panel-body { padding: 1.1rem 1.1rem; }
+    .panel-head { padding: 0.9rem 1.1rem; }
+  }
+
+  @media (max-width: 991.98px) {
+    .panel-body { padding: 1rem; }
+    .panel-head { padding: 0.8rem 1rem; }
+  }
+
+  @media (max-width: 767.98px) {
+    .dash-header { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    .dash-header .page-title { font-size: 20px; }
+    .panel-head { padding: 0.8rem 0.9rem; }
+    .panel-body { padding: 0.9rem; }
+    .rec-job { padding: 0.9rem; }
+  }
+
+  @media (max-width: 575.98px) {
+    .metric-card { padding: 1rem 0.8rem; }
+    .metric-card .mc-value { font-size: 22px; }
+    .upload-area { padding: 1.6rem 1rem; }
+    .upload-area .upload-title { font-size: 15px; }
+    .upload-area .upload-art { width: 50px; height: 50px; font-size: 20px; }
+    .btn-choose-file { min-width: 0; width: 100%; }
+    .dash-header .page-title { font-size: 18px; }
+    .panel-body { padding: 0.9rem; }
+    .panel-head { padding: 0.7rem 0.9rem; }
   }
 </style>
 
 <div class="ai-match-page">
 
-  <div class="dash-header">
+   <div class="dash-header">
     <div class="dash-brand">
-      <div class="dash-brand-mark"><i class="bi bi-robot"></i></div>
-      <h1 class="page-title">AI Match</h1>
-      <span class="dash-brand-sub">Dashboard</span>
+      <div class="dash-brand-mark"><i class="bi bi-graph-up-arrow"></i></div>
+      <div class="dash-brand-info">
+        <h1 class="page-title">AI Match Dashboard</h1>
+      </div>
     </div>
     <p class="page-subtitle mb-0">
       Upload a CV PDF to generate insights, match analytics, and recommended jobs.
     </p>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════════════════
-       VIEW 1 — DASHBOARD (master)
-
-       Deliberately short: the CV on record, the headline match score, the
-       analytics cards and the recommended job list. Every deeper analysis
-       panel lives in the detail view below and is revealed only when a
-       specific job is opened.
-       ═══════════════════════════════════════════════════════════════════ -->
   <div id="listView" class="view-pane">
 
-  <!-- Row 1: Upload (2fr) + Match Score (1fr) -->
   <div class="match-row row-1">
-    <!-- No panel header: the card's own title is the heading, so a bar reading
-         "Upload Your CV" directly above "Upload Resume to Get Started" would
-         say the same thing twice. -->
     <div class="dash-panel upload-panel">
       <div class="panel-body">
         <form id="aiMatchForm">
-          <!-- Drop target. The click handler forwards to the file input, so the
-               whole card behaves as one control. -->
           <div class="upload-area">
             <div class="upload-art" aria-hidden="true"><i class="bi bi-cloud-arrow-up-fill"></i></div>
 
@@ -2077,8 +2296,6 @@
               PDF format and must not exceed 10&nbsp;MB in size.
             </div>
 
-            <!-- A browser clears the file input on every load and cannot
-                 repopulate it, so the CV on record is shown here instead. -->
             <div id="currentCvLine" class="upload-file" style="display:none;">
               <span class="uf-name">
                 <i class="bi bi-file-earmark-pdf-fill"></i>
@@ -2088,12 +2305,6 @@
               <span class="uf-meta" id="currentCvDate"></span>
             </div>
 
-            <!-- The input stays in the layout — visually hidden but focusable
-                 and still `required`, so native validation and every existing
-                 handler keep working. It is the real control: the pill beside
-                 it is decoration, and the card's existing click handler
-                 forwards to the input. A label bound with "for" would open the
-                 file picker twice: once natively, once via that handler. -->
             <input id="resume_pdf" class="visually-hidden-input" name="resume"
                    type="file" accept="application/pdf" required
                    aria-label="Choose a CV file in PDF format">
@@ -2117,7 +2328,6 @@
       </div>
     </div>
 
-    <!-- Match Score — the headline result, kept top-right and above the fold -->
     <div class="dash-panel score-panel">
       <div class="panel-head">
         <div class="panel-title">
@@ -2127,7 +2337,6 @@
       </div>
       <div class="panel-body">
         <div class="score-hero">
-          <!-- Ring arc is driven by --score-pct, set from resume_score. -->
           <div class="score-ring" id="scoreRing">
             <div class="score-ring-inner">
               <div class="score-ring-val" id="resumeScore">--</div>
@@ -2149,9 +2358,6 @@
     </div>
   </div>
 
-  <!-- Job Categories — a client-side lens over the analysis already in memory.
-       Selecting one re-renders the grid below from `currentJobs`; nothing is
-       fetched and no stored state changes. Hidden until an analysis exists. -->
   <section class="cat-section" id="jobCategories" hidden aria-labelledby="catHeading">
     <h2 class="cat-heading" id="catHeading">
       <i class="bi bi-collection"></i> Job Categories
@@ -2159,7 +2365,6 @@
     <div class="cat-bar" id="categoryBar" role="group" aria-label="Filter recommended jobs by category"></div>
   </section>
 
-  <!-- Recommended Jobs — the entry point into the detail view -->
   <div class="mb-4">
     <div class="dash-panel">
       <div class="panel-head">
@@ -2182,14 +2387,6 @@
   </div><!-- /#listView -->
 
 
-  <!-- ═══════════════════════════════════════════════════════════════════
-       VIEW 2 — JOB DETAIL
-
-       Reached by clicking a recommended job. Nothing is fetched: the job
-       specific blocks are painted from the analysis already in memory by the
-       same helpers the list used, and the CV-wide panels below are the very
-       same elements the renderers have always written into.
-       ═══════════════════════════════════════════════════════════════════ -->
   <div id="detailView" class="view-pane" hidden>
 
     <div class="detail-topbar">
@@ -2204,14 +2401,10 @@
       </div>
     </div>
 
-    <!-- Sections follow one reading order; the two-column rows collapse to a
-         single column on tablet and below. -->
     <div class="detail-flow">
 
-      <!-- 1 · Job Header — information, headline score, Apply + Bookmark -->
       <div id="jobDetailHero"></div>
 
-      <!-- 2 · Match Score — the per-component bars, beside the quick metrics -->
       <div class="detail-row">
         <div class="dash-panel">
           <div class="panel-head">
@@ -2233,7 +2426,6 @@
         </div>
       </div>
 
-      <!-- 3 & 4 · Strengths and Missing Skills (the score ledger) -->
       <div class="dash-panel">
         <div class="panel-head">
           <div class="panel-title">
@@ -2244,7 +2436,6 @@
         <div class="panel-body" id="jobDetailLedger"></div>
       </div>
 
-      <!-- Why it matched / why it did not score higher -->
       <div class="dash-panel" id="jobDetailWhyPanel">
         <div class="panel-head">
           <div class="panel-title">
@@ -2255,9 +2446,6 @@
         <div class="panel-body" id="jobDetailWhy"></div>
       </div>
 
-      <!-- Next step: hand off to Skill Gap Analysis, which stays a page of
-           its own. Sits where the per-role AI insight used to, so the flow
-           still reaches an action before the analytics below. -->
       <section class="next-step" id="skillGapCta" aria-hidden="true">
         <div class="next-step-inner">
           <div class="next-step-main">
@@ -2275,7 +2463,6 @@
         </div>
       </section>
 
-      <!-- 5 · Charts — match analytics across every recommended role -->
       <div class="dash-panel">
         <div class="panel-head">
           <div class="panel-title">
@@ -2288,7 +2475,6 @@
         </div>
       </div>
 
-      <!-- 6 · CV Summary — last, read once a role has been chosen -->
       <div class="dash-panel" id="cvSummaryPanel">
         <div class="panel-head">
           <div class="panel-title">
@@ -2306,7 +2492,6 @@
 
     </div>
 
-    <!-- Small screens: the two primary actions stay within thumb reach -->
     <div class="detail-sticky-bar" id="detailStickyBar"></div>
 
   </div><!-- /#detailView -->
@@ -2321,23 +2506,12 @@
   let matchChart;
   let breakdownChart;
 
-  /* ── Apply accent color ── */
+  /* ── Brand-locked page: skips the user's chosen accent so every AI Match
+        card renders in unified system blue. ── */
   (function applyAccentColor() {
-    const saved = localStorage.getItem("pref_accent");
-    if (!saved) return;
-    document.documentElement.style.setProperty("--bs-primary", saved);
-    const temp = document.createElement("div");
-    temp.style.color = saved;
-    document.body.appendChild(temp);
-    const rgb = getComputedStyle(temp).color;
-    document.body.removeChild(temp);
-    const m = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
-    if (m) document.documentElement.style.setProperty(
-      "--bs-primary-rgb", `${m[1]}, ${m[2]}, ${m[3]}`
-    );
+    /* intentionally empty on this page */
   })();
 
-  /* ── Number animation ── */
   function animateValue(id, target, suffix = "") {
     const el = document.getElementById(id);
     if (!el) return;
@@ -2352,16 +2526,11 @@
     requestAnimationFrame(step);
   }
 
-  /* ── Paint into a target that may not be on the page ──
-     Several analysis panels were removed from the layout. The renderers still
-     produce their markup, so writing through here keeps them harmless no-ops
-     instead of throwing on a missing element. */
   function setHtml(id, html) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
   }
 
-  /* ── Empty state ── */
   function emptyBlock(icon, title, sub) {
     return `<div class="empty-block">
       <div class="eb-icon"><i class="bi bi-${icon}"></i></div>
@@ -2370,7 +2539,6 @@
     </div>`;
   }
 
-  /* ── Chip list ── */
   function chipList(values, emptyText) {
     if (!values || !values.length) return emptyBlock("tools", emptyText, "");
     return values.map(v =>
@@ -2378,10 +2546,6 @@
     ).join("");
   }
 
-  /* ── Score components (single source of truth for every chart/bar) ── */
-  /* Certifications and Semantic are still scored by the backend and still
-     counted in match_percentage — they are simply not listed, because
-     neither reads as something a candidate can act on. */
   const SCORE_COMPONENTS = [
     { key: "profession_match",    label: "Profession",     color: "#6366f1" },
     { key: "skills_match",        label: "Skills",         color: "#10B981" },
@@ -2390,7 +2554,6 @@
     { key: "project_match",       label: "Projects",       color: "#EC4899" },
   ];
 
-  /* ── Match explanation bar ── */
   function renderMatchExplanation(exp) {
     if (!exp || !exp.final_score) return "";
     const bars = SCORE_COMPONENTS;
@@ -2408,7 +2571,6 @@
     </div>`;
   }
 
-  /* ── Why this job matched / why it did not score higher (Phase 2 #5) ── */
   function renderWhy(item) {
     const pos = item.why_matched || [];
     const neg = item.why_not_higher || [];
@@ -2425,12 +2587,6 @@
     </div>`;
   }
 
-  /* ── Score ledger ─────────────────────────────────────────────────────
-     Shows the arithmetic behind match_percentage: the weighted score, the
-     requirements THIS posting asked for that the CV did not evidence, and
-     what each one cost. Rendered only when the backend supplied the ledger,
-     so an analysis session stored before it existed still repaints using the
-     plain matched/missing chips. */
   function hasScoreLedger(item) {
     return Array.isArray(item.strengths) || Array.isArray(item.deductions);
   }
@@ -2457,7 +2613,6 @@
     const deductions = item.deductions || [];
     const total = parseInt(item.total_deduction) || 0;
     const final = parseInt(item.match_percentage) || 0;
-    /* base_score is authoritative; derive it only for older payloads. */
     const base = parseInt(item.base_score) || (final + total);
 
     const column = (cls, icon, title, rows, empty) => `
@@ -2484,7 +2639,6 @@
       </div>`;
   }
 
-  /* ── Company logo ── */
   function jobLogoHtml(job, cls) {
     const initial = escapeHtml((job.company || "?")[0].toUpperCase());
     return job.company_logo
@@ -2492,15 +2646,12 @@
       : `<div class="${cls}">${initial}</div>`;
   }
 
-  /* ── Matched / missing skill columns ──
-     The plain form of the score ledger, used when the backend did not supply
-     one (an analysis stored before the ledger existed still repaints). */
   function renderSkillColumns(item) {
     const matched = (item.matched_skills || [])
       .map(s => `<span class="skill-chip-modern chip-success"><i class="bi bi-check-lg"></i> ${escapeHtml(s)}</span>`).join("");
     const missing = (item.missing_skills || [])
       .map(s => `<span class="skill-chip-modern chip-warn"><i class="bi bi-x-lg"></i> ${escapeHtml(s)}</span>`).join("");
-    const none = '<span style="font-size:13px;color:var(--txt-muted)">None</span>';
+    const none = '<span style="font-size:12px;color:var(--txt-muted)">None</span>';
     return `
       <div class="rj-skills-row">
         <div>
@@ -2514,10 +2665,6 @@
       </div>`;
   }
 
-  /* ── Apply / Bookmark ──
-     The same two calls the page has always made. Bookmark belongs to the
-     detail view only: it is a decision taken after reading the full posting,
-     so the summary card carries Apply alone. */
   function jobActionsHtml(job) {
     return `<button class="btn-apply-job" type="button" onclick="submitJobApplication(${job.id}, this)">
         <i class="bi bi-send"></i> Apply
@@ -2527,37 +2674,25 @@
       </button>`;
   }
 
-  /* ── One fact on the summary card ── */
   function jobFact(icon, value, tone) {
     return `<span class="rj-fact ${tone || ""}"><i class="bi ${icon}"></i> ${escapeHtml(value)}</span>`;
   }
 
-  /* Match strength colour. Same thresholds renderResumeQuality already uses,
-     so a percentage means the same thing everywhere on the page. */
   function matchTone(pct) {
     return pct >= 85 ? "#10B981" : pct >= 70 ? "#3B82F6" : pct >= 50 ? "#F59E0B" : "#EF4444";
   }
 
-  /* ── Recommended job card (master list) ──
-     A summary only. The component bars, score ledger, reasoning and insight
-     are one click away in the detail view, painted from this same object. */
   function renderRecommendedJob(item, index, pos) {
     const job = item.job;
     const pct = Math.min(100, Math.max(0, parseInt(item.match_percentage) || 0));
-    /* `index` addresses currentJobs; `pos` is the slot in the visible grid and
-       only drives the stagger, so a filtered list still animates in from 0. */
     const slot = (pos === undefined) ? index : pos;
     const matched = item.matched_skills || [];
 
-    /* Top matching skills only — the missing ones are part of the full
-       breakdown and would compete with the decision this card is for. */
     const chips = matched.slice(0, 5).map(s =>
       `<span class="skill-chip-modern chip-success"><i class="bi bi-check-lg"></i> ${escapeHtml(s)}</span>`).join("");
     const extra = Math.max(0, matched.length - 5);
     const more = extra ? `<span class="rj-more">+${extra} more</span>` : "";
 
-    /* Location, work mode, experience and pay flow in one wrapping row, so a
-       short set sits on a single line and a long one breaks naturally. */
     const facts = [
       jobFact("bi-geo-alt-fill", job.location || "Flexible", "loc"),
       jobFact("bi-building", workModeLabel(job.work_mode), "mode"),
@@ -2582,7 +2717,7 @@
       <div class="rj-match" role="img" aria-label="Match score ${pct} percent">
         <span class="rj-match-label">Match</span>
         <div class="rj-match-track">
-          <span style="width:${pct}%;background:${tone};"></span>
+          <span style="width:${pct}%;background:${tone};color:${tone};"></span>
         </div>
         <span class="rj-match-pct" style="color:${tone};">${pct}%</span>
       </div>
@@ -2603,23 +2738,9 @@
     </article>`;
   }
 
-  /* ══════════════════════════════════════════════════════════════════
-     MASTER → DETAIL NAVIGATION
-
-     Opening a job changes which sections are visible; it never navigates,
-     reloads, or calls an endpoint. Every value shown below comes from the
-     analysis already held in `currentJobs`.
-     ══════════════════════════════════════════════════════════════════ */
   let currentJobs = [];
   let openJobIndex = null;
 
-  /* ══════════════════════════════════════════════════════════════════
-     JOB CATEGORIES
-
-     A lens over `currentJobs` — the analysis already in memory. Selecting a
-     category re-renders the grid and nothing else: no request, no cache
-     write, no change to the stored analysis.
-     ══════════════════════════════════════════════════════════════════ */
   const JOB_CATEGORIES = [
     { key: "all",     label: "All Jobs",           icon: "bi-grid-fill" },
     { key: "mobile",  label: "Mobile Development", icon: "bi-phone-fill",
@@ -2648,8 +2769,6 @@
               "jenkins", "ansible", "aws", "azure", "gcp", "sre"] },
   ];
 
-  /* Matched on word boundaries so short terms stay honest: "ai" hits
-     "AI/ML engineer" but not "email", "ui" not "build". */
   function categoryPattern(term) {
     const esc = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return new RegExp(`(^|[^a-z0-9])${esc}([^a-z0-9]|$)`, "i");
@@ -2661,19 +2780,11 @@
   });
 
   let activeCategory = "all";
-  let jobFields = [];         /* per job: {title, skills, description}, lowercased */
+  let jobFields = [];
 
-  /* Where a term is found decides whether it means anything. A title says what
-     the role IS; required_skills say what it demands; a description is prose
-     that name-drops adjacent tech ("...CI/CD experience a plus") and on its own
-     proves nothing. Scoring the fields separately — instead of concatenating
-     them into one haystack — is what keeps an incidental mention from inventing
-     a category. */
   const FIELD_TITLE = 3;
   const FIELD_SKILLS = 2;
   const FIELD_DESCRIPTION = 1;
-  /* Title or required_skills confer membership; a description-only hit (1)
-     falls below the bar. */
   const CATEGORY_MIN_SCORE = FIELD_SKILLS;
 
   function jobFieldSet(item) {
@@ -2686,7 +2797,6 @@
     };
   }
 
-  /* Strength of the strongest field this category matched in, 0 if none. */
   function categoryScore(index, key) {
     const pats = CATEGORY_PATTERNS[key];
     const f = jobFields[index];
@@ -2709,8 +2819,6 @@
     return n;
   }
 
-  /* Index-preserving: the detail view looks a job up by its position in
-     `currentJobs`, so the original index travels with each card. */
   function visibleJobs() {
     const rows = [];
     for (let i = 0; i < currentJobs.length; i++) {
@@ -2726,8 +2834,6 @@
 
     if (!currentJobs.length) { section.hidden = true; bar.innerHTML = ""; return; }
 
-    /* A category with nothing behind it is dropped rather than rendered as a
-       dead "(0)" pill. All Jobs always stays. */
     const shown = JOB_CATEGORIES
       .map(cat => ({ cat: cat, count: categoryCount(cat.key) }))
       .filter(e => e.cat.key === "all" || e.count > 0);
@@ -2763,8 +2869,6 @@
     }
   }
 
-  /* Only the pressed state is rewritten, so the counts do not flicker and the
-     pill the user clicked keeps focus. */
   (function bindCategoryBar() {
     const bar = document.getElementById("categoryBar");
     if (!bar) return;
@@ -2851,9 +2955,6 @@
          <div class="ph-text">No per-component breakdown was returned for this role.</div>
        </div>`;
 
-    /* The ledger is the richer form of the matched/missing chips — it names the
-       same skills but prices them and explains each one. Show the chips only
-       when there is no ledger, so the two never duplicate each other. */
     document.getElementById("jobDetailLedger").innerHTML =
       renderScoreLedger(item) || renderSkillColumns(item);
 
@@ -2867,12 +2968,8 @@
     document.getElementById("listView").hidden = true;
     document.getElementById("detailView").hidden = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
-    /* Focus lands on the way back out, so keyboard users are not dropped at
-       the top of a page they cannot orient in. */
     document.getElementById("backToJobs").focus({ preventScroll: true });
 
-    /* Both canvases were laid out inside a hidden pane and so measured zero.
-       Nothing is re-plotted — the existing charts are only re-sized. */
     requestAnimationFrame(() => {
       if (breakdownChart) breakdownChart.resize();
       if (matchChart) matchChart.resize();
@@ -2887,7 +2984,6 @@
     const jobs = document.getElementById("recommendedJobs");
     if (jobs) jobs.scrollIntoView({ behavior: "smooth", block: "center" });
 
-    /* Return the caret to the card the user came from. */
     const card = jobs && openJobIndex !== null
       ? jobs.querySelector(`.rec-job[data-job-index="${openJobIndex}"] .rj-view`)
       : null;
@@ -2895,8 +2991,6 @@
     openJobIndex = null;
   }
 
-  /* A card opens the detail view; the Apply and Bookmark buttons inside it
-     keep their own, unchanged handlers. */
   (function bindJobNavigation() {
     const list = document.getElementById("recommendedJobs");
     if (list) {
@@ -2913,15 +3007,11 @@
     });
   })();
 
-  /* ── Radar: this CV's score profile against the best-matching role ──
-     Driven entirely by score_breakdown / match_analytics from the backend, so
-     a different CV always produces a different shape (Phase 2 #1). */
   function renderBreakdownChart(breakdown, rows) {
     const canvas = document.getElementById("breakdownChart");
     if (!canvas) return;
     if (breakdownChart) breakdownChart.destroy();
 
-    // Fall back to the top analytics row if score_breakdown is absent.
     const src = (breakdown && Object.keys(breakdown).length)
       ? breakdown
       : ((rows || [])[0] || {});
@@ -2940,8 +3030,8 @@
         datasets: [{
           label: "Your profile",
           data: values,
-          backgroundColor: "rgba(99,102,241,0.18)",
-          borderColor: "#6366f1",
+          backgroundColor: "rgba(37,99,235,0.18)",
+          borderColor: "#2563EB",
           borderWidth: 2,
           pointBackgroundColor: SCORE_COMPONENTS.map(c => c.color),
           pointRadius: 4
@@ -2965,17 +3055,14 @@
     });
   }
 
-  /* ── Chart ── */
   function renderChart(rows) {
     const canvas = document.getElementById("matchChart");
     if (matchChart) matchChart.destroy();
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#2563EB';
 
-    // Grouped comparison: overall vs skills vs experience per matched role.
-    // Previously this plotted a single flat "Match %" series, which looked
-    // near-identical for every CV.
+    /* Lock chart palette to the brand blue instead of reading --bs-primary,
+       which other pages may have set to a user preference. */
     const series = [
-      { key: "match_percentage", label: "Overall", color: accent },
+      { key: "match_percentage", label: "Overall", color: "#2563EB" },
       { key: "skills_match", label: "Skills", color: "#10B981" },
       { key: "experience_match", label: "Experience", color: "#F59E0B" },
     ];
@@ -3026,9 +3113,6 @@
     });
   }
 
-  /* ── Skill Gap Analysis hand-off ──
-     The CTA is a navigation affordance, not a second copy of the feature:
-     Skill Gap Analysis stays on its own page and nothing is embedded here. ── */
   function toggleSkillGapCta(show) {
     const cta = document.getElementById("skillGapCta");
     if (!cta) return;
@@ -3036,17 +3120,13 @@
     cta.setAttribute("aria-hidden", show ? "false" : "true");
   }
 
-  /* ── Apply analysis data ── */
   function applyAnalysis(data) {
     animateValue("resumeScore", data.resume_score || 0, "%");
 
-    /* Sweeps the donut arc. Presentation only — same figure as above. */
     const scoreRing = document.getElementById("scoreRing");
     if (scoreRing) scoreRing.style.setProperty("--score-pct", data.resume_score || 0);
     const professionEl = document.getElementById("detectedProfession");
     if (data.profession && professionEl) {
-      // Show the fine-grained specialisation alongside the coarse profession
-      // when the backend detected one (e.g. Mobile Developer / Flutter Developer).
       const spec = (data.specialization && data.specialization !== data.profession)
         ? `<span class="badge-spec"><i class="bi bi-diagram-3"></i> ${escapeHtml(data.specialization)}</span>`
         : "";
@@ -3057,14 +3137,11 @@
     const jobsList = data.matched_jobs || data.recommended_jobs || [];
     animateValue("jobCount", jobsList.length);
 
-    /* The detail view reads from here, so it never has to refetch. A fresh
-       list also invalidates whichever job was open, so return to the master. */
     currentJobs = jobsList;
     jobFields = jobsList.map(jobFieldSet);
-    activeCategory = "all";       /* a new analysis is a fresh, unfiltered set */
+    activeCategory = "all";
     closeJobDetail();
 
-    /* CV Summary */
     const summaryWrap = document.getElementById("resumeSummaryWrap");
     if (data.resume_summary) {
       summaryWrap.innerHTML = `<p class="content-text filled mb-0">${escapeHtml(data.resume_summary)}</p>`;
@@ -3075,8 +3152,6 @@
       </div>`;
     }
 
-    /* The CV has been analyzed, so the hand-off to Skill Gap Analysis is now
-       worth offering. Before this point the pre-upload empty state stands. */
     toggleSkillGapCta(true);
 
     setHtml("skillsExtracted", chipList(data.skills_extracted, "No skills extracted yet."));
@@ -3088,8 +3163,6 @@
       (data.resume_improvement_suggestions || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")
       || `<li style="opacity:0.45;border-style:dashed;">Suggestions will appear after analysis.</li>`);
 
-    /* Categories first — it may reset activeCategory — then the grid and the
-       count badge, both driven by whichever category is selected. */
     renderCategoryBar();
     if (jobsList.length) {
       paintJobs();
@@ -3105,13 +3178,11 @@
     renderBreakdownChart(data.score_breakdown, data.match_analytics || []);
   }
 
-  /* ── CV Insights: categorised when the backend supplies them (Phase 2 #3) ── */
   function renderInsights(data) {
     const target = document.getElementById("resumeInsights");
     if (!target) return;
     const groups = data.structured_insights || [];
     if (groups.length) {
-      // The container is a <ul>; swap it for grouped blocks.
       target.innerHTML = groups.map(g => `
         <div class="insight-group">
           <div class="insight-group-title">${escapeHtml(g.category)}</div>
@@ -3126,7 +3197,6 @@
       || `<li style="opacity:0.45;border-style:dashed;">Insights will appear after analysis.</li>`;
   }
 
-  /* ── Skill action plan (Phase 2 #4) ── */
   function renderActionPlan(plan) {
     const target = document.getElementById("skillActionPlan");
     if (!target) return;
@@ -3147,7 +3217,6 @@
       </div>`).join("");
   }
 
-  /* ── Resume quality / ATS report (Phase 2 #11) ── */
   function renderResumeQuality(quality) {
     const target = document.getElementById("resumeQuality");
     const badge = document.getElementById("qualityScore");
@@ -3180,7 +3249,6 @@
     target.innerHTML = rows + tips;
   }
 
-  /* ── Upload area drag-and-drop ── */
   const uploadArea = document.querySelector(".upload-area");
   const fileInput = document.getElementById("resume_pdf");
   if (uploadArea && fileInput) {
@@ -3198,14 +3266,9 @@
     fileInput.addEventListener("change", previewSelectedFile);
   }
 
-  /* ── Loading skeletons ── */
   function showSkeletons() {
-    /* A re-analysis is in flight, so the previous result no longer describes
-       the CV being processed. The CTA returns when the new one lands, and an
-       open job detail is left behind for the dashboard. */
     toggleSkillGapCta(false);
     closeJobDetail();
-    /* The categories describe the outgoing analysis, so they go with it. */
     const catSection = document.getElementById("jobCategories");
     if (catSection) catSection.hidden = true;
     const lines = `<div><div class="skeleton-line w80"></div><div class="skeleton-line"></div></div>`;
@@ -3222,18 +3285,9 @@
     setHtml("resumeSuggestions", lines);
   }
 
-  /* ── Persistence ───────────────────────────────────────────────
-     The analysis is the user's work: it is restored on every visit until a
-     new CV replaces it. The server holds the authoritative copy; the local
-     snapshot only removes the network wait on repaint. ── */
   const ANALYSIS_CACHE = "aiMatch.analysis";
   const CV_KEY = "recommendations.currentCv";
 
-  /* ── Current uploaded CV ──────────────────────────────────────
-     A file input is cleared by the browser on every load and cannot be
-     repopulated, so the CV on record is tracked separately: stored on upload,
-     restored from localStorage for an instant paint, and confirmed against the
-     backend. It stays on screen until another CV replaces it. ── */
   function formatUploadStamp(value) {
     if (!value) return "";
     const when = new Date(value);
@@ -3260,7 +3314,7 @@
     dateEl.textContent = cv.pending
       ? "Selected — press Analyze CV to run it"
       : (stamp ? `Last uploaded • ${stamp}` : "");
-    line.style.display = "block";
+    line.style.display = "flex";
   }
 
   function storeCurrentCv(cv) {
@@ -3269,8 +3323,6 @@
     renderCurrentCv(cv);
   }
 
-  /* A file picked but not yet analyzed is shown straight away, without
-     becoming the stored record - that only happens once the upload succeeds. */
   function previewSelectedFile() {
     const input = document.getElementById("resume_pdf");
     const file = input && input.files ? input.files[0] : null;
@@ -3287,9 +3339,6 @@
     const text = document.getElementById("restoredText");
     if (!banner || !text) return;
 
-    /* The filename and its timestamp live in the CV card above, so this
-       notice is only raised when the stored analysis no longer describes the
-       CV on the profile. */
     if (meta.is_current !== false) {
       banner.style.display = "none";
       return;
@@ -3305,13 +3354,9 @@
     if (banner) banner.style.display = "none";
   }
 
-  /* Repaint the last completed analysis: local snapshot first (instant), then
-     the server copy, which wins when it differs. */
   async function restoreAnalysis() {
     const store = window.SkillSyncState;
 
-    /* Paint the CV on record before anything is fetched, so returning to the
-       page never shows an empty upload panel. */
     renderCurrentCv(cachedCurrentCv());
 
     const cached = store ? store.cache.read(ANALYSIS_CACHE, null) : null;
@@ -3324,21 +3369,16 @@
     try {
       data = await api("/api/jobs/ai-match/");
     } catch (_) {
-      return;              /* offline or expired session — the local repaint stands */
+      return;
     }
     if (!data || !data.has_analysis) {
-      /* The server answered and holds nothing, so a leftover local record is
-         wrong rather than merely old. */
       if (store) store.local.remove(CV_KEY);
       renderCurrentCv(null);
-      /* A stale local snapshot may already have revealed the CTA; the server
-         holds no analysis, so there is nothing to continue to. */
       toggleSkillGapCta(false);
       if (!cached) hideRestoredBanner();
       return;
     }
 
-    /* The backend is the source of truth for which CV is on record. */
     storeCurrentCv(data.cv);
 
     const meta = {
@@ -3354,7 +3394,6 @@
     showRestoredBanner(meta);
   }
 
-  /* ── Form submit ── */
   document.getElementById("aiMatchForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     const file = document.getElementById("resume_pdf").files[0];
@@ -3374,17 +3413,12 @@
       showMessage("CV analyzed successfully.", "success");
       applyAnalysis(data);
 
-      /* The new upload becomes the CV on record. `data.cv` carries the stored
-         id and timestamp; the file's own name and time cover the rare case
-         where persistence failed server-side. */
       storeCurrentCv(data.cv || {
         id: null,
         filename: file.name,
         uploaded_at: data.analyzed_at || new Date().toISOString()
       });
 
-      /* A new CV explicitly replaces the stored analysis — and every cached
-         view derived from the previous one. */
       if (window.SkillSyncState) {
         window.SkillSyncState.cache.write(ANALYSIS_CACHE, {
           analysis: data,

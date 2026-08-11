@@ -3,133 +3,688 @@
 
 {% block content %}
 <style>
-  .recruiter-dash { animation: pageIn 0.6s ease both; }
-  @keyframes pageIn {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
+  /* ============================================================
+     RECRUITER DASHBOARD — Unified Design Tokens
+     ============================================================ */
+  .recruiter-dash {
+    animation: sgFadeIn 0.5s ease both;
+    padding-bottom: var(--sp-6);
+
+    --accent: #2563EB;
+    --accent-rgb: 37, 99, 235;
+    --surface: #fff;
+    --surface-alt: #f8f9fb;
+    --surface-hover: #f1f3f6;
+    --txt: rgba(15, 23, 42, 0.88);
+    --txt-soft: rgba(15, 23, 42, 0.55);
+    --txt-muted: rgba(15, 23, 42, 0.38);
+    --bdr: rgba(15, 23, 42, 0.06);
+    --bdr-hover: rgba(15, 23, 42, 0.12);
+    --shadow: rgba(15, 23, 42, 0.04);
+    --shadow-lg: rgba(15, 23, 42, 0.08);
+    --track: rgba(15, 23, 42, 0.07);
+    --page-bg: #F8FAFC;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-pill: 999px;
+    --success: #16a34a;
+    --success-bg: rgba(34, 197, 94, 0.10);
+    --success-bdr: rgba(34, 197, 94, 0.18);
+    --warn: #d97706;
+    --warn-bg: rgba(217, 119, 6, 0.10);
+    --warn-bdr: rgba(217, 119, 6, 0.18);
+    --danger: #dc2626;
+    --danger-bg: rgba(220, 38, 38, 0.08);
+    --danger-bdr: rgba(220, 38, 38, 0.14);
+    --purple: #7c3aed;
+    --purple-bg: rgba(124, 58, 237, 0.08);
+
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 20px;
+    --sp-6: 28px;
+
+    --el-1: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
+    --el-2: 0 2px 6px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .dash-hero { margin-bottom: 2rem; }
-  .dh-kicker {
-    font-size: 14px; font-weight: 400; color: var(--ss-muted); margin-bottom: 0.15rem;
-  }
-  .dh-kicker span { color: var(--ss-brand); font-weight: 500; }
-  .dash-hero h1 {
-    font-size: 36px; font-weight: 700; margin-bottom: 0.2rem; color: var(--ss-ink); letter-spacing: -0.02em;
-  }
-  .dh-sub {
-    font-size: 15px; font-weight: 400; max-width: 520px; color: var(--ss-muted); line-height: 1.5;
+  /* Force brand blue on this page */
+  .recruiter-dash {
+    --bs-primary: #2563EB !important;
+    --bs-primary-rgb: 37, 99, 235 !important;
+    --accent: #2563EB !important;
+    --accent-rgb: 37, 99, 235 !important;
   }
 
-  .dash-panel {
-    background: var(--ss-surface); border: 1px solid var(--ss-border); border-radius: 20px;
-    box-shadow: var(--ss-shadow-sm); overflow: hidden; height: 100%;
-  }
-  .panel-head {
-    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--ss-border);
-  }
-  .panel-head .panel-title {
-    display: flex; align-items: center; gap: 0.6rem; font-size: 18px; font-weight: 600;
-    margin-bottom: 0; color: var(--ss-ink);
-  }
-  .panel-head .panel-icon {
-    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    border-radius: 10px; background: rgba(var(--ss-brand-rgb), 0.08); color: var(--ss-brand); font-size: 0.85rem;
-  }
-  .panel-body { padding: 1.5rem; }
+  /* Dark theme */
+  html.theme-dark .recruiter-dash,
+  [data-theme="dark"] .recruiter-dash {
+    --accent: #3B82F6 !important;
+    --accent-rgb: 59, 130, 246 !important;
+    --bs-primary: #3B82F6 !important;
+    --bs-primary-rgb: 59, 130, 246 !important;
 
-  .empty-block {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 2.5rem 1rem; text-align: center;
+    --surface: #1E293B;
+    --surface-alt: #172033;
+    --surface-hover: #24334d;
+    --txt: rgba(248, 250, 252, 0.92);
+    --txt-soft: rgba(248, 250, 252, 0.62);
+    --txt-muted: rgba(248, 250, 252, 0.42);
+    --bdr: rgba(248, 250, 252, 0.08);
+    --bdr-hover: rgba(248, 250, 252, 0.16);
+    --shadow: rgba(0, 0, 0, 0.28);
+    --shadow-lg: rgba(0, 0, 0, 0.42);
+    --track: rgba(248, 250, 252, 0.10);
+    --page-bg: #0B1120;
+    --el-1: 0 1px 3px rgba(0, 0, 0, 0.24), 0 4px 12px rgba(0, 0, 0, 0.28);
+    --el-2: 0 2px 6px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.38);
   }
-  .empty-block .eb-icon {
-    width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
-    border-radius: 16px; background: rgba(var(--ss-brand-rgb), 0.07);
-    color: var(--ss-brand); font-size: 1.25rem; margin-bottom: 0.75rem;
-  }
-  .empty-block .eb-title { font-size: 0.88rem; font-weight: 700; color: var(--ss-muted); margin-bottom: 0.2rem; }
-  .empty-block .eb-sub { font-size: 0.76rem; color: var(--ss-muted-light); max-width: 300px; line-height: 1.5; }
 
-  .progress { height: 6px; border-radius: 999px; background: var(--ss-border); }
-  .progress .progress-bar { border-radius: 999px; }
-
-  /* ── Activity Timeline ── */
-  .activity-list { list-style: none; padding: 0; margin: 0; }
-  .activity-item {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--ss-border);
-    animation: actFadeIn 0.35s ease both;
+  @keyframes sgFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .activity-item:last-child { border-bottom: none; }
+  @keyframes gentlePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(var(--accent-rgb), 0.06); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes barGrow {
+    from { width: 0%; }
+  }
   @keyframes actFadeIn {
     from { opacity: 0; transform: translateX(-8px); }
     to { opacity: 1; transform: translateX(0); }
   }
-  .activity-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem;
-    flex-shrink: 0;
-    margin-top: 2px;
+  @keyframes orbFloat {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(20px, -15px) scale(1.1); }
   }
+  @keyframes orbFloatReverse {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-15px, 12px) scale(1.15); }
+  }
+
+  /* ── Dash Hero — Enhanced Blue Card ── */
+  .dash-hero {
+    background: var(--accent);
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(255,255,255,0.10) 0%, transparent 60%),
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.07) 0%, transparent 50%),
+      radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 30px 30px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: var(--radius);
+    padding: 2.25rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--el-2);
+    transition: all 0.3s var(--ease);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-hero:hover {
+    box-shadow: 0 8px 30px rgba(var(--accent-rgb), 0.30);
+    transform: translateY(-2px);
+  }
+
+  html.theme-dark .dash-hero,
+  [data-theme="dark"] .dash-hero {
+    background: var(--accent);
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(255,255,255,0.12) 0%, transparent 60%),
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%),
+      radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 30px 30px;
+    border-color: rgba(255,255,255,0.06);
+  }
+
+  /* Floating orbs */
+  .dash-hero::before {
+    content: "";
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    top: -120px;
+    right: -80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    animation: orbFloat 14s ease-in-out infinite alternate;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(40px);
+  }
+
+  .dash-hero::after {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    bottom: -80px;
+    left: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    animation: orbFloatReverse 18s ease-in-out infinite alternate-reverse;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(40px);
+  }
+
+  html.theme-dark .dash-hero::before {
+    background: rgba(255,255,255,0.08);
+  }
+  html.theme-dark .dash-hero::after {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .dash-hero .dh-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dash-hero .dh-accent-bar {
+    width: 4px;
+    height: 52px;
+    border-radius: var(--radius-pill);
+    background: rgba(255,255,255,0.4);
+    flex-shrink: 0;
+  }
+
+  .dash-hero .dh-kicker {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.70);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.02em;
+  }
+
+  .dash-hero .dh-kicker span {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .dash-hero h1 {
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin: 0;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  /* ── Metric Cards ── */
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--bdr);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.25rem 1.125rem;
+    transition: all 0.3s var(--ease);
+    box-shadow: var(--el-1);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent), var(--accent));
+    background-size: 200% 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .metric-card:hover {
+    border-color: var(--bdr-hover);
+    box-shadow: var(--el-2);
+    transform: translateY(-4px);
+  }
+
+  .metric-card:hover::before {
+    opacity: 1;
+    animation: shimmer 2.5s infinite;
+  }
+
+  .metric-card .mc-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.875rem;
+  }
+
+  .metric-card .mc-icon {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 18px;
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover .mc-icon {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 8px 28px rgba(var(--accent-rgb), 0.30);
+    transform: scale(1.05);
+  }
+
+  .metric-card .mc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
+    letter-spacing: 0.02em;
+  }
+
+  .metric-card .mc-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--txt);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.125rem;
+  }
+
+  .metric-card .mc-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--txt-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Panels ── */
+  .dash-panel {
+    background: var(--surface);
+    border: 1px solid var(--bdr);
+    border-radius: var(--radius);
+    box-shadow: var(--el-1);
+    overflow: hidden;
+    transition: all 0.3s var(--ease);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dash-panel:hover {
+    border-color: var(--bdr-hover);
+    box-shadow: var(--el-2);
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--bdr);
+    background: var(--surface-alt);
+    flex-shrink: 0;
+  }
+
+  .panel-head .panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--txt);
+  }
+
+  .panel-head .panel-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 0.75rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
+  }
+
+  .panel-body {
+    padding: var(--sp-4) var(--sp-5);
+    flex: 1;
+  }
+
+  /* ── Activity Timeline ── */
+  .activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .activity-item {
+    display: flex;
+    gap: var(--sp-3);
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid var(--bdr);
+    animation: actFadeIn 0.4s ease both;
+    transition: padding-left 0.2s ease;
+  }
+
+  .activity-item:last-child { border-bottom: none; }
+  .activity-item:hover { padding-left: var(--sp-1); }
+
+  .activity-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.3s ease;
+  }
+
+  .activity-item:hover .activity-icon {
+    transform: scale(1.08);
+  }
+
   .activity-icon.created,
   .activity-icon.published,
-  .activity-icon.reopened { background: #ECFDF5; color: #10B981; }
-  .activity-icon.updated { background: #EFF6FF; color: #2563EB; }
-  .activity-icon.closed { background: #FEF2F2; color: #EF4444; }
-  .activity-icon.draft { background: #F8FAFC; color: #94A3B8; }
-  .activity-icon.deleted { background: #FEF2F2; color: #EF4444; }
+  .activity-icon.reopened {
+    background: var(--success-bg);
+    color: var(--success);
+  }
 
-  .activity-body { flex: 1; min-width: 0; }
+  .activity-icon.updated {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+  }
+
+  .activity-icon.closed,
+  .activity-icon.deleted {
+    background: var(--danger-bg);
+    color: var(--danger);
+  }
+
+  .activity-icon.draft {
+    background: rgba(15, 23, 42, 0.05);
+    color: var(--txt-muted);
+    border: 1px solid var(--bdr);
+  }
+
+  html.theme-dark .activity-icon.draft {
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--txt-muted);
+    border-color: var(--bdr);
+  }
+
+  .activity-body {
+    flex: 1;
+    min-width: 0;
+  }
+
   .activity-title {
-    font-size: 14px; font-weight: 500; color: var(--ss-text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--txt-soft);
     margin-bottom: 0.1rem;
+    line-height: 1.4;
   }
+
   .activity-job-title {
-    font-size: 15px; font-weight: 600; color: var(--ss-ink);
-    margin-bottom: 0.1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--txt);
   }
+
   .activity-meta {
-    display: flex; align-items: center; gap: 0.5rem;
-    font-size: 13px; color: var(--ss-muted-light);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: 0.72rem;
+    color: var(--txt-muted);
+    margin-top: var(--sp-1);
+    flex-wrap: wrap;
   }
+
   .activity-badge {
-    display: inline-flex; align-items: center; gap: 0.25rem;
-    padding: 0.1rem 0.45rem; border-radius: 999px;
-    font-size: 11px; font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: 0.05rem 0.5rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid transparent;
   }
+
   .activity-badge.created,
   .activity-badge.published,
-  .activity-badge.reopened { background: #ECFDF5; color: #10B981; }
-  .activity-badge.updated { background: #EFF6FF; color: #2563EB; }
-  .activity-badge.closed { background: #FEF2F2; color: #EF4444; }
-  .activity-badge.draft { background: #F8FAFC; color: #94A3B8; }
-  .activity-badge.deleted { background: #FEF2F2; color: #EF4444; }
+  .activity-badge.reopened {
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: var(--success-bdr);
+  }
+
+  .activity-badge.updated {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb), 0.10);
+  }
+
+  .activity-badge.closed,
+  .activity-badge.deleted {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-color: var(--danger-bdr);
+  }
+
+  .activity-badge.draft {
+    background: rgba(15, 23, 42, 0.05);
+    color: var(--txt-muted);
+    border-color: var(--bdr);
+  }
+
+  html.theme-dark .activity-badge.draft {
+    background: rgba(148, 163, 184, 0.12);
+    border-color: var(--bdr);
+  }
 
   .activity-dot {
-    width: 6px; height: 6px;
+    width: 3px;
+    height: 3px;
     border-radius: 50%;
-    background: var(--ss-border-strong);
+    background: var(--bdr-hover);
+    flex-shrink: 0;
   }
 
+  /* ── Hiring Overview ── */
+  .hiring-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    margin-bottom: var(--sp-3);
+  }
+
+  .hiring-row:last-child { margin-bottom: 0; }
+
+  .hiring-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--sp-1);
+  }
+
+  .hiring-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--txt-soft);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+  }
+
+  .hiring-label i {
+    font-size: 0.8rem;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+
+  .hiring-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--txt);
+    letter-spacing: -0.01em;
+  }
+
+  .hiring-bar-track {
+    width: 100%;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background: rgba(15, 23, 42, 0.07);
+    overflow: hidden;
+  }
+
+  html.theme-dark .hiring-bar-track {
+    background: rgba(148, 163, 184, 0.15);
+  }
+
+  .hiring-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width 0.8s var(--ease);
+    animation: barGrow 0.8s var(--ease) both;
+  }
+
+  .hiring-bar-fill.blue {
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.20);
+  }
+
+  .hiring-bar-fill.green {
+    background: var(--success);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.20);
+  }
+
+  /* ── Hiring Summary Grid ── */
+  .hiring-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-2);
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--bdr);
+  }
+
+  .hiring-summary-item {
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr);
+    border-radius: var(--radius-sm);
+    padding: var(--sp-2);
+    text-align: center;
+    transition: all 0.25s ease;
+  }
+
+  .hiring-summary-item:hover {
+    border-color: var(--bdr-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--el-1);
+  }
+
+  .hiring-summary-val {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--txt);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .hiring-summary-lbl {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--txt-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.05rem;
+  }
+
+  /* ── Empty State ── */
+  .empty-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-6) var(--sp-4);
+    text-align: center;
+  }
+
+  .empty-block .eb-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: var(--sp-3);
+    animation: gentlePulse 3s ease-in-out infinite;
+  }
+
+  .empty-block .eb-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--txt-soft);
+    margin-bottom: var(--sp-1);
+  }
+
+  .empty-block .eb-sub {
+    font-size: 0.78rem;
+    color: var(--txt-muted);
+    max-width: 240px;
+    line-height: 1.5;
+  }
+
+  /* ── Responsive ── */
   @media (max-width: 767.98px) {
-    .dash-hero h1 { font-size: 1.5rem; }
-    .panel-head { padding: 1rem 1.15rem; }
-    .panel-body { padding: 1.15rem; }
+    .dash-hero { padding: 1.5rem 1.25rem; }
+    .dash-hero .dh-accent-bar { height: 40px; }
+    .dash-hero::before { width: 200px; height: 200px; top: -80px; right: -40px; }
+    .dash-hero::after { width: 150px; height: 150px; bottom: -60px; left: 10px; }
+    .metric-card .mc-value { font-size: 1.5rem; }
+    .panel-body { padding: var(--sp-3); }
+    .hiring-summary-grid { gap: var(--sp-1); }
   }
   @media (max-width: 575.98px) {
-    .metric-card .mc-value { font-size: 1.75rem; }
-    .metric-card { padding: 1.15rem; }
+    .hiring-summary-grid { grid-template-columns: repeat(3, 1fr); }
   }
 </style>
 
 <div class="recruiter-dash">
 
-  <!-- ── Header ── -->
+  <!-- ═══ HERO — Enhanced with pattern & floating bubbles ═══ -->
   <div class="dash-hero">
     <div class="dh-content">
       <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
@@ -138,20 +693,19 @@
           <div>
             <div class="dh-kicker"><span id="greetLine">Recruiter workspace</span></div>
             <h1>Your hiring command center</h1>
-            <p class="dh-sub">Post roles, let AI rank candidates, and fill positions faster with intelligent matching.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Metrics ── -->
+  <!-- ═══ METRICS ═══ -->
   <div class="row g-3 mb-4">
     <div class="col-md-6 col-xl-3">
       <div class="metric-card" style="animation-delay:0.10s">
         <div class="mc-top">
           <div class="mc-icon"><i class="bi bi-file-earmark-post"></i></div>
-          <div class="mc-badge"><i class="bi bi-arrow-up-short"></i> Total</div>
+          <div class="mc-badge"><i class="bi bi-layers"></i> Total</div>
         </div>
         <div id="dashTotalJobs" class="mc-value">–</div>
         <div class="mc-label">Total Jobs Posted</div>
@@ -189,8 +743,10 @@
     </div>
   </div>
 
-  <!-- Recent Activity & Hiring Overview -->
-  <div class="row g-4 mt-2">
+  <!-- ═══ PANELS ═══ -->
+  <div class="row g-4">
+
+    <!-- Recent Activity -->
     <div class="col-lg-7">
       <div class="dash-panel" style="animation-delay:0.26s">
         <div class="panel-head">
@@ -208,39 +764,83 @@
         </div>
       </div>
     </div>
+
+    <!-- Hiring Overview -->
     <div class="col-lg-5">
       <div class="dash-panel" style="animation-delay:0.30s">
         <div class="panel-head">
           <div class="panel-title">
-            <div class="panel-icon"><i class="bi bi-bar-chart"></i></div>
+            <div class="panel-icon"><i class="bi bi-bar-chart-line"></i></div>
             Hiring Overview
           </div>
         </div>
         <div class="panel-body">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <span style="font-size:0.82rem;color:var(--ss-muted);font-weight:500;">Posted Jobs</span>
-            <span id="hiringPosted" style="font-size:1rem;font-weight:700;color:var(--ss-ink);">–</span>
+
+          <!-- Posted Jobs -->
+          <div class="hiring-row">
+            <div class="hiring-row-head">
+              <span class="hiring-label">
+                <i class="bi bi-file-earmark-post"></i> Posted Jobs
+              </span>
+              <span class="hiring-value" id="hiringPosted">–</span>
+            </div>
+            <div class="hiring-bar-track">
+              <div id="hiringProgressBar"
+                   class="hiring-bar-fill blue"
+                   style="width:0%"></div>
+            </div>
           </div>
-          <div class="progress mb-3" style="height:6px;border-radius:999px;background:var(--ss-border);">
-            <div id="hiringProgressBar" class="progress-bar" style="width:0%;background:linear-gradient(135deg,#2563EB,#1D4ED8);border-radius:999px;"></div>
+
+          <!-- Active Jobs -->
+          <div class="hiring-row">
+            <div class="hiring-row-head">
+              <span class="hiring-label">
+                <i class="bi bi-broadcast"></i> Active Jobs
+              </span>
+              <span class="hiring-value" id="hiringActive">–</span>
+            </div>
+            <div class="hiring-bar-track">
+              <div id="hiringActiveBar"
+                   class="hiring-bar-fill green"
+                   style="width:0%"></div>
+            </div>
           </div>
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <span style="font-size:0.82rem;color:var(--ss-muted);font-weight:500;">Active Jobs</span>
-            <span id="hiringActive" style="font-size:1rem;font-weight:700;color:var(--ss-ink);">–</span>
+
+          <!-- Applications -->
+          <div class="hiring-row">
+            <div class="hiring-row-head">
+              <span class="hiring-label">
+                <i class="bi bi-people"></i> Applications
+              </span>
+              <span class="hiring-value" id="hiringApps">–</span>
+            </div>
+            <div class="hiring-bar-track">
+              <div id="hiringAppsBar"
+                   class="hiring-bar-fill blue"
+                   style="width:0%"></div>
+            </div>
           </div>
-          <div class="progress mb-3" style="height:6px;border-radius:999px;background:var(--ss-border);">
-            <div id="hiringActiveBar" class="progress-bar" style="width:0%;background:linear-gradient(135deg,#22C55E,#16A34A);border-radius:999px;"></div>
+
+          <!-- Summary grid -->
+          <div class="hiring-summary-grid">
+            <div class="hiring-summary-item">
+              <div class="hiring-summary-val" id="summaryPosted">–</div>
+              <div class="hiring-summary-lbl">Posted</div>
+            </div>
+            <div class="hiring-summary-item">
+              <div class="hiring-summary-val" id="summaryActive">–</div>
+              <div class="hiring-summary-lbl">Active</div>
+            </div>
+            <div class="hiring-summary-item">
+              <div class="hiring-summary-val" id="summaryApps">–</div>
+              <div class="hiring-summary-lbl">Applies</div>
+            </div>
           </div>
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <span style="font-size:0.82rem;color:var(--ss-muted);font-weight:500;">Applications</span>
-            <span id="hiringApps" style="font-size:1rem;font-weight:700;color:var(--ss-ink);">–</span>
-          </div>
-          <div class="progress" style="height:6px;border-radius:999px;background:var(--ss-border);">
-            <div id="hiringAppsBar" class="progress-bar" style="width:0%;background:linear-gradient(135deg,#2563EB,#1D4ED8);border-radius:999px;"></div>
-          </div>
+
         </div>
       </div>
     </div>
+
   </div>
 </div>
 {% endblock %}
@@ -249,6 +849,7 @@
 <script>
   requireRole("recruiter");
 
+  /* ── Accent colour ── */
   (function applyAccentColor() {
     const saved = localStorage.getItem("pref_accent");
     if (!saved) return;
@@ -260,25 +861,31 @@
     document.body.removeChild(temp);
     const match = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
     if (match) {
-      document.documentElement.style.setProperty("--bs-primary-rgb", `${match[1]}, ${match[2]}, ${match[3]}`);
+      document.documentElement.style.setProperty(
+        "--bs-primary-rgb",
+        `${match[1]}, ${match[2]}, ${match[3]}`
+      );
     }
   })();
 
+  /* ── Greeting ── */
   (function setGreeting() {
     const name = localStorage.getItem("username") || "there";
     const h = new Date().getHours();
     let g = "Good evening";
     if (h < 12) g = "Good morning";
     else if (h < 17) g = "Good afternoon";
-    document.getElementById("greetLine").innerHTML = `${g}, <span>${name}</span>`;
+    document.getElementById("greetLine").innerHTML =
+      `${g}, <span>${name}</span>`;
   })();
 
+  /* ── Animate counter ── */
   function animateValue(id, target) {
     const el = document.getElementById(id);
     if (!el || isNaN(target)) { if (el) el.textContent = target; return; }
     const dur = 600, start = performance.now();
     function step(now) {
-      const p = Math.min((now - start) / dur, 1);
+      const p    = Math.min((now - start) / dur, 1);
       const ease = 1 - Math.pow(1 - p, 3);
       el.textContent = Math.round(target * ease);
       if (p < 1) requestAnimationFrame(step);
@@ -286,19 +893,25 @@
     requestAnimationFrame(step);
   }
 
+  /* ── HTML escape ── */
   function escapeHtml(s) {
     if (!s) return "";
-    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
+  /* ── Activity helpers ── */
   function getActivityIcon(type) {
     const icons = {
-      job_created: "bi-check-circle",
+      job_created:   "bi-check-circle",
       job_published: "bi-rocket-takeoff",
-      job_updated: "bi-pencil-square",
-      job_closed: "bi-lock",
-      job_reopened: "bi-unlock",
-      draft_saved: "bi-file-earmark",
+      job_updated:   "bi-pencil-square",
+      job_closed:    "bi-lock",
+      job_reopened:  "bi-unlock",
+      draft_saved:   "bi-file-earmark",
       draft_deleted: "bi-trash3",
     };
     return icons[type] || "bi-circle";
@@ -306,36 +919,46 @@
 
   function getActivityLabel(type) {
     const labels = {
-      job_created: "Created",
+      job_created:   "Created",
       job_published: "Published",
-      job_updated: "Updated",
-      job_closed: "Closed",
-      job_reopened: "Reopened",
-      draft_saved: "Saved as Draft",
+      job_updated:   "Updated",
+      job_closed:    "Closed",
+      job_reopened:  "Reopened",
+      draft_saved:   "Saved as Draft",
       draft_deleted: "Draft Deleted",
     };
     return labels[type] || type;
   }
 
   function getActivityIconClass(type) {
-    if (type === "job_created" || type === "job_published" || type === "job_reopened") return "created";
-    if (type === "job_updated") return "updated";
-    if (type === "job_closed") return "closed";
-    if (type === "draft_saved") return "draft";
-    if (type === "draft_deleted") return "deleted";
+    if (type === "job_created"  ||
+        type === "job_published"||
+        type === "job_reopened") return "created";
+    if (type === "job_updated")  return "updated";
+    if (type === "job_closed")   return "closed";
+    if (type === "draft_saved")  return "draft";
+    if (type === "draft_deleted")return "deleted";
     return "updated";
   }
 
+  /* ── renderActivity ── */
   function renderActivity(item) {
     const iconClass = getActivityIconClass(item.activity_type);
-    const icon = getActivityIcon(item.activity_type);
-    const label = getActivityLabel(item.activity_type);
-    const jobTitle = item.job_title ? escapeHtml(item.job_title) : "";
+    const icon      = getActivityIcon(item.activity_type);
+    const label     = getActivityLabel(item.activity_type);
+    const jobTitle  = item.job_title ? escapeHtml(item.job_title) : "";
     return `
       <li class="activity-item">
-        <div class="activity-icon ${iconClass}"><i class="bi ${icon}"></i></div>
+        <div class="activity-icon ${iconClass}">
+          <i class="bi ${icon}"></i>
+        </div>
         <div class="activity-body">
-          <div class="activity-title">${label} ${jobTitle ? '<span class="activity-job-title">' + jobTitle + '</span>' : ''}</div>
+          <div class="activity-title">
+            ${label}
+            ${jobTitle
+              ? `<span class="activity-job-title">${jobTitle}</span>`
+              : ""}
+          </div>
           <div class="activity-meta">
             <span class="activity-badge ${iconClass}">${label}</span>
             <span class="activity-dot"></span>
@@ -352,10 +975,11 @@
       <div class="eb-sub">Start by posting your first job.</div>
     </div>`;
 
+  /* ── loadDashboardStats ── */
   async function loadDashboardStats() {
-    document.getElementById("dashTotalJobs").textContent = "–";
-    document.getElementById("dashActiveJobs").textContent = "–";
-    document.getElementById("dashDraftJobs").textContent = "–";
+    document.getElementById("dashTotalJobs").textContent         = "–";
+    document.getElementById("dashActiveJobs").textContent        = "–";
+    document.getElementById("dashDraftJobs").textContent         = "–";
     document.getElementById("dashTotalApplications").textContent = "–";
 
     try {
@@ -364,37 +988,53 @@
         api("/api/recruiter/activities/"),
       ]);
 
-      const posted = jobs.length;
-      const active = jobs.filter(j => j.is_active).length;
-      const drafts = jobs.filter(j => !j.is_active).length;
-      const totalApps = jobs.reduce((sum, j) => sum + (j.application_count || 0), 0);
+      const posted    = jobs.length;
+      const active    = jobs.filter(j => j.is_active).length;
+      const drafts    = jobs.filter(j => !j.is_active).length;
+      const totalApps = jobs.reduce(
+        (sum, j) => sum + (j.application_count || 0), 0
+      );
 
-      animateValue("dashTotalJobs", posted);
-      animateValue("dashActiveJobs", active);
-      animateValue("dashDraftJobs", drafts);
+      animateValue("dashTotalJobs",         posted);
+      animateValue("dashActiveJobs",        active);
+      animateValue("dashDraftJobs",         drafts);
       animateValue("dashTotalApplications", totalApps);
 
       document.getElementById("hiringPosted").textContent = posted;
       document.getElementById("hiringActive").textContent = active;
-      document.getElementById("hiringApps").textContent = totalApps;
+      document.getElementById("hiringApps").textContent   = totalApps;
 
       if (posted > 0) {
-        const activePct = Math.round((active / posted) * 100);
-        const appsPerJob = Math.min(Math.round((totalApps / posted) * 10), 100);
+        const activePct  = Math.round((active    / posted) * 100);
+        const appsPerJob = Math.min(
+          Math.round((totalApps / posted) * 10), 100
+        );
         document.getElementById("hiringProgressBar").style.width = "100%";
-        document.getElementById("hiringActiveBar").style.width = activePct + "%";
-        document.getElementById("hiringAppsBar").style.width = appsPerJob + "%";
+        document.getElementById("hiringActiveBar").style.width   = activePct + "%";
+        document.getElementById("hiringAppsBar").style.width     = appsPerJob + "%";
       }
 
-      // Recent Activity
       const container = document.getElementById("recentActivity");
       if (activities && activities.length > 0) {
-        container.innerHTML = '<ul class="activity-list">' + activities.map(renderActivity).join("") + '</ul>';
+        container.innerHTML =
+          '<ul class="activity-list">' +
+          activities.map(renderActivity).join("") +
+          "</ul>";
       } else {
         container.innerHTML = emptyActivity;
       }
+
+      // Hero stats strip removed — no longer updating heroTotalJobs, etc.
+
+      const sp  = document.getElementById("summaryPosted");
+      const sa  = document.getElementById("summaryActive");
+      const sap = document.getElementById("summaryApps");
+      if (sp)  sp.textContent  = posted;
+      if (sa)  sa.textContent  = active;
+      if (sap) sap.textContent = totalApps;
+
     } catch (e) {
-      // silently fail on dashboard stats
+      /* silently fail on dashboard stats */
     }
   }
 

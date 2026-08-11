@@ -1,297 +1,374 @@
-<!-- file path: templates/jobs.html -->
 {% extends "base_dashboard.html" %}
 {% block title %}Jobs | SkillSync AI{% endblock %}
 
 {% block content %}
 <style>
-  :root {
-    --accent: var(--bs-primary, #2563EB);
-    --accent-rgb: var(--bs-primary-rgb, 37, 99, 235);
+  /* ============================================================
+     JOBS — Unified Design Tokens (matches other pages)
+     ============================================================ */
+  .jobs-page {
+    animation: sgFadeIn 0.5s ease both;
+    padding-bottom: var(--sp-6);
+
+    --accent: #2563EB;
+    --accent-rgb: 37, 99, 235;
     --surface: #fff;
-    --surface-alt: #F8FAFC;
-    --surface-sunk: #F1F5F9;
-    --txt: rgba(15,23,42,0.90);
-    --txt-soft: rgba(15,23,42,0.58);
-    --txt-muted: rgba(15,23,42,0.42);
-    --bdr: rgba(15,23,42,0.08);
-    --bdr-strong: rgba(15,23,42,0.14);
-    --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
-    --shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -14px rgba(15,23,42,0.16);
-    --shadow-lg: 0 2px 4px rgba(15,23,42,0.04), 0 18px 40px -18px rgba(15,23,42,0.24);
-    --success: #10B981;
-    --success-bg: rgba(16,185,129,0.10);
-    --success-bdr: rgba(16,185,129,0.20);
-    --amber: #B45309;
-    --amber-bg: rgba(245,158,11,0.12);
-    --amber-bdr: rgba(245,158,11,0.26);
+    --surface-alt: #f8f9fb;
+    --surface-hover: #f1f3f6;
+    --txt: rgba(15, 23, 42, 0.88);
+    --txt-soft: rgba(15, 23, 42, 0.55);
+    --txt-muted: rgba(15, 23, 42, 0.38);
+    --bdr: rgba(15, 23, 42, 0.06);
+    --bdr-hover: rgba(15, 23, 42, 0.12);
+    --shadow: rgba(15, 23, 42, 0.04);
+    --shadow-lg: rgba(15, 23, 42, 0.08);
+    --track: rgba(15, 23, 42, 0.07);
+    --page-bg: #F8FAFC;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-pill: 999px;
+    --success: #16a34a;
+    --success-bg: rgba(34, 197, 94, 0.10);
+    --success-bdr: rgba(34, 197, 94, 0.18);
+    --warn: #d97706;
+    --warn-bg: rgba(217, 119, 6, 0.10);
+    --warn-bdr: rgba(217, 119, 6, 0.18);
+    --danger: #dc2626;
+    --danger-bg: rgba(220, 38, 38, 0.08);
+    --danger-bdr: rgba(220, 38, 38, 0.14);
+    --purple: #7c3aed;
+    --purple-bg: rgba(124, 58, 237, 0.08);
+
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 20px;
+    --sp-6: 28px;
+
+    --el-1: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
+    --el-2: 0 2px 6px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  html.theme-dark {
-    --surface: var(--ss-surface, #1E293B);
-    --surface-alt: var(--ss-surface-alt, #0F172A);
-    --surface-sunk: rgba(148,163,184,0.08);
-    --txt: rgba(248,250,252,0.94);
-    --txt-soft: rgba(248,250,252,0.66);
-    --txt-muted: rgba(248,250,252,0.46);
-    --bdr: rgba(148,163,184,0.16);
-    --bdr-strong: rgba(148,163,184,0.28);
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.30);
-    --shadow: 0 1px 2px rgba(0,0,0,0.30), 0 8px 24px -14px rgba(0,0,0,0.60);
-    --shadow-lg: 0 2px 4px rgba(0,0,0,0.35), 0 18px 40px -18px rgba(0,0,0,0.70);
-    --success: #34D399;
-    --amber: #FBBF24;
+  /* Force brand blue on this page */
+  .jobs-page {
+    --bs-primary: #2563EB !important;
+    --bs-primary-rgb: 37, 99, 235 !important;
+    --accent: #2563EB !important;
+    --accent-rgb: 37, 99, 235 !important;
   }
 
-  .jobs-page { width: 100%; max-width: 1400px; margin: 0 auto; animation: pageIn 0.5s ease both; }
-  .jobs-page .row > *, .jobs-page .dash-panel { min-width: 0; }
+  /* Dark theme */
+  html.theme-dark .jobs-page,
+  [data-theme="dark"] .jobs-page {
+    --accent: #3B82F6 !important;
+    --accent-rgb: 59, 130, 246 !important;
+    --bs-primary: #3B82F6 !important;
+    --bs-primary-rgb: 59, 130, 246 !important;
 
-  @keyframes pageIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+    --surface: #1E293B;
+    --surface-alt: #172033;
+    --surface-hover: #24334d;
+    --txt: rgba(248, 250, 252, 0.92);
+    --txt-soft: rgba(248, 250, 252, 0.62);
+    --txt-muted: rgba(248, 250, 252, 0.42);
+    --bdr: rgba(248, 250, 252, 0.08);
+    --bdr-hover: rgba(248, 250, 252, 0.16);
+    --shadow: rgba(0, 0, 0, 0.28);
+    --shadow-lg: rgba(0, 0, 0, 0.42);
+    --track: rgba(248, 250, 252, 0.10);
+    --page-bg: #0B1120;
+    --el-1: 0 1px 3px rgba(0, 0, 0, 0.24), 0 4px 12px rgba(0, 0, 0, 0.28);
+    --el-2: 0 2px 6px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.38);
   }
 
-  /* ── Header ── */
-  .dash-header {
+  @keyframes sgFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes itemSlide {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes iconPop {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* ── Page Header ── */
+  .page-header {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    margin-bottom: 1.75rem;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-5);
     flex-wrap: wrap;
   }
-
-  .dash-header .page-kicker {
-    display: inline-flex;
+  .page-header-left {
+    display: flex;
     align-items: center;
-    gap: 0.45rem;
-    margin-bottom: 0.65rem;
-    padding: 0.3rem 0.7rem 0.3rem 0.6rem;
-    border-radius: 999px;
-    background: rgba(var(--accent-rgb), 0.10);
-    color: var(--accent);
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
+    gap: var(--sp-3);
+    min-width: 0;
   }
-
-  .dash-header .page-kicker .pulse-dot {
-    width: 6px; height: 6px;
-    border-radius: 999px;
+  .page-header-left .brand-mark {
+    width: 40px; height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
     background: var(--accent);
-    animation: pulseDot 2s ease-in-out infinite;
+    color: #fff;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
   }
-
-  @keyframes pulseDot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50%     { opacity: 0.35; transform: scale(0.55); }
-  }
-
-  .dash-header .page-title {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.15;
-    margin-bottom: 0.35rem;
+  .page-header-left .page-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
     color: var(--txt);
+    line-height: 1.15;
   }
-
-  .dash-header .page-subtitle {
-    font-size: 15px;
-    max-width: 60ch;
-    line-height: 1.6;
-    color: var(--txt-soft);
+  .page-header .header-actions {
+    display: flex;
+    gap: var(--sp-2);
+    flex-shrink: 0;
   }
-
-  /* Saved-jobs entry point: a header button, not a permanent sidebar. */
   .btn-saved {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    height: 42px;
-    padding: 0 1.05rem;
-    border-radius: 12px;
+    gap: var(--sp-2);
+    height: 40px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--radius-pill);
+    border: 1.5px solid var(--bdr);
     background: var(--surface);
-    border: 1px solid var(--bdr-strong);
-    color: var(--txt);
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease;
+    color: var(--txt-soft);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
   }
-
-  .btn-saved i { font-size: 15px; color: var(--accent); }
-
   .btn-saved:hover {
-    color: var(--txt);
-    border-color: rgba(var(--accent-rgb), 0.45);
-    box-shadow: 0 8px 20px -12px rgba(var(--accent-rgb), 0.7);
-    transform: translateY(-1px);
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.05);
+    transform: translateY(-2px);
   }
-
-  .btn-saved:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
   .btn-saved .count-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 22px;
     height: 22px;
-    padding: 0 0.4rem;
-    border-radius: 999px;
-    background: rgba(var(--accent-rgb), 0.12);
+    padding: 0 var(--sp-2);
+    border-radius: var(--radius-pill);
+    background: rgba(var(--accent-rgb), 0.10);
     color: var(--accent);
-    font-size: 12px;
+    font-size: 0.7rem;
     font-weight: 700;
-    font-variant-numeric: tabular-nums;
   }
 
   /* ── Panels ── */
   .dash-panel {
     background: var(--surface);
     border: 1px solid var(--bdr);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    box-shadow: var(--el-1);
     overflow: hidden;
+    transition: all 0.3s var(--ease);
+    margin-bottom: var(--sp-4);
+  }
+  .dash-panel:last-child { margin-bottom: 0; }
+  .dash-panel:hover {
+    box-shadow: var(--el-2);
+    border-color: var(--bdr-hover);
   }
 
   .panel-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    padding: 1.1rem 1.5rem;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
     border-bottom: 1px solid var(--bdr);
+    background: var(--surface-alt);
   }
-
   .panel-head .panel-title {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
-    font-size: 15.5px;
-    font-weight: 650;
-    margin-bottom: 0;
+    gap: var(--sp-3);
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin: 0;
     color: var(--txt);
-    letter-spacing: -0.01em;
   }
-
   .panel-head .panel-icon {
-    width: 34px; height: 34px;
+    width: 28px; height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    background: rgba(var(--accent-rgb), 0.10);
+    border-radius: var(--radius-sm);
+    background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 15px;
-    flex-shrink: 0;
+    font-size: 0.75rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
   }
-
   .panel-head .badge-count {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 999px;
-    font-size: 12.5px;
-    font-weight: 600;
+    gap: var(--sp-2);
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.68rem;
+    font-weight: 700;
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-bdr);
-    font-variant-numeric: tabular-nums;
+  }
+  .panel-body {
+    padding: var(--sp-4) var(--sp-5);
   }
 
-  .panel-body { padding: 1.5rem; }
-
-  .panel-note { font-size: 12.5px; color: var(--txt-muted); }
+  .panel-note {
+    font-size: 0.72rem;
+    color: var(--txt-muted);
+    font-weight: 500;
+  }
 
   .link-more {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.2rem;
+    gap: var(--sp-1);
     background: none;
     border: none;
-    font-size: 13px;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--accent);
     transition: gap 0.2s ease;
+    padding: 0.15rem 0.2rem;
   }
+  .link-more:hover { gap: var(--sp-2); color: var(--accent); }
+  .link-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
-  .link-more:hover { gap: 0.55rem; color: var(--accent); }
-  .link-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
-
-  /* ── Recently viewed strip (above the filters) ── */
-  .recent-strip { margin-bottom: 1.5rem; }
-  .recent-strip .panel-head { padding: 0.95rem 1.5rem; }
-  .recent-strip .panel-body { padding: 1.15rem 1.5rem; }
-
-  .recent-strip #recentJobs {
+  /* ── Recent Jobs Strip ── */
+  .recent-strip .panel-body { padding: var(--sp-3) var(--sp-4); }
+  #recentJobs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--sp-2);
   }
+  #recentJobs > .mini-job:nth-child(n+7) { display: none; }
 
-  /* Latest six only — the full history lives behind "View all". */
-  .recent-strip #recentJobs > .mini-job:nth-child(n+7) { display: none; }
-  .recent-strip #recentJobs > .empty-block { grid-column: 1 / -1; }
+  .mini-job {
+    display: flex;
+    gap: var(--sp-2);
+    align-items: center;
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--bdr);
+    background: var(--surface-alt);
+    transition: all 0.25s var(--ease);
+    min-width: 0;
+    animation: itemSlide 0.35s ease both;
+  }
+  .mini-job:hover {
+    border-color: var(--bdr-hover);
+    background: var(--surface);
+    box-shadow: var(--el-1);
+    transform: translateY(-2px);
+  }
+  .mini-job .mj-logo {
+    width: 34px; height: 34px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--bdr);
+    flex-shrink: 0;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    overflow: hidden;
+    padding: 4px;
+  }
+  .mini-job .mj-logo img { width: 100%; height: 100%; object-fit: contain; }
+  .mini-job .mj-title {
+    font-size: 0.8rem;
+    font-weight: 650;
+    color: var(--txt);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mini-job .mj-meta {
+    font-size: 0.7rem;
+    color: var(--txt-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mini-job .mj-meta i { font-size: 0.7rem; opacity: 0.7; }
 
-  /* ── Filter toolbar ── */
-  .search-panel { margin-bottom: 1.5rem; }
-  .search-panel .panel-head { padding: 0.95rem 1.5rem; }
-  .search-panel .panel-body { padding: 1.25rem 1.5rem; }
+  /* ── Filter Panel ── */
+  .search-panel .panel-body { padding: var(--sp-3) var(--sp-4); }
 
   .filter-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.5fr) auto;
-    gap: 0.7rem;
+    gap: var(--sp-2);
     align-items: center;
   }
-
-  .input-wrap { position: relative; }
-
+  .input-wrap {
+    position: relative;
+  }
   .input-wrap .field-icon {
     position: absolute;
-    left: 0.8rem; top: 50%;
+    left: var(--sp-3);
+    top: 50%;
     transform: translateY(-50%);
-    font-size: 14px;
+    font-size: 0.85rem;
     color: var(--txt-muted);
     pointer-events: none;
-    transition: color 0.2s ease;
     z-index: 2;
   }
-
   .input-wrap:focus-within .field-icon { color: var(--accent); }
 
   .search-panel .form-control,
   .search-panel .form-select {
-    height: 42px;
-    border-radius: 12px;
-    border: 1px solid var(--bdr-strong);
-    background: var(--surface);
+    height: 40px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--bdr-hover);
+    background: var(--surface-alt);
     color: var(--txt);
-    font-size: 14px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    box-shadow: none;
+    font-size: 0.85rem;
+    transition: all 0.25s var(--ease);
+    padding-left: var(--sp-4);
+    padding-right: var(--sp-3);
+    width: 100%;
   }
-
-  .search-panel .form-control.has-icon,
-  .search-panel .form-select.has-icon { padding-left: 2.35rem; }
+  .search-panel .form-control.has-icon { padding-left: 2.3rem; }
+  .search-panel .form-select.has-icon { padding-left: 2.3rem; }
 
   .search-panel .form-control::placeholder { color: var(--txt-muted); }
-
   .search-panel .form-control:hover,
-  .search-panel .form-select:hover { border-color: rgba(var(--accent-rgb), 0.45); }
-
+  .search-panel .form-select:hover {
+    border-color: rgba(var(--accent-rgb), 0.35);
+    background: var(--surface);
+  }
   .search-panel .form-control:focus,
   .search-panel .form-select:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.14);
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.06);
     background: var(--surface);
     outline: none;
   }
-
   .search-panel .form-select {
     appearance: none;
     -webkit-appearance: none;
@@ -303,652 +380,474 @@
   }
 
   .btn-search {
-    height: 42px;
-    min-width: 118px;
-    padding: 0 1.25rem;
-    border-radius: 12px;
-    background: var(--accent) !important;
-    color: #fff !important;
-    border: none !important;
-    font-size: 14px;
-    font-weight: 600;
+    height: 40px;
+    min-width: 100px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
-    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    box-shadow: 0 1px 2px rgba(15,23,42,0.08);
+    gap: var(--sp-2);
+    transition: all 0.3s var(--ease);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
+    cursor: pointer;
+    width: 100%;
   }
-
   .btn-search:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px -10px rgba(var(--accent-rgb), 0.85);
-    filter: brightness(1.06);
-    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.35);
+    color: #fff;
   }
+  .btn-search:disabled { opacity: 0.6; pointer-events: none; }
 
-  .btn-search:active { transform: translateY(0); }
-  .btn-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  /* Mobile-only "Filters" toggle; the toolbar is always open from lg up. */
-  .btn-filter-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    height: 36px;
-    padding: 0 0.9rem;
-    border-radius: 10px;
-    background: var(--surface-alt);
-    border: 1px solid var(--bdr-strong);
-    color: var(--txt-soft);
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .btn-filter-toggle:hover { color: var(--accent); border-color: rgba(var(--accent-rgb), 0.4); }
-  .btn-filter-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .btn-filter-toggle .bi-chevron-down { transition: transform 0.25s ease; font-size: 11px; }
-  .btn-filter-toggle[aria-expanded="true"] .bi-chevron-down { transform: rotate(180deg); }
-
-  /* ── Active filter chips ── */
+  /* ── Filter Chips ── */
   .chip-bar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1.1rem;
-    padding-top: 1.1rem;
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+    padding-top: var(--sp-3);
     border-top: 1px dashed var(--bdr);
   }
-
   .chip-bar:empty { display: none; }
-
-  .chip-bar .chip-lead {
-    font-size: 12px;
+  .chip-lead {
+    font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--txt-muted);
-    margin-right: 0.15rem;
+    margin-right: var(--sp-1);
   }
-
   .filter-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.35rem 0.4rem 0.35rem 0.75rem;
-    border-radius: 999px;
-    font-size: 13px;
+    gap: var(--sp-2);
+    padding: 0.15rem 0.4rem 0.15rem 0.7rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.78rem;
     font-weight: 600;
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    border: 1px solid rgba(var(--accent-rgb), 0.20);
-    transition: background 0.2s ease, border-color 0.2s ease;
+    border: 1px solid rgba(var(--accent-rgb), 0.14);
   }
-
-  .filter-chip:hover { background: rgba(var(--accent-rgb), 0.13); border-color: rgba(var(--accent-rgb), 0.35); }
-
   .filter-chip .chip-x {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px; height: 20px;
+    width: 18px; height: 18px;
     border: none;
-    border-radius: 999px;
-    background: rgba(var(--accent-rgb), 0.14);
+    border-radius: 50%;
+    background: rgba(var(--accent-rgb), 0.12);
     color: inherit;
-    font-size: 11px;
-    line-height: 1;
-    transition: background 0.15s ease, transform 0.15s ease;
+    font-size: 0.6rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
   }
-
-  .filter-chip .chip-x:hover { background: var(--accent); color: #fff; transform: rotate(90deg); }
-  .filter-chip .chip-x:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
+  .filter-chip .chip-x:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: rotate(90deg);
+  }
   .chip-clear {
     background: none;
     border: none;
-    padding: 0.3rem 0.4rem;
-    font-size: 12.5px;
+    padding: 0.15rem 0.3rem;
+    font-size: 0.72rem;
     font-weight: 600;
     color: var(--txt-muted);
     text-decoration: underline;
     text-underline-offset: 3px;
+    cursor: pointer;
   }
-
   .chip-clear:hover { color: var(--accent); }
-  .chip-clear:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 
-  /* ── Results grid ── */
+  /* ── Job Cards ── */
   #jobsList {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--sp-3);
+  }
+  @media (max-width: 1399.98px) {
+    #jobsList { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
   }
 
-  #jobsList > .empty-block { grid-column: 1 / -1; }
-
-  /* ── Job cards ── */
   .job-item {
     display: flex;
     flex-direction: column;
-    padding: 1.4rem;
-    border-radius: 16px;
+    padding: var(--sp-4);
+    border-radius: var(--radius);
     border: 1px solid var(--bdr);
     background: var(--surface);
-    box-shadow: var(--shadow-sm);
-    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    transition: all 0.3s var(--ease);
     animation: itemSlide 0.4s ease both;
     position: relative;
   }
-
-  @keyframes itemSlide {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
   .job-item:hover {
-    border-color: rgba(var(--accent-rgb), 0.32);
-    box-shadow: var(--shadow-lg);
+    border-color: var(--bdr-hover);
+    box-shadow: var(--el-2);
     transform: translateY(-3px);
   }
-
   .job-item .ji-header {
     display: flex;
     align-items: flex-start;
-    gap: 0.9rem;
-    margin-bottom: 0.9rem;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-3);
   }
-
   .job-item .ji-logo {
-    width: 52px; height: 52px;
-    border-radius: 13px;
+    width: 48px; height: 48px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--bdr);
-    background: #fff;
-    box-shadow: var(--shadow-sm);
+    background: var(--surface);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 19px;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--accent);
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
     overflow: hidden;
-    padding: 8px;
+    padding: 6px;
   }
-
-  .job-item:hover .ji-logo {
-    border-color: rgba(var(--accent-rgb), 0.3);
-    box-shadow: 0 6px 14px -8px rgba(var(--accent-rgb), 0.7);
-  }
-
   .job-item .ji-logo img { width: 100%; height: 100%; object-fit: contain; }
-
-  .job-item .ji-head { flex: 1 1 auto; min-width: 0; }
-
-  .job-item .ji-title {
-    font-size: 16.5px;
-    font-weight: 650;
-    color: var(--txt);
-    line-height: 1.35;
-    letter-spacing: -0.01em;
-    margin-bottom: 0.3rem;
-    overflow-wrap: anywhere;
+  .job-item:hover .ji-logo {
+    border-color: rgba(var(--accent-rgb), 0.25);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.12);
   }
-
+  .job-item .ji-head { flex: 1; min-width: 0; }
+  .job-item .ji-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--txt);
+    line-height: 1.3;
+    margin-bottom: var(--sp-1);
+  }
   .job-item .ji-meta {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 13px;
-    color: var(--txt-soft);
+    gap: var(--sp-2);
+    font-size: 0.78rem;
+    color: var(--txt-muted);
     flex-wrap: wrap;
   }
-
-  .job-item .ji-meta i { font-size: 12.5px; opacity: 0.7; }
-
+  .job-item .ji-meta i { font-size: 0.75rem; opacity: 0.7; }
   .job-item .ji-meta .meta-dot {
     width: 3px; height: 3px;
-    border-radius: 999px;
+    border-radius: 50%;
     background: var(--txt-muted);
-    opacity: 0.6;
+    opacity: 0.3;
   }
 
-  /* Bookmark, top-right. Its text is collapsed to zero so the shared
-     toggle helper can keep rewriting the label without breaking the icon. */
-  .job-item .ji-bm,
-  .job-item .ji-bm.btn-primary,
-  .job-item .ji-bm.btn-outline-primary {
+  .job-item .ji-bm {
     flex-shrink: 0;
-    width: 38px; height: 38px;
+    width: 34px; height: 34px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    border-radius: 11px;
-    border: 1px solid var(--bdr-strong);
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--bdr);
     background: var(--surface);
     color: var(--txt-muted);
-    font-size: 0;
-    line-height: 0;
-    box-shadow: none;
-    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    font-size: 0.9rem;
+    transition: all 0.25s var(--ease);
+    cursor: pointer;
   }
-
-  .job-item .ji-bm i { font-size: 16px; line-height: 1; margin: 0 !important; }
-
   .job-item .ji-bm:hover {
     color: var(--accent);
-    border-color: rgba(var(--accent-rgb), 0.45);
-    background: rgba(var(--accent-rgb), 0.07);
+    border-color: rgba(var(--accent-rgb), 0.35);
+    background: rgba(var(--accent-rgb), 0.05);
     transform: translateY(-1px);
   }
-
-  .job-item .ji-bm:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  /* Saved state keys off the filled icon, so it stays correct whether the
-     card was rendered saved or toggled after load. */
-  .job-item .ji-bm:has(.bi-bookmark-fill) {
+  .job-item .ji-bm.saved {
     color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.12);
-    border-color: rgba(var(--accent-rgb), 0.35);
+    background: rgba(var(--accent-rgb), 0.10);
+    border-color: rgba(var(--accent-rgb), 0.30);
   }
+
+  .job-item .ji-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-1);
+    margin-bottom: var(--sp-2);
+  }
+  .rel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .rel-best { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-bdr); }
+  .rel-rec  { background: rgba(var(--accent-rgb), 0.08); color: var(--accent); border: 1px solid rgba(var(--accent-rgb), 0.14); }
+  .rel-pct  { background: rgba(15, 23, 42, 0.05); color: var(--txt-soft); border: 1px solid var(--bdr); }
 
   .job-item .ji-facts {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.9rem;
+    gap: var(--sp-1);
+    margin-bottom: var(--sp-2);
   }
-
   .tag-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.28rem 0.6rem;
-    border-radius: 8px;
-    font-size: 12.5px;
+    gap: var(--sp-1);
+    padding: 0.1rem 0.55rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
     font-weight: 600;
-    background: var(--surface-sunk);
+    background: var(--surface-alt);
     color: var(--txt-soft);
     border: 1px solid var(--bdr);
   }
-
-  .tag-pill i { font-size: 12px; opacity: 0.8; }
-
-  .tag-pill.tag-salary { background: var(--success-bg); color: var(--success); border-color: var(--success-bdr); }
-  .tag-pill.tag-salary i { opacity: 1; }
-
-  /* Relevance badges — presentation of how the job answers the active
-     filters. Nothing here re-orders the list. */
-  .rel-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.24rem 0.6rem;
-    border-radius: 999px;
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
+  .tag-pill i { font-size: 0.65rem; opacity: 0.7; }
+  .tag-pill.tag-salary {
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: var(--success-bdr);
   }
 
-  .rel-best { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bdr); }
-  .rel-rec  { background: rgba(var(--accent-rgb), 0.10); color: var(--accent); border: 1px solid rgba(var(--accent-rgb), 0.22); }
-  .rel-pct  { background: var(--surface-sunk); color: var(--txt-soft); border: 1px solid var(--bdr); font-variant-numeric: tabular-nums; }
-
-  .job-item .ji-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.6rem; }
-  .job-item .ji-badges:empty { display: none; }
-
   .job-item .ji-desc {
-    font-size: 13.5px;
+    font-size: 0.82rem;
     color: var(--txt-soft);
-    line-height: 1.65;
-    margin-bottom: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: var(--sp-3);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    overflow-wrap: anywhere;
   }
 
   .job-item .ji-skills {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-bottom: 1.15rem;
+    gap: var(--sp-1);
+    margin-bottom: var(--sp-3);
   }
-
   .skill-tag {
     display: inline-flex;
     align-items: center;
-    padding: 0.24rem 0.6rem;
-    border-radius: 8px;
-    font-size: 12.5px;
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
     font-weight: 500;
-    background: rgba(var(--accent-rgb), 0.07);
+    background: rgba(var(--accent-rgb), 0.06);
     color: var(--accent);
-    border: 1px solid rgba(var(--accent-rgb), 0.14);
-    transition: background 0.2s ease;
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
   }
-
-  .skill-tag:hover { background: rgba(var(--accent-rgb), 0.14); }
-
   .skill-tag.skill-hit {
-    background: rgba(var(--accent-rgb), 0.16);
-    border-color: rgba(var(--accent-rgb), 0.4);
-    font-weight: 650;
+    background: rgba(var(--accent-rgb), 0.14);
+    border-color: rgba(var(--accent-rgb), 0.25);
+    font-weight: 600;
   }
 
   .job-item .ji-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
+    gap: var(--sp-2);
     margin-top: auto;
-    padding-top: 0.15rem;
   }
-
-  /* Job action buttons */
   .btn-apply {
-    height: 38px;
-    padding: 0 1.15rem;
-    border-radius: 11px;
-    font-size: 13.5px;
-    font-weight: 600;
+    height: 36px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 700;
     border: none;
-    background: var(--accent) !important;
-    color: #fff !important;
+    background: var(--accent);
+    color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
-    box-shadow: 0 1px 2px rgba(15,23,42,0.08);
+    gap: var(--sp-1);
+    transition: all 0.25s var(--ease);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
+    cursor: pointer;
   }
-
   .btn-apply:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px -12px rgba(var(--accent-rgb), 0.9);
-    filter: brightness(1.06);
-    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.35);
+    color: #fff;
   }
-
-  .btn-apply:active { transform: translateY(0); }
-  .btn-apply:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .btn-apply i { margin-right: 0.35rem; }
-
-  .job-item .btn-applied,
-  .job-item .btn-applied.btn-success {
-    height: 38px;
-    padding: 0 1.15rem;
-    border-radius: 11px;
-    font-size: 13.5px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--success-bg) !important;
-    color: var(--success) !important;
-    border: 1px solid var(--success-bdr) !important;
-    box-shadow: none !important;
-    transform: none !important;
+  .btn-apply:disabled { opacity: 0.6; pointer-events: none; }
+  .btn-apply.applied {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success-bdr);
+    box-shadow: none;
     pointer-events: none;
   }
 
   .btn-view {
-    height: 38px;
-    padding: 0 0.95rem;
-    border-radius: 11px;
-    font-size: 13.5px;
-    font-weight: 600;
+    height: 36px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 700;
     background: var(--surface);
     color: var(--txt-soft);
-    border: 1px solid var(--bdr-strong);
-    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    border: 1.5px solid var(--bdr);
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: var(--sp-1);
+    transition: all 0.25s var(--ease);
+    cursor: pointer;
   }
-
   .btn-view:hover {
-    background: var(--surface-alt);
-    border-color: rgba(var(--accent-rgb), 0.4);
+    border-color: var(--accent);
     color: var(--accent);
-    transform: translateY(-1px);
-  }
-
-  .btn-view:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  /* ── Mini job cards (recent strip + modals) ── */
-  .mini-job {
-    display: flex;
-    gap: 0.7rem;
-    align-items: center;
-    padding: 0.8rem 0.9rem;
-    border-radius: 14px;
-    border: 1px solid var(--bdr);
-    background: var(--surface-alt);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
-    animation: itemSlide 0.35s ease both;
-    min-width: 0;
-  }
-
-  .mini-job:hover {
-    border-color: rgba(var(--accent-rgb), 0.3);
-    background: var(--surface);
-    box-shadow: var(--shadow);
+    background: rgba(var(--accent-rgb), 0.04);
     transform: translateY(-2px);
   }
 
-  .mini-job .mj-logo {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    border: 1px solid var(--bdr);
-    flex-shrink: 0;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent);
-    overflow: hidden;
-    padding: 5px;
-  }
-
-  .mini-job .mj-logo img { width: 100%; height: 100%; object-fit: contain; }
-
-  .mini-job .mj-title {
-    font-size: 13.5px;
-    font-weight: 650;
-    color: var(--txt);
-    margin-bottom: 0.15rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .mini-job .mj-meta {
-    font-size: 12.5px;
-    color: var(--txt-muted);
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .mini-job .mj-meta i { font-size: 12px; opacity: 0.7; }
-
-  /* Modal lists stack rather than sit in a strip. */
-  .modal-list { display: flex; flex-direction: column; gap: 0.6rem; }
-
-  /* ── Modals ── */
-  .jobs-modal .modal-content {
-    border: 1px solid var(--bdr);
-    border-radius: 18px;
-    background: var(--surface);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .jobs-modal .modal-header {
-    border-bottom: 1px solid var(--bdr);
-    padding: 1.15rem 1.4rem;
-    gap: 0.7rem;
-  }
-
-  .jobs-modal .modal-title {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    font-size: 16px;
-    font-weight: 650;
-    color: var(--txt);
-  }
-
-  .jobs-modal .modal-body { padding: 1.4rem; max-height: 65vh; overflow-y: auto; }
-
-  /* ── Empty states ── */
+  /* ── Empty States ── */
   .empty-block {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2.75rem 1.25rem;
+    padding: var(--sp-6) var(--sp-4);
     text-align: center;
+    grid-column: 1 / -1;
   }
-
   .empty-block .eb-icon {
-    width: 58px; height: 58px;
+    width: 52px; height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 18px;
-    background: rgba(var(--accent-rgb), 0.09);
-    border: 1px solid rgba(var(--accent-rgb), 0.16);
+    border-radius: var(--radius);
+    background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 23px;
-    margin-bottom: 0.9rem;
-    animation: iconPop 0.45s 0.1s ease both;
+    font-size: 1.3rem;
+    margin-bottom: var(--sp-3);
+    border: 1px solid rgba(var(--accent-rgb), 0.10);
   }
-
-  @keyframes iconPop {
-    from { transform: scale(0.7); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-
   .empty-block .eb-title {
-    font-size: 15px;
-    font-weight: 650;
-    color: var(--txt);
-    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--txt-soft);
+    margin-bottom: var(--sp-1);
   }
-
   .empty-block .eb-sub {
-    font-size: 13.5px;
+    font-size: 0.78rem;
     color: var(--txt-muted);
-    max-width: 300px;
-    line-height: 1.6;
+    max-width: 280px;
+    line-height: 1.5;
   }
-
-  .empty-block .eb-cta { margin-top: 1.1rem; }
-  .empty-block .eb-cta:empty { display: none; }
-
   .btn-empty-cta {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    height: 38px;
-    padding: 0 1.15rem;
-    border-radius: 11px;
-    border: 1px solid rgba(var(--accent-rgb), 0.28);
-    background: rgba(var(--accent-rgb), 0.07);
+    gap: var(--sp-2);
+    height: 36px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--radius-sm);
+    border: 1.5px solid rgba(var(--accent-rgb), 0.20);
+    background: rgba(var(--accent-rgb), 0.06);
     color: var(--accent);
-    font-size: 13.5px;
-    font-weight: 600;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+    margin-top: var(--sp-3);
   }
-
   .btn-empty-cta:hover {
-    background: rgba(var(--accent-rgb), 0.14);
-    border-color: rgba(var(--accent-rgb), 0.45);
-    color: var(--accent);
-    transform: translateY(-1px);
+    background: rgba(var(--accent-rgb), 0.10);
+    border-color: var(--accent);
+    transform: translateY(-2px);
   }
 
-  .btn-empty-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* ── Modals ── */
+  .jobs-modal .modal-content {
+    border: 1px solid var(--bdr);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--el-2);
+  }
+  .jobs-modal .modal-header {
+    border-bottom: 1px solid var(--bdr);
+    padding: var(--sp-3) var(--sp-4);
+  }
+  .jobs-modal .modal-title {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--txt);
+  }
+  .jobs-modal .modal-body {
+    padding: var(--sp-4);
+    max-height: 65vh;
+    overflow-y: auto;
+  }
+  .jobs-modal .modal-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
 
   /* ── Responsive ── */
-  @media (max-width: 1399.98px) {
-    #jobsList { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
-  }
-
   @media (max-width: 1199.98px) {
-    .filter-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr); }
+    .filter-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+    }
     .filter-grid .fg-skill { grid-column: 1 / 3; }
     .filter-grid .fg-search { grid-column: 3 / 4; }
-    .btn-search { width: 100%; }
   }
-
   @media (max-width: 991.98px) {
     #jobsList { grid-template-columns: 1fr; }
-    .dash-header .page-title { font-size: 27px; }
-    /* The filter card follows the page on small screens so search is
-       always one tap away. */
     .search-panel { position: sticky; top: calc(var(--navbar-height, 60px) + 0.5rem); z-index: 6; }
   }
-
   @media (max-width: 767.98px) {
-    .dash-header { flex-direction: column; align-items: stretch; gap: 1.1rem; }
-    .dash-header .page-title { font-size: 24px; }
-    .btn-saved { width: 100%; justify-content: center; }
-    .panel-head { padding: 0.95rem 1.15rem; }
-    .panel-body { padding: 1.15rem; }
-    .search-panel .panel-body { padding: 1.15rem; }
-    .recent-strip .panel-body { padding: 1rem 1.15rem; }
+    .page-header { flex-direction: column; align-items: stretch; gap: var(--sp-3); }
+    .page-header .header-actions { justify-content: flex-start; }
+    .page-header-left .page-title { font-size: 1.1rem; }
+    .panel-head { padding: var(--sp-2) var(--sp-3); }
+    .panel-body { padding: var(--sp-3); }
     .filter-grid { grid-template-columns: 1fr 1fr; }
     .filter-grid .fg-role,
     .filter-grid .fg-skill,
     .filter-grid .fg-search { grid-column: 1 / -1; }
     .recent-strip #recentJobs { grid-template-columns: 1fr 1fr; }
-    .recent-strip #recentJobs > .mini-job:nth-child(n+5) { display: none; }
+    #recentJobs > .mini-job:nth-child(n+5) { display: none; }
   }
-
   @media (max-width: 575.98px) {
-    .job-item { padding: 1.15rem; }
-    .job-item .ji-logo { width: 46px; height: 46px; border-radius: 11px; padding: 6px; font-size: 17px; }
+    .job-item { padding: var(--sp-3); }
+    .job-item .ji-logo { width: 42px; height: 42px; font-size: 0.9rem; }
     .filter-grid { grid-template-columns: 1fr; }
     .recent-strip #recentJobs { grid-template-columns: 1fr; }
-    .recent-strip #recentJobs > .mini-job:nth-child(n+4) { display: none; }
+    #recentJobs > .mini-job:nth-child(n+4) { display: none; }
     .job-item .ji-actions .btn-apply,
-    .job-item .ji-actions .btn-view { flex: 1 1 auto; }
+    .job-item .ji-actions .btn-view { flex: 1; }
   }
 </style>
 
 <div class="jobs-page">
 
-  <!-- ── Header ── -->
-  <div class="dash-header">
-    <div>
-      <span class="page-kicker"><span class="pulse-dot"></span> Job search</span>
+  <!-- ===== Page Header ===== -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="brand-mark"><i class="bi bi-briefcase-fill"></i></div>
       <h1 class="page-title">Jobs for you</h1>
-      <p class="page-subtitle mb-0">
-        Browse openings matched to your role, skills and experience — bookmark the ones worth a second look.
-      </p>
     </div>
     <div class="header-actions">
       <button class="btn-saved" type="button" data-bs-toggle="modal" data-bs-target="#savedJobsModal">
         <i class="bi bi-bookmark-heart"></i>
-        Saved jobs
+        Saved
         <span class="count-pill" id="savedCount">0</span>
       </button>
     </div>
   </div>
 
-  <!-- ── Recently viewed (above the filters, horizontal) ── -->
+  <!-- ===== Recently Viewed ===== -->
   <div class="dash-panel recent-strip">
     <div class="panel-head">
       <div class="panel-title">
@@ -963,26 +862,21 @@
     <div class="panel-body" id="recentJobs"></div>
   </div>
 
-  <!-- ── Filter toolbar ── -->
+  <!-- ===== Search & Filter ===== -->
   <div class="dash-panel search-panel">
     <div class="panel-head">
       <div class="panel-title">
         <div class="panel-icon"><i class="bi bi-funnel"></i></div>
         Filter jobs
       </div>
-      <button class="btn-filter-toggle d-lg-none" type="button"
-              data-bs-toggle="collapse" data-bs-target="#filterBody"
-              aria-expanded="false" aria-controls="filterBody">
-        <i class="bi bi-sliders2"></i> Filters <i class="bi bi-chevron-down"></i>
-      </button>
     </div>
-    <div class="panel-body collapse d-lg-block" id="filterBody">
+    <div class="panel-body">
       <form id="jobSearchForm" class="filter-grid">
         <div class="fg-role">
           <label class="visually-hidden" for="role">Role</label>
           <div class="input-wrap">
             <i class="bi bi-briefcase field-icon"></i>
-            <input id="role" class="form-control has-icon" name="role" placeholder="Job title, keyword or company">
+            <input id="role" class="form-control has-icon" name="role" placeholder="Job title or company">
           </div>
         </div>
         <div class="fg-exp">
@@ -997,7 +891,7 @@
           <div class="input-wrap">
             <i class="bi bi-laptop field-icon"></i>
             <select id="work_mode" class="form-select has-icon" name="work_mode">
-              <option value="">Any work mode</option>
+              <option value="">Any mode</option>
               <option value="remote">Remote</option>
               <option value="hybrid">Hybrid</option>
               <option value="onsite">On-site</option>
@@ -1018,12 +912,11 @@
         </div>
       </form>
 
-      <!-- Active filter chips — rendered from the fields above. -->
       <div class="chip-bar" id="activeFilters"></div>
     </div>
   </div>
 
-  <!-- ── Results ── -->
+  <!-- ===== Results ===== -->
   <div class="dash-panel">
     <div class="panel-head">
       <div class="panel-title">
@@ -1042,7 +935,7 @@
 
 </div>
 
-<!-- ── Saved jobs modal ── -->
+<!-- ===== Saved Jobs Modal ===== -->
 <div class="modal fade jobs-modal" id="savedJobsModal" tabindex="-1" aria-labelledby="savedJobsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content">
@@ -1060,7 +953,7 @@
   </div>
 </div>
 
-<!-- ── Recently viewed modal ── -->
+<!-- ===== Recent Jobs Modal ===== -->
 <div class="modal fade jobs-modal" id="recentJobsModal" tabindex="-1" aria-labelledby="recentJobsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content">
@@ -1097,26 +990,23 @@
     if (m) document.documentElement.style.setProperty("--bs-primary-rgb", `${m[1]}, ${m[2]}, ${m[3]}`);
   })();
 
-  /* ── Empty state ── */
+  /* ── Helpers ── */
   function emptyBlock(icon, title, sub, cta) {
     return `
       <div class="empty-block">
         <div class="eb-icon"><i class="bi bi-${icon}"></i></div>
         <div class="eb-title">${title}</div>
         <div class="eb-sub">${sub}</div>
-        <div class="eb-cta">${cta || ""}</div>
+        ${cta ? `<div class="eb-cta">${cta}</div>` : ""}
       </div>`;
   }
 
-  /* ── Active filters ─────────────────────────────────────────────
-     Presentation only. `relevance` describes how a job answers the
-     filters the user typed so the card can say why it is there; it
-     never re-orders anything - the server decides the order. ── */
+  /* ── Active filters ── */
   const FILTER_LABELS = {
-    role: value => `Role: ${value}`,
-    experience: value => `${value}+ years`,
-    work_mode: value => workModeLabel(value),
-    skill: value => `Skill: ${value}`
+    role: v => `Role: ${v}`,
+    experience: v => `${v}+ years`,
+    work_mode: v => workModeLabel(v),
+    skill: v => `Skill: ${v}`
   };
 
   let relevance = { active: false, scores: [], best: -1, terms: [] };
@@ -1148,7 +1038,6 @@
       relevance.scores.push(score);
       if (score > bestScore) { bestScore = score; relevance.best = index; }
     });
-
     if (bestScore <= 0) relevance.best = -1;
   }
 
@@ -1159,13 +1048,12 @@
 
     const pct = Math.round(score * 100);
     const badges = [];
-
     if (index === relevance.best) {
       badges.push('<span class="rel-badge rel-best"><i class="bi bi-star-fill"></i> Best match</span>');
     } else if (score >= 0.6) {
       badges.push('<span class="rel-badge rel-rec"><i class="bi bi-hand-thumbs-up"></i> Recommended</span>');
     }
-    badges.push(`<span class="rel-badge rel-pct">${pct}% filter match</span>`);
+    badges.push(`<span class="rel-badge rel-pct">${pct}% match</span>`);
     return badges.join("");
   }
 
@@ -1173,8 +1061,6 @@
     const host = document.getElementById("activeFilters");
     if (!host) return;
 
-    /* The API ranks by relevance once there is something to rank, and by
-       date when the boxes are empty. Say which one the user is looking at. */
     const note = document.getElementById("sortNote");
     if (note) note.textContent = (filters.role || filters.skill) ? "Most relevant first" : "Newest first";
 
@@ -1193,15 +1079,11 @@
       : "";
   }
 
-  /* Clearing a chip goes through the same path as editing the field and
-     pressing Search, so persistence and the search run unchanged. */
   function clearJobFilter(name) {
     const form = document.getElementById("jobSearchForm");
     const field = form && form.elements[name];
     if (!field) return;
     field.value = "";
-    field.dispatchEvent(new Event("input", { bubbles: true }));
-    field.dispatchEvent(new Event("change", { bubbles: true }));
     form.requestSubmit();
   }
 
@@ -1212,8 +1094,6 @@
       const field = form.elements[name];
       if (field) field.value = "";
     });
-    form.dispatchEvent(new Event("input", { bubbles: true }));
-    form.dispatchEvent(new Event("change", { bubbles: true }));
     form.requestSubmit();
   }
 
@@ -1234,9 +1114,8 @@
     })();
 
     const isSaved = job.is_saved;
-    const saveClass = isSaved ? "ji-bm btn-primary" : "ji-bm btn-outline-primary";
     const saveIcon = isSaved ? "bi-bookmark-fill" : "bi-bookmark";
-    const saveLabel = isSaved ? "Bookmarked" : "Bookmark";
+    const saveClass = isSaved ? "ji-bm saved" : "ji-bm";
 
     return `
       <div class="job-item" style="animation-delay:${(index || 0) * 0.05}s">
@@ -1252,7 +1131,7 @@
           </div>
           <button class="${saveClass}" type="button"
             onclick="toggleSavedJob(${job.id}, this).then(loadSavedAndRecent)">
-            <i class="bi ${saveIcon}"></i> ${saveLabel}
+            <i class="bi ${saveIcon}"></i>
           </button>
         </div>
 
@@ -1269,31 +1148,28 @@
         <div class="ji-desc">${escapeHtml(job.description)}</div>
 
         <div class="ji-skills">
-          ${skills || '<span style="font-size:13px;color:var(--txt-muted)">No skills listed</span>'}
+          ${skills || '<span style="font-size:0.75rem;color:var(--txt-muted)">No skills listed</span>'}
         </div>
 
         <div class="ji-actions">
-          <button class="btn-apply" type="button"
-            onclick="applyToJob(${job.id}, this)">
+          <button class="btn-apply" type="button" onclick="applyToJob(${job.id}, this)">
             <i class="bi bi-send"></i> Apply
           </button>
-          <button class="btn-view" type="button"
-            onclick="markRecentlyViewed(${job.id}).then(loadSavedAndRecent)">
-            <i class="bi bi-eye"></i> View details
+          <button class="btn-view" type="button" onclick="markRecentlyViewed(${job.id}).then(loadSavedAndRecent)">
+            <i class="bi bi-eye"></i> View
           </button>
         </div>
       </div>`;
   }
 
-  /* ── Apply with feedback ── */
   function applyToJob(jobId, btn) {
     const orig = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Applying…';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>';
     btn.disabled = true;
 
     submitJobApplication(jobId, btn).then(() => {
-      btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Applied';
-      btn.classList.add("btn-applied");
+      btn.innerHTML = '<i class="bi bi-check-lg"></i> Applied';
+      btn.classList.add("applied");
       btn.classList.remove("btn-apply");
     }).catch(() => {
       btn.innerHTML = orig;
@@ -1304,7 +1180,6 @@
   /* ── Render mini job ── */
   function renderMiniJob(item, index) {
     const job = item.job || item;
-
     const logoHtml = (() => {
       const initial = escapeHtml((job.company || "?")[0].toUpperCase());
       return job.company_logo
@@ -1319,14 +1194,14 @@
           <div class="mj-title">${escapeHtml(job.title)}</div>
           <div class="mj-meta">
             <i class="bi bi-building"></i> ${escapeHtml(job.company)}
-            <span style="opacity:0.25">·</span>
+            <span style="opacity:0.3;">·</span>
             <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
           </div>
         </div>
       </div>`;
   }
 
-  /* ── Load jobs ── */
+  /* ── Load data ── */
   async function loadJobs() {
     document.getElementById("jobsList").innerHTML =
       emptyBlock("hourglass-split", "Loading…", "Searching for matching openings.");
@@ -1351,7 +1226,6 @@
         );
   }
 
-  /* ── Load saved & recent ── */
   async function loadSavedAndRecent() {
     const [saved, recent] = await Promise.all([
       api("/api/jobs/saved/"),
@@ -1366,13 +1240,13 @@
       : emptyBlock(
           "bookmark",
           "No saved jobs yet",
-          "Use the bookmark icon on any job card and it will be waiting for you here.",
+          "Use the bookmark icon on any job card.",
           '<button class="btn-empty-cta" type="button" data-bs-dismiss="modal"><i class="bi bi-search"></i> Browse openings</button>'
         );
 
     const recentHtml = recent.length
       ? recent.map(renderMiniJob).join("")
-      : emptyBlock("clock-history", "No recent views", "Open a job with “View details” and it will show up here.");
+      : emptyBlock("clock-history", "No recent views", "View a job to see it here.");
 
     document.getElementById("recentJobs").innerHTML = recentHtml;
     document.getElementById("recentJobsAll").innerHTML = recentHtml;
@@ -1384,10 +1258,7 @@
     loadJobs();
   });
 
-  /* ── Persistence ───────────────────────────────────────────────
-     Search filters follow the user: they are restored on return, after a
-     refresh and on another device, so a search never has to be retyped.
-     `loadJobs()` runs once, after the filters are back in the fields. ── */
+  /* ── Persistence ── */
   (function initJobsPage() {
     const store = window.SkillSyncState;
     const form = document.getElementById("jobSearchForm");
@@ -1406,8 +1277,6 @@
     store.bindForm(form, "jobs.filters", {
       onRestore(values, meta) {
         const hasFilters = values && Object.keys(values).some(k => values[k]);
-        /* The local pass paints instantly; the server pass only re-runs the
-           search if it actually changed the fields. */
         if (meta.source === "local" || (meta.applied && hasFilters)) runSearch();
       }
     }).then(() => { if (!searched) runSearch(); });

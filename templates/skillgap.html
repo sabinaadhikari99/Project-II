@@ -3,2524 +3,2687 @@
 
 {% block content %}
 <style>
-/* ══════════════════════════════════════════════════════════════════
-   DESIGN TOKENS
+    /* ══════════════════════════════════════════════════════════════════
+       DESIGN TOKENS — refined for better space management
+       ══════════════════════════════════════════════════════════════════ */
+    :root {
+        --accent: #2563EB;
+        --accent-rgb: 37, 99, 235;
+        --surface: #fff;
+        --surface-alt: #f8f9fb;
+        --surface-hover: #f1f3f6;
+        --txt: rgba(15, 23, 42, 0.88);
+        --txt-soft: rgba(15, 23, 42, 0.55);
+        --txt-muted: rgba(15, 23, 42, 0.38);
+        --bdr: rgba(15, 23, 42, 0.06);
+        --bdr-hover: rgba(15, 23, 42, 0.12);
+        --shadow: rgba(15, 23, 42, 0.04);
+        --shadow-lg: rgba(15, 23, 42, 0.08);
+        --track: rgba(15, 23, 42, 0.07);
+        --page-bg: #F8FAFC;
+        --radius: 14px;
+        --radius-sm: 8px;
+        --radius-pill: 999px;
+        --success: #16a34a;
+        --success-bg: rgba(34, 197, 94, 0.10);
+        --success-bdr: rgba(34, 197, 94, 0.18);
+        --warn: #d97706;
+        --warn-bg: rgba(217, 119, 6, 0.10);
+        --warn-bdr: rgba(217, 119, 6, 0.18);
+        --danger: #dc2626;
+        --danger-bg: rgba(220, 38, 38, 0.08);
+        --danger-bdr: rgba(220, 38, 38, 0.14);
+        --purple: #7c3aed;
+        --purple-bg: rgba(124, 58, 237, 0.08);
 
-   The same 8px spacing scale, radius scale and elevation scale the AI
-   Match page uses, so the two pages read as one product rather than two
-   separately styled screens.
-   ══════════════════════════════════════════════════════════════════ */
-:root {
-  --accent: #2563EB;
-  --accent-rgb: 37, 99, 235;
-  --surface: #fff;
-  --surface-alt: #f8f9fb;
-  --surface-hover: #f1f3f6;
-  --txt: rgba(15,23,42,0.88);
-  --txt-soft: rgba(15,23,42,0.55);
-  --txt-muted: rgba(15,23,42,0.38);
-  --bdr: rgba(15,23,42,0.06);
-  --bdr-hover: rgba(15,23,42,0.12);
-  --shadow: rgba(15,23,42,0.04);
-  --shadow-lg: rgba(15,23,42,0.08);
-  --track: rgba(15,23,42,0.07);
-  --page-bg: #F8FAFC;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --success: #16a34a;
-  --success-bg: rgba(34,197,94,0.10);
-  --success-bdr: rgba(34,197,94,0.18);
-  --warn: #d97706;
-  --warn-bg: rgba(217,119,6,0.10);
-  --warn-bdr: rgba(217,119,6,0.18);
-  --danger: #dc2626;
-  --danger-bg: rgba(220,38,38,0.08);
-  --danger-bdr: rgba(220,38,38,0.14);
-  --purple: #7c3aed;
-  --purple-bg: rgba(124,58,237,0.08);
+        /* Compact spacing system */
+        --sp-1: 4px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 20px;
+        --sp-6: 28px;
 
-  /* 8px spacing system */
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 24px;
-  --sp-6: 32px;
+        --el-1: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
+        --el-2: 0 2px 6px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
 
-  --r-xs: 8px;
-  --r-sm: 10px;
-  --r-md: 12px;
-  --r-lg: 16px;
-  --r-pill: 999px;
+    /* Dark theme */
+    html.theme-dark {
+        --surface: #1E293B;
+        --surface-alt: #172033;
+        --surface-hover: #24334d;
+        --txt: rgba(248, 250, 252, 0.92);
+        --txt-soft: rgba(248, 250, 252, 0.62);
+        --txt-muted: rgba(248, 250, 252, 0.42);
+        --bdr: rgba(248, 250, 252, 0.08);
+        --bdr-hover: rgba(248, 250, 252, 0.16);
+        --shadow: rgba(0, 0, 0, 0.28);
+        --shadow-lg: rgba(0, 0, 0, 0.42);
+        --track: rgba(248, 250, 252, 0.10);
+        --page-bg: #0B1120;
+        --el-1: 0 1px 3px rgba(0, 0, 0, 0.24), 0 4px 12px rgba(0, 0, 0, 0.28);
+        --el-2: 0 2px 6px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.38);
+    }
 
-  --el-1: 0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.05);
-  --el-2: 0 2px 4px rgba(15,23,42,0.05), 0 10px 28px rgba(15,23,42,0.08);
+    /* ── Page entry ── */
+    .sg-page {
+        animation: sgFadeIn 0.5s ease both;
+        scroll-behavior: smooth;
+        padding-bottom: var(--sp-6);
+    }
+    @keyframes sgFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
+    /* ── Header ── */
+    .sg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-4);
+        flex-wrap: wrap;
+    }
+    .sg-brand {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        min-width: 0;
+    }
+    .sg-brand-mark {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.25);
+    }
+    .sg-header h1 {
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--txt);
+        margin: 0;
+    }
+    .sg-brand-role {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--txt-soft);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .sg-brand-role:not(:empty)::before {
+        content: "· ";
+        opacity: 0.5;
+    }
+    .sg-header p {
+        font-size: 0.74rem;
+        color: var(--txt-muted);
+        margin: 0;
+        max-width: 340px;
+        text-align: right;
+        line-height: 1.4;
+    }
+    @media (max-width: 767.98px) {
+        .sg-header p {
+            display: none;
+        }
+    }
 
-/* Dark theme: surface and ink tokens only — every component reads through
-   them, so no component needs its own dark rule. */
-html.theme-dark {
-  --surface: #1E293B;
-  --surface-alt: #172033;
-  --surface-hover: #24334d;
-  --txt: rgba(248,250,252,0.92);
-  --txt-soft: rgba(248,250,252,0.62);
-  --txt-muted: rgba(248,250,252,0.42);
-  --bdr: rgba(248,250,252,0.08);
-  --bdr-hover: rgba(248,250,252,0.16);
-  --shadow: rgba(0,0,0,0.28);
-  --shadow-lg: rgba(0,0,0,0.42);
-  --track: rgba(248,250,252,0.10);
-  --page-bg: #0B1120;
-  --el-1: 0 1px 2px rgba(0,0,0,0.24), 0 4px 16px rgba(0,0,0,0.28);
-  --el-2: 0 2px 4px rgba(0,0,0,0.28), 0 10px 28px rgba(0,0,0,0.38);
-}
+    /* ── Hero summary bar ── */
+    .sg-hero {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-4);
+        flex-wrap: wrap;
+        background: var(--surface);
+        border: 1px solid var(--bdr);
+        border-radius: var(--radius);
+        box-shadow: var(--el-1);
+        padding: var(--sp-4) var(--sp-5);
+        margin-bottom: var(--sp-4);
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .sg-hero:hover {
+        border-color: var(--bdr-hover);
+        box-shadow: var(--el-2);
+    }
 
-.sg-page { animation: sgFadeIn 0.5s ease both; }
-@keyframes sgFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @property --sg-pct {
+        syntax: "<number>";
+        inherits: false;
+        initial-value: 0;
+    }
+    .sg-ring {
+        --sg-pct: 0;
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: grid;
+        place-items: center;
+        background: conic-gradient(var(--accent) calc(var(--sg-pct) * 1%), rgba(15, 23, 42, 0.07) 0);
+        transition: --sg-pct 0.9s var(--ease);
+    }
+    .sg-ring-inner {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--txt);
+        letter-spacing: -0.02em;
+    }
 
-/* ── Header ── */
-.sg-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-.sg-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-width: 0;
-}
-.sg-brand-mark {
-  width: 38px; height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 11px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 1rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.28);
-}
-.sg-header h1 {
-  font-size: 1.3rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--txt);
-  margin: 0;
-}
-.sg-brand-role {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--txt-soft);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.sg-brand-role:not(:empty)::before { content: "· "; opacity: 0.5; }
-.sg-header p {
-  font-size: 0.78rem;
-  color: var(--txt-muted);
-  margin-bottom: 0;
-  max-width: 380px;
-  text-align: right;
-}
+    .sg-hero-id {
+        flex: 1 1 140px;
+        min-width: 0;
+    }
+    .sg-hero-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--txt);
+        line-height: 1.2;
+    }
+    .sg-hero-sub {
+        font-size: 0.7rem;
+        color: var(--txt-soft);
+        margin-top: 2px;
+    }
 
-/* ── Headline summary bar ── */
-.sg-hero {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  background: var(--surface);
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 8px var(--shadow);
-  padding: 1.1rem 1.35rem;
-  margin-bottom: 1rem;
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
-}
-.sg-hero:hover {
-  border-color: var(--bdr-hover);
-  box-shadow: 0 6px 16px var(--shadow-lg);
-}
+    .sg-hero-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+    .sg-hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        padding: 0.3rem 0.7rem;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--bdr);
+        background: var(--surface-alt);
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--txt-soft);
+        white-space: nowrap;
+    }
+    .sg-hero-pill b {
+        color: var(--txt);
+        font-weight: 800;
+    }
+    .sg-hero-pill i {
+        font-size: 0.6rem;
+    }
+    .sg-hero-pill.red i {
+        color: var(--danger);
+    }
+    .sg-hero-pill.green i {
+        color: var(--success);
+    }
 
-/* Score ring. --sg-pct is set by applyGap from the match score.
-   Registering the property lets the arc animate rather than snap; browsers
-   without @property ignore this and simply paint the final value. */
-@property --sg-pct {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
-}
-.sg-ring {
-  --sg-pct: 0;
-  width: 74px; height: 74px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  background: conic-gradient(
-    var(--accent) calc(var(--sg-pct) * 1%),
-    rgba(15,23,42,0.07) 0
-  );
-  transition: --sg-pct 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-}
+    .sg-hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: 0.4rem 1rem;
+        border-radius: var(--radius-pill);
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.22);
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+    .sg-hero-cta:hover {
+        background: #1d4ed8;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.30);
+        text-decoration: none;
+    }
+    .sg-hero-cta:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+    }
 
-/* The hero CTA and the section nav both jump within the page. The offset
-   that clears the fixed navbar and the sticky section nav is on .sg-anchor,
-   which every jump target carries. */
-.sg-page { scroll-behavior: smooth; }
-.sg-ring-inner {
-  width: 58px; height: 58px;
-  border-radius: 50%;
-  background: var(--surface);
-  display: grid;
-  place-items: center;
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--txt);
-  letter-spacing: -0.02em;
-}
+    @media (max-width: 767.98px) {
+        .sg-hero {
+            gap: var(--sp-3);
+            padding: var(--sp-3);
+        }
+        .sg-hero-actions {
+            width: 100%;
+            margin-left: 0;
+        }
+        .sg-hero-cta {
+            flex: 1;
+            justify-content: center;
+        }
+    }
 
-.sg-hero-id { flex: 1 1 180px; min-width: 0; }
-.sg-hero-title {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--txt);
-  line-height: 1.25;
-}
-.sg-hero-sub {
-  font-size: 0.72rem;
-  color: var(--txt-soft);
-  margin-top: 0.15rem;
-}
+    /* ── AI Recommendation ── */
+    .sg-ai-box {
+        background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.04), rgba(var(--accent-rgb), 0.08));
+        border: 1px solid rgba(var(--accent-rgb), 0.12);
+        border-radius: var(--radius);
+        padding: var(--sp-4) var(--sp-5);
+        margin-bottom: var(--sp-4);
+        display: flex;
+        align-items: flex-start;
+        gap: var(--sp-4);
+        transition: all 0.3s ease;
+    }
+    .sg-ai-box:hover {
+        border-color: rgba(var(--accent-rgb), 0.20);
+        box-shadow: var(--el-1);
+    }
+    .sg-ai-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 1rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.18);
+    }
+    .sg-ai-body {
+        flex: 1;
+        min-width: 0;
+    }
+    .sg-ai-body .sg-ai-head {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--txt);
+        margin-bottom: var(--sp-1);
+    }
+    .sg-ai-body .sg-ai-text {
+        font-size: 0.76rem;
+        color: var(--txt-soft);
+        line-height: 1.6;
+        margin-bottom: var(--sp-2);
+    }
+    .sg-ai-body .sg-ai-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+    }
+    .sg-ai-body .sg-ai-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        padding: 0.15rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        background: rgba(var(--accent-rgb), 0.08);
+        color: var(--accent);
+        border: 1px solid rgba(var(--accent-rgb), 0.10);
+    }
+    .sg-ai-body .sg-ai-pill i {
+        font-size: 0.5rem;
+    }
+    @media (max-width: 575.98px) {
+        .sg-ai-box {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .sg-ai-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 0.85rem;
+        }
+    }
 
-.sg-hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  flex-wrap: wrap;
-}
-.sg-hero-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  border: 1px solid var(--bdr);
-  background: var(--surface-alt);
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--txt-soft);
-  white-space: nowrap;
-}
-.sg-hero-pill b { color: var(--txt); font-weight: 800; }
-.sg-hero-pill i { font-size: 0.62rem; }
-.sg-hero-pill.red i { color: var(--danger); }
-.sg-hero-pill.green i { color: var(--success); }
+    /* ── Section nav ── */
+    .sg-nav {
+        position: sticky;
+        top: var(--navbar-height, 60px);
+        z-index: 20;
+        display: flex;
+        gap: var(--sp-1);
+        overflow-x: auto;
+        padding: var(--sp-2) 0;
+        margin-bottom: var(--sp-4);
+        background: var(--page-bg);
+        border-bottom: 1px solid var(--bdr);
+        scrollbar-width: none;
+    }
+    .sg-nav::-webkit-scrollbar {
+        display: none;
+    }
+    .sg-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-2) var(--sp-3);
+        border-radius: var(--radius-sm);
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--txt-soft);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background 0.2s var(--ease), color 0.2s var(--ease);
+    }
+    .sg-nav a:hover {
+        background: var(--surface-alt);
+        color: var(--txt);
+    }
+    .sg-nav a.active {
+        background: rgba(var(--accent-rgb), 0.08);
+        color: var(--accent);
+    }
+    .sg-nav a i {
+        font-size: 0.7rem;
+    }
+    .sg-nav a .sg-nav-count {
+        font-size: 0.64rem;
+        font-weight: 700;
+        padding: 0 var(--sp-2);
+        border-radius: var(--radius-pill);
+        background: var(--track);
+        color: var(--txt-soft);
+        line-height: 1.6;
+    }
+    .sg-nav a.active .sg-nav-count {
+        background: rgba(var(--accent-rgb), 0.14);
+        color: var(--accent);
+    }
+    @media (max-width: 575.98px) {
+        .sg-nav a {
+            padding: var(--sp-2);
+            font-size: 0.7rem;
+        }
+        .sg-nav a .sg-nav-count {
+            font-size: 0.6rem;
+            padding: 0 var(--sp-1);
+        }
+    }
 
-.sg-hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1rem;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.24);
-  transition: all 0.2s ease;
-}
-.sg-hero-cta:hover {
-  background: #1d4ed8;
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.30);
-}
-.sg-hero-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    /* ── Anchors ── */
+    .sg-anchor {
+        scroll-margin-top: calc(var(--navbar-height, 60px) + 52px);
+    }
 
-@media (max-width: 767.98px) {
-  .sg-header p { display: none; }
-  .sg-hero { gap: 0.9rem; padding: 1rem; }
-  .sg-hero-actions { width: 100%; }
-  .sg-hero-cta { flex: 1; justify-content: center; }
-}
+    /* ── Grid ── */
+    .sg-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-4);
+        align-items: start;
+    }
+    @media (max-width: 1199.98px) {
+        .sg-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
 
-/* ── Equal-height panes with their own scroll ──
-   Keeps the paired columns level and the page short however many gaps or
-   skills the analysis returns. */
-.sg-pane {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.sg-scroll {
-  max-height: 26rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding-right: 0.3rem;
-  margin-right: -0.3rem;
-}
-.sg-scroll::-webkit-scrollbar { width: 6px; }
-.sg-scroll::-webkit-scrollbar-track { background: transparent; }
-.sg-scroll::-webkit-scrollbar-thumb {
-  background: rgba(15,23,42,0.14);
-  border-radius: 999px;
-}
-.sg-pane-foot:not(:empty) {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  padding-top: 0.7rem;
-  border-top: 1px solid var(--bdr);
-  font-size: 0.68rem;
-  color: var(--txt-muted);
-}
-.sg-legend { display: flex; gap: 0.7rem; flex-wrap: wrap; }
-.sg-legend span { display: inline-flex; align-items: center; gap: 0.3rem; }
-.sg-legend i { font-size: 0.5rem; }
-.sg-legend .dot-red { color: var(--danger); }
-.sg-legend .dot-amber { color: var(--warn); }
-.sg-legend .dot-gray { color: rgba(15,23,42,0.3); }
-.sg-pane-foot b { color: var(--txt-soft); font-weight: 700; }
+    /* ── Card ── */
+    .sg-card {
+        background: var(--surface);
+        border: 1px solid var(--bdr);
+        border-radius: var(--radius);
+        box-shadow: var(--el-1);
+        overflow: hidden;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    .sg-card:hover {
+        box-shadow: var(--el-2);
+        border-color: var(--bdr-hover);
+    }
+    .sg-card-head {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        border-bottom: 1px solid var(--bdr);
+        background: var(--surface-alt);
+    }
+    .sg-card-head .sgh-icon {
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-size: 0.68rem;
+        flex-shrink: 0;
+    }
+    .sg-card-head .sgh-icon.green {
+        background: var(--success-bg);
+        color: var(--success);
+    }
+    .sg-card-head .sgh-icon.amber {
+        background: var(--warn-bg);
+        color: var(--warn);
+    }
+    .sg-card-head .sgh-icon.blue {
+        background: rgba(var(--accent-rgb), 0.08);
+        color: var(--accent);
+    }
+    .sg-card-head .sgh-icon.red {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+    .sg-card-head .sgh-icon.purple {
+        background: var(--purple-bg);
+        color: var(--purple);
+    }
+    .sg-card-head .sgh-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--txt);
+        margin: 0;
+        flex: 1;
+    }
+    .sgh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-size: 0.64rem;
+        font-weight: 700;
+        line-height: 1.5;
+        padding: 0.1rem 0.55rem;
+        border-radius: var(--radius-pill);
+        border: 1px solid transparent;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .sgh-badge.green {
+        background: var(--success-bg);
+        color: var(--success);
+        border-color: var(--success-bdr);
+    }
+    .sgh-badge.amber {
+        background: var(--warn-bg);
+        color: var(--warn);
+        border-color: var(--warn-bdr);
+    }
+    .sgh-badge.blue {
+        background: rgba(var(--accent-rgb), 0.08);
+        color: var(--accent);
+        border-color: rgba(var(--accent-rgb), 0.14);
+    }
+    .sgh-badge.red {
+        background: var(--danger-bg);
+        color: var(--danger);
+        border-color: var(--danger-bdr);
+    }
+    .sgh-badge.purple {
+        background: var(--purple-bg);
+        color: var(--purple);
+        border-color: rgba(124, 58, 237, 0.16);
+    }
+    .sgh-badge.gray {
+        background: rgba(15, 23, 42, 0.05);
+        color: var(--txt-soft);
+        border-color: rgba(15, 23, 42, 0.10);
+    }
 
-@media (max-width: 1199.98px) {
-  .sg-scroll { max-height: none; }
-}
+    .sg-card-body {
+        padding: var(--sp-3) var(--sp-4);
+    }
 
-/* ── Card component ── */
-.sg-card {
-  background: var(--surface);
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 8px var(--shadow);
-  overflow: hidden;
-  height: 100%;
-  transition: all 0.25s ease;
-}
-.sg-card:hover {
-  box-shadow: 0 6px 16px var(--shadow-lg);
-  border-color: var(--bdr-hover);
-}
-.sg-card-head {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.85rem 1.15rem;
-  border-bottom: 1px solid var(--bdr);
-}
-.sg-card-head .sgh-icon {
-  width: 28px; height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 0.72rem;
-  flex-shrink: 0;
-}
-.sg-card-head .sgh-icon.green { background: var(--success-bg); color: var(--success); }
-.sg-card-head .sgh-icon.amber { background: var(--warn-bg); color: var(--warn); }
-.sg-card-head .sgh-icon.blue { background: rgba(var(--accent-rgb), 0.08); color: var(--accent); }
-.sg-card-head .sgh-icon.red { background: var(--danger-bg); color: var(--danger); }
-.sg-card-head .sgh-icon.purple { background: var(--purple-bg); color: var(--purple); }
+    /* ── Collapsible cards ── */
+    .sg-card-toggle {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid var(--bdr);
+        background: none;
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+        color: inherit;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--surface-alt);
+    }
+    .sg-card-toggle:hover {
+        background: var(--surface-hover);
+    }
+    .sg-card-toggle:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+    }
+    .sg-card-toggle .sgh-chevron {
+        margin-left: auto;
+        font-size: 0.7rem;
+        color: var(--txt-muted);
+        transition: transform 0.3s var(--ease);
+        flex-shrink: 0;
+    }
+    .sg-card.collapsed .sgh-chevron {
+        transform: rotate(-90deg);
+    }
+    .sg-card.collapsed .sg-card-body {
+        display: none;
+    }
+    .sg-card.collapsed .sg-card-toggle {
+        border-bottom: none;
+    }
 
-.sg-card-head .sgh-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: 0;
-  flex: 1;
-}
-.sgh-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.68rem;
-  font-weight: 700;
-  line-height: 1.5;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--r-pill);
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-.sg-card-head .sgh-badge { flex-shrink: 0; }
-.sgh-badge.green { background: var(--success-bg); color: var(--success); border-color: var(--success-bdr); }
-.sgh-badge.amber { background: var(--warn-bg); color: var(--warn); border-color: var(--warn-bdr); }
-.sgh-badge.blue { background: rgba(var(--accent-rgb), 0.08); color: var(--accent); border-color: rgba(var(--accent-rgb), 0.14); }
-.sgh-badge.red { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-bdr); }
-/* Both were already emitted by the markup and by sgPriBadge/sgDiffBadge but
-   never had a rule, so they painted with an uncoloured border and no fill. */
-.sgh-badge.purple { background: var(--purple-bg); color: var(--purple); border-color: rgba(124,58,237,0.16); }
-.sgh-badge.gray { background: rgba(15,23,42,0.05); color: var(--txt-soft); border-color: rgba(15,23,42,0.10); }
+    /* ── Pane & scroll ── */
+    .sg-pane {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+    }
+    .sg-scroll {
+        max-height: 26rem;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-right: var(--sp-1);
+        margin-right: -var(--sp-1);
+    }
+    .sg-scroll::-webkit-scrollbar {
+        width: 5px;
+    }
+    .sg-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .sg-scroll::-webkit-scrollbar-thumb {
+        background: rgba(15, 23, 42, 0.12);
+        border-radius: var(--radius-pill);
+    }
+    @media (max-width: 1199.98px) {
+        .sg-scroll {
+            max-height: none;
+        }
+    }
 
-.sg-card-body { padding: var(--sp-4) var(--sp-5); }
+    .sg-pane-foot:not(:empty) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--sp-3);
+        flex-wrap: wrap;
+        padding-top: var(--sp-3);
+        border-top: 1px solid var(--bdr);
+        font-size: 0.66rem;
+        color: var(--txt-muted);
+    }
+    .sg-legend {
+        display: flex;
+        gap: var(--sp-3);
+        flex-wrap: wrap;
+    }
+    .sg-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+    }
+    .sg-legend i {
+        font-size: 0.45rem;
+    }
+    .sg-legend .dot-red {
+        color: var(--danger);
+    }
+    .sg-legend .dot-amber {
+        color: var(--warn);
+    }
+    .sg-legend .dot-gray {
+        color: rgba(15, 23, 42, 0.3);
+    }
+    .sg-pane-foot b {
+        color: var(--txt-soft);
+        font-weight: 700;
+    }
 
-/* ── Collapsible cards ──
-   The learning sections are long by nature. Each one keeps its header as a
-   button so a user scanning the page can fold away what they are not working
-   on, and the header still reads as a summary when folded. */
-.sg-card-toggle {
-  width: 100%;
-  /* The head's own bottom rule must survive the button reset. */
-  border: none;
-  border-bottom: 1px solid var(--bdr);
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
-}
-.sg-card-toggle:hover { background: var(--surface-alt); }
-.sg-card-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.sg-card-toggle .sgh-chevron {
-  margin-left: var(--sp-2);
-  font-size: 0.7rem;
-  color: var(--txt-muted);
-  transition: transform 0.25s var(--ease);
-  flex-shrink: 0;
-}
-.sg-card.collapsed .sgh-chevron { transform: rotate(-90deg); }
-.sg-card.collapsed .sg-card-body { display: none; }
-.sg-card.collapsed .sg-card-head { border-bottom: none; }
+    /* ── Current Skills (categorized) ── */
+    .sg-cat-group {
+        border: 1px solid var(--bdr);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-2) var(--sp-3);
+        margin-bottom: var(--sp-2);
+        transition: all 0.2s ease;
+        background: var(--surface-alt);
+    }
+    .sg-cat-group:last-child {
+        margin-bottom: 0;
+    }
+    .sg-cat-group:hover {
+        border-color: var(--bdr-hover);
+        background: var(--surface);
+        box-shadow: var(--el-1);
+    }
+    .sg-cat-group .sg-cat-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--sp-1);
+    }
+    .sg-cat-group .sg-cat-head .sg-cat-name {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--txt);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-1);
+    }
+    .sg-cat-group .sg-cat-head .sg-cat-name .sg-cat-check {
+        color: var(--success);
+        font-size: 0.65rem;
+    }
+    .sg-cat-group .sg-cat-head .sg-cat-count {
+        font-size: 0.62rem;
+        font-weight: 600;
+        color: var(--txt-muted);
+    }
+    .sg-cat-group .sg-cat-skills {
+        font-size: 0.72rem;
+        color: var(--txt-soft);
+        line-height: 1.7;
+        word-break: break-word;
+    }
+    .sg-cat-group .sg-cat-skills .sg-cat-dot {
+        color: var(--txt-muted);
+        margin: 0 0.15rem;
+    }
+    .sg-cat-group .sg-cat-skills .sg-cat-more {
+        color: var(--accent);
+        font-weight: 600;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 0.68rem;
+    }
+    .sg-cat-group .sg-cat-skills .sg-cat-more:hover {
+        text-decoration: underline;
+    }
 
-/* ── Section nav ──
-   A long page needs a way in. Sticks under the app bar and marks which
-   section the reader is currently inside. */
-.sg-nav {
-  position: sticky;
-  /* The app navbar is fixed at 60px with z-index 1040 — sit directly under
-     it, and below it in the stack. */
-  top: var(--navbar-height, 60px);
-  z-index: 20;
-  display: flex;
-  gap: var(--sp-1);
-  overflow-x: auto;
-  padding: var(--sp-2) 0;
-  margin-bottom: var(--sp-4);
-  background: var(--page-bg);
-  border-bottom: 1px solid var(--bdr);
-  scrollbar-width: none;
-}
-.sg-nav::-webkit-scrollbar { display: none; }
-.sg-nav a {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--r-xs);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--txt-soft);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.2s var(--ease), color 0.2s var(--ease);
-}
-.sg-nav a:hover { background: var(--surface-alt); color: var(--txt); }
-.sg-nav a.active { background: rgba(var(--accent-rgb), 0.09); color: var(--accent); }
-.sg-nav a i { font-size: 0.75rem; }
-.sg-nav a .sg-nav-count {
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 0 var(--sp-2);
-  border-radius: var(--r-pill);
-  background: var(--track);
-  color: var(--txt-soft);
-}
-.sg-nav a.active .sg-nav-count {
-  background: rgba(var(--accent-rgb), 0.16);
-  color: var(--accent);
-}
+    /* ── Missing skill rows ── */
+    .sg-miss-group {
+        margin-bottom: var(--sp-3);
+    }
+    .sg-miss-group:last-child {
+        margin-bottom: 0;
+    }
+    .sg-miss-group .sg-miss-header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-2);
+        padding-bottom: var(--sp-1);
+        border-bottom: 1px solid var(--bdr);
+    }
+    .sg-miss-group .sg-miss-header .sg-miss-stars {
+        font-size: 0.7rem;
+        line-height: 1;
+    }
+    .sg-miss-group .sg-miss-header .sg-miss-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--txt);
+        margin: 0;
+    }
+    .sg-miss-group .sg-miss-header .sg-miss-count {
+        font-size: 0.62rem;
+        font-weight: 600;
+        color: var(--txt-muted);
+        margin-left: auto;
+    }
 
-/* Anchored sections must clear the sticky nav when jumped to. */
-.sg-anchor { scroll-margin-top: calc(var(--navbar-height, 60px) + 56px); }
+    .sg-gap-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+    }
 
-@media (max-width: 767.98px) {
-  .sg-nav a { padding: var(--sp-2); font-size: 0.74rem; }
-}
+    .sg-gap-item {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        border: 1px solid var(--bdr);
+        border-radius: var(--radius-sm);
+        background: var(--surface-alt);
+        padding: var(--sp-2) var(--sp-3);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .sg-gap-item:hover {
+        background: var(--surface);
+        border-color: var(--bdr-hover);
+        box-shadow: var(--el-1);
+    }
 
-/* ── Show-more footer for capped lists ── */
-.sg-more-row {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--sp-4);
-  padding-top: var(--sp-4);
-  border-top: 1px solid var(--bdr);
-}
-.sg-more-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-4);
-  border-radius: var(--r-xs);
-  border: 1px solid var(--bdr-hover);
-  background: var(--surface);
-  color: var(--txt-soft);
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
-}
-.sg-more-btn:hover {
-  color: var(--accent);
-  border-color: rgba(var(--accent-rgb), 0.32);
-  background: rgba(var(--accent-rgb), 0.05);
-}
-.sg-more-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .sg-gap-mark {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-size: 0.65rem;
+        flex-shrink: 0;
+    }
+    .sg-gap-item.red .sg-gap-mark {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+    .sg-gap-item.amber .sg-gap-mark {
+        background: var(--warn-bg);
+        color: var(--warn);
+    }
+    .sg-gap-item.gray .sg-gap-mark {
+        background: rgba(15, 23, 42, 0.05);
+        color: var(--txt-soft);
+    }
 
-/* ── Section spacer ── */
-.sg-section-title {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
+    .sg-gap-main {
+        flex: 1;
+        min-width: 0;
+    }
+    .sg-gap-name {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--txt);
+        margin: 0 0 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .sg-gap-facts {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--sp-1) var(--sp-2);
+        font-size: 0.62rem;
+        color: var(--txt-soft);
+    }
+    .sg-gap-fact {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        white-space: nowrap;
+    }
+    .sg-gap-fact i {
+        font-size: 0.55rem;
+        opacity: 0.6;
+    }
+    .sg-gap-fact.up {
+        color: var(--success);
+        font-weight: 700;
+    }
+    .sg-gap-fact.up i {
+        opacity: 1;
+    }
 
-/* ── AI Recommendation ── */
-.sg-ai-box {
-  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.04), rgba(var(--accent-rgb), 0.09));
-  border: 1px solid rgba(var(--accent-rgb), 0.14);
-  border-radius: var(--radius);
-  padding: 1.05rem 1.15rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.9rem;
-  transition: all 0.25s ease;
-}
-.sg-ai-box:hover {
-  border-color: rgba(var(--accent-rgb), 0.22);
-  box-shadow: 0 6px 16px var(--shadow-lg);
-}
-.sg-ai-box .sg-ai-icon {
-  width: 42px; height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.18);
-}
-.sg-ai-box .sg-ai-body { flex: 1; min-width: 0; }
-.sg-ai-box .sg-ai-body .sg-ai-head {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: 0.3rem;
-}
-.sg-ai-box .sg-ai-body .sg-ai-text {
-  font-size: 0.78rem;
-  color: var(--txt-soft);
-  line-height: 1.6;
-  margin-bottom: 0.6rem;
-}
-.sg-ai-box .sg-ai-body .sg-ai-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 0.6rem;
-}
-.sg-ai-box .sg-ai-body .sg-ai-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 7px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  background: rgba(var(--accent-rgb), 0.08);
-  color: var(--accent);
-  border: 1px solid rgba(var(--accent-rgb), 0.12);
-}
-.sg-ai-box .sg-ai-body .sg-ai-metrics {
-  display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-}
-.sg-ai-box .sg-ai-body .sg-ai-metrics span {
-  font-size: 0.75rem;
-  color: var(--txt-soft);
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-.sg-ai-box .sg-ai-body .sg-ai-metrics strong {
-  color: var(--accent);
-}
+    .sg-gap-pri {
+        font-size: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.05rem 0.4rem;
+        border-radius: 4px;
+        white-space: nowrap;
+    }
+    .sg-gap-pri.red {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+    .sg-gap-pri.amber {
+        background: var(--warn-bg);
+        color: var(--warn);
+    }
+    .sg-gap-pri.gray {
+        background: rgba(15, 23, 42, 0.05);
+        color: var(--txt-soft);
+    }
 
-/* ── Category groups for Current Skills ── */
-.sg-cat-group {
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius-sm);
-  padding: 0.75rem 0.85rem;
-  margin-bottom: 0.55rem;
-  transition: all 0.2s ease;
-  background: var(--surface-alt);
-}
-.sg-cat-group:last-child { margin-bottom: 0; }
-.sg-cat-group:hover {
-  border-color: var(--bdr-hover);
-  background: var(--surface);
-  box-shadow: 0 2px 8px var(--shadow);
-}
-.sg-cat-group .sg-cat-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.3rem;
-}
-.sg-cat-group .sg-cat-head .sg-cat-name {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--txt);
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-.sg-cat-group .sg-cat-head .sg-cat-name .sg-cat-check {
-  color: var(--success);
-  font-size: 0.7rem;
-}
-.sg-cat-group .sg-cat-head .sg-cat-count {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--txt-muted);
-}
-.sg-cat-group .sg-cat-skills {
-  font-size: 0.74rem;
-  color: var(--txt-soft);
-  line-height: 1.7;
-  word-break: break-word;
-}
-.sg-cat-group .sg-cat-skills .sg-cat-dot {
-  color: var(--txt-muted);
-  margin: 0 0.2rem;
-}
-.sg-cat-group .sg-cat-skills .sg-cat-more {
-  color: var(--accent);
-  font-weight: 600;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 0.72rem;
-}
-.sg-cat-group .sg-cat-skills .sg-cat-more:hover { text-decoration: underline; }
+    .sg-gap-go {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        flex-shrink: 0;
+        max-width: 8rem;
+        padding: 0.2rem 0.55rem;
+        border-radius: var(--radius-pill);
+        background: rgba(var(--accent-rgb), 0.06);
+        border: 1px solid rgba(var(--accent-rgb), 0.12);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .sg-gap-go span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .sg-gap-go:hover {
+        background: rgba(var(--accent-rgb), 0.10);
+        border-color: rgba(var(--accent-rgb), 0.25);
+        color: var(--accent);
+        text-decoration: none;
+    }
+    .sg-gap-go:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+    .sg-gap-go i {
+        transition: transform 0.2s ease;
+        font-size: 0.55rem;
+    }
+    .sg-gap-go:hover i {
+        transform: translateX(2px);
+    }
+    .sg-gap-go.none {
+        background: var(--surface-alt);
+        border-color: var(--bdr);
+        color: var(--txt-muted);
+        font-weight: 600;
+    }
 
-/* ── Missing skill rows ── */
-.sg-miss-group {
-  margin-bottom: 1.1rem;
-}
-.sg-miss-group:last-child { margin-bottom: 0; }
-.sg-miss-group .sg-miss-header {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--bdr);
-}
-.sg-miss-group .sg-miss-header .sg-miss-stars {
-  font-size: 0.75rem;
-  line-height: 1;
-}
-.sg-miss-group .sg-miss-header .sg-miss-label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: 0;
-}
-.sg-miss-group .sg-miss-header .sg-miss-count {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--txt-muted);
-  margin-left: auto;
-}
-/* The flat chip list here was replaced by the richer .sg-gap-item cards
-   further down, which carry the same skills plus their priority, importance,
-   learning time, expected match gain and recommendation. */
+    @media (max-width: 575.98px) {
+        .sg-gap-item {
+            flex-wrap: wrap;
+        }
+        .sg-gap-go {
+            max-width: none;
+            width: 100%;
+            justify-content: center;
+        }
+    }
 
-/* ── Progress bars ── */
+    /* ── Empty state ── */
+    .sg-empty {
+        padding: var(--sp-5) var(--sp-3);
+        text-align: center;
+        color: var(--txt-muted);
+        font-size: 0.76rem;
+    }
+    .sg-empty .sg-empty-icon {
+        font-size: 1.4rem;
+        margin-bottom: var(--sp-2);
+        color: var(--txt-muted);
+        opacity: 0.4;
+    }
+    .sg-empty .sg-empty-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--txt);
+        margin-bottom: var(--sp-1);
+    }
 
-/* ── Page grid ──
-   Gaps and covered skills share a row so neither owns a full screen of its
-   own. Collapses to one column before the cards get cramped. */
-.sg-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  gap: 1rem;
-  margin-bottom: 1rem;
-  align-items: start;
-}
-@media (max-width: 1199.98px) {
-  .sg-grid { grid-template-columns: minmax(0, 1fr); }
-}
+    /* ── Shimmer ── */
+    .sg-shimmer-block {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+    }
+    .sg-shimmer {
+        height: 12px;
+        border-radius: 6px;
+        background: rgba(15, 23, 42, 0.04);
+        animation: sgPulse 1.4s ease-in-out infinite;
+    }
+    .sg-shimmer.h24 {
+        height: 24px;
+    }
+    .sg-shimmer.h60 {
+        height: 60px;
+    }
+    .sg-shimmer.h80 {
+        height: 80px;
+    }
+    .sg-shimmer.w40 {
+        width: 40%;
+    }
+    .sg-shimmer.w60 {
+        width: 60%;
+    }
+    .sg-shimmer.w80 {
+        width: 80%;
+    }
 
-/* ── Missing-skill card ── */
-.sg-gap-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+    @keyframes sgPulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.35;
+        }
+    }
 
-/* One skill per row: mark, name over its facts, and the action on the right. */
-.sg-gap-item {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius-sm);
-  background: var(--surface-alt);
-  padding: 0.6rem 0.7rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-.sg-gap-item:hover {
-  background: var(--surface);
-  border-color: var(--bdr-hover);
-  box-shadow: 0 4px 12px var(--shadow-lg);
-}
+    /* ── Recommended Courses ── */
+    .sg-course-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--sp-3);
+    }
+    .sg-course {
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        border: 1px solid var(--bdr);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .sg-course:hover {
+        color: inherit;
+        border-color: var(--bdr-hover);
+        box-shadow: var(--el-2);
+        transform: translateY(-2px);
+    }
+    .sg-course:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
 
-.sg-gap-mark {
-  width: 32px; height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  font-size: 0.72rem;
-  flex-shrink: 0;
-}
-.sg-gap-item.red   .sg-gap-mark { background: var(--danger-bg); color: var(--danger); }
-.sg-gap-item.amber .sg-gap-mark { background: var(--warn-bg); color: var(--warn); }
-.sg-gap-item.gray  .sg-gap-mark { background: rgba(15,23,42,0.05); color: var(--txt-soft); }
+    .sg-course-cover {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        min-height: 80px;
+    }
+    .sg-course-cover::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.10));
+    }
+    .sg-course-glyph {
+        position: relative;
+        z-index: 1;
+        font-size: 1.6rem;
+        color: rgba(255, 255, 255, 0.92);
+    }
+    .sg-course-flag {
+        position: absolute;
+        z-index: 2;
+        top: var(--sp-2);
+        left: var(--sp-2);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        padding: 0.1rem 0.45rem;
+        border-radius: var(--radius-pill);
+        font-size: 0.58rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.94);
+        color: var(--txt);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    .sg-course-flag i {
+        font-size: 0.55rem;
+    }
+    .sg-course-flag.free {
+        color: var(--success);
+    }
+    .sg-course-flag.top {
+        color: var(--warn);
+    }
+    .sg-course-flag+.sg-course-flag {
+        left: auto;
+        right: var(--sp-2);
+    }
 
-.sg-gap-main { flex: 1; min-width: 0; }
-.sg-gap-name {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin: 0 0 0.2rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+    .sg-course-body {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-1);
+        padding: var(--sp-2) var(--sp-3) 0;
+        flex: 1;
+    }
+    .sg-course-provider {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-size: 0.64rem;
+        font-weight: 500;
+        color: var(--txt-muted);
+    }
+    .sg-course-provider i {
+        font-size: 0.6rem;
+    }
+    .sg-course-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--txt);
+        line-height: 1.4;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .sg-course-signal {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+        font-size: 0.64rem;
+        color: var(--txt-muted);
+        margin-top: var(--sp-1);
+    }
+    .sg-course-signal .gain {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-weight: 700;
+        color: var(--success);
+    }
+    .sg-course-signal .sep {
+        opacity: 0.4;
+    }
 
-.sg-gap-facts {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 0.5rem;
-  font-size: 0.66rem;
-  color: var(--txt-soft);
-}
-.sg-gap-fact {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.22rem;
-  white-space: nowrap;
-}
-.sg-gap-fact i { font-size: 0.58rem; opacity: 0.55; }
-.sg-gap-fact.up { color: var(--success); font-weight: 700; }
-.sg-gap-fact.up i { opacity: 1; }
+    .sg-course-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--sp-2);
+        padding: var(--sp-2) var(--sp-3);
+        margin-top: var(--sp-2);
+        font-size: 0.64rem;
+        color: var(--txt-muted);
+        border-top: 1px solid var(--bdr);
+    }
+    .sg-course-foot .dur {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        white-space: nowrap;
+    }
+    .sg-course-foot .go {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-weight: 700;
+        color: var(--accent);
+        white-space: nowrap;
+    }
+    .sg-course:hover .go {
+        text-decoration: underline;
+    }
 
-/* Priority, as a small uppercase mark rather than a full badge */
-.sg-gap-pri {
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.1rem 0.4rem;
-  border-radius: 5px;
-  white-space: nowrap;
-}
-.sg-gap-pri.red   { background: var(--danger-bg); color: var(--danger); }
-.sg-gap-pri.amber { background: var(--warn-bg); color: var(--warn); }
-.sg-gap-pri.gray  { background: rgba(15,23,42,0.05); color: var(--txt-soft); }
+    @media (max-width: 1199.98px) {
+        .sg-course-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 899.98px) {
+        .sg-course-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 575.98px) {
+        .sg-course-grid {
+            gap: var(--sp-2);
+        }
+        .sg-course-body {
+            padding: var(--sp-2);
+        }
+        .sg-course-foot {
+            padding: var(--sp-2);
+        }
+        .sg-course-glyph {
+            font-size: 1.2rem;
+        }
+    }
+    @media (max-width: 419.98px) {
+        .sg-course-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
 
-/* Learning recommendation, right-aligned */
-.sg-gap-go {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  flex-shrink: 0;
-  max-width: 8.5rem;
-  padding: 0.32rem 0.6rem;
-  border-radius: 999px;
-  background: rgba(var(--accent-rgb), 0.06);
-  border: 1px solid rgba(var(--accent-rgb), 0.14);
-  font-size: 0.66rem;
-  font-weight: 700;
-  color: var(--accent);
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-.sg-gap-go span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.sg-gap-go:hover {
-  background: rgba(var(--accent-rgb), 0.11);
-  border-color: rgba(var(--accent-rgb), 0.28);
-  color: var(--accent);
-}
-.sg-gap-go:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.sg-gap-go i { transition: transform 0.2s ease; font-size: 0.6rem; }
-.sg-gap-go:hover i { transform: translateX(2px); }
-.sg-gap-go.none {
-  background: var(--surface-alt);
-  border-color: var(--bdr);
-  color: var(--txt-muted);
-  font-weight: 600;
-}
+    .sg-more-row {
+        display: flex;
+        justify-content: center;
+        margin-top: var(--sp-3);
+        padding-top: var(--sp-3);
+        border-top: 1px solid var(--bdr);
+    }
+    .sg-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-2) var(--sp-4);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--bdr-hover);
+        background: var(--surface);
+        color: var(--txt-soft);
+        font-size: 0.74rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+    .sg-more-btn:hover {
+        color: var(--accent);
+        border-color: rgba(var(--accent-rgb), 0.30);
+        background: rgba(var(--accent-rgb), 0.04);
+    }
+    .sg-more-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
 
-@media (max-width: 575.98px) {
-  .sg-gap-item { flex-wrap: wrap; }
-  .sg-gap-go { max-width: none; width: 100%; justify-content: center; }
-}
+    /* ── Tags ── */
+    .sg-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        padding: 0.1rem 0.45rem;
+        border-radius: 5px;
+        font-size: 0.64rem;
+        font-weight: 600;
+        background: rgba(var(--accent-rgb), 0.07);
+        color: var(--accent);
+        border: 1px solid rgba(var(--accent-rgb), 0.10);
+    }
+    .sg-tag i {
+        font-size: 0.45rem;
+    }
 
-/* ── Empty state ── */
-.sg-empty {
-  padding: 1.5rem 1rem;
-  text-align: center;
-  color: var(--txt-muted);
-  font-size: 0.78rem;
-}
-.sg-empty .sg-empty-icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.4rem;
-  color: var(--txt-muted);
-  opacity: 0.4;
-}
-.sg-empty .sg-empty-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--txt-main);
-  margin-bottom: 0.25rem;
-}
+    /* ── Roadmap ── */
+    .sg-rm-lead {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        margin-bottom: var(--sp-4);
+        border-radius: var(--radius-sm);
+        background: var(--surface-alt);
+        border: 1px solid var(--bdr);
+    }
+    .sg-rm-lead>i {
+        color: var(--accent);
+        font-size: 0.85rem;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .sg-rm-lead b {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--txt);
+        margin-bottom: var(--sp-1);
+    }
+    .sg-rm-lead p {
+        margin: 0;
+        font-size: 0.74rem;
+        color: var(--txt-soft);
+        line-height: 1.6;
+    }
 
-/* ── Shimmer ── */
-.sg-shimmer-block { display: flex; flex-direction: column; gap: 0.5rem; }
-.sg-shimmer {
-  height: 12px;
-  border-radius: 6px;
-  background: rgba(15,23,42,0.04);
-  animation: sgPulse 1.4s ease-in-out infinite;
-}
-.sg-shimmer.h24 { height: 24px; }
-.sg-shimmer.h60 { height: 60px; }
-.sg-shimmer.h80 { height: 80px; }
-.sg-shimmer.w40 { width: 40%; }
-.sg-shimmer.w60 { width: 60%; }
-.sg-shimmer.w80 { width: 80%; }
+    .sg-phase-timeline {
+        position: relative;
+        padding-left: 2.4rem;
+    }
+    .sg-phase-timeline::before {
+        content: "";
+        position: absolute;
+        left: 19px;
+        top: 12px;
+        bottom: 12px;
+        width: 2px;
+        background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.30), rgba(var(--accent-rgb), 0.08));
+        border-radius: 2px;
+    }
+    .sg-phase {
+        position: relative;
+        margin-bottom: var(--sp-3);
+    }
+    .sg-phase:last-child {
+        margin-bottom: 0;
+    }
+    .sg-phase-node {
+        position: absolute;
+        left: -2.4rem;
+        top: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 800;
+        line-height: 1;
+        box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.22);
+        z-index: 1;
+    }
+    .sg-phase-node small {
+        font-size: 0.44rem;
+        font-weight: 700;
+        opacity: 0.85;
+        letter-spacing: 0.05em;
+    }
+    .sg-phase-capstone .sg-phase-node {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        box-shadow: 0 4px 10px rgba(124, 58, 237, 0.28);
+    }
+    .sg-phase-card {
+        background: var(--surface);
+        border: 1px solid var(--bdr);
+        border-left: 3px solid rgba(var(--accent-rgb), 0.35);
+        border-radius: var(--radius);
+        padding: var(--sp-3) var(--sp-4);
+        transition: all 0.25s ease;
+    }
+    .sg-phase-card:hover {
+        border-color: var(--bdr-hover);
+        border-left-color: var(--accent);
+        box-shadow: var(--el-1);
+    }
+    .sg-phase-capstone .sg-phase-card {
+        border-color: rgba(124, 58, 237, 0.18);
+        background: linear-gradient(180deg, rgba(124, 58, 237, 0.03), var(--surface));
+    }
+    .sg-phase-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-2);
+        flex-wrap: wrap;
+    }
+    .sg-phase-title {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--txt);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        margin: 0;
+    }
+    .sg-phase-meta {
+        font-size: 0.64rem;
+        color: var(--txt-muted);
+        display: inline-flex;
+        gap: var(--sp-3);
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .sg-phase-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+    }
+    .sg-phase-done {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        margin-bottom: var(--sp-2);
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--success);
+    }
+    .sg-phase-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+        margin-bottom: var(--sp-2);
+    }
+    .sg-phase-objectives {
+        margin: 0 0 var(--sp-2);
+        padding-left: 1.15rem;
+    }
+    .sg-phase-objectives li {
+        font-size: 0.7rem;
+        color: var(--txt-soft);
+        line-height: 1.6;
+    }
+    .sg-phase-project {
+        background: var(--surface-alt);
+        border: 1px dashed var(--bdr-hover);
+        border-radius: 6px;
+        padding: var(--sp-2) var(--sp-3);
+        margin-bottom: var(--sp-2);
+        font-size: 0.7rem;
+        color: var(--txt-soft);
+        line-height: 1.55;
+    }
+    .sg-phase-project strong {
+        color: var(--txt);
+    }
+    .sg-phase-why {
+        margin-bottom: var(--sp-2);
+    }
+    .sg-phase-why .sg-why-title {
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: var(--txt-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: var(--sp-1);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-1);
+    }
+    .sg-phase-why .sg-why-title i {
+        color: var(--warn);
+    }
+    .sg-phase-why ul {
+        margin: 0;
+        padding-left: 1.15rem;
+    }
+    .sg-phase-why li {
+        font-size: 0.7rem;
+        color: var(--txt-soft);
+        line-height: 1.6;
+    }
 
-@keyframes sgPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
-}
+    .sg-phase-resources {
+        background: var(--surface-alt);
+        border: 1px solid var(--bdr);
+        border-radius: 6px;
+        padding: var(--sp-2) var(--sp-3);
+        margin-bottom: var(--sp-2);
+    }
+    .sg-phase-resources .sg-res-title {
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: var(--txt-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: var(--sp-1);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-1);
+    }
+    .sg-phase-resources .sg-res-title i {
+        color: var(--accent);
+    }
+    .sg-res-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--sp-2);
+        padding: var(--sp-1) 0;
+        border-bottom: 1px dashed var(--bdr);
+        font-size: 0.68rem;
+    }
+    .sg-res-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .sg-res-item:first-child {
+        padding-top: 0;
+    }
+    .sg-res-item .sg-res-name {
+        color: var(--txt);
+        font-weight: 600;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+    }
+    .sg-res-item .sg-res-provider {
+        color: var(--txt-muted);
+        font-size: 0.62rem;
+        flex-shrink: 0;
+    }
+    .sg-res-item a {
+        color: var(--accent);
+        font-size: 0.64rem;
+        font-weight: 700;
+        text-decoration: none;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+    }
+    .sg-res-item a:hover {
+        text-decoration: underline;
+    }
+    .sg-phase-steps {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+    }
+    .sg-phase-empty {
+        font-size: 0.7rem;
+        color: var(--txt-muted);
+        font-style: italic;
+        background: var(--surface-alt);
+        border-radius: 6px;
+        padding: var(--sp-2) var(--sp-3);
+    }
 
-/* ── Course rows ──
-   One course per full-width row: rank, then title and badges, provider and
-   covered skill, the figures, why it is recommended, and the action. */
-/* ── Recommended Courses ──
-   Card grid: cover band, provider, title, one signal line, then a footer
-   carrying the duration and the open action. */
-.sg-course-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--sp-4);
-}
+    .sg-job-ready-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--sp-3);
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(34, 197, 94, 0.14));
+        border: 1px solid rgba(34, 197, 94, 0.22);
+        border-radius: var(--radius);
+        padding: var(--sp-3) var(--sp-4);
+        margin-bottom: var(--sp-4);
+    }
+    .sg-job-ready-banner .sg-jr-icon {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        background: var(--success);
+        color: #fff;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.28);
+    }
+    .sg-job-ready-banner .sg-jr-title {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--success);
+        margin-bottom: 2px;
+    }
+    .sg-job-ready-banner .sg-jr-text {
+        font-size: 0.72rem;
+        color: var(--txt-soft);
+        line-height: 1.55;
+        margin: 0;
+    }
 
-.sg-course {
-  display: flex;
-  flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r-md);
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
-}
-.sg-course:hover {
-  color: inherit;
-  border-color: var(--bdr-hover);
-  box-shadow: var(--el-2);
-  transform: translateY(-2px);
-}
-.sg-course:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* ── Legacy step timeline ── */
+    .sg-timeline {
+        position: relative;
+        padding-left: 2.2rem;
+    }
+    .sg-timeline::before {
+        content: "";
+        position: absolute;
+        left: 14px;
+        top: 6px;
+        bottom: 6px;
+        width: 2px;
+        background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.30), rgba(var(--accent-rgb), 0.08));
+        border-radius: 2px;
+    }
+    .sg-step {
+        position: relative;
+        margin-bottom: var(--sp-2);
+    }
+    .sg-step-num {
+        position: absolute;
+        left: -2.2rem;
+        top: 2px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 2px solid rgba(var(--accent-rgb), 0.22);
+        color: var(--accent);
+        font-size: 0.68rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+        z-index: 1;
+    }
+    .sg-step.done .sg-step-num {
+        background: var(--success);
+        border-color: var(--success);
+        color: #fff;
+    }
+    .sg-step.active .sg-step-num {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+    }
+    .sg-step-head {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        background: var(--surface-alt);
+        border: 1px solid var(--bdr);
+        border-radius: var(--radius-sm);
+        padding: var(--sp-2) var(--sp-3);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .sg-step-head:hover {
+        border-color: var(--bdr-hover);
+        background: var(--surface);
+        box-shadow: var(--el-1);
+    }
+    .sg-step.done .sg-step-head {
+        border-color: var(--success-bdr);
+        background: var(--success-bg);
+    }
+    .sg-step-check {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        border: 2px solid var(--bdr-hover);
+        background: var(--surface);
+        color: var(--txt-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .sg-step-check:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    .sg-step.done .sg-step-check {
+        background: var(--success);
+        border-color: var(--success);
+        color: #fff;
+    }
+    .sg-step.active .sg-step-check {
+        background: rgba(var(--accent-rgb), 0.10);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    .sg-step-name {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--txt);
+        flex: 1;
+        margin: 0;
+    }
+    .sg-step-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-1);
+        flex-wrap: wrap;
+    }
+    .sg-step-body {
+        display: none;
+        margin-top: var(--sp-2);
+        border: 1px solid var(--bdr);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        background: var(--surface);
+        padding: var(--sp-2) var(--sp-3);
+    }
+    .sg-step.open .sg-step-body {
+        display: block;
+    }
+    .sg-step-body .desc {
+        font-size: 0.72rem;
+        color: var(--txt-soft);
+        line-height: 1.55;
+        margin-bottom: var(--sp-2);
+    }
+    .sg-step-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-2);
+    }
+    .sg-step-detail {
+        background: var(--surface-alt);
+        border: 1px solid var(--bdr);
+        border-radius: 6px;
+        padding: var(--sp-2) var(--sp-2);
+    }
+    .sg-step-detail .lab {
+        font-size: 0.58rem;
+        font-weight: 700;
+        color: var(--txt-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 2px;
+    }
+    .sg-step-detail .val {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--txt);
+    }
+    .sg-step-outcome {
+        font-size: 0.7rem;
+        color: var(--txt-soft);
+        background: rgba(var(--accent-rgb), 0.04);
+        border-radius: 6px;
+        padding: var(--sp-2) var(--sp-3);
+        line-height: 1.55;
+        margin: 0;
+    }
+    .sg-step-outcome strong {
+        color: var(--accent);
+    }
 
-/* Cover. The catalogue carries no artwork, so this is a generated field —
-   a hue derived from the skill name plus the provider glyph. Decorative by
-   design: it never states anything the payload did not. */
-.sg-course-cover {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.sg-course-cover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, rgba(255,255,255,0.16), rgba(0,0,0,0.10));
-}
-.sg-course-glyph {
-  position: relative;
-  z-index: 1;
-  font-size: 1.75rem;
-  color: rgba(255,255,255,0.92);
-}
-.sg-course-flag {
-  position: absolute;
-  z-index: 2;
-  top: var(--sp-2);
-  left: var(--sp-2);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--r-pill);
-  font-size: 0.62rem;
-  font-weight: 700;
-  background: rgba(255,255,255,0.94);
-  color: var(--txt);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.14);
-}
-.sg-course-flag i { font-size: 0.6rem; }
-.sg-course-flag.free { color: var(--success); }
-.sg-course-flag.top  { color: var(--warn); }
-.sg-course-flag + .sg-course-flag { left: auto; right: var(--sp-2); }
-
-.sg-course-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding: var(--sp-3) var(--sp-4) 0;
-  flex: 1;
-}
-.sg-course-provider {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.68rem;
-  font-weight: 500;
-  color: var(--txt-muted);
-}
-.sg-course-provider i { font-size: 0.66rem; }
-.sg-course-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--txt);
-  line-height: 1.4;
-  margin: 0;
-  /* Two lines, as in the reference, so every card in the row aligns. */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* The reference puts a star rating here. The catalogue supplies no ratings,
-   so this line carries what it does know: what the course is worth to the
-   match score, and how many postings ask for the skill. */
-.sg-course-signal {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  font-size: 0.68rem;
-  color: var(--txt-muted);
-  margin-top: 0.1rem;
-}
-.sg-course-signal .gain {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  font-weight: 700;
-  color: var(--success);
-}
-.sg-course-signal .sep { opacity: 0.4; }
-
-.sg-course-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-2);
-  padding: var(--sp-3) var(--sp-4);
-  margin-top: var(--sp-3);
-  font-size: 0.68rem;
-  color: var(--txt-muted);
-}
-.sg-course-foot .dur {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  white-space: nowrap;
-}
-.sg-course-foot .go {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-weight: 700;
-  color: var(--accent);
-  white-space: nowrap;
-}
-.sg-course:hover .go { text-decoration: underline; }
-
-@media (max-width: 1199.98px) { .sg-course-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 899.98px)  { .sg-course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 575.98px) {
-  .sg-course-grid { gap: var(--sp-3); }
-  .sg-course-body { padding: var(--sp-3) var(--sp-3) 0; }
-  .sg-course-foot { padding: var(--sp-3); }
-  .sg-course-glyph { font-size: 1.4rem; }
-}
-@media (max-width: 419.98px) { .sg-course-grid { grid-template-columns: minmax(0, 1fr); } }
-
-.sg-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.18rem 0.55rem;
-  border-radius: 7px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  background: rgba(var(--accent-rgb), 0.07);
-  color: var(--accent);
-  border: 1px solid rgba(var(--accent-rgb), 0.12);
-}
-.sg-btn-accent {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.42rem 0.85rem;
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-.sg-btn-accent:hover {
-  background: #1d4ed8;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.28);
-  transform: translateY(-1px);
-}
-
-/* ── Learning Roadmap ──
-   Instructions, not a metrics screen: a lead paragraph explaining how to
-   work through the phases, then the phases themselves. */
-.sg-rm-lead {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sp-3);
-  padding: var(--sp-4);
-  margin-bottom: var(--sp-4);
-  border-radius: var(--r-sm);
-  background: var(--surface-alt);
-  border: 1px solid var(--bdr);
-}
-.sg-rm-lead > i {
-  color: var(--accent);
-  font-size: 0.9rem;
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-.sg-rm-lead b {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: var(--sp-1);
-}
-.sg-rm-lead p {
-  margin: 0;
-  font-size: 0.76rem;
-  color: var(--txt-soft);
-  line-height: 1.6;
-}
-
-/* ── Roadmap phases ── */
-.sg-phase-timeline {
-  position: relative;
-  padding-left: 2.6rem;
-}
-.sg-phase-timeline::before {
-  content: "";
-  position: absolute;
-  left: 21px;
-  top: 12px;
-  bottom: 12px;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.35), rgba(var(--accent-rgb), 0.10));
-  border-radius: 2px;
-}
-.sg-phase {
-  position: relative;
-  margin-bottom: 0.9rem;
-}
-.sg-phase:last-child { margin-bottom: 0; }
-.sg-phase-node {
-  position: absolute;
-  left: -2.6rem;
-  top: 12px;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--accent);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 800;
-  line-height: 1;
-  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
-  z-index: 1;
-}
-.sg-phase-node small { font-size: 0.48rem; font-weight: 700; opacity: 0.85; letter-spacing: 0.05em; }
-.sg-phase-capstone .sg-phase-node {
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-}
-.sg-phase-card {
-  background: var(--surface);
-  border: 1px solid var(--bdr);
-  border-left: 3px solid rgba(var(--accent-rgb), 0.45);
-  border-radius: var(--radius);
-  padding: 0.9rem 1rem;
-  transition: all 0.25s ease;
-}
-.sg-phase-card:hover {
-  border-color: var(--bdr-hover);
-  border-left-color: var(--accent);
-  box-shadow: 0 6px 16px var(--shadow-lg);
-}
-.sg-phase-capstone .sg-phase-card {
-  border-color: rgba(124, 58, 237, 0.22);
-  background: linear-gradient(180deg, rgba(124, 58, 237, 0.04), var(--surface));
-}
-.sg-phase-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.45rem;
-  flex-wrap: wrap;
-}
-.sg-phase-title {
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: var(--txt);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0;
-}
-.sg-phase-meta {
-  font-size: 0.68rem;
-  color: var(--txt-muted);
-  display: inline-flex;
-  gap: 0.7rem;
-  align-items: center;
-}
-.sg-phase-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
-.sg-phase-done {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-1);
-  margin-bottom: 0.55rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--success);
-}
-
-.sg-phase-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-bottom: 0.5rem;
-}
-.sg-phase-objectives {
-  margin: 0 0 0.55rem;
-  padding-left: 1.15rem;
-}
-.sg-phase-objectives li {
-  font-size: 0.72rem;
-  color: var(--txt-soft);
-  line-height: 1.65;
-}
-.sg-phase-project {
-  background: var(--surface-alt);
-  border: 1px dashed var(--bdr-hover);
-  border-radius: 8px;
-  padding: 0.5rem 0.65rem;
-  margin-bottom: 0.6rem;
-  font-size: 0.72rem;
-  color: var(--txt-soft);
-  line-height: 1.55;
-}
-.sg-phase-project strong { color: var(--txt); }
-.sg-phase-why {
-  margin-bottom: 0.55rem;
-}
-.sg-phase-why .sg-why-title {
-  font-size: 0.66rem;
-  font-weight: 800;
-  color: var(--txt-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-.sg-phase-why .sg-why-title i { color: var(--warn); }
-.sg-phase-why ul {
-  margin: 0;
-  padding-left: 1.15rem;
-}
-.sg-phase-why li {
-  font-size: 0.72rem;
-  color: var(--txt-soft);
-  line-height: 1.6;
-}
-.sg-phase-resources {
-  background: var(--surface-alt);
-  border: 1px solid var(--bdr);
-  border-radius: 8px;
-  padding: 0.5rem 0.65rem;
-  margin-bottom: 0.6rem;
-}
-.sg-phase-resources .sg-res-title {
-  font-size: 0.66rem;
-  font-weight: 800;
-  color: var(--txt-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-.sg-phase-resources .sg-res-title i { color: var(--accent); }
-.sg-res-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.3rem 0;
-  border-bottom: 1px dashed var(--bdr);
-  font-size: 0.72rem;
-}
-.sg-res-item:last-child { border-bottom: none; padding-bottom: 0; }
-.sg-res-item:first-child { padding-top: 0; }
-.sg-res-item .sg-res-name {
-  color: var(--txt);
-  font-weight: 600;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-.sg-res-item .sg-res-provider {
-  color: var(--txt-muted);
-  font-size: 0.65rem;
-  flex-shrink: 0;
-}
-.sg-res-item a {
-  color: var(--accent);
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-decoration: none;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-}
-.sg-res-item a:hover { text-decoration: underline; }
-.sg-job-ready-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.7rem;
-  background: linear-gradient(135deg, rgba(34,197,94,0.10), rgba(34,197,94,0.16));
-  border: 1px solid rgba(34,197,94,0.25);
-  border-radius: var(--radius);
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-}
-.sg-job-ready-banner .sg-jr-icon {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: var(--success);
-  color: #fff;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 10px rgba(34,197,94,0.3);
-}
-.sg-job-ready-banner .sg-jr-title {
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: var(--success);
-  margin-bottom: 0.15rem;
-}
-.sg-job-ready-banner .sg-jr-text {
-  font-size: 0.74rem;
-  color: var(--txt-soft);
-  line-height: 1.55;
-  margin: 0;
-}
-.sg-phase-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.sg-phase-steps .sg-step {
-  margin-bottom: 0;
-  padding-left: 2.1rem;
-}
-.sg-phase-steps .sg-step-num {
-  left: -2.1rem;
-  width: 26px;
-  height: 26px;
-  font-size: 0.65rem;
-}
-.sg-phase-empty {
-  font-size: 0.72rem;
-  color: var(--txt-muted);
-  font-style: italic;
-  background: var(--surface-alt);
-  border-radius: 8px;
-  padding: 0.5rem 0.65rem;
-}
-
-/* ── Course rank + gap strip ── */
-
-@media (max-width: 575.98px) {
-  .sg-course { padding: 0.75rem; gap: 0.6rem; }
-}
-
-/* ── Timeline (legacy flat fallback) ── */
-.sg-timeline {
-  position: relative;
-  padding-left: 2.4rem;
-}
-.sg-timeline::before {
-  content: "";
-  position: absolute;
-  left: 15px;
-  top: 6px;
-  bottom: 6px;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.35), rgba(var(--accent-rgb), 0.08));
-  border-radius: 2px;
-}
-.sg-step {
-  position: relative;
-  margin-bottom: 0.7rem;
-}
-.sg-step-num {
-  position: absolute;
-  left: -2.4rem;
-  top: 2px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 2px solid rgba(var(--accent-rgb), 0.25);
-  color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.25s ease;
-  z-index: 1;
-}
-.sg-step.done .sg-step-num { background: var(--success); border-color: var(--success); color: #fff; }
-.sg-step.active .sg-step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
-.sg-step-head {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: var(--surface-alt);
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-.sg-step-head:hover {
-  border-color: var(--bdr-hover);
-  background: var(--surface);
-  box-shadow: 0 3px 10px var(--shadow);
-}
-.sg-step.done .sg-step-head { border-color: var(--success-bdr); background: var(--success-bg); }
-.sg-step-check {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  border: 2px solid var(--bdr-hover);
-  background: var(--surface);
-  color: var(--txt-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.68rem;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.sg-step-check:hover { border-color: var(--accent); color: var(--accent); }
-.sg-step.done .sg-step-check { background: var(--success); border-color: var(--success); color: #fff; }
-.sg-step.active .sg-step-check { background: rgba(var(--accent-rgb), 0.12); border-color: var(--accent); color: var(--accent); }
-.sg-step-name {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--txt);
-  flex: 1;
-  margin: 0;
-}
-.sg-step-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
-.sg-step-body {
-  display: none;
-  margin-top: 0.45rem;
-  border: 1px solid var(--bdr);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--surface);
-  padding: 0.75rem 0.85rem;
-}
-.sg-step.open .sg-step-body { display: block; }
-.sg-step-body .desc {
-  font-size: 0.74rem;
-  color: var(--txt-soft);
-  line-height: 1.55;
-  margin-bottom: 0.6rem;
-}
-.sg-step-detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.45rem;
-  margin-bottom: 0.55rem;
-}
-.sg-step-detail {
-  background: var(--surface-alt);
-  border: 1px solid var(--bdr);
-  border-radius: 8px;
-  padding: 0.45rem 0.6rem;
-}
-.sg-step-detail .lab {
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: var(--txt-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.15rem;
-}
-.sg-step-detail .val {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--txt);
-}
-.sg-step-outcome {
-  font-size: 0.72rem;
-  color: var(--txt-soft);
-  background: rgba(var(--accent-rgb), 0.05);
-  border-radius: 8px;
-  padding: 0.5rem 0.65rem;
-  line-height: 1.55;
-  margin: 0;
-}
-.sg-step-outcome strong { color: var(--accent); }
-
-/* ── Responsive ── */
-@media (max-width: 767.98px) {
-  .sg-header h1 { font-size: 1.2rem; }
-  .sg-ai-box { flex-direction: column; }
-  .sg-ai-box .sg-ai-icon { width: 36px; height: 36px; font-size: 0.9rem; }
-}
-@media (max-width: 575.98px) {
-  .sg-phase-timeline { padding-left: 0; }
-  .sg-phase-timeline::before { display: none; }
-  .sg-phase-node { position: static; margin-bottom: 0.5rem; width: 38px; height: 38px; }
-}
+    @media (max-width: 575.98px) {
+        .sg-phase-timeline {
+            padding-left: 0;
+        }
+        .sg-phase-timeline::before {
+            display: none;
+        }
+        .sg-phase-node {
+            position: static;
+            margin-bottom: var(--sp-2);
+            width: 36px;
+            height: 36px;
+            font-size: 0.7rem;
+        }
+        .sg-phase-node small {
+            font-size: 0.4rem;
+        }
+        .sg-phase-card {
+            padding: var(--sp-2) var(--sp-3);
+        }
+        .sg-rm-lead {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
 </style>
 
 <div class="sg-page">
 
-  <!-- ── Identity bar ──
-       One line: mark, page name, and the detected role that every number
-       below is measured against. -->
-  <div class="sg-header">
-    <div class="sg-brand">
-      <div class="sg-brand-mark"><i class="bi bi-graph-up-arrow"></i></div>
-      <h1>Skill Gap</h1>
-      <span class="sg-brand-role" id="sgMatchSub"></span>
-    </div>
-    <p>Compare your skills with active job demand and get a focused learning plan.</p>
-  </div>
-
-  <!-- ── Headline summary ──
-       The same three figures the stat tiles carried, in a third of the
-       height: the score reads as a ring, the counts as pills. -->
-  <div class="sg-hero" id="sgStats">
-    <div class="sg-ring" id="sgRing">
-      <div class="sg-ring-inner" id="sgMatchVal">–</div>
-    </div>
-    <div class="sg-hero-id">
-      <div class="sg-hero-title" id="sgMatchLabel">Match Score</div>
-      <div class="sg-hero-sub" id="sgCritSub"></div>
-    </div>
-    <div class="sg-hero-actions">
-      <span class="sg-hero-pill red">
-        <i class="bi bi-flag-fill"></i> <b id="sgCritVal">–</b> critical gaps
-      </span>
-      <span class="sg-hero-pill green">
-        <i class="bi bi-check-circle-fill"></i> <b id="sgHaveVal">–</b> skills
-      </span>
-      <a class="sg-hero-cta" href="#sgRoadmapCard">
-        <i class="bi bi-signpost-split-fill"></i> View Roadmap
-      </a>
-    </div>
-  </div>
-
-  <!-- ── AI Recommendation ──
-       The one paragraph that tells the user what to do first. It names the
-       role and the skills to close — it does not restate the score or the
-       gap counts, which the hero above already owns. -->
-  <div class="sg-ai-box" id="sgAiBox">
-    <div class="sg-ai-icon"><i class="bi bi-stars"></i></div>
-    <div class="sg-ai-body" id="sgAiBody">
-      <div class="sg-shimmer-block">
-        <div class="sg-shimmer w60"></div>
-        <div class="sg-shimmer w80"></div>
-        <div class="sg-shimmer w40"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Section nav ──
-       Four learning sections is more than fits a screen. This is the map. -->
-  <nav class="sg-nav" id="sgNav" aria-label="Skill gap sections">
-    <a href="#sgGapsSection"><i class="bi bi-exclamation-triangle"></i> Missing Skills
-      <span class="sg-nav-count" id="sgNavMissing">0</span></a>
-    <a href="#sgSkillsSection"><i class="bi bi-check-circle"></i> Current Skills
-      <span class="sg-nav-count" id="sgNavSkills">0</span></a>
-    <a href="#sgCoursesCard"><i class="bi bi-mortarboard-fill"></i> Courses
-      <span class="sg-nav-count" id="sgNavCourses">0</span></a>
-    <a href="#sgRoadmapCard"><i class="bi bi-signpost-split-fill"></i> Roadmap
-      <span class="sg-nav-count" id="sgNavRoadmap">0</span></a>
-  </nav>
-
-  <!-- ── Gaps first, then what is already covered ──
-       Paired so the actionable column and the reassurance column share one
-       screen instead of stacking into two full-height sections. -->
-  <div class="sg-grid">
-
-    <!-- Missing Skills by Priority -->
-    <div class="sg-card sg-anchor" id="sgGapsSection">
-      <div class="sg-card-head">
-        <div class="sgh-icon red"><i class="bi bi-exclamation-triangle"></i></div>
-        <div class="sgh-title">Missing Skills</div>
-        <span class="sgh-badge red" id="sgMissBadge">0</span>
-      </div>
-      <div class="sg-card-body sg-pane">
-        <div class="sg-scroll" id="sgMissingSkills">
-          <div class="sg-shimmer-block">
-            <div class="sg-shimmer h60"></div>
-            <div class="sg-shimmer h60"></div>
-            <div class="sg-shimmer h60"></div>
-          </div>
+    <!-- ── Header ── -->
+    <div class="sg-header">
+        <div class="sg-brand">
+            <div class="sg-brand-mark"><i class="bi bi-graph-up-arrow"></i></div>
+            <h1>Skill Gap</h1>
+            <span class="sg-brand-role" id="sgMatchSub"></span>
         </div>
-        <div class="sg-pane-foot" id="sgMissFoot"></div>
-      </div>
+        <p>Compare your skills with active job demand and get a focused learning plan.</p>
     </div>
 
-    <!-- Current Skills -->
-    <div class="sg-card sg-anchor" id="sgSkillsSection">
-      <div class="sg-card-head">
-        <div class="sgh-icon green"><i class="bi bi-check-circle"></i></div>
-        <div class="sgh-title">Current Skills</div>
-        <span class="sgh-badge green" id="sgHaveBadge">0</span>
-      </div>
-      <div class="sg-card-body sg-pane">
-        <div class="sg-scroll" id="sgCurrentSkills">
-          <div class="sg-shimmer-block">
-            <div class="sg-shimmer h24"></div>
-            <div class="sg-shimmer h24"></div>
-            <div class="sg-shimmer h24"></div>
-          </div>
+    <!-- ── Hero summary ── -->
+    <div class="sg-hero" id="sgStats">
+        <div class="sg-ring" id="sgRing">
+            <div class="sg-ring-inner" id="sgMatchVal">–</div>
         </div>
-      </div>
+        <div class="sg-hero-id">
+            <div class="sg-hero-title" id="sgMatchLabel">Match Score</div>
+            <div class="sg-hero-sub" id="sgCritSub"></div>
+        </div>
+        <div class="sg-hero-actions">
+            <span class="sg-hero-pill red">
+                <i class="bi bi-flag-fill"></i> <b id="sgCritVal">–</b> critical gaps
+            </span>
+            <span class="sg-hero-pill green">
+                <i class="bi bi-check-circle-fill"></i> <b id="sgHaveVal">–</b> skills
+            </span>
+            <a class="sg-hero-cta" href="#sgRoadmapCard">
+                <i class="bi bi-signpost-split-fill"></i> View Roadmap
+            </a>
+        </div>
     </div>
 
-  </div>
-
-  <!-- ── Recommended Courses ── -->
-  <div class="sg-card sg-anchor mb-3" id="sgCoursesCard">
-    <button type="button" class="sg-card-head sg-card-toggle"
-            data-sg-collapse="sgCoursesCard" aria-expanded="true" aria-controls="sgCourses">
-      <div class="sgh-icon purple"><i class="bi bi-mortarboard-fill"></i></div>
-      <div class="sgh-title">Recommended Courses</div>
-      <span class="sgh-badge purple" id="sgCourseBadge">0</span>
-      <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
-    </button>
-    <div class="sg-card-body" id="sgCourses">
-      <div class="sg-shimmer-block">
-        <div class="sg-shimmer h60"></div>
-        <div class="sg-shimmer h60"></div>
-        <div class="sg-shimmer h60"></div>
-      </div>
+    <!-- ── AI Recommendation ── -->
+    <div class="sg-ai-box" id="sgAiBox">
+        <div class="sg-ai-icon"><i class="bi bi-stars"></i></div>
+        <div class="sg-ai-body" id="sgAiBody">
+            <div class="sg-shimmer-block">
+                <div class="sg-shimmer w60"></div>
+                <div class="sg-shimmer w80"></div>
+                <div class="sg-shimmer w40"></div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- ── Learning Roadmap ── -->
-  <div class="sg-card sg-anchor mb-3" id="sgRoadmapCard">
-    <button type="button" class="sg-card-head sg-card-toggle"
-            data-sg-collapse="sgRoadmapCard" aria-expanded="true" aria-controls="sgRoadmap">
-      <div class="sgh-icon amber"><i class="bi bi-signpost-split-fill"></i></div>
-      <div class="sgh-title">Learning Roadmap</div>
-      <span class="sgh-badge amber" id="sgRoadmapBadge">–</span>
-      <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
-    </button>
-    <div class="sg-card-body" id="sgRoadmap">
-      <div class="sg-shimmer-block">
-        <div class="sg-shimmer h24"></div>
-        <div class="sg-shimmer h60"></div>
-        <div class="sg-shimmer h60"></div>
-      </div>
+    <!-- ── Section nav ── -->
+    <nav class="sg-nav" id="sgNav" aria-label="Skill gap sections">
+        <a href="#sgGapsSection"><i class="bi bi-exclamation-triangle"></i> Missing Skills
+            <span class="sg-nav-count" id="sgNavMissing">0</span></a>
+        <a href="#sgSkillsSection"><i class="bi bi-check-circle"></i> Current Skills
+            <span class="sg-nav-count" id="sgNavSkills">0</span></a>
+        <a href="#sgCoursesCard"><i class="bi bi-mortarboard-fill"></i> Courses
+            <span class="sg-nav-count" id="sgNavCourses">0</span></a>
+        <a href="#sgRoadmapCard"><i class="bi bi-signpost-split-fill"></i> Roadmap
+            <span class="sg-nav-count" id="sgNavRoadmap">0</span></a>
+    </nav>
+
+    <!-- ── Grid: Missing Skills + Current Skills ── -->
+    <div class="sg-grid">
+
+        <!-- Missing Skills -->
+        <div class="sg-card sg-anchor" id="sgGapsSection">
+            <div class="sg-card-head">
+                <div class="sgh-icon red"><i class="bi bi-exclamation-triangle"></i></div>
+                <div class="sgh-title">Missing Skills</div>
+                <span class="sgh-badge red" id="sgMissBadge">0</span>
+            </div>
+            <div class="sg-card-body sg-pane">
+                <div class="sg-scroll" id="sgMissingSkills">
+                    <div class="sg-shimmer-block">
+                        <div class="sg-shimmer h60"></div>
+                        <div class="sg-shimmer h60"></div>
+                        <div class="sg-shimmer h60"></div>
+                    </div>
+                </div>
+                <div class="sg-pane-foot" id="sgMissFoot"></div>
+            </div>
+        </div>
+
+        <!-- Current Skills -->
+        <div class="sg-card sg-anchor" id="sgSkillsSection">
+            <div class="sg-card-head">
+                <div class="sgh-icon green"><i class="bi bi-check-circle"></i></div>
+                <div class="sgh-title">Current Skills</div>
+                <span class="sgh-badge green" id="sgHaveBadge">0</span>
+            </div>
+            <div class="sg-card-body sg-pane">
+                <div class="sg-scroll" id="sgCurrentSkills">
+                    <div class="sg-shimmer-block">
+                        <div class="sg-shimmer h24"></div>
+                        <div class="sg-shimmer h24"></div>
+                        <div class="sg-shimmer h24"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-  </div>
+
+    <!-- ── Recommended Courses ── -->
+    <div class="sg-card sg-anchor mb-3" id="sgCoursesCard">
+        <button type="button" class="sg-card-toggle" data-sg-collapse="sgCoursesCard" aria-expanded="true" aria-controls="sgCourses">
+            <div class="sgh-icon purple"><i class="bi bi-mortarboard-fill"></i></div>
+            <div class="sgh-title">Recommended Courses</div>
+            <span class="sgh-badge purple" id="sgCourseBadge">0</span>
+            <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
+        </button>
+        <div class="sg-card-body" id="sgCourses">
+            <div class="sg-shimmer-block">
+                <div class="sg-shimmer h60"></div>
+                <div class="sg-shimmer h60"></div>
+                <div class="sg-shimmer h60"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Learning Roadmap ── -->
+    <div class="sg-card sg-anchor mb-3" id="sgRoadmapCard">
+        <button type="button" class="sg-card-toggle" data-sg-collapse="sgRoadmapCard" aria-expanded="true" aria-controls="sgRoadmap">
+            <div class="sgh-icon amber"><i class="bi bi-signpost-split-fill"></i></div>
+            <div class="sgh-title">Learning Roadmap</div>
+            <span class="sgh-badge amber" id="sgRoadmapBadge">–</span>
+            <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
+        </button>
+        <div class="sg-card-body" id="sgRoadmap">
+            <div class="sg-shimmer-block">
+                <div class="sg-shimmer h24"></div>
+                <div class="sg-shimmer h60"></div>
+                <div class="sg-shimmer h60"></div>
+            </div>
+        </div>
+    </div>
 
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  requireRole("job_seeker");
+    requireRole("job_seeker");
 
-  /* ── Skill categories ── */
-  const SG_CATS = {
-    "Frontend":       ["HTML","CSS","JavaScript","React","Angular","Vue","TypeScript","Bootstrap","Tailwind","jQuery","SASS","Redux","Next.js","Vite","Gatsby","Webpack"],
-    "Backend":        ["Python","Django","DRF","Node.js","Express","Java","Spring","C#",".NET","PHP","Laravel","Ruby","Rails","Go","Rust","FastAPI","Flask","GraphQL"],
-    "Database":       ["SQL","PostgreSQL","MySQL","MongoDB","Redis","SQLite","Oracle","Elasticsearch","Firebase","DynamoDB","MariaDB"],
-    "DevOps & Cloud": ["Docker","Kubernetes","AWS","Azure","GCP","CI/CD","Jenkins","Terraform","Ansible","GitHub Actions","GitLab","Linux","Nginx","Apache"],
-    "AI & ML":        ["Machine Learning","TensorFlow","PyTorch","Scikit-learn","NumPy","Pandas","NLP","Computer Vision","Deep Learning","Transformers","LLM","Generative AI"],
-    "Soft Skills":    ["Communication","Leadership","Teamwork","Problem Solving","Time Management","Critical Thinking","Collaboration","Adaptability","Creativity","Emotional Intelligence"],
-    "Tools":          ["Git","VS Code","Postman","Jira","Confluence","Figma","Linux","Notion","Slack"],
-    "Design":         ["Canva","Figma","Photoshop","Illustrator","Typography","Branding","UI/UX","XD","Sketch","InDesign","After Effects"],
-  };
+    /* ── Skill categories ── */
+    const SG_CATS = {
+        "Frontend": ["HTML", "CSS", "JavaScript", "React", "Angular", "Vue", "TypeScript", "Bootstrap", "Tailwind", "jQuery", "SASS", "Redux", "Next.js", "Vite", "Gatsby", "Webpack"],
+        "Backend": ["Python", "Django", "DRF", "Node.js", "Express", "Java", "Spring", "C#", ".NET", "PHP", "Laravel", "Ruby", "Rails", "Go", "Rust", "FastAPI", "Flask", "GraphQL"],
+        "Database": ["SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "SQLite", "Oracle", "Elasticsearch", "Firebase", "DynamoDB", "MariaDB"],
+        "DevOps & Cloud": ["Docker", "Kubernetes", "AWS", "Azure", "GCP", "CI/CD", "Jenkins", "Terraform", "Ansible", "GitHub Actions", "GitLab", "Linux", "Nginx", "Apache"],
+        "AI & ML": ["Machine Learning", "TensorFlow", "PyTorch", "Scikit-learn", "NumPy", "Pandas", "NLP", "Computer Vision", "Deep Learning", "Transformers", "LLM", "Generative AI"],
+        "Soft Skills": ["Communication", "Leadership", "Teamwork", "Problem Solving", "Time Management", "Critical Thinking", "Collaboration", "Adaptability", "Creativity", "Emotional Intelligence"],
+        "Tools": ["Git", "VS Code", "Postman", "Jira", "Confluence", "Figma", "Linux", "Notion", "Slack"],
+        "Design": ["Canva", "Figma", "Photoshop", "Illustrator", "Typography", "Branding", "UI/UX", "XD", "Sketch", "InDesign", "After Effects"],
+    };
 
-  const SG_HIGH  = ["Docker","SQL","PostgreSQL","FastAPI","Git","AWS","Python","Django","React","TypeScript","Node.js","REST","API","Linux","MongoDB","Redis","JavaScript","CI/CD","Jenkins","Terraform","Kubernetes"];
-  const SG_MED   = ["Machine Learning","TensorFlow","PyTorch","Scikit-learn","NumPy","Pandas","NLP","Computer Vision","Deep Learning","Transformers","LLM","Generative AI","GraphQL","Elasticsearch","Firebase","GCP","Azure"];
-
-  function sgCat(skill) {
-    const s = skill.trim().toLowerCase();
-    for (const [name, list] of Object.entries(SG_CATS)) {
-      if (list.some(k => k.toLowerCase() === s)) return name;
-    }
-    return null;
-  }
-
-  function sgPriority(skill) {
-    const s = skill.trim().toLowerCase();
-    if (SG_HIGH.some(k => k.toLowerCase() === s)) return "high";
-    if (SG_MED.some(k => k.toLowerCase() === s))  return "medium";
-    return "low";
-  }
-
-  function sgEscape(v) {
-    const d = document.createElement("div");
-    d.textContent = v;
-    return d.innerHTML;
-  }
-
-  /* ── Categorize skills ── */
-  function sgCategorize(skills) {
-    const map = {};
-    const other = [];
-    for (const s of skills) {
-      const c = sgCat(s);
-      if (c) { if (!map[c]) map[c] = []; map[c].push(s); }
-      else other.push(s);
-    }
-    if (other.length) map["Other"] = other;
-    return map;
-  }
-
-  /* ── Partition missing (real AI priorities with legacy fallback) ── */
-  function sgDetailMap(details) {
-    const map = {};
-    for (const d of (details || [])) {
-      if (d && d.skill && d.priority) map[String(d.skill).trim().toLowerCase()] = d.priority;
-    }
-    return map;
-  }
-
-  function sgPartition(skills, detailMap) {
-    const h=[], m=[], l=[];
-    for (const s of skills) {
-      const p = (detailMap && detailMap[s.trim().toLowerCase()]) || sgPriority(s);
-      if (p === "high") h.push(s);
-      else if (p === "medium") m.push(s);
-      else l.push(s);
-    }
-    return { high: h, medium: m, low: l };
-  }
-
-  /* ── Render: Current Skills (categorized) ── */
-  function sgRenderCurrent(categorized) {
-    const keys = Object.keys(categorized);
-    if (!keys.length) return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-check-circle"></i></div>Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
-
-    return keys.map(cat => {
-      const items = categorized[cat];
-      const showCount = 5;
-      const hasMore = items.length > showCount;
-      const id = "sgc_" + cat.replace(/\s+/g, "_");
-
-      return `<div class="sg-cat-group">
-        <div class="sg-cat-head">
-          <div class="sg-cat-name"><span class="sg-cat-check">✓</span> ${cat}</div>
-          <div class="sg-cat-count">${items.length} Skill${items.length !== 1 ? "s" : ""}</div>
-        </div>
-        <div class="sg-cat-skills">
-          ${items.slice(0, showCount).map(s => `<span>${sgEscape(s)}</span>`).join(`<span class="sg-cat-dot">•</span>`)}
-          ${hasMore ? `<span id="${id}_more" style="display:inline"><span class="sg-cat-dot">•</span> <button class="sg-cat-more" onclick="sgToggleCatSkills('${id}')">+${items.length - showCount} more</button></span>` : ""}
-          <span id="${id}" style="display:none">${hasMore ? `<span class="sg-cat-dot">•</span> ${items.slice(showCount).map(s => `<span>${sgEscape(s)}</span>`).join(`<span class="sg-cat-dot">•</span>`)}` : ""}</span>
-        </div>
-      </div>`;
-    }).join("");
-  }
-
-  window.sgToggleCatSkills = function(id) {
-    const el = document.getElementById(id);
-    const more = document.getElementById(id + "_more");
-    if (!el) return;
-    if (el.style.display === "none" || el.style.display === "") {
-      el.style.display = "inline";
-      if (more) more.style.display = "none";
-    } else {
-      el.style.display = "none";
-      if (more) more.style.display = "inline";
-    }
-  };
-
-  /* ── Missing-skill detail lookup ────────────────────────────────────
-     sgDetailMap above returns skill -> priority, which sgPartition depends
-     on. This keeps the whole record so a gap card can also state importance
-     and how many postings ask for the skill. */
-  function sgDetailFull(details) {
-    const map = {};
-    for (const d of (details || [])) {
-      if (d && d.skill) map[String(d.skill).trim().toLowerCase()] = d;
-    }
-    return map;
-  }
-
-  /* Courses arrive on their own request, so a gap card is painted with
-     whatever has landed and repainted once they do. The join is by skill
-     name — the same key the course service already reports the gap under. */
-  let sgCourseIndex = {};
-  function sgIndexCourses(courses) {
-    const map = {};
-    for (const c of (courses || [])) {
-      const key = String(c.missing_skill || c.skill_covered || "").trim().toLowerCase();
-      if (key) map[key] = c;
-    }
-    return map;
-  }
-
-  /* ── Render: one missing skill, as a single row ── */
-  function sgGapCard(skill, group, detail, course) {
-    const imp = detail ? parseInt(detail.importance) || 0 : 0;
-    const jobs = detail ? parseInt(detail.job_count) || 0 : 0;
-    const dur = (course && course.estimated_duration) || {};
-    const gain = course ? parseInt(course.expected_score_gain) || 0 : 0;
-
-    /* Only facts that exist are shown — the course list is capped, so a
-       low-priority gap can legitimately have no matching course. */
-    const facts = [`<span class="sg-gap-pri ${group.chip}">${group.priority}</span>`];
-    if (imp) {
-      facts.push(`<span class="sg-gap-fact"><i class="bi bi-bar-chart-fill"></i> ${imp}/10 importance</span>`);
-    }
-    if (dur.hours) {
-      facts.push(`<span class="sg-gap-fact"><i class="bi bi-clock"></i> ~${dur.hours}h${dur.weeks ? ` · ${dur.weeks} wks` : ""}</span>`);
-    }
-    if (gain) {
-      facts.push(`<span class="sg-gap-fact up"><i class="bi bi-arrow-up-right"></i> +${gain}% match</span>`);
-    }
-    if (jobs) {
-      facts.push(`<span class="sg-gap-fact"><i class="bi bi-people-fill"></i> ${jobs} posting${jobs === 1 ? "" : "s"}</span>`);
-    }
-
-    /* The provider names the action; the course title is the tooltip so the
-       row stays one line wide. */
-    const rec = course
-      ? `<a class="sg-gap-go" href="${sgEscape(course.url)}" target="_blank" rel="noopener noreferrer"
-            title="${sgEscape(course.course_title)}"
-            aria-label="Open ${sgEscape(course.course_title)} to learn ${sgEscape(skill)}">
-           <span>${sgEscape(course.provider || "Course")}</span><i class="bi bi-arrow-right"></i>
-         </a>`
-      : `<span class="sg-gap-go none" title="No course matched yet — see the Learning Roadmap below.">No course</span>`;
-
-    return `<article class="sg-gap-item ${group.chip}">
-      <div class="sg-gap-mark" aria-hidden="true"><i class="bi bi-lightning-charge-fill"></i></div>
-      <div class="sg-gap-main">
-        <h6 class="sg-gap-name">${sgEscape(skill)}</h6>
-        <div class="sg-gap-facts">${facts.join("")}</div>
-      </div>
-      ${rec}
-    </article>`;
-  }
-
-  /* ── Render: Missing Skills (3 priority groups) ── */
-  function sgRenderMissing(haveSkills, partitioned, detailFull, courseIndex) {
-    if (!haveSkills.length) {
-      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-upload"></i></div>Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
-    }
-
-    const groups = [
-      { key: "high",   stars: "⭐⭐⭐", label: "Critical Skills",  chip: "red",   priority: "High" },
-      { key: "medium", stars: "⭐⭐",   label: "Recommended Skills", chip: "amber", priority: "Medium" },
-      { key: "low",    stars: "⭐",     label: "Optional Skills",   chip: "gray",  priority: "Low" },
+    const SG_HIGH = ["Docker", "SQL", "PostgreSQL", "FastAPI", "Git", "AWS", "Python", "Django", "React", "TypeScript", "Node.js", "REST", "API", "Linux", "MongoDB", "Redis", "JavaScript", "CI/CD",
+        "Jenkins", "Terraform", "Kubernetes"
+    ];
+    const SG_MED = ["Machine Learning", "TensorFlow", "PyTorch", "Scikit-learn", "NumPy", "Pandas", "NLP", "Computer Vision", "Deep Learning", "Transformers", "LLM", "Generative AI", "GraphQL",
+        "Elasticsearch", "Firebase", "GCP", "Azure"
     ];
 
-    const total = partitioned.high.length + partitioned.medium.length + partitioned.low.length;
-    if (!total) return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-shield-check"></i></div>No major gaps found. Your skills align well with current job demand.</div>`;
-
-    const details = detailFull || {};
-    const courses = courseIndex || {};
-
-    return groups.map(g => {
-      const items = partitioned[g.key];
-      if (!items.length) return "";
-      return `<div class="sg-miss-group">
-        <div class="sg-miss-header">
-          <span class="sg-miss-stars">${g.stars}</span>
-          <div class="sg-miss-label">${g.label}</div>
-          <div class="sg-miss-count">${items.length}</div>
-        </div>
-        <div class="sg-gap-list">
-          ${items.map(s => {
-            const key = String(s).trim().toLowerCase();
-            return sgGapCard(s, g, details[key], courses[key]);
-          }).join("")}
-        </div>
-      </div>`;
-    }).filter(Boolean).join("");
-  }
-
-  /* Repaint the gap cards from whatever gap + course data is currently held.
-     Called by applyGap and again when courses land. */
-  function sgPaintMissing() {
-    const ctx = window.__sgMissingCtx;
-    const target = document.getElementById("sgMissingSkills");
-    if (!ctx || !target) return;
-    target.innerHTML = sgRenderMissing(ctx.haveSkills, ctx.partition, ctx.detailFull, sgCourseIndex);
-
-    /* Footer: what the row colours mean, and the study time the listed
-       courses add up to. Both read from what the rows already show. */
-    const foot = document.getElementById("sgMissFoot");
-    if (!foot) return;
-    const p = ctx.partition;
-    const any = p.high.length + p.medium.length + p.low.length;
-    if (!ctx.haveSkills.length || !any) { foot.innerHTML = ""; return; }
-
-    let hours = 0;
-    for (const list of [p.high, p.medium, p.low]) {
-      for (const s of list) {
-        const c = sgCourseIndex[String(s).trim().toLowerCase()];
-        if (c && c.estimated_duration) hours += parseInt(c.estimated_duration.hours) || 0;
-      }
+    function sgCat(skill) {
+        const s = skill.trim().toLowerCase();
+        for (const [name, list] of Object.entries(SG_CATS)) {
+            if (list.some(k => k.toLowerCase() === s)) return name;
+        }
+        return null;
     }
 
-    const legend = [
-      p.high.length   ? `<span><i class="bi bi-circle-fill dot-red"></i> Critical</span>` : "",
-      p.medium.length ? `<span><i class="bi bi-circle-fill dot-amber"></i> Recommended</span>` : "",
-      p.low.length    ? `<span><i class="bi bi-circle-fill dot-gray"></i> Optional</span>` : "",
-    ].filter(Boolean).join("");
-
-    foot.innerHTML =
-      `<div class="sg-legend">${legend}</div>` +
-      (hours ? `<span><i class="bi bi-clock"></i> <b>~${hours}h</b> of listed courses</span>` : "");
-  }
-
-  /* ── Render: AI Recommendation ──
-     One instruction: which role you are measured against, and which skills to
-     close first. The match score, the critical-gap count and the recommended
-     count are all shown in the hero above, so none of them is repeated here —
-     the box would otherwise be a second copy of the same three numbers. */
-  function sgRenderAI(haveSkills, missSkills, gap, partition) {
-    if (!haveSkills.length) {
-      return `<div class="sg-ai-head"><i class="bi bi-upload" style="margin-right:0.25rem;"></i> No resume uploaded</div>
-        <div class="sg-ai-text">Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
+    function sgPriority(skill) {
+        const s = skill.trim().toLowerCase();
+        if (SG_HIGH.some(k => k.toLowerCase() === s)) return "high";
+        if (SG_MED.some(k => k.toLowerCase() === s)) return "medium";
+        return "low";
     }
 
-    const profession = gap.profession || "Your target role";
-    const level = gap.career_level_label || "";
-    const heading = `${sgEscape(profession)}${level ? ` (${sgEscape(level)})` : ""}`;
-    const top5 = [...partition.high, ...partition.medium, ...partition.low].slice(0, 5);
-
-    if (!missSkills.length) {
-      return `<div class="sg-ai-head"><i class="bi bi-check-circle-fill" style="color:var(--success);margin-right:0.25rem;"></i> ${heading}</div>
-        <div class="sg-ai-text">No critical skill gaps detected — your current skills align with active job postings. The roadmap below keeps you competitive.</div>`;
+    function sgEscape(v) {
+        const d = document.createElement("div");
+        d.textContent = v;
+        return d.innerHTML;
     }
 
-    return `<div class="sg-ai-head"><i class="bi bi-person-badge-fill" style="color:var(--accent);margin-right:0.25rem;"></i> ${heading}</div>
-      <div class="sg-ai-text">Start here — closing these ${top5.length === 1 ? "skill" : `${top5.length} skills`} first will qualify you for the most additional roles:</div>
-      <div class="sg-ai-pills">
-        ${top5.map(s => `<span class="sg-ai-pill"><i class="bi bi-lightning-charge-fill" style="font-size:0.5rem;"></i> ${sgEscape(s)}</span>`).join("")}
-      </div>`;
-  }
-
-  /* ── Section nav ──────────────────────────────────────────────────
-     Counts mirror the card badges; the active mark follows the scroll. Both
-     are read from what is already on the page — nothing is recomputed. */
-  function sgSetNavCount(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  }
-
-  function bindSectionNav() {
-    const nav = document.getElementById("sgNav");
-    if (!nav || !("IntersectionObserver" in window)) return;
-
-    const links = Array.from(nav.querySelectorAll("a[href^='#']"));
-    const byId = {};
-    links.forEach(a => { byId[a.getAttribute("href").slice(1)] = a; });
-
-    const sections = links
-      .map(a => document.getElementById(a.getAttribute("href").slice(1)))
-      .filter(Boolean);
-
-    /* The topmost section currently intersecting wins, so a tall section
-       being scrolled through keeps its own mark. */
-    const visible = new Set();
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id);
-      });
-      const current = sections.find(s => visible.has(s.id));
-      links.forEach(a => a.classList.remove("active"));
-      if (current && byId[current.id]) byId[current.id].classList.add("active");
-    }, { rootMargin: "-72px 0px -55% 0px", threshold: 0 });
-
-    sections.forEach(s => observer.observe(s));
-  }
-
-  /* ── Collapsible cards ──
-     Which sections are folded is the user's working state, so it survives a
-     reload the same way the open roadmap steps already do. */
-  const SG_COLLAPSED_KEY = "skillgap.collapsed";
-
-  function sgCollapsedCards() {
-    const stored = SG_STORE ? SG_STORE.local.get(SG_COLLAPSED_KEY, []) : [];
-    return Array.isArray(stored) ? stored : [];
-  }
-
-  function sgSetCollapsed(cardId, collapsed) {
-    const card = document.getElementById(cardId);
-    if (!card) return;
-    card.classList.toggle("collapsed", collapsed);
-    const toggle = card.querySelector(".sg-card-toggle");
-    if (toggle) toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
-  }
-
-  function bindCollapsibles() {
-    document.querySelectorAll(".sg-card-toggle[data-sg-collapse]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.sgCollapse;
-        const card = document.getElementById(id);
-        if (!card) return;
-        const collapsed = !card.classList.contains("collapsed");
-        sgSetCollapsed(id, collapsed);
-
-        if (!SG_STORE) return;
-        const set = new Set(sgCollapsedCards());
-        if (collapsed) set.add(id); else set.delete(id);
-        SG_STORE.local.set(SG_COLLAPSED_KEY, Array.from(set));
-      });
-    });
-    sgCollapsedCards().forEach(id => sgSetCollapsed(id, true));
-  }
-
-  /* The Match Score Progress renderer lived here. The section was removed from
-     the page, so its markup builder went with it — `match_explanation` and
-     `match_score` are still served and still drive the AI Match Score stat
-     above and the AI recommendation box. No calculation was touched. */
-
-  /* ── Badge helpers ── */
-  function sgDiffBadge(d) {
-    const map = { "Beginner": "green", "Intermediate": "blue", "Advanced": "purple" };
-    const cls = map[d] || "gray";
-    return `<span class="sgh-badge ${cls}">${d}</span>`;
-  }
-  function sgPriBadge(p) {
-    const map = { "High": "red", "Medium": "amber", "Low": "gray" };
-    const cls = map[p] || "gray";
-    return `<span class="sgh-badge ${cls}">${p} Priority</span>`;
-  }
-  function sgCap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
-
-  /* ── Render: Recommended Courses ── */
-  function sgRenderCourses(haveSkills, data) {
-    if (!data.has_resume) {
-      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-mortarboard"></i></div><div class="sg-empty-title">No Recommended Courses Yet</div><div>Upload and analyze your CV to receive personalized course recommendations based on your detected skill gaps.</div></div>`;
-    }
-    const courses = data.courses || [];
-    if (!courses.length) {
-      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-mortarboard"></i></div>No course gaps detected for this CV. Your skills align well with current job demand.</div>`;
+    /* ── Categorize skills ── */
+    function sgCategorize(skills) {
+        const map = {};
+        const other = [];
+        for (const s of skills) {
+            const c = sgCat(s);
+            if (c) { if (!map[c]) map[c] = []; map[c].push(s); } else other.push(s);
+        }
+        if (other.length) map["Other"] = other;
+        return map;
     }
 
-    /* The list is ranked, so the first few are the ones worth reading. The
-       rest stay one click away rather than adding a screen of scrolling to a
-       page that already has a roadmap below it. */
-    const shown = sgCoursesExpanded ? courses.length : Math.min(SG_COURSE_PREVIEW, courses.length);
-    const rest = courses.length - shown;
-
-    return `<div class="sg-course-grid">${courses.slice(0, shown).map((c, i) => sgCourseCard(c, i)).join("")}</div>`
-      + (rest > 0 || sgCoursesExpanded && courses.length > SG_COURSE_PREVIEW
-          ? `<div class="sg-more-row">
-               <button type="button" class="sg-more-btn" onclick="sgToggleCourses()">
-                 ${rest > 0
-                   ? `<i class="bi bi-chevron-down"></i> Show ${rest} more course${rest === 1 ? "" : "s"}`
-                   : `<i class="bi bi-chevron-up"></i> Show fewer`}
-               </button>
-             </div>`
-          : "");
-  }
-
-  /* How many courses are shown before the list asks to be expanded. */
-  const SG_COURSE_PREVIEW = 4;
-  let sgCoursesExpanded = false;
-
-  window.sgToggleCourses = function() {
-    sgCoursesExpanded = !sgCoursesExpanded;
-    const data = sgCacheRead("courses") || sgCoursesData;
-    if (data) renderCourses(data);
-  };
-
-  function sgProviderIcon(provider) {
-    const p = (provider || "").toLowerCase();
-    if (p.includes("coursera")) return "bi-mortarboard-fill";
-    if (p.includes("udemy")) return "bi-play-btn-fill";
-    if (p.includes("linkedin")) return "bi-linkedin";
-    if (p.includes("freecodecamp")) return "bi-code-slash";
-    if (p.includes("google") || p.includes("official")) return "bi-globe2";
-    return "bi-book-fill";
-  }
-
-  /* Cover artwork. The course catalogue carries no images, so the band is
-     generated: a stable hue per skill plus the provider glyph. It is
-     decoration only — it asserts nothing the payload did not supply. */
-  function sgCoverHue(seed) {
-    let h = 0;
-    const str = String(seed || "course");
-    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 360;
-    return h;
-  }
-
-  function sgCoverStyle(seed) {
-    const h = sgCoverHue(seed);
-    return `background:linear-gradient(135deg,hsl(${h} 62% 52%),hsl(${(h + 42) % 360} 66% 42%));`;
-  }
-
-  function sgCourseCard(c, idx) {
-    const dur = c.estimated_duration || {};
-    const gain = parseInt(c.expected_score_gain) || 0;
-    const demand = parseInt(c.job_demand) || 0;
-
-    /* Both flags are facts from the payload: whether the course costs money,
-       and whether it closes the highest-impact gap for this CV. */
-    const flags = [
-      idx === 0
-        ? `<span class="sg-course-flag top" title="Highest-impact gap for your target role"><i class="bi bi-trophy-fill"></i> Top pick</span>`
-        : "",
-      c.is_free
-        ? `<span class="sg-course-flag free"><i class="bi bi-unlock-fill"></i> Free</span>`
-        : `<span class="sg-course-flag"><i class="bi bi-lock-fill"></i> Paid</span>`,
-    ].filter(Boolean).join("");
-
-    /* Where the reference shows a star rating. No rating exists in the
-       catalogue, so this states what the course is actually worth here. */
-    const signal = [
-      gain ? `<span class="gain"><i class="bi bi-arrow-up-right"></i> +${gain}% match</span>` : "",
-      demand ? `<span>${demand} posting${demand === 1 ? "" : "s"}</span>` : "",
-    ].filter(Boolean).join(`<span class="sep">·</span>`);
-
-    const hours = dur.hours
-      ? `${dur.hours} hour${dur.hours === 1 ? "" : "s"}`
-      : "Self-paced";
-
-    return `<a class="sg-course" href="${sgEscape(c.url)}" target="_blank" rel="noopener noreferrer"
-              aria-label="Open ${sgEscape(c.course_title)} on ${sgEscape(c.provider)}">
-      <div class="sg-course-cover" style="${sgCoverStyle(c.skill_covered || c.course_title)}" aria-hidden="true">
-        ${flags}
-        <i class="bi ${sgProviderIcon(c.provider)} sg-course-glyph"></i>
-      </div>
-      <div class="sg-course-body">
-        <div class="sg-course-provider">
-          <i class="bi ${sgProviderIcon(c.provider)}"></i> ${sgEscape(c.provider)}
-        </div>
-        <h6 class="sg-course-title">${sgEscape(c.course_title)}</h6>
-        ${signal ? `<div class="sg-course-signal">${signal}</div>` : ""}
-      </div>
-      <div class="sg-course-foot">
-        <span class="dur"><i class="bi bi-clock"></i> ${hours}</span>
-        <span class="go">Open <i class="bi bi-box-arrow-up-right"></i></span>
-      </div>
-    </a>`;
-  }
-
-
-  /* ── Render: Learning Roadmap ── */
-  function sgRenderRoadmap(haveSkills, data) {
-    if (!data.has_resume) {
-      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-upload"></i></div>Upload your resume in AI Job Match to generate your personalized Learning Roadmap.</div>`;
-    }
-    const progress = data.progress;
-    const roadmap = data.roadmap;
-    if (!roadmap || !progress || !progress.steps.length) {
-      return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-signpost"></i></div>We're preparing your roadmap from your latest CV analysis — refresh in a moment.</div>`;
+    /* ── Partition missing ── */
+    function sgDetailMap(details) {
+        const map = {};
+        for (const d of (details || [])) {
+            if (d && d.skill && d.priority) map[String(d.skill).trim().toLowerCase()] = d.priority;
+        }
+        return map;
     }
 
-    const jobReady = roadmap.job_ready;
-
-    const banner = jobReady
-      ? `<div class="sg-job-ready-banner">
-          <div class="sg-jr-icon"><i class="bi bi-award-fill"></i></div>
-          <div>
-            <div class="sg-jr-title">You're Job Ready for ${sgEscape(roadmap.profession || "your target role")}!</div>
-            <p class="sg-jr-text">No critical skill gaps remain. This advanced roadmap keeps you competitive — master specialization topics and deepen your expertise while your skills stay current.</p>
-          </div>
-        </div>`
-      : "";
-
-    /* How to read the roadmap, stated once at the top. */
-    const total = progress.total;
-    const hours = progress.remaining_hours;
-    const scale = [
-      total ? `${total} skill${total === 1 ? "" : "s"}` : "",
-      hours ? `around ${hours} hours of study` : "",
-    ].filter(Boolean).join(", ");
-
-    const summary = `
-      <div class="sg-rm-lead">
-        <i class="bi bi-list-check"></i>
-        <div>
-          <b>How to use this roadmap</b>
-          <p>Work through the phases in order. Open a skill to see what to learn
-             and why it matters, then tick it off once you can use it unaided${
-               scale ? ` — ${scale} in total` : ""}.</p>
-        </div>
-      </div>`;
-
-    const phases = roadmap.phases || [];
-    if (!phases.length) {
-      return banner + summary + `<div class="sg-timeline">${progress.steps.map(sgRoadmapStep).join("")}</div>`;
+    function sgPartition(skills, detailMap) {
+        const h = [],
+            m = [],
+            l = [];
+        for (const s of skills) {
+            const p = (detailMap && detailMap[s.trim().toLowerCase()]) || sgPriority(s);
+            if (p === "high") h.push(s);
+            else if (p === "medium") m.push(s);
+            else l.push(s);
+        }
+        return { high: h, medium: m, low: l };
     }
 
-    const stepsByPhase = {};
-    for (const step of progress.steps) {
-      const key = String(step.phase_number || 1);
-      if (!stepsByPhase[key]) stepsByPhase[key] = [];
-      stepsByPhase[key].push(step);
-    }
-    return banner + summary + `<div class="sg-phase-timeline">${phases.map(ph => sgPhase(ph, stepsByPhase)).join("")}</div>`;
-  }
+    /* ── Render: Current Skills ── */
+    function sgRenderCurrent(categorized) {
+        const keys = Object.keys(categorized);
+        if (!keys.length) return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-check-circle"></i></div>Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
 
-  function sgPhase(ph, stepsByPhase) {
-    const capstone = ph.phase_number === "capstone";
-    const pr = ph.progress || {};
-    const node = capstone
-      ? `<div class="sg-phase-node"><i class="bi bi-trophy-fill" style="font-size:0.85rem;"></i></div>`
-      : `<div class="sg-phase-node"><small>Phase</small>${ph.phase_number}</div>`;
+        return keys.map(cat => {
+            const items = categorized[cat];
+            const showCount = 5;
+            const hasMore = items.length > showCount;
+            const id = "sgc_" + cat.replace(/\s+/g, "_");
 
-    /* A phase that is fully ticked off says so in words; there is no bar. */
-    const progressBar = (pr.total && pr.completed >= pr.total)
-      ? `<div class="sg-phase-done"><i class="bi bi-check-circle-fill"></i> Phase complete</div>`
-      : "";
-
-    const skills = (ph.skills || []).length
-      ? `<div class="sg-phase-skills">${ph.skills.map(s => `<span class="sg-tag"><i class="bi bi-lightning-charge-fill" style="font-size:0.5rem;"></i> ${sgEscape(s)}</span>`).join("")}</div>`
-      : "";
-
-    const objectives = (ph.objectives || []).length
-      ? `<ul class="sg-phase-objectives">${ph.objectives.map(o => `<li>${sgEscape(o)}</li>`).join("")}</ul>`
-      : "";
-
-    const project = ph.practice_project
-      ? `<div class="sg-phase-project"><strong><i class="bi bi-briefcase-fill" style="color:var(--accent);font-size:0.6rem;"></i> ${sgEscape(ph.practice_project.title)}</strong> — ${sgEscape(ph.practice_project.description)}</div>`
-      : "";
-
-    const why = (ph.why_important || []).length
-      ? `<div class="sg-phase-why">
-          <div class="sg-why-title"><i class="bi bi-lightbulb-fill" style="font-size:0.6rem;"></i> Why this phase matters</div>
-          <ul>${ph.why_important.map(w => `<li>${sgEscape(w)}</li>`).join("")}</ul>
-        </div>`
-      : "";
-
-    const resources = (ph.learning_resources || []).length
-      ? `<div class="sg-phase-resources">
-          <div class="sg-res-title"><i class="bi bi-mortarboard-fill" style="font-size:0.6rem;"></i> Recommended learning resources</div>
-          ${ph.learning_resources.map(r => `
-            <div class="sg-res-item">
-              <span class="sg-res-name">${sgEscape(r.title)}</span>
-              <span class="sg-res-provider">${sgEscape(r.provider || "")}</span>
-              <a href="${sgEscape(r.url)}" target="_blank" rel="noopener noreferrer">Open <i class="bi bi-box-arrow-up-right" style="font-size:0.55rem;"></i></a>
-            </div>`).join("")}
-        </div>`
-      : "";
-
-    const phaseSteps = stepsByPhase[String(ph.phase_number)] || [];
-    const stepsHtml = phaseSteps.length
-      ? `<div class="sg-phase-steps">${phaseSteps.map(sgRoadmapStep).join("")}</div>`
-      : `<div class="sg-phase-empty">${capstone ? "This capstone unlocks once every phase above is complete." : "No individual steps for this phase."}</div>`;
-
-    return `<div class="sg-phase ${capstone ? "sg-phase-capstone" : ""}">
-      ${node}
-      <div class="sg-phase-card">
-        <div class="sg-phase-head">
-          <div class="sg-phase-title">${capstone ? `<i class="bi bi-trophy-fill" style="color:#a855f7;font-size:0.75rem;"></i>` : ""}${sgEscape(ph.title)}</div>
-          <div class="sg-phase-meta">
-            ${ph.priority ? sgPriBadge(sgCap(ph.priority)) : ""}
-            <span><i class="bi bi-clock"></i> ~${ph.estimated_weeks} wks</span>
-            <span><i class="bi bi-hourglass-split"></i> ${ph.estimated_hours}h</span>
-          </div>
-        </div>
-        ${progressBar}
-        ${skills}
-        ${why}
-        ${resources}
-        ${objectives}
-        ${project}
-        ${stepsHtml}
-      </div>
-    </div>`;
-  }
-
-  function sgRoadmapStep(step) {
-    const state = step.status === "completed" ? "done" : (step.status === "in_progress" ? "active" : "");
-    const checkIcon = step.status === "completed"
-      ? `<i class="bi bi-check-lg"></i>`
-      : (step.status === "in_progress" ? `<i class="bi bi-dash-lg"></i>` : `<i class="bi bi-circle" style="font-size:0.45rem;"></i>`);
-    const prereq = (step.prerequisites || []).map(p =>
-      `<span class="sg-tag ${p.coverage === "existing" ? "" : ""}" style="${p.coverage === "existing" ? "background:var(--success-bg);color:var(--success);border-color:var(--success-bdr);" : "background:rgba(var(--accent-rgb),0.07);color:var(--accent);border-color:rgba(var(--accent-rgb),0.12);"}"><i class="bi ${p.coverage === "existing" ? "bi-check-circle" : "bi-arrow-right-circle"}" style="font-size:0.5rem;"></i> ${sgEscape(p.skill_name)}</span>`
-    ).join("") || `<span style="font-size:0.68rem;color:var(--txt-muted);">None required</span>`;
-
-    const resource = step.learning_resource
-      ? `<div class="sg-step-detail" style="grid-column:1/-1;"><div class="lab">Recommended Resource</div><div class="val" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">${sgEscape(step.learning_resource.title)} <a href="${sgEscape(step.learning_resource.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-size:0.7rem;font-weight:700;text-decoration:none;white-space:nowrap;">Open <i class="bi bi-box-arrow-up-right" style="font-size:0.5rem;"></i></a></div></div>`
-      : "";
-
-    const priority = step.priority
-      ? `<div class="sg-step-detail"><div class="lab">Priority</div><div class="val">${sgPriBadge(sgCap(step.priority))}</div></div>`
-      : "";
-
-    return `<div class="sg-step ${state}" id="sgStep${step.step_number}">
-      <div class="sg-step-num">${step.step_number}</div>
-      <div class="sg-step-head" onclick="sgToggleStep(${step.step_number})">
-        <span class="sg-step-check" onclick="event.stopPropagation(); sgCycleStep(${step.step_number}, '${step.status}')" title="Toggle status">${checkIcon}</span>
-        <p class="sg-step-name">Learn ${sgEscape(step.skill_name)}</p>
-        <div class="sg-step-meta">
-          ${sgDiffBadge(sgCap(step.difficulty))}
-          ${step.priority ? sgPriBadge(sgCap(step.priority)) : ""}
-          <span class="sgh-badge blue" style="background:rgba(var(--accent-rgb),0.06);color:var(--accent);border-color:rgba(var(--accent-rgb),0.12);"><i class="bi bi-clock" style="font-size:0.55rem;"></i> ${step.estimated_hours}h</span>
-          <i class="bi bi-chevron-down" style="font-size:0.65rem;color:var(--txt-muted);"></i>
-        </div>
-      </div>
-      <div class="sg-step-body">
-        <p class="desc">${sgEscape(step.description)}</p>
-        <div class="sg-step-detail-grid">
-          <div class="sg-step-detail"><div class="lab">Estimated Time</div><div class="val">${step.estimated_hours} hours</div></div>
-          <div class="sg-step-detail"><div class="lab">Difficulty</div><div class="val">${sgCap(step.difficulty)}</div></div>
-          ${priority}
-          <div class="sg-step-detail"><div class="lab">Prerequisites</div><div class="val">${prereq}</div></div>
-        </div>
-        ${resource}
-        <p class="sg-step-outcome"><strong>Outcome:</strong> ${sgEscape(step.expected_outcome)}</p>
-      </div>
-    </div>`;
-  }
-
-  /* ── Persistence ───────────────────────────────────────────────
-     Everything on this page is derived from the CV on file, so a snapshot is
-     valid exactly as long as that CV is unchanged. Each cache entry carries
-     the CV fingerprint the backend reported; when the fingerprint moves, the
-     stale entries are dropped rather than shown. ── */
-  const SG_STORE = window.SkillSyncState || null;
-  let sgFingerprint = SG_STORE ? (SG_STORE.local.get("skillgap.fingerprint", "") || "") : "";
-
-  function sgCacheRead(name) {
-    return SG_STORE ? SG_STORE.cache.read("skillgap." + name, sgFingerprint) : null;
-  }
-
-  function sgCacheWrite(name, data) {
-    if (SG_STORE) SG_STORE.cache.write("skillgap." + name, data, sgFingerprint);
-  }
-
-  function sgSetFingerprint(fingerprint) {
-    if (!fingerprint || !SG_STORE) return;
-    if (sgFingerprint && sgFingerprint !== fingerprint) {
-      ["skillgap.gap", "skillgap.courses", "skillgap.roadmap"].forEach(k => SG_STORE.cache.drop(k));
-      SG_STORE.local.remove("skillgap.openSteps");
-    }
-    sgFingerprint = fingerprint;
-    SG_STORE.local.set("skillgap.fingerprint", fingerprint);
-  }
-
-  /* Which roadmap steps the user had expanded. */
-  function sgOpenSteps() {
-    const stored = SG_STORE ? SG_STORE.local.get("skillgap.openSteps", []) : [];
-    return Array.isArray(stored) ? stored : [];
-  }
-
-  function sgApplyOpenSteps() {
-    sgOpenSteps().forEach(n => {
-      const el = document.getElementById("sgStep" + n);
-      if (el) el.classList.add("open");
-    });
-  }
-
-  window.sgToggleStep = function(n) {
-    const el = document.getElementById("sgStep" + n);
-    if (!el) return;
-    const open = el.classList.toggle("open");
-    if (!SG_STORE) return;
-    const steps = new Set(sgOpenSteps().map(String));
-    if (open) steps.add(String(n)); else steps.delete(String(n));
-    SG_STORE.local.set("skillgap.openSteps", Array.from(steps));
-  };
-
-  window.sgCycleStep = async function(n, current) {
-    const next = current === "not_started" ? "in_progress" : (current === "in_progress" ? "completed" : "not_started");
-    try {
-      const progress = await api("/api/skillgap/roadmap/progress/", {
-        method: "PATCH",
-        body: JSON.stringify({ step_number: n, status: next })
-      });
-      /* The endpoint returns the progress summary only. It is merged into the
-         roadmap already on screen so the step list keeps its phases, resources
-         and headers instead of being replaced by a bare summary. */
-      const base = sgRoadmapData || sgCacheRead("roadmap") || {};
-      const merged = Object.assign({}, base, {
-        progress: progress,
-        has_resume: base.has_resume !== undefined ? base.has_resume : true
-      });
-      sgCacheWrite("roadmap", merged);
-      renderRoadmap(merged);
-    } catch (e) {
-      showToast("Could not update progress: " + e.message, "danger");
-    }
-  };
-
-  let sgCoursesData = null;
-
-  function renderCourses(data) {
-    sgCoursesData = data;
-    const haveSkills = (window.__sgHaveSkills || []);
-    const courses = data.courses || [];
-    document.getElementById("sgCourseBadge").textContent = courses.length;
-    sgSetNavCount("sgNavCourses", courses.length);
-    document.getElementById("sgCourses").innerHTML = sgRenderCourses(haveSkills, data);
-
-    /* The gap cards borrow learning time, expected match gain and the course
-       link from this same payload — no second request. */
-    sgCourseIndex = sgIndexCourses(courses);
-    sgPaintMissing();
-  }
-
-  async function loadCourses() {
-    const cached = sgCacheRead("courses");
-    if (cached) {
-      renderCourses(cached);
-    } else {
-      document.getElementById("sgCourses").innerHTML =
-        `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-      document.getElementById("sgCourseBadge").textContent = "…";
+            return `<div class="sg-cat-group">
+                <div class="sg-cat-head">
+                  <div class="sg-cat-name"><span class="sg-cat-check">✓</span> ${cat}</div>
+                  <div class="sg-cat-count">${items.length} Skill${items.length !== 1 ? "s" : ""}</div>
+                </div>
+                <div class="sg-cat-skills">
+                  ${items.slice(0, showCount).map(s => `<span>${sgEscape(s)}</span>`).join(`<span class="sg-cat-dot">•</span>`)}
+                  ${hasMore ? `<span id="${id}_more" style="display:inline"><span class="sg-cat-dot">•</span> <button class="sg-cat-more" onclick="sgToggleCatSkills('${id}')">+${items.length - showCount} more</button></span>` : ""}
+                  <span id="${id}" style="display:none">${hasMore ? `<span class="sg-cat-dot">•</span> ${items.slice(showCount).map(s => `<span>${sgEscape(s)}</span>`).join(`<span class="sg-cat-dot">•</span>`)}` : ""}</span>
+                </div>
+              </div>`;
+        }).join("");
     }
 
-    let data = { courses: [] };
-    try {
-      data = await api("/api/skillgap/courses/");
-    } catch (e) {
-      if (cached) return;   /* keep the restored view rather than blanking it */
-      document.getElementById("sgCourses").innerHTML =
-        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Course recommendations are temporarily unavailable.</div>`;
-      return;
-    }
-    sgCacheWrite("courses", data);
-    renderCourses(data);
-  }
-
-  let sgRoadmapData = null;
-
-  function renderRoadmap(data) {
-    sgRoadmapData = data;
-    const haveSkills = (window.__sgHaveSkills || []);
-    const progress = data.progress;
-    const stepLabel = progress && progress.total
-      ? `${progress.total} step${progress.total === 1 ? "" : "s"}`
-      : "–";
-    document.getElementById("sgRoadmapBadge").textContent = stepLabel;
-    sgSetNavCount("sgNavRoadmap", progress && progress.total ? progress.total : "–");
-    document.getElementById("sgRoadmap").innerHTML = sgRenderRoadmap(haveSkills, data);
-    sgApplyOpenSteps();
-  }
-
-  async function loadRoadmap() {
-    const cached = sgCacheRead("roadmap");
-    if (cached) {
-      renderRoadmap(cached);
-    } else {
-      document.getElementById("sgRoadmap").innerHTML =
-        `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-      document.getElementById("sgRoadmapBadge").textContent = "…";
-    }
-
-    let data = {};
-    try {
-      data = await api("/api/skillgap/roadmap/");
-    } catch (e) {
-      if (cached) return;
-      document.getElementById("sgRoadmap").innerHTML =
-        `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Could not load your roadmap right now. Please try again.</div>`;
-      return;
-    }
-    sgCacheWrite("roadmap", data);
-    renderRoadmap(data);
-  }
-
-  /* ── Main ── */
-  function sgShowShimmers() {
-    document.getElementById("sgCurrentSkills").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div></div>`;
-    document.getElementById("sgMissingSkills").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
-    document.getElementById("sgAiBody").innerHTML =
-      `<div class="sg-shimmer-block"><div class="sg-shimmer w60"></div><div class="sg-shimmer w80"></div><div class="sg-shimmer w40"></div></div>`;
-    document.getElementById("sgHaveVal").textContent = "–";
-    document.getElementById("sgCritVal").textContent = "–";
-    document.getElementById("sgMatchVal").textContent = "–";
-    document.getElementById("sgMatchSub").textContent = "";
-  }
-
-  function applyGap(gap) {
-    const haveSkills = gap.user_skills || [];
-    const missSkills = gap.missing_skills || [];
-    const haveLen    = haveSkills.length;
-    const missLen    = missSkills.length;
-    const detailMap  = sgDetailMap(gap.missing_skill_details);
-    const p          = sgPartition(missSkills, detailMap);
-    const matchPct   = gap.match_score || 0;
-
-    /* Stats */
-    document.getElementById("sgHaveVal").textContent = haveLen;
-    document.getElementById("sgCritVal").textContent = p.high.length;
-    document.getElementById("sgCritSub").textContent = `${p.medium.length} recommended · ${p.low.length} optional`;
-    document.getElementById("sgMatchVal").textContent = matchPct + "%";
-    document.getElementById("sgMatchLabel").textContent = "AI Match Score";
-    document.getElementById("sgMatchSub").textContent = gap.profession || "";
-
-    /* Drives the ring's filled arc. Presentation only — the value is the
-       match score already computed above. */
-    const ring = document.getElementById("sgRing");
-    if (ring) ring.style.setProperty("--sg-pct", matchPct);
-
-    /* Badges — and the section nav, which mirrors them. */
-    document.getElementById("sgHaveBadge").textContent = haveLen;
-    document.getElementById("sgMissBadge").textContent = missLen;
-    sgSetNavCount("sgNavMissing", missLen);
-    sgSetNavCount("sgNavSkills", haveLen);
-
-    /* AI Recommendation */
-    document.getElementById("sgAiBody").innerHTML = sgRenderAI(haveSkills, missSkills, gap, p);
-
-    /* Current Skills */
-    document.getElementById("sgCurrentSkills").innerHTML = sgRenderCurrent(sgCategorize(haveSkills));
-
-    /* Missing Skills — repainted again once the course request lands, so each
-       gap can also show its learning time, match gain and recommendation. */
-    window.__sgMissingCtx = {
-      haveSkills: haveSkills,
-      partition: p,
-      detailFull: sgDetailFull(gap.missing_skill_details),
+    window.sgToggleCatSkills = function(id) {
+        const el = document.getElementById(id);
+        const more = document.getElementById(id + "_more");
+        if (!el) return;
+        if (el.style.display === "none" || el.style.display === "") {
+            el.style.display = "inline";
+            if (more) more.style.display = "none";
+        } else {
+            el.style.display = "none";
+            if (more) more.style.display = "inline";
+        }
     };
-    sgPaintMissing();
 
-    window.__sgHaveSkills = haveSkills;
-  }
-
-  /* Restore the last analysis instantly, then revalidate against the server.
-     The gap, courses and roadmap all describe the same CV, so one fingerprint
-     governs the whole page. */
-  async function loadSkillGap() {
-    const cached = sgCacheRead("gap");
-    if (cached) {
-      applyGap(cached);
-    } else {
-      sgShowShimmers();
+    function sgDetailFull(details) {
+        const map = {};
+        for (const d of (details || [])) {
+            if (d && d.skill) map[String(d.skill).trim().toLowerCase()] = d;
+        }
+        return map;
     }
 
-    let gap;
-    try {
-      gap = await api("/api/skillgap/");
-    } catch (e) {
-      if (cached) {
-        /* Serve what the user already had rather than an error screen. */
+    let sgCourseIndex = {};
+
+    function sgIndexCourses(courses) {
+        const map = {};
+        for (const c of (courses || [])) {
+            const key = String(c.missing_skill || c.skill_covered || "").trim().toLowerCase();
+            if (key) map[key] = c;
+        }
+        return map;
+    }
+
+    /* ── Render: one missing skill ── */
+    function sgGapCard(skill, group, detail, course) {
+        const imp = detail ? parseInt(detail.importance) || 0 : 0;
+        const jobs = detail ? parseInt(detail.job_count) || 0 : 0;
+        const dur = (course && course.estimated_duration) || {};
+        const gain = course ? parseInt(course.expected_score_gain) || 0 : 0;
+
+        const facts = [`<span class="sg-gap-pri ${group.chip}">${group.priority}</span>`];
+        if (imp) {
+            facts.push(`<span class="sg-gap-fact"><i class="bi bi-bar-chart-fill"></i> ${imp}/10 importance</span>`);
+        }
+        if (dur.hours) {
+            facts.push(`<span class="sg-gap-fact"><i class="bi bi-clock"></i> ~${dur.hours}h${dur.weeks ? ` · ${dur.weeks} wks` : ""}</span>`);
+        }
+        if (gain) {
+            facts.push(`<span class="sg-gap-fact up"><i class="bi bi-arrow-up-right"></i> +${gain}% match</span>`);
+        }
+        if (jobs) {
+            facts.push(`<span class="sg-gap-fact"><i class="bi bi-people-fill"></i> ${jobs} posting${jobs === 1 ? "" : "s"}</span>`);
+        }
+
+        const rec = course ?
+            `<a class="sg-gap-go" href="${sgEscape(course.url)}" target="_blank" rel="noopener noreferrer"
+                    title="${sgEscape(course.course_title)}"
+                    aria-label="Open ${sgEscape(course.course_title)} to learn ${sgEscape(skill)}">
+                  <span>${sgEscape(course.provider || "Course")}</span><i class="bi bi-arrow-right"></i>
+                </a>` :
+            `<span class="sg-gap-go none" title="No course matched yet — see the Learning Roadmap below.">No course</span>`;
+
+        return `<article class="sg-gap-item ${group.chip}">
+              <div class="sg-gap-mark" aria-hidden="true"><i class="bi bi-lightning-charge-fill"></i></div>
+              <div class="sg-gap-main">
+                <h6 class="sg-gap-name">${sgEscape(skill)}</h6>
+                <div class="sg-gap-facts">${facts.join("")}</div>
+              </div>
+              ${rec}
+            </article>`;
+    }
+
+    /* ── Render: Missing Skills ── */
+    function sgRenderMissing(haveSkills, partitioned, detailFull, courseIndex) {
+        if (!haveSkills.length) {
+            return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-upload"></i></div>Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
+        }
+
+        const groups = [
+            { key: "high", stars: "⭐⭐⭐", label: "Critical Skills", chip: "red", priority: "High" },
+            { key: "medium", stars: "⭐⭐", label: "Recommended Skills", chip: "amber", priority: "Medium" },
+            { key: "low", stars: "⭐", label: "Optional Skills", chip: "gray", priority: "Low" },
+        ];
+
+        const total = partitioned.high.length + partitioned.medium.length + partitioned.low.length;
+        if (!total) return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-shield-check"></i></div>No major gaps found. Your skills align well with current job demand.</div>`;
+
+        const details = detailFull || {};
+        const courses = courseIndex || {};
+
+        return groups.map(g => {
+            const items = partitioned[g.key];
+            if (!items.length) return "";
+            return `<div class="sg-miss-group">
+                  <div class="sg-miss-header">
+                    <span class="sg-miss-stars">${g.stars}</span>
+                    <div class="sg-miss-label">${g.label}</div>
+                    <div class="sg-miss-count">${items.length}</div>
+                  </div>
+                  <div class="sg-gap-list">
+                    ${items.map(s => {
+                      const key = String(s).trim().toLowerCase();
+                      return sgGapCard(s, g, details[key], courses[key]);
+                    }).join("")}
+                  </div>
+                </div>`;
+        }).filter(Boolean).join("");
+    }
+
+    function sgPaintMissing() {
+        const ctx = window.__sgMissingCtx;
+        const target = document.getElementById("sgMissingSkills");
+        if (!ctx || !target) return;
+        target.innerHTML = sgRenderMissing(ctx.haveSkills, ctx.partition, ctx.detailFull, sgCourseIndex);
+
+        const foot = document.getElementById("sgMissFoot");
+        if (!foot) return;
+        const p = ctx.partition;
+        const any = p.high.length + p.medium.length + p.low.length;
+        if (!ctx.haveSkills.length || !any) { foot.innerHTML = ""; return; }
+
+        let hours = 0;
+        for (const list of [p.high, p.medium, p.low]) {
+            for (const s of list) {
+                const c = sgCourseIndex[String(s).trim().toLowerCase()];
+                if (c && c.estimated_duration) hours += parseInt(c.estimated_duration.hours) || 0;
+            }
+        }
+
+        const legend = [
+            p.high.length ? `<span><i class="bi bi-circle-fill dot-red"></i> Critical</span>` : "",
+            p.medium.length ? `<span><i class="bi bi-circle-fill dot-amber"></i> Recommended</span>` : "",
+            p.low.length ? `<span><i class="bi bi-circle-fill dot-gray"></i> Optional</span>` : "",
+        ].filter(Boolean).join("");
+
+        foot.innerHTML =
+            `<div class="sg-legend">${legend}</div>` +
+            (hours ? `<span><i class="bi bi-clock"></i> <b>~${hours}h</b> of listed courses</span>` : "");
+    }
+
+    /* ── Render: AI Recommendation ── */
+    function sgRenderAI(haveSkills, missSkills, gap, partition) {
+        if (!haveSkills.length) {
+            return `<div class="sg-ai-head"><i class="bi bi-upload" style="margin-right:0.25rem;"></i> No resume uploaded</div>
+                <div class="sg-ai-text">Upload your resume in AI Job Match to generate your personalized Skill Gap Analysis.</div>`;
+        }
+
+        const profession = gap.profession || "Your target role";
+        const level = gap.career_level_label || "";
+        const heading = `${sgEscape(profession)}${level ? ` (${sgEscape(level)})` : ""}`;
+        const top5 = [...partition.high, ...partition.medium, ...partition.low].slice(0, 5);
+
+        if (!missSkills.length) {
+            return `<div class="sg-ai-head"><i class="bi bi-check-circle-fill" style="color:var(--success);margin-right:0.25rem;"></i> ${heading}</div>
+                <div class="sg-ai-text">No critical skill gaps detected — your current skills align with active job postings. The roadmap below keeps you competitive.</div>`;
+        }
+
+        return `<div class="sg-ai-head"><i class="bi bi-person-badge-fill" style="color:var(--accent);margin-right:0.25rem;"></i> ${heading}</div>
+              <div class="sg-ai-text">Start here — closing these ${top5.length === 1 ? "skill" : `${top5.length} skills`} first will qualify you for the most additional roles:</div>
+              <div class="sg-ai-pills">
+                ${top5.map(s => `<span class="sg-ai-pill"><i class="bi bi-lightning-charge-fill" style="font-size:0.5rem;"></i> ${sgEscape(s)}</span>`).join("")}
+              </div>`;
+    }
+
+    /* ── Section nav ── */
+    function sgSetNavCount(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    }
+
+    function bindSectionNav() {
+        const nav = document.getElementById("sgNav");
+        if (!nav || !("IntersectionObserver" in window)) return;
+
+        const links = Array.from(nav.querySelectorAll("a[href^='#']"));
+        const byId = {};
+        links.forEach(a => { byId[a.getAttribute("href").slice(1)] = a; });
+
+        const sections = links
+            .map(a => document.getElementById(a.getAttribute("href").slice(1)))
+            .filter(Boolean);
+
+        const visible = new Set();
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) visible.add(e.target.id);
+                else visible.delete(e.target.id);
+            });
+            const current = sections.find(s => visible.has(s.id));
+            links.forEach(a => a.classList.remove("active"));
+            if (current && byId[current.id]) byId[current.id].classList.add("active");
+        }, { rootMargin: "-72px 0px -55% 0px", threshold: 0 });
+
+        sections.forEach(s => observer.observe(s));
+    }
+
+    /* ── Collapsible cards ── */
+    const SG_COLLAPSED_KEY = "skillgap.collapsed";
+
+    function sgCollapsedCards() {
+        const stored = SG_STORE ? SG_STORE.local.get(SG_COLLAPSED_KEY, []) : [];
+        return Array.isArray(stored) ? stored : [];
+    }
+
+    function sgSetCollapsed(cardId, collapsed) {
+        const card = document.getElementById(cardId);
+        if (!card) return;
+        card.classList.toggle("collapsed", collapsed);
+        const toggle = card.querySelector(".sg-card-toggle");
+        if (toggle) toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    }
+
+    function bindCollapsibles() {
+        document.querySelectorAll(".sg-card-toggle[data-sg-collapse]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.sgCollapse;
+                const card = document.getElementById(id);
+                if (!card) return;
+                const collapsed = !card.classList.contains("collapsed");
+                sgSetCollapsed(id, collapsed);
+
+                if (!SG_STORE) return;
+                const set = new Set(sgCollapsedCards());
+                if (collapsed) set.add(id);
+                else set.delete(id);
+                SG_STORE.local.set(SG_COLLAPSED_KEY, Array.from(set));
+            });
+        });
+        sgCollapsedCards().forEach(id => sgSetCollapsed(id, true));
+    }
+
+    function sgDiffBadge(d) {
+        const map = { "Beginner": "green", "Intermediate": "blue", "Advanced": "purple" };
+        const cls = map[d] || "gray";
+        return `<span class="sgh-badge ${cls}">${d}</span>`;
+    }
+
+    function sgPriBadge(p) {
+        const map = { "High": "red", "Medium": "amber", "Low": "gray" };
+        const cls = map[p] || "gray";
+        return `<span class="sgh-badge ${cls}">${p} Priority</span>`;
+    }
+
+    function sgCap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
+
+    /* ── Render: Recommended Courses ── */
+    const SG_COURSE_PREVIEW = 4;
+    let sgCoursesExpanded = false;
+    let sgCoursesData = null;
+
+    function sgRenderCourses(haveSkills, data) {
+        if (!data.has_resume) {
+            return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-mortarboard"></i></div><div class="sg-empty-title">No Recommended Courses Yet</div><div>Upload and analyze your CV to receive personalized course recommendations based on your detected skill gaps.</div></div>`;
+        }
+        const courses = data.courses || [];
+        if (!courses.length) {
+            return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-mortarboard"></i></div>No course gaps detected for this CV. Your skills align well with current job demand.</div>`;
+        }
+
+        const shown = sgCoursesExpanded ? courses.length : Math.min(SG_COURSE_PREVIEW, courses.length);
+        const rest = courses.length - shown;
+
+        return `<div class="sg-course-grid">${courses.slice(0, shown).map((c, i) => sgCourseCard(c, i)).join("")}</div>` +
+            (rest > 0 || sgCoursesExpanded && courses.length > SG_COURSE_PREVIEW ?
+                `<div class="sg-more-row">
+                     <button type="button" class="sg-more-btn" onclick="sgToggleCourses()">
+                       ${rest > 0
+                         ? `<i class="bi bi-chevron-down"></i> Show ${rest} more course${rest === 1 ? "" : "s"}`
+                         : `<i class="bi bi-chevron-up"></i> Show fewer`}
+                     </button>
+                   </div>` :
+                "");
+    }
+
+    window.sgToggleCourses = function() {
+        sgCoursesExpanded = !sgCoursesExpanded;
+        const data = sgCacheRead("courses") || sgCoursesData;
+        if (data) renderCourses(data);
+    };
+
+    function sgProviderIcon(provider) {
+        const p = (provider || "").toLowerCase();
+        if (p.includes("coursera")) return "bi-mortarboard-fill";
+        if (p.includes("udemy")) return "bi-play-btn-fill";
+        if (p.includes("linkedin")) return "bi-linkedin";
+        if (p.includes("freecodecamp")) return "bi-code-slash";
+        if (p.includes("google") || p.includes("official")) return "bi-globe2";
+        return "bi-book-fill";
+    }
+
+    function sgCoverHue(seed) {
+        let h = 0;
+        const str = String(seed || "course");
+        for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 360;
+        return h;
+    }
+
+    function sgCoverStyle(seed) {
+        const h = sgCoverHue(seed);
+        return `background:linear-gradient(135deg,hsl(${h} 62% 52%),hsl(${(h + 42) % 360} 66% 42%));`;
+    }
+
+    function sgCourseCard(c, idx) {
+        const dur = c.estimated_duration || {};
+        const gain = parseInt(c.expected_score_gain) || 0;
+        const demand = parseInt(c.job_demand) || 0;
+
+        const flags = [
+            idx === 0 ?
+            `<span class="sg-course-flag top" title="Highest-impact gap for your target role"><i class="bi bi-trophy-fill"></i> Top pick</span>` :
+            "",
+            c.is_free ?
+            `<span class="sg-course-flag free"><i class="bi bi-unlock-fill"></i> Free</span>` :
+            `<span class="sg-course-flag"><i class="bi bi-lock-fill"></i> Paid</span>`,
+        ].filter(Boolean).join("");
+
+        const signal = [
+            gain ? `<span class="gain"><i class="bi bi-arrow-up-right"></i> +${gain}% match</span>` : "",
+            demand ? `<span>${demand} posting${demand === 1 ? "" : "s"}</span>` : "",
+        ].filter(Boolean).join(`<span class="sep">·</span>`);
+
+        const hours = dur.hours ?
+            `${dur.hours} hour${dur.hours === 1 ? "" : "s"}` :
+            "Self-paced";
+
+        return `<a class="sg-course" href="${sgEscape(c.url)}" target="_blank" rel="noopener noreferrer"
+                  aria-label="Open ${sgEscape(c.course_title)} on ${sgEscape(c.provider)}">
+                <div class="sg-course-cover" style="${sgCoverStyle(c.skill_covered || c.course_title)}" aria-hidden="true">
+                  ${flags}
+                  <i class="bi ${sgProviderIcon(c.provider)} sg-course-glyph"></i>
+                </div>
+                <div class="sg-course-body">
+                  <div class="sg-course-provider">
+                    <i class="bi ${sgProviderIcon(c.provider)}"></i> ${sgEscape(c.provider)}
+                  </div>
+                  <h6 class="sg-course-title">${sgEscape(c.course_title)}</h6>
+                  ${signal ? `<div class="sg-course-signal">${signal}</div>` : ""}
+                </div>
+                <div class="sg-course-foot">
+                  <span class="dur"><i class="bi bi-clock"></i> ${hours}</span>
+                  <span class="go">Open <i class="bi bi-box-arrow-up-right"></i></span>
+                </div>
+              </a>`;
+    }
+
+    function renderCourses(data) {
+        sgCoursesData = data;
+        const haveSkills = (window.__sgHaveSkills || []);
+        const courses = data.courses || [];
+        document.getElementById("sgCourseBadge").textContent = courses.length;
+        sgSetNavCount("sgNavCourses", courses.length);
+        document.getElementById("sgCourses").innerHTML = sgRenderCourses(haveSkills, data);
+        sgCourseIndex = sgIndexCourses(courses);
+        sgPaintMissing();
+    }
+
+    /* ── Render: Learning Roadmap ── */
+    let sgRoadmapData = null;
+
+    function sgRenderRoadmap(haveSkills, data) {
+        if (!data.has_resume) {
+            return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-upload"></i></div>Upload your resume in AI Job Match to generate your personalized Learning Roadmap.</div>`;
+        }
+        const progress = data.progress;
+        const roadmap = data.roadmap;
+        if (!roadmap || !progress || !progress.steps.length) {
+            return `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-signpost"></i></div>We're preparing your roadmap from your latest CV analysis — refresh in a moment.</div>`;
+        }
+
+        const jobReady = roadmap.job_ready;
+
+        const banner = jobReady ?
+            `<div class="sg-job-ready-banner">
+                  <div class="sg-jr-icon"><i class="bi bi-award-fill"></i></div>
+                  <div>
+                    <div class="sg-jr-title">You're Job Ready for ${sgEscape(roadmap.profession || "your target role")}!</div>
+                    <p class="sg-jr-text">No critical skill gaps remain. This advanced roadmap keeps you competitive — master specialization topics and deepen your expertise while your skills stay current.</p>
+                  </div>
+                </div>` :
+            "";
+
+        const total = progress.total;
+        const hours = progress.remaining_hours;
+        const scale = [
+            total ? `${total} skill${total === 1 ? "" : "s"}` : "",
+            hours ? `around ${hours} hours of study` : "",
+        ].filter(Boolean).join(", ");
+
+        const summary = `
+              <div class="sg-rm-lead">
+                <i class="bi bi-list-check"></i>
+                <div>
+                  <b>How to use this roadmap</b>
+                  <p>Work through the phases in order. Open a skill to see what to learn
+                     and why it matters, then tick it off once you can use it unaided${scale ? ` — ${scale} in total` : ""}.</p>
+                </div>
+              </div>`;
+
+        const phases = roadmap.phases || [];
+        if (!phases.length) {
+            return banner + summary + `<div class="sg-timeline">${progress.steps.map(sgRoadmapStep).join("")}</div>`;
+        }
+
+        const stepsByPhase = {};
+        for (const step of progress.steps) {
+            const key = String(step.phase_number || 1);
+            if (!stepsByPhase[key]) stepsByPhase[key] = [];
+            stepsByPhase[key].push(step);
+        }
+        return banner + summary + `<div class="sg-phase-timeline">${phases.map(ph => sgPhase(ph, stepsByPhase)).join("")}</div>`;
+    }
+
+    function sgPhase(ph, stepsByPhase) {
+        const capstone = ph.phase_number === "capstone";
+        const pr = ph.progress || {};
+        const node = capstone ?
+            `<div class="sg-phase-node"><i class="bi bi-trophy-fill" style="font-size:0.85rem;"></i></div>` :
+            `<div class="sg-phase-node"><small>Phase</small>${ph.phase_number}</div>`;
+
+        const progressBar = (pr.total && pr.completed >= pr.total) ?
+            `<div class="sg-phase-done"><i class="bi bi-check-circle-fill"></i> Phase complete</div>` :
+            "";
+
+        const skills = (ph.skills || []).length ?
+            `<div class="sg-phase-skills">${ph.skills.map(s => `<span class="sg-tag"><i class="bi bi-lightning-charge-fill" style="font-size:0.5rem;"></i> ${sgEscape(s)}</span>`).join("")}</div>` :
+            "";
+
+        const objectives = (ph.objectives || []).length ?
+            `<ul class="sg-phase-objectives">${ph.objectives.map(o => `<li>${sgEscape(o)}</li>`).join("")}</ul>` :
+            "";
+
+        const project = ph.practice_project ?
+            `<div class="sg-phase-project"><strong><i class="bi bi-briefcase-fill" style="color:var(--accent);font-size:0.6rem;"></i> ${sgEscape(ph.practice_project.title)}</strong> — ${sgEscape(ph.practice_project.description)}</div>` :
+            "";
+
+        const why = (ph.why_important || []).length ?
+            `<div class="sg-phase-why">
+                  <div class="sg-why-title"><i class="bi bi-lightbulb-fill" style="font-size:0.6rem;"></i> Why this phase matters</div>
+                  <ul>${ph.why_important.map(w => `<li>${sgEscape(w)}</li>`).join("")}</ul>
+                </div>` :
+            "";
+
+        const resources = (ph.learning_resources || []).length ?
+            `<div class="sg-phase-resources">
+                  <div class="sg-res-title"><i class="bi bi-mortarboard-fill" style="font-size:0.6rem;"></i> Recommended learning resources</div>
+                  ${ph.learning_resources.map(r => `
+                    <div class="sg-res-item">
+                      <span class="sg-res-name">${sgEscape(r.title)}</span>
+                      <span class="sg-res-provider">${sgEscape(r.provider || "")}</span>
+                      <a href="${sgEscape(r.url)}" target="_blank" rel="noopener noreferrer">Open <i class="bi bi-box-arrow-up-right" style="font-size:0.55rem;"></i></a>
+                    </div>`).join("")}
+                </div>` :
+            "";
+
+        const phaseSteps = stepsByPhase[String(ph.phase_number)] || [];
+        const stepsHtml = phaseSteps.length ?
+            `<div class="sg-phase-steps">${phaseSteps.map(sgRoadmapStep).join("")}</div>` :
+            `<div class="sg-phase-empty">${capstone ? "This capstone unlocks once every phase above is complete." : "No individual steps for this phase."}</div>`;
+
+        return `<div class="sg-phase ${capstone ? "sg-phase-capstone" : ""}">
+                ${node}
+                <div class="sg-phase-card">
+                  <div class="sg-phase-head">
+                    <div class="sg-phase-title">${capstone ? `<i class="bi bi-trophy-fill" style="color:#a855f7;font-size:0.75rem;"></i>` : ""}${sgEscape(ph.title)}</div>
+                    <div class="sg-phase-meta">
+                      ${ph.priority ? sgPriBadge(sgCap(ph.priority)) : ""}
+                      <span><i class="bi bi-clock"></i> ~${ph.estimated_weeks} wks</span>
+                      <span><i class="bi bi-hourglass-split"></i> ${ph.estimated_hours}h</span>
+                    </div>
+                  </div>
+                  ${progressBar}
+                  ${skills}
+                  ${why}
+                  ${resources}
+                  ${objectives}
+                  ${project}
+                  ${stepsHtml}
+                </div>
+              </div>`;
+    }
+
+    function sgRoadmapStep(step) {
+        const state = step.status === "completed" ? "done" : (step.status === "in_progress" ? "active" : "");
+        const checkIcon = step.status === "completed" ?
+            `<i class="bi bi-check-lg"></i>` :
+            (step.status === "in_progress" ? `<i class="bi bi-dash-lg"></i>` : `<i class="bi bi-circle" style="font-size:0.45rem;"></i>`);
+        const prereq = (step.prerequisites || []).map(p =>
+            `<span class="sg-tag ${p.coverage === "existing" ? "" : ""}" style="${p.coverage === "existing" ? "background:var(--success-bg);color:var(--success);border-color:var(--success-bdr);" : "background:rgba(var(--accent-rgb),0.07);color:var(--accent);border-color:rgba(var(--accent-rgb),0.12);"}"><i class="bi ${p.coverage === "existing" ? "bi-check-circle" : "bi-arrow-right-circle"}" style="font-size:0.5rem;"></i> ${sgEscape(p.skill_name)}</span>`
+        ).join("") || `<span style="font-size:0.68rem;color:var(--txt-muted);">None required</span>`;
+
+        const resource = step.learning_resource ?
+            `<div class="sg-step-detail" style="grid-column:1/-1;"><div class="lab">Recommended Resource</div><div class="val" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">${sgEscape(step.learning_resource.title)} <a href="${sgEscape(step.learning_resource.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-size:0.7rem;font-weight:700;text-decoration:none;white-space:nowrap;">Open <i class="bi bi-box-arrow-up-right" style="font-size:0.5rem;"></i></a></div></div>` :
+            "";
+
+        const priority = step.priority ?
+            `<div class="sg-step-detail"><div class="lab">Priority</div><div class="val">${sgPriBadge(sgCap(step.priority))}</div></div>` :
+            "";
+
+        return `<div class="sg-step ${state}" id="sgStep${step.step_number}">
+                <div class="sg-step-num">${step.step_number}</div>
+                <div class="sg-step-head" onclick="sgToggleStep(${step.step_number})">
+                  <span class="sg-step-check" onclick="event.stopPropagation(); sgCycleStep(${step.step_number}, '${step.status}')" title="Toggle status">${checkIcon}</span>
+                  <p class="sg-step-name">Learn ${sgEscape(step.skill_name)}</p>
+                  <div class="sg-step-meta">
+                    ${sgDiffBadge(sgCap(step.difficulty))}
+                    ${step.priority ? sgPriBadge(sgCap(step.priority)) : ""}
+                    <span class="sgh-badge blue" style="background:rgba(var(--accent-rgb),0.06);color:var(--accent);border-color:rgba(var(--accent-rgb),0.12);"><i class="bi bi-clock" style="font-size:0.55rem;"></i> ${step.estimated_hours}h</span>
+                    <i class="bi bi-chevron-down" style="font-size:0.65rem;color:var(--txt-muted);"></i>
+                  </div>
+                </div>
+                <div class="sg-step-body">
+                  <p class="desc">${sgEscape(step.description)}</p>
+                  <div class="sg-step-detail-grid">
+                    <div class="sg-step-detail"><div class="lab">Estimated Time</div><div class="val">${step.estimated_hours} hours</div></div>
+                    <div class="sg-step-detail"><div class="lab">Difficulty</div><div class="val">${sgCap(step.difficulty)}</div></div>
+                    ${priority}
+                    <div class="sg-step-detail"><div class="lab">Prerequisites</div><div class="val">${prereq}</div></div>
+                  </div>
+                  ${resource}
+                  <p class="sg-step-outcome"><strong>Outcome:</strong> ${sgEscape(step.expected_outcome)}</p>
+                </div>
+              </div>`;
+    }
+
+    function renderRoadmap(data) {
+        sgRoadmapData = data;
+        const haveSkills = (window.__sgHaveSkills || []);
+        const progress = data.progress;
+        const stepLabel = progress && progress.total ?
+            `${progress.total} step${progress.total === 1 ? "" : "s"}` :
+            "–";
+        document.getElementById("sgRoadmapBadge").textContent = stepLabel;
+        sgSetNavCount("sgNavRoadmap", progress && progress.total ? progress.total : "–");
+        document.getElementById("sgRoadmap").innerHTML = sgRenderRoadmap(haveSkills, data);
+        sgApplyOpenSteps();
+    }
+
+    /* ── Persistence ── */
+    const SG_STORE = window.SkillSyncState || null;
+    let sgFingerprint = SG_STORE ? (SG_STORE.local.get("skillgap.fingerprint", "") || "") : "";
+
+    function sgCacheRead(name) {
+        return SG_STORE ? SG_STORE.cache.read("skillgap." + name, sgFingerprint) : null;
+    }
+
+    function sgCacheWrite(name, data) {
+        if (SG_STORE) SG_STORE.cache.write("skillgap." + name, data, sgFingerprint);
+    }
+
+    function sgSetFingerprint(fingerprint) {
+        if (!fingerprint || !SG_STORE) return;
+        if (sgFingerprint && sgFingerprint !== fingerprint) {
+            ["skillgap.gap", "skillgap.courses", "skillgap.roadmap"].forEach(k => SG_STORE.cache.drop(k));
+            SG_STORE.local.remove("skillgap.openSteps");
+        }
+        sgFingerprint = fingerprint;
+        SG_STORE.local.set("skillgap.fingerprint", fingerprint);
+    }
+
+    function sgOpenSteps() {
+        const stored = SG_STORE ? SG_STORE.local.get("skillgap.openSteps", []) : [];
+        return Array.isArray(stored) ? stored : [];
+    }
+
+    function sgApplyOpenSteps() {
+        sgOpenSteps().forEach(n => {
+            const el = document.getElementById("sgStep" + n);
+            if (el) el.classList.add("open");
+        });
+    }
+
+    window.sgToggleStep = function(n) {
+        const el = document.getElementById("sgStep" + n);
+        if (!el) return;
+        const open = el.classList.toggle("open");
+        if (!SG_STORE) return;
+        const steps = new Set(sgOpenSteps().map(String));
+        if (open) steps.add(String(n));
+        else steps.delete(String(n));
+        SG_STORE.local.set("skillgap.openSteps", Array.from(steps));
+    };
+
+    window.sgCycleStep = async function(n, current) {
+        const next = current === "not_started" ? "in_progress" : (current === "in_progress" ? "completed" : "not_started");
+        try {
+            const progress = await api("/api/skillgap/roadmap/progress/", {
+                method: "PATCH",
+                body: JSON.stringify({ step_number: n, status: next })
+            });
+            const base = sgRoadmapData || sgCacheRead("roadmap") || {};
+            const merged = Object.assign({}, base, {
+                progress: progress,
+                has_resume: base.has_resume !== undefined ? base.has_resume : true
+            });
+            sgCacheWrite("roadmap", merged);
+            renderRoadmap(merged);
+        } catch (e) {
+            showToast("Could not update progress: " + e.message, "danger");
+        }
+    };
+
+    /* ── Load courses ── */
+    async function loadCourses() {
+        const cached = sgCacheRead("courses");
+        if (cached) {
+            renderCourses(cached);
+        } else {
+            document.getElementById("sgCourses").innerHTML =
+                `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
+            document.getElementById("sgCourseBadge").textContent = "…";
+        }
+
+        let data = { courses: [] };
+        try {
+            data = await api("/api/skillgap/courses/");
+        } catch (e) {
+            if (cached) return;
+            document.getElementById("sgCourses").innerHTML =
+                `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Course recommendations are temporarily unavailable.</div>`;
+            return;
+        }
+        sgCacheWrite("courses", data);
+        renderCourses(data);
+    }
+
+    /* ── Load roadmap ── */
+    async function loadRoadmap() {
+        const cached = sgCacheRead("roadmap");
+        if (cached) {
+            renderRoadmap(cached);
+        } else {
+            document.getElementById("sgRoadmap").innerHTML =
+                `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
+            document.getElementById("sgRoadmapBadge").textContent = "…";
+        }
+
+        let data = {};
+        try {
+            data = await api("/api/skillgap/roadmap/");
+        } catch (e) {
+            if (cached) return;
+            document.getElementById("sgRoadmap").innerHTML =
+                `<div class="sg-empty"><div class="sg-empty-icon"><i class="bi bi-exclamation-circle"></i></div>Could not load your roadmap right now. Please try again.</div>`;
+            return;
+        }
+        sgCacheWrite("roadmap", data);
+        renderRoadmap(data);
+    }
+
+    /* ── Main ── */
+    function sgShowShimmers() {
+        document.getElementById("sgCurrentSkills").innerHTML =
+            `<div class="sg-shimmer-block"><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div><div class="sg-shimmer h24"></div></div>`;
+        document.getElementById("sgMissingSkills").innerHTML =
+            `<div class="sg-shimmer-block"><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div><div class="sg-shimmer h60"></div></div>`;
+        document.getElementById("sgAiBody").innerHTML =
+            `<div class="sg-shimmer-block"><div class="sg-shimmer w60"></div><div class="sg-shimmer w80"></div><div class="sg-shimmer w40"></div></div>`;
+        document.getElementById("sgHaveVal").textContent = "–";
+        document.getElementById("sgCritVal").textContent = "–";
+        document.getElementById("sgMatchVal").textContent = "–";
+        document.getElementById("sgMatchSub").textContent = "";
+    }
+
+    function applyGap(gap) {
+        const haveSkills = gap.user_skills || [];
+        const missSkills = gap.missing_skills || [];
+        const haveLen = haveSkills.length;
+        const missLen = missSkills.length;
+        const detailMap = sgDetailMap(gap.missing_skill_details);
+        const p = sgPartition(missSkills, detailMap);
+        const matchPct = gap.match_score || 0;
+
+        document.getElementById("sgHaveVal").textContent = haveLen;
+        document.getElementById("sgCritVal").textContent = p.high.length;
+        document.getElementById("sgCritSub").textContent = `${p.medium.length} recommended · ${p.low.length} optional`;
+        document.getElementById("sgMatchVal").textContent = matchPct + "%";
+        document.getElementById("sgMatchLabel").textContent = "AI Match Score";
+        document.getElementById("sgMatchSub").textContent = gap.profession || "";
+
+        const ring = document.getElementById("sgRing");
+        if (ring) ring.style.setProperty("--sg-pct", matchPct);
+
+        document.getElementById("sgHaveBadge").textContent = haveLen;
+        document.getElementById("sgMissBadge").textContent = missLen;
+        sgSetNavCount("sgNavMissing", missLen);
+        sgSetNavCount("sgNavSkills", haveLen);
+
+        document.getElementById("sgAiBody").innerHTML = sgRenderAI(haveSkills, missSkills, gap, p);
+        document.getElementById("sgCurrentSkills").innerHTML = sgRenderCurrent(sgCategorize(haveSkills));
+
+        window.__sgMissingCtx = {
+            haveSkills: haveSkills,
+            partition: p,
+            detailFull: sgDetailFull(gap.missing_skill_details),
+        };
+        sgPaintMissing();
+
+        window.__sgHaveSkills = haveSkills;
+    }
+
+    async function loadSkillGap() {
+        const cached = sgCacheRead("gap");
+        if (cached) {
+            applyGap(cached);
+        } else {
+            sgShowShimmers();
+        }
+
+        let gap;
+        try {
+            gap = await api("/api/skillgap/");
+        } catch (e) {
+            if (cached) {
+                loadCourses();
+                loadRoadmap();
+                return;
+            }
+            throw e;
+        }
+
+        sgSetFingerprint(gap.analysis_fingerprint || "");
+        sgCacheWrite("gap", gap);
+        if (!cached || JSON.stringify(cached) !== JSON.stringify(gap)) applyGap(gap);
+
         loadCourses();
         loadRoadmap();
-        return;
-      }
-      throw e;
     }
 
-    sgSetFingerprint(gap.analysis_fingerprint || "");
-    sgCacheWrite("gap", gap);
-    if (!cached || JSON.stringify(cached) !== JSON.stringify(gap)) applyGap(gap);
-
-    /* Recommended Courses + Learning Roadmap */
-    loadCourses();
-    loadRoadmap();
-  }
-
-  bindSectionNav();
-  bindCollapsibles();
-  loadSkillGap();
+    bindSectionNav();
+    bindCollapsibles();
+    loadSkillGap();
 </script>
 {% endblock %}
