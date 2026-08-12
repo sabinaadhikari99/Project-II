@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root{
+    --bg:#f5f8fe;
+    --card:#ffffff;
+    --border:#e8edf7;
+    --border-soft:#f1f5fb;
+    --text:#0f172a;
+    --muted:#64748b;
+    --muted-2:#94a3b8;
+
+    --blue:#2563eb;
+    --blue-soft:#eff4ff;
+    --blue-tint:#f6f9ff;
+    --blue-line:#d5e2fb;
+
+    --green:#16a34a;
+    --green-bright:#22c55e;
+    --green-soft:#e9fbf1;
+    --green-tint:#f6fdf9;
+    --green-line:#d6f0e2;
+
+    --orange:#f97316;
+    --orange-soft:#fff4ec;
+    --violet:#7c3aed;
+    --violet-soft:#f5f3ff;
+
+    --radius:14px;
+    --shadow:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.03);
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h5,p{margin:0;}
+  a{color:inherit;text-decoration:none;}
+
+  .wrap{max-width:1000px;margin:0 auto;padding:26px 18px 48px;}
+
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+  }
+  .bar{display:block;height:5px;border-radius:99px;background:#e9eef6;overflow:hidden;}
+  .bar > span{display:block;height:100%;border-radius:99px;}
+  .fill-green{background:linear-gradient(90deg,#34d399,#16a34a);}
+  .fill-blue{background:linear-gradient(90deg,#60a5fa,#2563eb);}
+  .t-green{color:var(--green);}
+  .t-blue{color:var(--blue);}
+
+  /* ══ 1 · PAGE HEADER + TABS ══════════════ */
+  .page-head{margin-bottom:18px;}
+  .page-head h1{font-size:25px;font-weight:800;letter-spacing:-.025em;}
+  .page-head p{color:var(--muted);font-size:13.5px;margin-top:3px;}
+
+  .tabs{
+    display:flex;align-items:center;gap:6px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:24px;overflow-x:auto;scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 16px;font-size:13px;font-weight:600;
+    color:var(--muted);border-bottom:2px solid transparent;
+    white-space:nowrap;margin-bottom:-1px;
+  }
+  .tab i{font-size:12.5px;}
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+  /* ══ 2 · PHASES ══════════════════════════ */
+  .timeline{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;margin-bottom:28px;}
+
+  .rail{display:flex;flex-direction:column;align-items:center;}
+  .rail-seg{display:flex;flex-direction:column;align-items:center;flex:none;}
+  .connector{width:2px;flex:1 1 auto;background:var(--green-bright);border-radius:2px;min-height:34px;}
+  .connector.dim{background:#e2e8f0;}
+
+  .node{
+    position:relative;width:38px;height:38px;border-radius:50%;flex:none;
+    display:grid;place-items:center;font-size:14px;font-weight:700;color:#fff;
+    background:var(--green-bright);
+  }
+  .node.current{background:var(--blue);box-shadow:0 0 0 5px rgba(37,99,235,.12);}
+  .node.locked{background:#e8edf5;color:var(--muted-2);}
+  .node .badge{
+    position:absolute;top:-3px;right:-4px;
+    width:16px;height:16px;border-radius:50%;background:#fff;
+    display:grid;place-items:center;font-size:8px;color:var(--green);
+    border:1px solid var(--green-line);
+  }
+  .node.current .badge{color:var(--blue);border-color:var(--blue-line);}
+  .rail .lock{margin-top:6px;font-size:11px;color:var(--muted-2);}
+
+  .phases{display:flex;flex-direction:column;gap:16px;}
+
+  .phase{
+    display:grid;grid-template-columns:30px minmax(0,1fr) 250px;
+    gap:16px;align-items:start;padding:16px 18px;
+  }
+  .phase.done{background:var(--green-tint);border-color:var(--green-line);}
+  .phase.cur{background:var(--blue-tint);border-color:var(--blue-line);}
+  .mark{font-size:19px;line-height:1;margin-top:14px;}
+  .mark.done{color:var(--green);}
+  .mark.cur{color:var(--blue);}
+
+  .plabel{font-size:11px;font-weight:600;color:var(--muted-2);}
+  .phase h3{font-size:16px;font-weight:700;letter-spacing:-.02em;margin-top:5px;}
+  .desc{font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .prog{margin-top:14px;max-width:230px;}
+  .pct{font-size:11px;font-weight:700;margin-bottom:6px;}
+
+  .side{
+    border-left:1px solid var(--border);padding-left:18px;
+    display:flex;flex-direction:column;gap:11px;align-self:stretch;
+  }
+  .phase.done .side{border-left-color:var(--green-line);}
+  .phase.cur .side{border-left-color:var(--blue-line);}
+  .item{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:500;color:#334155;}
+  .item .chev{margin-left:auto;color:var(--muted-2);font-size:10px;}
+  .item .fa-circle-check{color:var(--green);font-size:12.5px;}
+  .item .fa-circle-dot{color:var(--blue);font-size:12.5px;}
+  .item .fa-circle{color:#cbd5e1;font-size:12.5px;}
+
+  .action{margin-top:auto;padding-top:8px;display:flex;justify-content:flex-end;}
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:7px;
+  }
+  .btn-done{background:var(--green-soft);color:var(--green);border:1px solid var(--green-line);}
+  .btn-continue{background:#fff;color:var(--green);border:1px solid var(--green-line);}
+  .btn-continue:hover{background:var(--green-soft);}
+  .btn-start{background:var(--blue);color:#fff;}
+  .btn-start:hover{background:#1d4ed8;}
+
+  .locked-side{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:8px;text-align:center;font-size:11px;color:var(--muted-2);
+    border-left:1px solid var(--border);padding-left:18px;align-self:stretch;
+  }
+  .locked-side i{font-size:14px;}
+
+  /* ══ 3 · RECOMMENDED RESOURCES ═══════════ */
+  .res-panel{padding:20px;}
+  .res-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:14px;flex-wrap:wrap;margin-bottom:16px;
+  }
+  .res-head h2{font-size:16px;font-weight:700;letter-spacing:-.015em;}
+  .link{
+    color:var(--blue);font-size:12.5px;font-weight:600;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+    transition:gap .15s ease;
+  }
+  .link:hover{gap:9px;text-decoration:underline;}
+
+  .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;}
+  .res{
+    padding:13px 14px;display:flex;flex-direction:column;gap:9px;min-height:126px;
+    border:1px solid var(--border);border-radius:12px;background:var(--card);
+  }
+  .res:hover{border-color:var(--blue-line);box-shadow:0 2px 8px rgba(15,23,42,.05);}
+  .res-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:6px;
+    background:#f1f5f9;color:var(--muted);
+  }
+  .pill-blue{background:var(--blue-soft);color:var(--blue);}
+  .pill-green{background:var(--green-soft);color:var(--green);}
+  .pill-orange{background:var(--orange-soft);color:var(--orange);}
+  .pill-violet{background:var(--violet-soft);color:var(--violet);}
+  .time{font-size:10.5px;color:var(--muted-2);font-weight:500;}
+  .res h5{font-size:13px;font-weight:600;line-height:1.4;}
+  .res-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin-top:auto;padding-top:9px;border-top:1px solid var(--border-soft);
+    font-size:11px;color:var(--muted);
+  }
+  .res-src{display:inline-flex;align-items:center;gap:6px;font-weight:500;}
+  .c-yt{color:#ef4444;} .c-fcc{color:#16a34a;} .c-doc{color:#0ea5e9;} .c-lab{color:#7c3aed;}
+  .bookmark{color:var(--muted-2);}
+
+  /* ══ RESPONSIVE ══════════════════════════ */
+  @media (max-width:860px){
+    .phase{grid-template-columns:26px minmax(0,1fr);}
+    .side,.locked-side{
+      grid-column:1 / -1;border-left:0;padding-left:0;
+      border-top:1px solid var(--border);padding-top:12px;
+    }
+    .phase.done .side{border-top-color:var(--green-line);}
+    .phase.cur .side{border-top-color:var(--blue-line);}
+    .locked-side{flex-direction:row;justify-content:flex-start;}
+  }
+  @media (max-width:600px){
+    .wrap{padding:18px 12px 40px;}
+    .page-head h1{font-size:21px;}
+    .timeline{grid-template-columns:44px minmax(0,1fr);gap:10px;}
+    .node{width:32px;height:32px;font-size:12.5px;}
+    .prog{max-width:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══ 1 · PAGE HEADER ══ -->
+  <header class="page-head">
+    <h1>Learning Roadmap</h1>
+    <p>Your step-by-step learning path to become a Backend Developer.</p>
+  </header>
+
+  <nav class="tabs" aria-label="Roadmap views">
+    <a href="#" class="tab active"><i class="fa-solid fa-diagram-project"></i> Roadmap</a>
+    <a href="#" class="tab"><i class="fa-regular fa-rectangle-list"></i> Learning Path</a>
+    <a href="#" class="tab"><i class="fa-regular fa-circle-check"></i> Completed</a>
+  </nav>
+
+  <!-- ══ 2 · PHASES 1–5 ══ -->
+  <section class="timeline" aria-label="Learning roadmap phases">
+
+    <!-- left rail -->
+    <div class="rail" aria-hidden="true">
+      <div class="rail-seg">
+        <span class="node">1<span class="badge"><i class="fa-solid fa-check"></i></span></span>
+      </div>
+      <span class="connector"></span>
+      <div class="rail-seg">
+        <span class="node">2<span class="badge"><i class="fa-solid fa-check"></i></span></span>
+      </div>
+      <span class="connector"></span>
+      <div class="rail-seg">
+        <span class="node current">3<span class="badge"><i class="fa-solid fa-bolt"></i></span></span>
+      </div>
+      <span class="connector dim"></span>
+      <div class="rail-seg">
+        <span class="node locked">4</span>
+        <i class="fa-solid fa-lock lock"></i>
+      </div>
+      <span class="connector dim"></span>
+      <div class="rail-seg">
+        <span class="node locked">5</span>
+        <i class="fa-solid fa-lock lock"></i>
+      </div>
+    </div>
+
+    <!-- phase cards -->
+    <div class="phases">
+
+      <!-- Phase 1 · completed -->
+      <article class="card phase done">
+        <i class="fa-solid fa-circle-check mark done"></i>
+        <div>
+          <div class="plabel">Phase 1</div>
+          <h3>Foundations</h3>
+          <p class="desc">Learn the fundamentals. Build a strong base.</p>
+          <div class="prog">
+            <div class="pct t-green">100% Completed</div>
+            <span class="bar"><span class="fill-green" style="width:100%"></span></span>
+          </div>
+        </div>
+        <div class="side">
+          <span class="item"><i class="fa-solid fa-circle-check"></i> Programming Basics <i class="fa-solid fa-chevron-down chev"></i></span>
+          <span class="item"><i class="fa-solid fa-circle-check"></i> Data Structures</span>
+          <span class="item"><i class="fa-solid fa-circle-check"></i> Problem Solving</span>
+          <div class="action">
+            <span class="btn btn-done"><i class="fa-solid fa-check"></i> Completed</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Phase 2 · in progress -->
+      <article class="card phase done">
+        <i class="fa-solid fa-circle-check mark done"></i>
+        <div>
+          <div class="plabel">Phase 2</div>
+          <h3>Backend Development Basics</h3>
+          <p class="desc">Learn core backend concepts and tools.</p>
+          <div class="prog">
+            <div class="pct t-green">75% Completed</div>
+            <span class="bar"><span class="fill-green" style="width:75%"></span></span>
+          </div>
+        </div>
+        <div class="side">
+          <span class="item"><i class="fa-solid fa-circle-check"></i> Python Basics <i class="fa-solid fa-chevron-down chev"></i></span>
+          <span class="item"><i class="fa-solid fa-circle-check"></i> OOP in Python</span>
+          <span class="item"><i class="fa-regular fa-circle"></i> File Handling</span>
+          <div class="action">
+            <a href="#" class="btn btn-continue"><i class="fa-solid fa-check"></i> Continue</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Phase 3 · current -->
+      <article class="card phase cur">
+        <i class="fa-solid fa-circle-check mark cur"></i>
+        <div>
+          <div class="plabel">Phase 3</div>
+          <h3>Web Frameworks</h3>
+          <p class="desc">Master backend frameworks and APIs.</p>
+          <div class="prog">
+            <div class="pct t-blue">20% Completed</div>
+            <span class="bar"><span class="fill-blue" style="width:20%"></span></span>
+          </div>
+        </div>
+        <div class="side">
+          <span class="item"><i class="fa-solid fa-circle-dot"></i> Django Basics <i class="fa-solid fa-chevron-down chev"></i></span>
+          <span class="item"><i class="fa-regular fa-circle"></i> Django REST Framework</span>
+          <span class="item"><i class="fa-regular fa-circle"></i> Authentication &amp; Authorization</span>
+          <div class="action">
+            <a href="#" class="btn btn-start">Start Phase</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Phase 4 · locked -->
+      <article class="card phase">
+        <span></span>
+        <div>
+          <div class="plabel">Phase 4</div>
+          <h3>Databases</h3>
+          <p class="desc">Learn to work with databases effectively.</p>
+        </div>
+        <div class="locked-side">
+          <i class="fa-solid fa-lock"></i>
+          <span>Complete previous phase to unlock</span>
+        </div>
+      </article>
+
+      <!-- Phase 5 · locked -->
+      <article class="card phase">
+        <span></span>
+        <div>
+          <div class="plabel">Phase 5</div>
+          <h3>Deployment &amp; DevOps</h3>
+          <p class="desc">Deploy, manage and scale your applications.</p>
+        </div>
+        <div class="locked-side">
+          <i class="fa-solid fa-lock"></i>
+          <span>Complete previous phase to unlock</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ══ 3 · RECOMMENDED RESOURCES ══ -->
+  <section class="card res-panel" aria-labelledby="resTitle">
+    <div class="res-head">
+      <h2 id="resTitle">Recommended Resources for Current Phase</h2>
+      <a href="#" class="link">View All <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <div class="res-grid">
+      <article class="res">
+        <div class="res-top">
+          <span class="pill pill-blue"><i class="fa-solid fa-play"></i> Video</span>
+          <span class="time">25 min</span>
+        </div>
+        <h5>Django for Beginners</h5>
+        <div class="res-foot">
+          <span class="res-src"><i class="fa-brands fa-youtube c-yt"></i> YouTube</span>
+          <i class="fa-regular fa-bookmark bookmark"></i>
+        </div>
+      </article>
+
+      <article class="res">
+        <div class="res-top">
+          <span class="pill pill-green"><i class="fa-solid fa-graduation-cap"></i> Course</span>
+          <span class="time">2.5 hrs</span>
+        </div>
+        <h5>Django Crash Course</h5>
+        <div class="res-foot">
+          <span class="res-src"><i class="fa-brands fa-free-code-camp c-fcc"></i> freeCodeCamp</span>
+          <i class="fa-regular fa-bookmark bookmark"></i>
+        </div>
+      </article>
+
+      <article class="res">
+        <div class="res-top">
+          <span class="pill pill-orange"><i class="fa-solid fa-file-lines"></i> Article</span>
+          <span class="time">15 min</span>
+        </div>
+        <h5>Django Project Structure</h5>
+        <div class="res-foot">
+          <span class="res-src"><i class="fa-solid fa-book c-doc"></i> Django Docs</span>
+          <i class="fa-regular fa-bookmark bookmark"></i>
+        </div>
+      </article>
+
+      <article class="res">
+        <div class="res-top">
+          <span class="pill pill-violet"><i class="fa-solid fa-flask"></i> Practice</span>
+          <span class="time">1 hr</span>
+        </div>
+        <h5>Build Your First Django API</h5>
+        <div class="res-foot">
+          <span class="res-src"><i class="fa-solid fa-cube c-lab"></i> SkillSync Labs</span>
+          <i class="fa-regular fa-bookmark bookmark"></i>
+        </div>
+      </article>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
