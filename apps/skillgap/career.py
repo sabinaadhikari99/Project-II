@@ -4,7 +4,12 @@ from collections import Counter
 from dataclasses import dataclass, field
 
 from apps.jobs.models import JobPosting
-from apps.jobs.services import compute_match_score, extract_resume_skills
+from apps.jobs.services import (
+    compute_match_score,
+    extract_resume_skills,
+    locate_resume_skills,
+    skill_confidence_map,
+)
 from apps.shared.constants import JOB_VECTOR_PREFIX
 from apps.shared.cv_signals import extract_cv_signals
 from apps.shared.embedding_client import get_embedding
@@ -152,7 +157,22 @@ class CareerAnalyzer:
 
         jobs, related_ids = cls._profession_jobs(profession, specialization, resume_text)
 
-        ranked = cls._rank_jobs(jobs, user_skills, user_skills_norm, profile, profession, resume_text)
+        # The AI Match Score must be the SAME number the AI Job Match page
+        # shows for this CV, so scoring reuses the exact recipe
+        # analyze_resume_match() uses: CV-extracted skills (not the profile
+        # merge), evidence-weighted skill confidence and the detected
+        # specialization. The profile merge still decides the gap universe
+        # below; it just never inflates what a job scores.
+        skill_confidence = (
+            skill_confidence_map(locate_resume_skills(resume_text, extracted))
+            if resume_text else {}
+        )
+        ranked = cls._rank_jobs(
+            jobs, user_skills, user_skills_norm, profile, profession, resume_text,
+            specialization=specialization,
+            skill_confidence=skill_confidence,
+            scoring_skills=extracted,
+        )
         recommended_jobs = [
             {
                 "title": job.title,
@@ -404,18 +424,22 @@ class CareerAnalyzer:
         return scores
 
     @classmethod
-    def _rank_jobs(cls, jobs, user_skills, user_skills_norm, profile, user_profession, resume_text=""):
+    def _rank_jobs(cls, jobs, user_skills, user_skills_norm, profile, user_profession,
+                   resume_text="", specialization=None, skill_confidence=None,
+                   scoring_skills=None):
         vector_scores = cls._vector_scores(resume_text, len(jobs) * 2) if jobs else {}
         cv_signals = extract_cv_signals(resume_text)
         scored = []
         for job in jobs:
             result = compute_match_score(
-                user_skills=user_skills,
+                user_skills=scoring_skills if scoring_skills is not None else user_skills,
                 user_profession=user_profession,
                 profile=profile,
                 job=job,
                 vector_score=vector_scores.get(job.id, 0.0),
                 cv_signals=cv_signals,
+                specialization=specialization,
+                skill_confidence=skill_confidence,
             )
             percentage = result["final_score"]
             explanation = result["match_explanation"]

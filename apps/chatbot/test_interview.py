@@ -917,7 +917,7 @@ class InterviewPageTests(TestCase):
         response = self.client.get("/interview-practice/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Interview practice")
+        self.assertContains(response, "Interview Practice")
         self.assertContains(response, "/api/chatbot/interview/session/")
 
     def test_the_page_is_three_stages_not_a_dashboard(self):

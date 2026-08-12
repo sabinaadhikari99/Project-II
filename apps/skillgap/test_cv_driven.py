@@ -189,19 +189,22 @@ class ExplainabilityTests(TestCase):
         clear()
         cache.clear()
 
-    def _analyze(self, cv, name="exp_user"):
+    def _analyze(self, cv, name="exp_user", skills=None):
         """Run the real AI-Match path, stubbing only the PDF text extraction."""
         import apps.jobs.services as svc
+        from django.core.files.uploadedfile import SimpleUploadedFile
         clear()
         user = User.objects.create_user(
             username=name, email=f"{name}@example.com",
             password="testpass123", role="job_seeker")
-        UserProfile.objects.create(user=user, skills=[], resume_text=cv,
+        UserProfile.objects.create(user=user, skills=skills or [],
+                                   resume_text=cv,
                                    experience_years=3, education="Bachelor")
         original = svc.extract_pdf_text
         svc.extract_pdf_text = lambda f: cv
         try:
-            return svc.analyze_resume_match(user, object())
+            return svc.analyze_resume_match(
+                user, SimpleUploadedFile("resume.pdf", b"%PDF-1.4 fake resume"))
         finally:
             svc.extract_pdf_text = original
 
@@ -275,6 +278,36 @@ Contact: rahul@example.com | +1 555 987 6543 | github.com/rahulverma
         for key in ("current_skill_coverage", "missing_skill_coverage",
                     "industry_readiness", "job_readiness"):
             self.assertIn(key, gap["coverage"])
+
+
+    def test_skillgap_match_score_equals_ai_match_page(self):
+        """Regression: the Skill Gap 'AI Match Score' must equal the AI Job
+        Match page's top match percentage for the same CV. Both pages feed the
+        same compute_match_score() with the same inputs (CV-extracted skills,
+        evidence-weighted confidence, detected specialization). A profile skill
+        that never appears in the CV must not inflate the Skill Gap score -
+        the AI Match page never credits skills the CV does not show."""
+        from apps.skillgap.services import analyze_skill_gap
+        ai = self._analyze(FLUTTER_CV, "consistency_user",
+                           skills=["State Management"])
+        clear()
+        user = User.objects.get(username="consistency_user")
+        gap = analyze_skill_gap(user)
+        ai_top = max(j["match_percentage"] for j in ai["recommended_jobs"])
+        self.assertEqual(gap["match_score"], ai_top)
+
+    def test_skillgap_job_scores_match_ai_page_per_job(self):
+        """The per-job percentages on the Skill Gap page must equal the AI Job
+        Match page's percentages for the same postings, not just the top one."""
+        from apps.skillgap.services import analyze_skill_gap
+        ai = self._analyze(FLUTTER_CV, "perjob_user")
+        clear()
+        user = User.objects.get(username="perjob_user")
+        gap = analyze_skill_gap(user)
+        ai_by_job = {j["job"].title: j["match_percentage"] for j in ai["recommended_jobs"]}
+        self.assertTrue(ai_by_job)
+        for item in gap["recommended_jobs"]:
+            self.assertEqual(item["match_percentage"], ai_by_job[item["title"]])
 
 
 class CVSignalTests(TestCase):
