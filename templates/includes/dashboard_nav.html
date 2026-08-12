@@ -1181,6 +1181,84 @@
 
 <script>
   /* ═══════════════════════════════════════════════
+     ═══ FIXED: DYNAMIC BREADCRUMB ═══
+     Updates the breadcrumb based on current page
+  ═══════════════════════════════════════════════ */
+  function updateBreadcrumb() {
+    var bcElement = document.getElementById('bcCurrent');
+    if (!bcElement) return;
+
+    var path = window.location.pathname;
+    var pageName = 'Dashboard';
+
+    // Page mapping
+    var pageMap = {
+      '/seeker-dashboard/': 'Dashboard',
+      '/recruiter-dashboard/': 'Dashboard',
+      '/admin-dashboard/': 'Dashboard',
+      '/dashboard/': 'Dashboard',
+      '/recruiter/post-job/': 'Post a Job',
+      '/recruiter-post-job/': 'Post a Job',
+      '/post-job/': 'Post a Job',
+      '/jobs/': 'Browse Jobs',
+      '/ai-match/': 'AI Match',
+      '/profile/': 'Profile',
+      '/skillgap/': 'Skill Analysis',
+      '/cvgen/': 'CV Generator',
+      '/quiz/': 'Quiz',
+      '/chat/': 'Messages',
+      '/interview-practice/': 'Interview Practice',
+      '/notifications/': 'Notifications',
+      '/linkedin/': 'External Integration',
+      '/settings/': 'Settings',
+      '/company-profile/': 'Company Profile',
+      '/admin/reports/': 'Reports',
+      '/admin/users/': 'Users',
+      '/admin/jobs/': 'Jobs'
+    };
+
+    // Find matching page
+    for (var [key, value] of Object.entries(pageMap)) {
+      if (path.includes(key)) {
+        pageName = value;
+        break;
+      }
+    }
+
+    // Update the breadcrumb
+    bcElement.textContent = pageName;
+    bcElement.setAttribute('data-page', pageName);
+
+    // Also update page title if needed
+    var titleEl = document.querySelector('title');
+    if (titleEl && !titleEl.textContent.includes(pageName)) {
+      var currentTitle = titleEl.textContent;
+      if (!currentTitle.includes('|')) {
+        titleEl.textContent = pageName + ' | SkillSync AI';
+      }
+    }
+  }
+
+  // Update breadcrumb on page load and on popstate
+  document.addEventListener('DOMContentLoaded', function() {
+    updateBreadcrumb();
+  });
+
+  window.addEventListener('popstate', function() {
+    updateBreadcrumb();
+  });
+
+  // Update when any internal link is clicked
+  document.addEventListener('click', function(e) {
+    var target = e.target.closest('a');
+    if (target && target.href && target.href.indexOf(window.location.origin) === 0) {
+      setTimeout(function() {
+        updateBreadcrumb();
+      }, 100);
+    }
+  });
+
+  /* ═══════════════════════════════════════════════
      SNACKBAR — Top Right Notification System
   ═══════════════════════════════════════════════ */
   (function () {
@@ -1363,6 +1441,8 @@
       updateSidebarNotifBadge();
       updateSearchPlaceholder();
       updateUserInfo(username);
+      // ═══ FIXED: Update breadcrumb after auth state changes ═══
+      updateBreadcrumb();
     } else {
       if (sidebar) sidebar.classList.add('d-none');
       guestElements.forEach(function (el) { el.classList.remove('d-none'); });
@@ -1595,6 +1675,8 @@
     updateBreadcrumb();
     updateSearchPlaceholder();
     updateThemeDropdownActive();
+    // ═══ FIXED: Update breadcrumb on page load ═══
+    updateBreadcrumb();
   });
 
   /* ═══════════════════════════════════════════════

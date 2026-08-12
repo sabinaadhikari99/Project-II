@@ -18,3 +18,5 @@ __pycache__/
 # Media/static
 media/
 staticfiles/
+db.sqlite3
+db.sqlite3.local
