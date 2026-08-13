@@ -2744,7 +2744,9 @@
   const JOB_CATEGORIES = [
     { key: "all",     label: "All Jobs",           icon: "bi-grid-fill" },
     { key: "mobile",  label: "Mobile Development", icon: "bi-phone-fill",
-      terms: ["mobile", "ios", "android", "flutter", "react native", "kotlin", "swift", "xamarin", "ionic"] },
+      terms: ["mobile", "ios", "android", "flutter", "react native", "kotlin", "swift", "xamarin", "ionic"],
+      categories: ["mobile developer", "ios developer", "android developer",
+                   "flutter developer", "react native developer"] },
     { key: "flutter", label: "Flutter",            icon: "bi-app-indicator",
       terms: ["flutter", "dart"] },
     { key: "android", label: "Android",            icon: "bi-android2",
@@ -2794,6 +2796,7 @@
       title: (job.title || "").toLowerCase(),
       skills: skills.toLowerCase(),
       description: (job.description || "").toLowerCase(),
+      category: String(job.job_category || "").trim().toLowerCase(),
     };
   }
 
@@ -2814,8 +2817,18 @@
 
   function categoryCount(key) {
     if (key === "all") return currentJobs.length;
+    const cat = JOB_CATEGORIES.find(c => c.key === key);
     let n = 0;
-    for (let i = 0; i < currentJobs.length; i++) if (categoryHas(i, key)) n++;
+    for (let i = 0; i < currentJobs.length; i++) {
+      const f = jobFields[i];
+      if (cat && cat.categories && f) {
+        if (f.category) {
+          if (cat.categories.includes(f.category)) n++;
+          continue;
+        }
+      }
+      if (categoryHas(i, key)) n++;
+    }
     return n;
   }
 
