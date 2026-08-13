@@ -4,7 +4,7 @@
 {% block content %}
 <style>
   /* ============================================================
-     JOBS — Unified Design Tokens (matches other pages)
+     JOBS — Unified Design Tokens
      ============================================================ */
   .jobs-page {
     animation: sgFadeIn 0.5s ease both;
@@ -24,8 +24,8 @@
     --shadow-lg: rgba(15, 23, 42, 0.08);
     --track: rgba(15, 23, 42, 0.07);
     --page-bg: #F8FAFC;
-    --radius: 14px;
-    --radius-sm: 8px;
+    --radius: 16px;
+    --radius-sm: 10px;
     --radius-pill: 999px;
     --success: #16a34a;
     --success-bg: rgba(34, 197, 94, 0.10);
@@ -45,18 +45,13 @@
     --sp-4: 16px;
     --sp-5: 20px;
     --sp-6: 28px;
+    --sp-7: 36px;
+    --sp-8: 48px;
 
     --el-1: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
     --el-2: 0 2px 6px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
+    --el-3: 0 8px 30px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  /* Force brand blue on this page */
-  .jobs-page {
-    --bs-primary: #2563EB !important;
-    --bs-primary-rgb: 37, 99, 235 !important;
-    --accent: #2563EB !important;
-    --accent-rgb: 37, 99, 235 !important;
   }
 
   /* Dark theme */
@@ -81,6 +76,7 @@
     --page-bg: #0B1120;
     --el-1: 0 1px 3px rgba(0, 0, 0, 0.24), 0 4px 12px rgba(0, 0, 0, 0.28);
     --el-2: 0 2px 6px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.38);
+    --el-3: 0 8px 30px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   @keyframes sgFadeIn {
@@ -91,9 +87,15 @@
     from { opacity: 0; transform: translateX(-12px); }
     to { opacity: 1; transform: translateX(0); }
   }
-  @keyframes iconPop {
-    from { transform: scale(0.6); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+  @keyframes bmPop {
+    0% { transform: scale(0.3) rotate(-15deg); opacity: 0.3; }
+    50% { transform: scale(1.4) rotate(8deg); }
+    75% { transform: scale(0.85) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   /* ── Page Header ── */
@@ -112,63 +114,71 @@
     min-width: 0;
   }
   .page-header-left .brand-mark {
-    width: 40px; height: 40px;
+    width: 44px; height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 11px;
-    background: var(--accent);
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
     color: #fff;
-    font-size: 1rem;
+    font-size: 1.1rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
+    box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.3);
   }
   .page-header-left .page-title {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     margin: 0;
     color: var(--txt);
-    line-height: 1.15;
+    line-height: 1.2;
   }
   .page-header .header-actions {
     display: flex;
     gap: var(--sp-2);
     flex-shrink: 0;
   }
+
+  /* ── Saved Button - Icon Only ── */
   .btn-saved {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--sp-2);
-    height: 40px;
-    padding: 0 var(--sp-4);
-    border-radius: var(--radius-pill);
+    height: 42px;
+    width: 42px;
+    padding: 0;
+    border-radius: 50%;
     border: 1.5px solid var(--bdr);
     background: var(--surface);
     color: var(--txt-soft);
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.3s var(--ease);
+    position: relative;
   }
   .btn-saved:hover {
     border-color: var(--accent);
     color: var(--accent);
     background: rgba(var(--accent-rgb), 0.05);
     transform: translateY(-2px);
+    box-shadow: var(--el-1);
   }
   .btn-saved .count-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 var(--sp-2);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
     border-radius: var(--radius-pill);
-    background: rgba(var(--accent-rgb), 0.10);
-    color: var(--accent);
-    font-size: 0.7rem;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.6rem;
     font-weight: 700;
+    position: absolute;
+    top: -6px;
+    right: -6px;
   }
 
   /* ── Panels ── */
@@ -200,20 +210,20 @@
     display: flex;
     align-items: center;
     gap: var(--sp-3);
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 700;
     margin: 0;
     color: var(--txt);
   }
   .panel-head .panel-icon {
-    width: 28px; height: 28px;
+    width: 30px; height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-sm);
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     border: 1px solid rgba(var(--accent-rgb), 0.08);
   }
   .panel-head .badge-count {
@@ -244,20 +254,19 @@
     gap: var(--sp-1);
     background: none;
     border: none;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--accent);
-    transition: gap 0.2s ease;
+    transition: all 0.25s var(--ease);
     padding: 0.15rem 0.2rem;
   }
-  .link-more:hover { gap: var(--sp-2); color: var(--accent); }
-  .link-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .link-more:hover { gap: var(--sp-2); color: var(--accent); transform: translateX(2px); }
 
   /* ── Recent Jobs Strip ── */
   .recent-strip .panel-body { padding: var(--sp-3) var(--sp-4); }
   #recentJobs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--sp-2);
   }
   #recentJobs > .mini-job:nth-child(n+7) { display: none; }
@@ -281,7 +290,7 @@
     transform: translateY(-2px);
   }
   .mini-job .mj-logo {
-    width: 34px; height: 34px;
+    width: 36px; height: 36px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--bdr);
     flex-shrink: 0;
@@ -289,7 +298,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--accent);
     overflow: hidden;
@@ -297,7 +306,7 @@
   }
   .mini-job .mj-logo img { width: 100%; height: 100%; object-fit: contain; }
   .mini-job .mj-title {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 650;
     color: var(--txt);
     white-space: nowrap;
@@ -314,7 +323,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .mini-job .mj-meta i { font-size: 0.7rem; opacity: 0.7; }
 
   /* ── Filter Panel ── */
   .search-panel .panel-body { padding: var(--sp-3) var(--sp-4); }
@@ -342,7 +350,7 @@
 
   .search-panel .form-control,
   .search-panel .form-select {
-    height: 40px;
+    height: 42px;
     border-radius: var(--radius-sm);
     border: 1.5px solid var(--bdr-hover);
     background: var(--surface-alt);
@@ -369,22 +377,13 @@
     background: var(--surface);
     outline: none;
   }
-  .search-panel .form-select {
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    padding-right: 2.1rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath fill='rgba(100,116,139,0.85)' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.85rem center;
-  }
 
   .btn-search {
-    height: 40px;
+    height: 42px;
     min-width: 100px;
     padding: 0 var(--sp-4);
     border-radius: var(--radius-sm);
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
     color: #fff;
     border: none;
     font-size: 0.85rem;
@@ -394,16 +393,15 @@
     justify-content: center;
     gap: var(--sp-2);
     transition: all 0.3s var(--ease);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
+    box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.3);
     cursor: pointer;
     width: 100%;
   }
   .btn-search:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.35);
+    box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.4);
     color: #fff;
   }
-  .btn-search:disabled { opacity: 0.6; pointer-events: none; }
 
   /* ── Filter Chips ── */
   .chip-bar {
@@ -500,7 +498,7 @@
     margin-bottom: var(--sp-3);
   }
   .job-item .ji-logo {
-    width: 48px; height: 48px;
+    width: 50px; height: 50px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--bdr);
     background: var(--surface);
@@ -543,33 +541,63 @@
     opacity: 0.3;
   }
 
+  /* ── Bookmark Button - Pure Icon Only (No Text, No Tooltip) ── */
   .job-item .ji-bm {
     flex-shrink: 0;
-    width: 34px; height: 34px;
+    width: 38px;
+    height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    border-radius: var(--radius-sm);
-    border: 1.5px solid var(--bdr);
+    border-radius: 50%;
+    border: 2px solid var(--bdr);
     background: var(--surface);
     color: var(--txt-muted);
-    font-size: 0.9rem;
-    transition: all 0.25s var(--ease);
+    font-size: 1rem;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     cursor: pointer;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
   .job-item .ji-bm:hover {
     color: var(--accent);
-    border-color: rgba(var(--accent-rgb), 0.35);
-    background: rgba(var(--accent-rgb), 0.05);
-    transform: translateY(-1px);
+    border-color: rgba(var(--accent-rgb), 0.4);
+    background: rgba(var(--accent-rgb), 0.06);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.15);
+  }
+  .job-item .ji-bm:active {
+    transform: scale(0.90);
+    transition-duration: 0.08s;
   }
   .job-item .ji-bm.saved {
-    color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.10);
-    border-color: rgba(var(--accent-rgb), 0.30);
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    border-color: var(--accent);
+    box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.35);
+  }
+  .job-item .ji-bm.saved:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 28px rgba(var(--accent-rgb), 0.5);
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    color: #fff;
+  }
+  .job-item .ji-bm i {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .job-item .ji-bm.saved i {
+    animation: bmPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
+  /* Belt-and-braces: never let a browser tooltip render text for the bookmark button */
+  .job-item .ji-bm[title] { position: relative; }
+  .job-item .ji-bm::after { content: none !important; }
+
+  /* ── Job Badges & Facts ── */
   .job-item .ji-badges {
     display: flex;
     flex-wrap: wrap;
@@ -650,24 +678,22 @@
   }
 
   .job-item .ji-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--sp-2);
     margin-top: auto;
   }
   .btn-apply {
-    height: 36px;
+    height: 40px;
+    width: 100%;
     padding: 0 var(--sp-4);
     border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 700;
     border: none;
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
     color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--sp-1);
+    gap: var(--sp-2);
     transition: all 0.25s var(--ease);
     box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
     cursor: pointer;
@@ -686,28 +712,6 @@
     pointer-events: none;
   }
 
-  .btn-view {
-    height: 36px;
-    padding: 0 var(--sp-4);
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    font-weight: 700;
-    background: var(--surface);
-    color: var(--txt-soft);
-    border: 1.5px solid var(--bdr);
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-1);
-    transition: all 0.25s var(--ease);
-    cursor: pointer;
-  }
-  .btn-view:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.04);
-    transform: translateY(-2px);
-  }
-
   /* ── Empty States ── */
   .empty-block {
     display: flex;
@@ -719,34 +723,34 @@
     grid-column: 1 / -1;
   }
   .empty-block .eb-icon {
-    width: 52px; height: 52px;
+    width: 56px; height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius);
     background: rgba(var(--accent-rgb), 0.08);
     color: var(--accent);
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     margin-bottom: var(--sp-3);
     border: 1px solid rgba(var(--accent-rgb), 0.10);
   }
   .empty-block .eb-title {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--txt-soft);
     margin-bottom: var(--sp-1);
   }
   .empty-block .eb-sub {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--txt-muted);
-    max-width: 280px;
+    max-width: 300px;
     line-height: 1.5;
   }
   .btn-empty-cta {
     display: inline-flex;
     align-items: center;
     gap: var(--sp-2);
-    height: 36px;
+    height: 38px;
     padding: 0 var(--sp-4);
     border-radius: var(--radius-sm);
     border: 1.5px solid rgba(var(--accent-rgb), 0.20);
@@ -764,34 +768,424 @@
     transform: translateY(-2px);
   }
 
-  /* ── Modals ── */
+  /* ============================================================
+     BEAUTIFUL MODALS — Transparent Backdrop, White Dialog
+     ============================================================ */
+  .jobs-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1055 !important;
+    padding: 1rem !important;
+    overflow-y: auto;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .jobs-modal.show {
+    display: flex !important;
+  }
+  .jobs-modal .modal-dialog {
+    margin: 0 !important;
+    width: 100%;
+    max-width: 580px;
+    max-height: calc(100vh - 2rem);
+    pointer-events: none;
+  }
   .jobs-modal .modal-content {
-    border: 1px solid var(--bdr);
-    border-radius: var(--radius);
-    background: var(--surface);
-    box-shadow: var(--el-2);
+    width: 100%;
+    max-height: calc(100vh - 2rem);
+    border: none;
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25), 0 10px 30px rgba(0, 0, 0, 0.08);
+    animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
   }
+
+  /* Dark theme support for modal */
+  html.theme-dark .jobs-modal .modal-content,
+  [data-theme="dark"] .jobs-modal .modal-content {
+    background: #1E293B;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Modal Header - WITH CLOSE BUTTON (X) */
   .jobs-modal .modal-header {
-    border-bottom: 1px solid var(--bdr);
-    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    padding: 1.2rem 1.8rem;
+    background: transparent;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
+  html.theme-dark .jobs-modal .modal-header,
+  [data-theme="dark"] .jobs-modal .modal-header {
+    border-bottom: 1px solid rgba(248, 250, 252, 0.08);
+  }
+
   .jobs-modal .modal-title {
     display: flex;
     align-items: center;
-    gap: var(--sp-2);
-    font-size: 0.95rem;
+    gap: 0.75rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    color: var(--txt);
+    color: #0F172A;
+    letter-spacing: -0.02em;
   }
+  html.theme-dark .jobs-modal .modal-title,
+  [data-theme="dark"] .jobs-modal .modal-title {
+    color: #F8FAFC;
+  }
+
+  .jobs-modal .modal-title .panel-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.10), rgba(124, 58, 237, 0.10));
+    color: #2563EB;
+    font-size: 1rem;
+    border: 1px solid rgba(37, 99, 235, 0.08);
+  }
+  html.theme-dark .jobs-modal .modal-title .panel-icon,
+  [data-theme="dark"] .jobs-modal .modal-title .panel-icon {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(124, 58, 237, 0.15));
+    border-color: rgba(59, 130, 246, 0.12);
+  }
+
+  .jobs-modal .modal-title .badge-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2563EB, #7c3aed);
+    color: #fff;
+    border: none;
+    margin-left: 0.25rem;
+  }
+
+  /* Close button in header */
+  .jobs-modal .btn-close-modal {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    background: rgba(15, 23, 42, 0.04);
+    color: rgba(15, 23, 42, 0.45);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0;
+    line-height: 1;
+  }
+  .jobs-modal .btn-close-modal:hover {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563EB;
+    transform: rotate(90deg);
+  }
+  html.theme-dark .jobs-modal .btn-close-modal,
+  [data-theme="dark"] .jobs-modal .btn-close-modal {
+    background: rgba(248, 250, 252, 0.06);
+    color: rgba(248, 250, 252, 0.5);
+  }
+  html.theme-dark .jobs-modal .btn-close-modal:hover,
+  [data-theme="dark"] .jobs-modal .btn-close-modal:hover {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3B82F6;
+  }
+
+  /* Modal Body */
   .jobs-modal .modal-body {
-    padding: var(--sp-4);
-    max-height: 65vh;
+    padding: 1.2rem 1.8rem 1.8rem;
     overflow-y: auto;
+    flex: 1;
+    max-height: 55vh;
   }
+  .jobs-modal .modal-body::-webkit-scrollbar {
+    width: 4px;
+  }
+  .jobs-modal .modal-body::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.05);
+    border-radius: 20px;
+  }
+  .jobs-modal .modal-body::-webkit-scrollbar-thumb {
+    background: #2563EB;
+    border-radius: 20px;
+  }
+
+  /* Empty State inside Modal */
+  .jobs-modal .empty-block {
+    padding: 2rem 1rem;
+  }
+  .jobs-modal .empty-block .eb-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: rgba(37, 99, 235, 0.06);
+    color: #2563EB;
+    font-size: 1.6rem;
+    border: 1px solid rgba(37, 99, 235, 0.08);
+    margin-bottom: 1rem;
+  }
+  .jobs-modal .empty-block .eb-title {
+    font-size: 1rem;
+    color: #0F172A;
+    margin-bottom: 0.3rem;
+  }
+  .jobs-modal .empty-block .eb-sub {
+    color: rgba(15, 23, 42, 0.5);
+  }
+  html.theme-dark .jobs-modal .empty-block .eb-title,
+  [data-theme="dark"] .jobs-modal .empty-block .eb-title {
+    color: #F8FAFC;
+  }
+  html.theme-dark .jobs-modal .empty-block .eb-sub,
+  [data-theme="dark"] .jobs-modal .empty-block .eb-sub {
+    color: rgba(248, 250, 252, 0.5);
+  }
+
+  /* ============================================================
+     PREMIUM MODAL ITEMS - For Saved and Recent
+     ============================================================ */
   .jobs-modal .modal-list {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-2);
+    gap: 0.75rem;
+  }
+
+  .jobs-modal .modal-list .premium-job-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: #F8FAFC;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+  }
+  .jobs-modal .modal-list .premium-job-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15%;
+    height: 70%;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+  .jobs-modal .modal-list .premium-job-item:hover {
+    border-color: rgba(37, 99, 235, 0.2);
+    background: #ffffff;
+    transform: translateX(6px);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  }
+  .jobs-modal .modal-list .premium-job-item:hover::before {
+    background: linear-gradient(180deg, #2563EB, #7c3aed);
+  }
+
+  html.theme-dark .jobs-modal .modal-list .premium-job-item,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item {
+    background: rgba(248, 250, 252, 0.05);
+    border-color: rgba(248, 250, 252, 0.08);
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item:hover,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item:hover {
+    background: rgba(248, 250, 252, 0.10);
+    border-color: rgba(59, 130, 246, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    flex-shrink: 0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2563EB;
+    overflow: hidden;
+    padding: 4px;
+    transition: all 0.3s ease;
+  }
+  .jobs-modal .modal-list .premium-job-item:hover .pj-logo {
+    border-color: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-logo,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-logo {
+    background: #1E293B;
+    border-color: rgba(248, 250, 252, 0.08);
+    color: #3B82F6;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-title,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-title {
+    color: #F8FAFC;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .jobs-modal .modal-list .premium-job-item .pj-badge.time-badge {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563EB;
+    border: 1px solid rgba(37, 99, 235, 0.08);
+  }
+  .jobs-modal .modal-list .premium-job-item .pj-badge.saved-badge {
+    background: rgba(16, 185, 129, 0.10);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-badge.time-badge,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-badge.time-badge {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.15);
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-badge.saved-badge,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-badge.saved-badge {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34D399;
+    border-color: rgba(16, 185, 129, 0.15);
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-meta {
+    font-size: 0.85rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-meta,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-meta {
+    color: #94A3B8;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-meta .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #94A3B8;
+    display: inline-block;
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-meta .dot,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-meta .dot {
+    background: #64748B;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-meta i {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    color: #64748B;
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-meta i,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-meta i {
+    color: #94A3B8;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  .jobs-modal .modal-list .premium-job-item .pj-action-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: #94A3B8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateX(-10px);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .jobs-modal .modal-list .premium-job-item:hover .pj-action-btn {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .jobs-modal .modal-list .premium-job-item .pj-action-btn:hover {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563EB;
+  }
+  .jobs-modal .modal-list .premium-job-item .pj-action-btn.remove-btn:hover {
+    background: rgba(220, 38, 38, 0.08);
+    color: #dc2626;
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-action-btn,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-action-btn {
+    color: #64748B;
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-action-btn:hover,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-action-btn:hover {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3B82F6;
+  }
+  html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-action-btn.remove-btn:hover,
+  [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-action-btn.remove-btn:hover {
+    background: rgba(220, 38, 38, 0.12);
+    color: #ef4444;
   }
 
   /* ── Responsive ── */
@@ -810,6 +1204,7 @@
     .page-header { flex-direction: column; align-items: stretch; gap: var(--sp-3); }
     .page-header .header-actions { justify-content: flex-start; }
     .page-header-left .page-title { font-size: 1.1rem; }
+    .page-header-left .brand-mark { width: 38px; height: 38px; font-size: 0.9rem; }
     .panel-head { padding: var(--sp-2) var(--sp-3); }
     .panel-body { padding: var(--sp-3); }
     .filter-grid { grid-template-columns: 1fr 1fr; }
@@ -818,6 +1213,44 @@
     .filter-grid .fg-search { grid-column: 1 / -1; }
     .recent-strip #recentJobs { grid-template-columns: 1fr 1fr; }
     #recentJobs > .mini-job:nth-child(n+5) { display: none; }
+    .job-item .ji-bm {
+      width: 34px;
+      height: 34px;
+      font-size: 0.9rem;
+    }
+    .jobs-modal .modal-dialog {
+      max-width: 100%;
+      max-height: calc(100vh - 1rem);
+    }
+    .jobs-modal .modal-body {
+      padding: 1rem;
+      max-height: 50vh;
+    }
+    .jobs-modal .modal-header {
+      padding: 1rem;
+    }
+    .jobs-modal .modal-list .premium-job-item {
+      padding: 0.75rem 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .jobs-modal .modal-list .premium-job-item .pj-title {
+      font-size: 0.9rem;
+    }
+    .jobs-modal .modal-list .premium-job-item .pj-meta {
+      font-size: 0.75rem;
+      gap: 0.3rem;
+    }
+    .jobs-modal .modal-list .premium-job-item .pj-action-btn {
+      opacity: 1;
+      transform: translateX(0);
+      padding: 0.3rem 0.7rem;
+      font-size: 0.7rem;
+    }
+    .jobs-modal .modal-list .premium-job-item .pj-badge {
+      font-size: 0.55rem;
+      padding: 0.05rem 0.4rem;
+    }
   }
   @media (max-width: 575.98px) {
     .job-item { padding: var(--sp-3); }
@@ -825,8 +1258,30 @@
     .filter-grid { grid-template-columns: 1fr; }
     .recent-strip #recentJobs { grid-template-columns: 1fr; }
     #recentJobs > .mini-job:nth-child(n+4) { display: none; }
-    .job-item .ji-actions .btn-apply,
-    .job-item .ji-actions .btn-view { flex: 1; }
+    .job-item .ji-bm {
+      width: 30px;
+      height: 30px;
+      font-size: 0.8rem;
+    }
+    .jobs-modal .modal-title {
+      font-size: 0.95rem;
+    }
+    .jobs-modal .modal-title .panel-icon {
+      width: 30px;
+      height: 30px;
+      font-size: 0.75rem;
+    }
+    .jobs-modal .modal-list .premium-job-item .pj-logo {
+      width: 40px;
+      height: 40px;
+      font-size: 0.9rem;
+    }
+    .jobs-modal .modal-list .premium-job-item .pj-title {
+      font-size: 0.85rem;
+    }
+    .jobs-modal .modal-list .premium-job-item .pj-meta {
+      font-size: 0.7rem;
+    }
   }
 </style>
 
@@ -839,9 +1294,8 @@
       <h1 class="page-title">Jobs for you</h1>
     </div>
     <div class="header-actions">
-      <button class="btn-saved" type="button" data-bs-toggle="modal" data-bs-target="#savedJobsModal">
+      <button class="btn-saved" type="button" title="" onclick="openModal('savedJobsModal')" aria-label="Saved jobs">
         <i class="bi bi-bookmark-heart"></i>
-        Saved
         <span class="count-pill" id="savedCount">0</span>
       </button>
     </div>
@@ -855,7 +1309,7 @@
         Recently viewed
         <span id="recentCount" class="badge-count">0</span>
       </div>
-      <button class="link-more" type="button" data-bs-toggle="modal" data-bs-target="#recentJobsModal">
+      <button class="link-more" type="button" onclick="openModal('recentJobsModal')">
         View all <i class="bi bi-arrow-right"></i>
       </button>
     </div>
@@ -936,45 +1390,269 @@
 </div>
 
 <!-- ===== Saved Jobs Modal ===== -->
-<div class="modal fade jobs-modal" id="savedJobsModal" tabindex="-1" aria-labelledby="savedJobsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+<div class="jobs-modal" id="savedJobsModal">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="savedJobsModalLabel">
+        <h2 class="modal-title">
           <span class="panel-icon"><i class="bi bi-bookmark-heart"></i></span>
-          Saved jobs
+          Saved Jobs
+          <span class="badge-count" id="savedModalCount">0</span>
         </h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close-modal" title="" onclick="closeModal('savedJobsModal')" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
-      <div class="modal-body">
-        <div class="modal-list" id="savedJobs"></div>
+      <div class="modal-body" id="savedJobsBody">
+        <!-- Content will be loaded here -->
       </div>
     </div>
   </div>
 </div>
 
 <!-- ===== Recent Jobs Modal ===== -->
-<div class="modal fade jobs-modal" id="recentJobsModal" tabindex="-1" aria-labelledby="recentJobsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+<div class="jobs-modal" id="recentJobsModal">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="recentJobsModalLabel">
+        <h2 class="modal-title">
           <span class="panel-icon"><i class="bi bi-clock-history"></i></span>
-          Recently viewed
+          Recently Viewed
+          <span class="badge-count" id="recentModalCount">0</span>
         </h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close-modal" title="" onclick="closeModal('recentJobsModal')" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
-      <div class="modal-body">
-        <div class="modal-list" id="recentJobsAll"></div>
+      <div class="modal-body" id="recentJobsBody">
+        <!-- Content will be loaded here -->
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
   requireRole("job_seeker");
+
+  /* ── Modal Control Functions ── */
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+
+      if (modalId === 'savedJobsModal' || modalId === 'recentJobsModal') {
+        renderModalContent(modalId);
+      }
+    }
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function renderModalContent(modalId) {
+    if (modalId === 'savedJobsModal') {
+      renderSavedJobsModal();
+    } else if (modalId === 'recentJobsModal') {
+      renderRecentJobsModal();
+    }
+  }
+
+  /* ── Render Saved Jobs Modal ── */
+  function renderSavedJobsModal() {
+    const container = document.getElementById('savedJobsBody');
+    if (!container) return;
+
+    const savedJobs = window._savedJobs || [];
+
+    if (savedJobs.length === 0) {
+      container.innerHTML = `
+        <div class="empty-block">
+          <div class="eb-icon"><i class="bi bi-bookmark"></i></div>
+          <div class="eb-title">No saved jobs yet</div>
+          <div class="eb-sub">Start saving jobs you're interested in by clicking the bookmark icon on any job card.</div>
+          <button class="btn-empty-cta" onclick="closeModal('savedJobsModal')">
+            <i class="bi bi-search"></i> Browse openings
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="modal-list">
+        ${savedJobs.map((job, index) => renderPremiumJobItem(job, index, 'saved')).join('')}
+      </div>
+    `;
+  }
+
+  /* ── Render Recent Jobs Modal ── */
+  function renderRecentJobsModal() {
+    const container = document.getElementById('recentJobsBody');
+    if (!container) return;
+
+    const recentJobs = window._recentJobs || [];
+
+    if (recentJobs.length === 0) {
+      container.innerHTML = `
+        <div class="empty-block">
+          <div class="eb-icon"><i class="bi bi-clock-history"></i></div>
+          <div class="eb-title">No recent views</div>
+          <div class="eb-sub">Start exploring jobs and they'll appear here for quick access.</div>
+          <button class="btn-empty-cta" onclick="closeModal('recentJobsModal')">
+            <i class="bi bi-search"></i> Browse jobs
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="modal-list">
+        ${recentJobs.map((item, index) => renderPremiumJobItem(item, index, 'recent')).join('')}
+      </div>
+    `;
+  }
+
+  /* ── Render Premium Job Item ── */
+  function renderPremiumJobItem(item, index, type) {
+    const job = item.job || item;
+
+    let badgeHtml = '';
+    if (type === 'recent') {
+      let timeAgo = 'Recently';
+      if (job.viewed_at) {
+        try {
+          const date = new Date(job.viewed_at);
+          if (!isNaN(date.getTime())) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) timeAgo = 'Just now';
+            else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
+            else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
+            else if (diffDays < 7) timeAgo = `${diffDays}d ago`;
+            else timeAgo = `${Math.floor(diffDays / 7)}w ago`;
+          }
+        } catch {
+          timeAgo = 'Recently';
+        }
+      }
+      badgeHtml = `<span class="pj-badge time-badge"><i class="bi bi-clock"></i> ${timeAgo}</span>`;
+    } else {
+      badgeHtml = `<span class="pj-badge saved-badge"><i class="bi bi-check-circle-fill"></i> Saved</span>`;
+    }
+
+    const logoHtml = (() => {
+      const initial = escapeHtml((job.company || "?")[0].toUpperCase());
+      return job.company_logo
+        ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company)} Logo" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='${initial}'">`
+        : initial;
+    })();
+
+    let actionButtons = '';
+    if (type === 'saved') {
+      actionButtons = `
+        <div class="pj-actions">
+          <button class="pj-action-btn remove-btn" title="" onclick="event.stopPropagation(); removeSavedJob(${job.id}, this)">
+            <i class="bi bi-x-lg"></i> Remove
+          </button>
+        </div>
+      `;
+    } else {
+      actionButtons = `
+        <div class="pj-actions">
+          <button class="pj-action-btn" title="" onclick="event.stopPropagation(); viewJob(${job.id})">
+            View <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="premium-job-item" style="animation-delay:${(index || 0) * 0.05}s" data-job-id="${job.id}" onclick="${type === 'saved' ? '' : 'viewJob(' + job.id + ')'}">
+        <div class="pj-logo">${logoHtml}</div>
+        <div class="pj-info">
+          <div class="pj-title">
+            ${escapeHtml(job.title)}
+            ${badgeHtml}
+          </div>
+          <div class="pj-meta">
+            <i class="bi bi-building"></i> ${escapeHtml(job.company)}
+            <span class="dot"></span>
+            <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
+            ${job.salary_range ? `<span class="dot"></span> <i class="bi bi-currency-dollar"></i> ${escapeHtml(job.salary_range)}` : ''}
+          </div>
+        </div>
+        ${actionButtons}
+      </div>
+    `;
+  }
+
+  /* ── View job function ── */
+  function viewJob(jobId) {
+    closeModal('recentJobsModal');
+    if (window.location.pathname.includes('/jobs/')) {
+      const jobElement = document.querySelector(`.job-item[data-job-id="${jobId}"]`);
+      if (jobElement) {
+        jobElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        jobElement.style.borderColor = '#2563EB';
+        jobElement.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.2)';
+        setTimeout(() => {
+          jobElement.style.borderColor = '';
+          jobElement.style.boxShadow = '';
+        }, 3000);
+      } else {
+        const form = document.getElementById('jobSearchForm');
+        if (form) {
+          const roleInput = document.getElementById('role');
+          if (roleInput) {
+            const job = window._allJobs?.find(j => j.id === jobId);
+            if (job) {
+              roleInput.value = job.title;
+              form.requestSubmit();
+            }
+          }
+        }
+      }
+    } else {
+      window.location.href = `/jobs/?highlight=${jobId}`;
+    }
+  }
+
+  /* ── Remove saved job ── */
+  function removeSavedJob(jobId, btn) {
+    const item = btn.closest('.premium-job-item');
+    if (item) {
+      item.style.opacity = '0.5';
+      item.style.pointerEvents = 'none';
+    }
+
+    const mainBtn = document.querySelector(`.ji-bm[data-job-id="${jobId}"]`);
+    if (mainBtn) {
+      toggleSavedJobWithFeedback(jobId, mainBtn);
+    } else {
+      window.toggleSavedJob(jobId, btn)
+        .then(() => loadSavedAndRecent())
+        .catch(() => {
+          if (item) {
+            item.style.opacity = '1';
+            item.style.pointerEvents = 'auto';
+          }
+        });
+    }
+  }
 
   /* ── Apply accent color ── */
   (function applyAccentColor() {
@@ -1116,9 +1794,10 @@
     const isSaved = job.is_saved;
     const saveIcon = isSaved ? "bi-bookmark-fill" : "bi-bookmark";
     const saveClass = isSaved ? "ji-bm saved" : "ji-bm";
+    const saveLabel = isSaved ? "Remove bookmark" : "Bookmark job";
 
     return `
-      <div class="job-item" style="animation-delay:${(index || 0) * 0.05}s">
+      <div class="job-item" style="animation-delay:${(index || 0) * 0.05}s" data-job-id="${job.id}">
         <div class="ji-header">
           ${logoHtml}
           <div class="ji-head">
@@ -1129,8 +1808,7 @@
               <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
             </div>
           </div>
-          <button class="${saveClass}" type="button"
-            onclick="toggleSavedJob(${job.id}, this).then(loadSavedAndRecent)">
+          <button class="${saveClass}" type="button" data-job-id="${job.id}" title="" aria-label="${saveLabel}" onclick="toggleSavedJobWithFeedback(${job.id}, this)">
             <i class="bi ${saveIcon}"></i>
           </button>
         </div>
@@ -1155,26 +1833,115 @@
           <button class="btn-apply" type="button" onclick="applyToJob(${job.id}, this)">
             <i class="bi bi-send"></i> Apply
           </button>
-          <button class="btn-view" type="button" onclick="markRecentlyViewed(${job.id}).then(loadSavedAndRecent)">
-            <i class="bi bi-eye"></i> View
-          </button>
         </div>
       </div>`;
   }
 
+  /* Applying to a job */
   function applyToJob(jobId, btn) {
     const orig = btn.innerHTML;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>';
     btn.disabled = true;
 
+    markRecentlyViewed(jobId).catch(() => {});
+
     submitJobApplication(jobId, btn).then(() => {
       btn.innerHTML = '<i class="bi bi-check-lg"></i> Applied';
       btn.classList.add("applied");
       btn.classList.remove("btn-apply");
+      loadSavedAndRecent();
     }).catch(() => {
       btn.innerHTML = orig;
       btn.disabled = false;
     });
+  }
+
+  /* ── Bookmark functions ── */
+  function updateBookmarkButton(btn, isSaved) {
+    const icon = btn.querySelector('i');
+    if (!icon) return;
+
+    if (isSaved) {
+      btn.classList.add('saved');
+      icon.className = 'bi bi-bookmark-fill';
+      btn.setAttribute('aria-label', 'Remove bookmark');
+    } else {
+      btn.classList.remove('saved');
+      icon.className = 'bi bi-bookmark';
+      btn.setAttribute('aria-label', 'Bookmark job');
+    }
+    // Never let a title attribute sneak back in and trigger a native tooltip
+    btn.setAttribute('title', '');
+  }
+
+  function toggleSavedJobWithFeedback(jobId, btn) {
+    const isCurrentlySaved = btn.classList.contains('saved');
+    updateBookmarkButton(btn, !isCurrentlySaved);
+
+    return window.toggleSavedJob(jobId, btn)
+      .then((result) => {
+        updateBookmarkButton(btn, result.saved);
+        loadSavedAndRecent();
+        return result;
+      })
+      .catch((error) => {
+        updateBookmarkButton(btn, isCurrentlySaved);
+        console.error('Error toggling bookmark:', error);
+        if (window.showToast && !window._toastShowing) {
+          window._toastShowing = true;
+          window.showToast('Failed to save job. Please try again.', 'error');
+          setTimeout(() => { window._toastShowing = false; }, 3000);
+        }
+        throw error;
+      });
+  }
+
+  /* ── Load data ── */
+  async function loadJobs() {
+    document.getElementById("jobsList").innerHTML =
+      emptyBlock("hourglass-split", "Loading…", "Searching for matching openings.");
+
+    const form = Object.fromEntries(new FormData(document.getElementById("jobSearchForm")));
+    const params = new URLSearchParams(Object.entries(form).filter(([, v]) => v));
+    const jobs = await api(`/api/jobs/filter/?${params.toString()}`);
+
+    window._allJobs = jobs;
+
+    document.getElementById("jobCount").innerHTML =
+      `<i class="bi bi-briefcase"></i> ${jobs.length} ${jobs.length === 1 ? "job" : "jobs"}`;
+
+    renderActiveFilters(form);
+    prepareRelevance(jobs, form);
+
+    document.getElementById("jobsList").innerHTML = jobs.length
+      ? jobs.map(renderJob).join("")
+      : emptyBlock(
+          "search",
+          "No matching jobs",
+          "Nothing matched these filters. Widen the search or clear a filter to see more openings.",
+          '<button class="btn-empty-cta" type="button" onclick="clearAllJobFilters()"><i class="bi bi-arrow-counterclockwise"></i> Clear all filters</button>'
+        );
+  }
+
+  async function loadSavedAndRecent() {
+    const [saved, recent] = await Promise.all([
+      api("/api/jobs/saved/"),
+      api("/api/jobs/recent/")
+    ]);
+
+    window._savedJobs = saved;
+    window._recentJobs = recent;
+
+    document.getElementById("savedCount").textContent = saved.length;
+    document.getElementById("recentCount").textContent = recent.length;
+    document.getElementById("savedModalCount").textContent = saved.length;
+    document.getElementById("recentModalCount").textContent = recent.length;
+
+    const recentHtml = recent.length
+      ? recent.map((item, index) => renderMiniJob(item, index)).join("")
+      : emptyBlock("clock-history", "No recent views", "Apply to a job to see it here.");
+
+    document.getElementById("recentJobs").innerHTML = recentHtml;
   }
 
   /* ── Render mini job ── */
@@ -1201,61 +1968,28 @@
       </div>`;
   }
 
-  /* ── Load data ── */
-  async function loadJobs() {
-    document.getElementById("jobsList").innerHTML =
-      emptyBlock("hourglass-split", "Loading…", "Searching for matching openings.");
-
-    const form = Object.fromEntries(new FormData(document.getElementById("jobSearchForm")));
-    const params = new URLSearchParams(Object.entries(form).filter(([, v]) => v));
-    const jobs = await api(`/api/jobs/filter/?${params.toString()}`);
-
-    document.getElementById("jobCount").innerHTML =
-      `<i class="bi bi-briefcase"></i> ${jobs.length} ${jobs.length === 1 ? "job" : "jobs"}`;
-
-    renderActiveFilters(form);
-    prepareRelevance(jobs, form);
-
-    document.getElementById("jobsList").innerHTML = jobs.length
-      ? jobs.map(renderJob).join("")
-      : emptyBlock(
-          "search",
-          "No matching jobs",
-          "Nothing matched these filters. Widen the search or clear a filter to see more openings.",
-          '<button class="btn-empty-cta" type="button" onclick="clearAllJobFilters()"><i class="bi bi-arrow-counterclockwise"></i> Clear all filters</button>'
-        );
-  }
-
-  async function loadSavedAndRecent() {
-    const [saved, recent] = await Promise.all([
-      api("/api/jobs/saved/"),
-      api("/api/jobs/recent/")
-    ]);
-
-    document.getElementById("savedCount").textContent = saved.length;
-    document.getElementById("recentCount").textContent = recent.length;
-
-    document.getElementById("savedJobs").innerHTML = saved.length
-      ? saved.map(renderMiniJob).join("")
-      : emptyBlock(
-          "bookmark",
-          "No saved jobs yet",
-          "Use the bookmark icon on any job card.",
-          '<button class="btn-empty-cta" type="button" data-bs-dismiss="modal"><i class="bi bi-search"></i> Browse openings</button>'
-        );
-
-    const recentHtml = recent.length
-      ? recent.map(renderMiniJob).join("")
-      : emptyBlock("clock-history", "No recent views", "View a job to see it here.");
-
-    document.getElementById("recentJobs").innerHTML = recentHtml;
-    document.getElementById("recentJobsAll").innerHTML = recentHtml;
-  }
-
   /* ── Form submit ── */
   document.getElementById("jobSearchForm").addEventListener("submit", (event) => {
     event.preventDefault();
     loadJobs();
+  });
+
+  /* ── Close modal on Escape key ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.jobs-modal.show').forEach(modal => {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+
+  /* ── Close modal on backdrop click ── */
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('jobs-modal') && e.target.classList.contains('show')) {
+      e.target.classList.remove('show');
+      document.body.style.overflow = '';
+    }
   });
 
   /* ── Persistence ── */
