@@ -71,7 +71,7 @@ class FAISSManager:
             self.id_map = self._load_map()
             return faiss.read_index(str(self.index_path))
         if faiss:
-            return faiss.IndexFlatIP(VECTOR_DIMENSION)
+            return faiss.IndexFlatIP(VECTOR_DIMENSION) ##(flat inner-product) 
         self.id_map = self._load_map()
         return self._load_numpy_index()
 
@@ -98,7 +98,7 @@ class FAISSManager:
         # would pointlessly reload the index we just persisted.
         self._source_mtime = self._current_mtime()
 
-    def _normalize(self, embedding: list[float]) -> np.ndarray:
+    def _normalize(self, embedding: list[float]) -> np.ndarray: #L2 normalization 
         array = np.array([embedding], dtype="float32")
         norm = np.linalg.norm(array, axis=1, keepdims=True)
         norm[norm == 0] = 1
@@ -122,7 +122,7 @@ class FAISSManager:
     def _rebuild_from_scratch(self):
         logger.info("Rebuilding vector store from scratch due to desync.")
         if faiss:
-            self.index = faiss.IndexFlatIP(VECTOR_DIMENSION)
+            self.index = faiss.IndexFlatIP(VECTOR_DIMENSION) #(flat inner-product) 
         else:
             self.index = np.empty((0, VECTOR_DIMENSION), dtype="float32")
         self.id_map = []

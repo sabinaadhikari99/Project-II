@@ -34,7 +34,7 @@ def fallback_embedding(text: str) -> list[float]:
         vector[int.from_bytes(digest[:4], "little") % VECTOR_DIMENSION] += 1.0
     norm = np.linalg.norm(vector)
     if norm:
-        vector = vector / norm
+        vector = vector / norm  #L2 normalization 
     return vector.tolist()
 
 
