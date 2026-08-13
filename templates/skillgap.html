@@ -1518,6 +1518,10 @@ html.theme-dark {
 #sgRmPath:checked ~ #sgRoadmap .lr-mark { display: none; }
 #sgRmPath:checked ~ #sgRoadmap .lr-card { grid-template-columns: minmax(0, 1fr); }
 #sgRmPath:checked ~ #sgRoadmap .lr-details { display: block; }
+/* The same steps also render as full cards inside Phase details, so the compact
+   side-column step list is hidden while those details are open — the roadmap
+   never shows its steps twice on screen at once. */
+.lr-row:has(.lr-details[open]) .lr-side .lr-item { display: none; }
 
 /* ══════════════════════════════════════════════════════════════
    Roadmap phase cards — timeline rail, tinted state cards.
@@ -1770,8 +1774,8 @@ html.theme-dark .lr-row.lr-cur  .lr-card { background: rgba(37, 99, 235, 0.07); 
       <i class="bi bi-chevron-down sgh-chevron" aria-hidden="true"></i>
     </button>
 
-    {# Tabs filter the phase list below with CSS alone — the radios are the
-       state, so nothing here depends on the roadmap having loaded yet. #}
+    {% comment %}Tabs filter the phase list below with CSS alone — the radios are
+    the state, so nothing here depends on the roadmap having loaded yet.{% endcomment %}
     <p class="lr-lede">Your personalized roadmap to become <b id="sgRmRole">your target role</b></p>
     <input type="radio" name="sgRmView" id="sgRmAll" class="lr-tabin" checked>
     <input type="radio" name="sgRmView" id="sgRmPath" class="lr-tabin">
@@ -2741,24 +2745,22 @@ html.theme-dark .lr-row.lr-cur  .lr-card { background: rgba(37, 99, 235, 0.07); 
       sgShowShimmers();
     }
 
-    let gap;
+    let gap = null;
     try {
       gap = await api("/api/skillgap/");
     } catch (e) {
-      if (cached) {
-        /* Serve what the user already had rather than an error screen. */
-        loadCourses();
-        loadRoadmap();
-        return;
-      }
-      throw e;
+      if (!cached) throw e;
+      /* Serve what the user already had rather than an error screen. */
     }
 
-    sgSetFingerprint(gap.analysis_fingerprint || "");
-    sgCacheWrite("gap", gap);
-    if (!cached || JSON.stringify(cached) !== JSON.stringify(gap)) applyGap(gap);
+    if (gap) {
+      sgSetFingerprint(gap.analysis_fingerprint || "");
+      sgCacheWrite("gap", gap);
+      if (!cached || JSON.stringify(cached) !== JSON.stringify(gap)) applyGap(gap);
+    }
 
-    /* Recommended Courses + Learning Roadmap */
+    /* Recommended Courses + Learning Roadmap — one call site each, so neither
+       section is ever requested or rendered twice on a single page load. */
     loadCourses();
     loadRoadmap();
   }
