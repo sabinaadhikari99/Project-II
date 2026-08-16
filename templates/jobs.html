@@ -79,6 +79,19 @@
     --el-3: 0 8px 30px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
+  .jobs-page .visually-hidden,
+  .jobs-modal .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
   @keyframes sgFadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -119,7 +132,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    background: var(--accent);
     color: #fff;
     font-size: 1.1rem;
     flex-shrink: 0;
@@ -383,7 +396,7 @@
     min-width: 100px;
     padding: 0 var(--sp-4);
     border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    background: var(--accent);
     color: #fff;
     border: none;
     font-size: 0.85rem;
@@ -485,6 +498,7 @@
     transition: all 0.3s var(--ease);
     animation: itemSlide 0.4s ease both;
     position: relative;
+    cursor: pointer;
   }
   .job-item:hover {
     border-color: var(--bdr-hover);
@@ -573,14 +587,14 @@
   }
   .job-item .ji-bm.saved {
     color: #fff;
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    background: var(--accent);
     border-color: var(--accent);
     box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.35);
   }
   .job-item .ji-bm.saved:hover {
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 8px 28px rgba(var(--accent-rgb), 0.5);
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    background: var(--accent);
     color: #fff;
   }
   .job-item .ji-bm i {
@@ -593,9 +607,31 @@
     animation: bmPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  /* Belt-and-braces: never let a browser tooltip render text for the bookmark button */
-  .job-item .ji-bm[title] { position: relative; }
-  .job-item .ji-bm::after { content: none !important; }
+  /* Belt-and-braces: never let ANY tooltip (native or custom) render text for
+     the bookmark / save buttons — covers common tooltip patterns that use
+     ::before/::after with attr(title) / attr(aria-label) / attr(data-*) */
+  .ji-bm::before,
+  .ji-bm::after,
+  .btn-saved::before,
+  .btn-saved::after,
+  .pj-action-btn::before,
+  .pj-action-btn::after {
+    content: none !important;
+    display: none !important;
+  }
+  .ji-bm[data-tooltip],
+  .btn-saved[data-tooltip],
+  .pj-action-btn[data-tooltip] {
+    pointer-events: auto;
+  }
+  /* If the tooltip system renders a sibling element (e.g. a floating span/div
+     injected next to the button on hover/focus), hide anything unexpected
+     that appears immediately after these buttons within their own wrapper. */
+  .ji-header .ji-bm ~ [role="tooltip"],
+  .header-actions .btn-saved ~ [role="tooltip"],
+  .pj-actions .pj-action-btn ~ [role="tooltip"] {
+    display: none !important;
+  }
 
   /* ── Job Badges & Facts ── */
   .job-item .ji-badges {
@@ -688,7 +724,7 @@
     font-size: 0.82rem;
     font-weight: 700;
     border: none;
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    background: var(--accent);
     color: #fff;
     display: inline-flex;
     align-items: center;
@@ -851,14 +887,14 @@
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.10), rgba(124, 58, 237, 0.10));
-    color: #2563EB;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
     font-size: 1rem;
-    border: 1px solid rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
   }
   html.theme-dark .jobs-modal .modal-title .panel-icon,
   [data-theme="dark"] .jobs-modal .modal-title .panel-icon {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(124, 58, 237, 0.15));
+    background: rgba(59, 130, 246, 0.15);
     border-color: rgba(59, 130, 246, 0.12);
   }
 
@@ -872,7 +908,7 @@
     border-radius: 999px;
     font-size: 0.7rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #2563EB, #7c3aed);
+    background: var(--accent);
     color: #fff;
     border: none;
     margin-left: 0.25rem;
@@ -896,8 +932,8 @@
     line-height: 1;
   }
   .jobs-modal .btn-close-modal:hover {
-    background: rgba(37, 99, 235, 0.08);
-    color: #2563EB;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
     transform: rotate(90deg);
   }
   html.theme-dark .jobs-modal .btn-close-modal,
@@ -926,7 +962,7 @@
     border-radius: 20px;
   }
   .jobs-modal .modal-body::-webkit-scrollbar-thumb {
-    background: #2563EB;
+    background: var(--accent);
     border-radius: 20px;
   }
 
@@ -938,10 +974,10 @@
     width: 64px;
     height: 64px;
     border-radius: 16px;
-    background: rgba(37, 99, 235, 0.06);
-    color: #2563EB;
+    background: rgba(var(--accent-rgb), 0.06);
+    color: var(--accent);
     font-size: 1.6rem;
-    border: 1px solid rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
     margin-bottom: 1rem;
   }
   .jobs-modal .empty-block .eb-title {
@@ -994,13 +1030,13 @@
     transition: all 0.3s ease;
   }
   .jobs-modal .modal-list .premium-job-item:hover {
-    border-color: rgba(37, 99, 235, 0.2);
+    border-color: rgba(var(--accent-rgb), 0.2);
     background: #ffffff;
     transform: translateX(6px);
     box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
   }
   .jobs-modal .modal-list .premium-job-item:hover::before {
-    background: linear-gradient(180deg, #2563EB, #7c3aed);
+    background: var(--accent);
   }
 
   html.theme-dark .jobs-modal .modal-list .premium-job-item,
@@ -1027,14 +1063,14 @@
     justify-content: center;
     font-size: 1.1rem;
     font-weight: 700;
-    color: #2563EB;
+    color: var(--accent);
     overflow: hidden;
     padding: 4px;
     transition: all 0.3s ease;
   }
   .jobs-modal .modal-list .premium-job-item:hover .pj-logo {
-    border-color: rgba(37, 99, 235, 0.2);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    border-color: rgba(var(--accent-rgb), 0.2);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.1);
   }
   html.theme-dark .jobs-modal .modal-list .premium-job-item .pj-logo,
   [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-logo {
@@ -1081,9 +1117,9 @@
     white-space: nowrap;
   }
   .jobs-modal .modal-list .premium-job-item .pj-badge.time-badge {
-    background: rgba(37, 99, 235, 0.08);
-    color: #2563EB;
-    border: 1px solid rgba(37, 99, 235, 0.08);
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
   }
   .jobs-modal .modal-list .premium-job-item .pj-badge.saved-badge {
     background: rgba(16, 185, 129, 0.10);
@@ -1166,8 +1202,8 @@
     transform: translateX(0);
   }
   .jobs-modal .modal-list .premium-job-item .pj-action-btn:hover {
-    background: rgba(37, 99, 235, 0.08);
-    color: #2563EB;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
   }
   .jobs-modal .modal-list .premium-job-item .pj-action-btn.remove-btn:hover {
     background: rgba(220, 38, 38, 0.08);
@@ -1186,6 +1222,130 @@
   [data-theme="dark"] .jobs-modal .modal-list .premium-job-item .pj-action-btn.remove-btn:hover {
     background: rgba(220, 38, 38, 0.12);
     color: #ef4444;
+  }
+
+  /* ============================================================
+     JOB DETAIL MODAL STYLES
+     ============================================================ */
+  .job-detail-company {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--bdr);
+  }
+  .job-detail-company .detail-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--bdr);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--surface);
+    overflow: hidden;
+    padding: 6px;
+  }
+  .job-detail-company .detail-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .job-detail-company .detail-company-info {
+    flex: 1;
+  }
+  .job-detail-company .detail-company-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--txt);
+  }
+  .job-detail-company .detail-company-location {
+    font-size: 0.85rem;
+    color: var(--txt-muted);
+  }
+  .job-detail-section {
+    margin-bottom: 1.25rem;
+  }
+  .job-detail-section:last-child { margin-bottom: 0; }
+  .job-detail-section .detail-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--txt-muted);
+    margin-bottom: 0.4rem;
+  }
+  .job-detail-section .detail-text {
+    font-size: 0.85rem;
+    color: var(--txt-soft);
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  .job-detail-section .detail-text strong {
+    color: var(--txt);
+    font-weight: 600;
+  }
+  .job-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .job-detail-tags .detail-tag {
+    display: inline-flex;
+    padding: 0.15rem 0.7rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(var(--accent-rgb), 0.06);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.08);
+  }
+  .detail-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .detail-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface-alt);
+    border: 1px solid var(--bdr);
+  }
+  .detail-meta-item i {
+    font-size: 0.85rem;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+  .detail-meta-item .detail-meta-label {
+    font-size: 0.65rem;
+    color: var(--txt-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .detail-meta-item .detail-meta-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--txt);
+  }
+  .job-detail-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .job-detail-benefits li {
+    font-size: 0.82rem;
+    color: var(--txt-soft);
+    margin-bottom: 0.3rem;
   }
 
   /* ── Responsive ── */
@@ -1251,6 +1411,9 @@
       font-size: 0.55rem;
       padding: 0.05rem 0.4rem;
     }
+    .detail-meta-grid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
   @media (max-width: 575.98px) {
     .job-item { padding: var(--sp-3); }
@@ -1282,6 +1445,9 @@
     .jobs-modal .modal-list .premium-job-item .pj-meta {
       font-size: 0.7rem;
     }
+    .detail-meta-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 
@@ -1294,7 +1460,8 @@
       <h1 class="page-title">Jobs for you</h1>
     </div>
     <div class="header-actions">
-      <button class="btn-saved" type="button" title="" onclick="openModal('savedJobsModal')" aria-label="Saved jobs">
+      <button class="btn-saved" type="button" onclick="openModal('savedJobsModal')">
+        <span class="visually-hidden">Saved jobs</span>
         <i class="bi bi-bookmark-heart"></i>
         <span class="count-pill" id="savedCount">0</span>
       </button>
@@ -1399,7 +1566,8 @@
           Saved Jobs
           <span class="badge-count" id="savedModalCount">0</span>
         </h2>
-        <button type="button" class="btn-close-modal" title="" onclick="closeModal('savedJobsModal')" aria-label="Close">
+        <button type="button" class="btn-close-modal" onclick="closeModal('savedJobsModal')">
+          <span class="visually-hidden">Close</span>
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
@@ -1420,11 +1588,33 @@
           Recently Viewed
           <span class="badge-count" id="recentModalCount">0</span>
         </h2>
-        <button type="button" class="btn-close-modal" title="" onclick="closeModal('recentJobsModal')" aria-label="Close">
+        <button type="button" class="btn-close-modal" onclick="closeModal('recentJobsModal')">
+          <span class="visually-hidden">Close</span>
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
       <div class="modal-body" id="recentJobsBody">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Job Detail Modal ===== -->
+<div class="jobs-modal" id="jobDetailModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span class="panel-icon"><i class="bi bi-briefcase-fill"></i></span>
+          <span id="detailJobTitle">Job Details</span>
+        </h2>
+        <button type="button" class="btn-close-modal" onclick="closeModal('jobDetailModal')">
+          <span class="visually-hidden">Close</span>
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="jobDetailBody">
         <!-- Content will be loaded here -->
       </div>
     </div>
@@ -1565,7 +1755,7 @@
     if (type === 'saved') {
       actionButtons = `
         <div class="pj-actions">
-          <button class="pj-action-btn remove-btn" title="" onclick="event.stopPropagation(); removeSavedJob(${job.id}, this)">
+          <button class="pj-action-btn remove-btn" onclick="event.stopPropagation(); removeSavedJob(${job.id}, this)">
             <i class="bi bi-x-lg"></i> Remove
           </button>
         </div>
@@ -1573,7 +1763,7 @@
     } else {
       actionButtons = `
         <div class="pj-actions">
-          <button class="pj-action-btn" title="" onclick="event.stopPropagation(); viewJob(${job.id})">
+          <button class="pj-action-btn" onclick="event.stopPropagation(); viewJob(${job.id})">
             View <i class="bi bi-arrow-right"></i>
           </button>
         </div>
@@ -1643,7 +1833,7 @@
     if (mainBtn) {
       toggleSavedJobWithFeedback(jobId, mainBtn);
     } else {
-      window.toggleSavedJob(jobId, btn)
+      window.toggleSavedJob(jobId)
         .then(() => loadSavedAndRecent())
         .catch(() => {
           if (item) {
@@ -1652,6 +1842,128 @@
           }
         });
     }
+  }
+
+  /* ── Open Job Detail Modal ── */
+  function openJobDetail(jobId) {
+    const job = window._allJobs?.find(j => j.id === jobId);
+    if (!job) return;
+
+    const modal = document.getElementById('jobDetailModal');
+    if (!modal) return;
+
+    document.getElementById('detailJobTitle').textContent = job.title;
+
+    const body = document.getElementById('jobDetailBody');
+
+    const logoHtml = (() => {
+      const initial = (job.company || "?")[0].toUpperCase();
+      return job.company_logo
+        ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company)} Logo" onerror="this.style.display='none';this.parentElement.innerHTML='${initial}'">`
+        : initial;
+    })();
+
+    const skillsHtml = (job.required_skills || [])
+      .map(s => `<span class="detail-tag">${escapeHtml(s)}</span>`)
+      .join('');
+
+    const preferredSkillsHtml = (job.preferred_skills || [])
+      .map(s => `<span class="detail-tag">${escapeHtml(s)}</span>`)
+      .join('');
+
+    const benefitsHtml = (job.benefits || [])
+      .map(b => `<li>• ${escapeHtml(b)}</li>`)
+      .join('');
+
+    body.innerHTML = `
+      <div class="job-detail-company">
+        <div class="detail-logo">${logoHtml}</div>
+        <div class="detail-company-info">
+          <div class="detail-company-name">${escapeHtml(job.company)}</div>
+          <div class="detail-company-location"><i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}</div>
+        </div>
+      </div>
+
+      <div class="detail-meta-grid">
+        <div class="detail-meta-item">
+          <i class="bi bi-currency-dollar"></i>
+          <div>
+            <div class="detail-meta-label">Salary</div>
+            <div class="detail-meta-value">${escapeHtml(job.salary_range || "Not listed")}</div>
+          </div>
+        </div>
+        <div class="detail-meta-item">
+          <i class="bi bi-laptop"></i>
+          <div>
+            <div class="detail-meta-label">Work Mode</div>
+            <div class="detail-meta-value">${workModeLabel(job.work_mode)}</div>
+          </div>
+        </div>
+        <div class="detail-meta-item">
+          <i class="bi bi-clock-history"></i>
+          <div>
+            <div class="detail-meta-label">Experience</div>
+            <div class="detail-meta-value">${Number(job.experience_required || 0)}+ years</div>
+          </div>
+        </div>
+        <div class="detail-meta-item">
+          <i class="bi bi-calendar-event"></i>
+          <div>
+            <div class="detail-meta-label">Employment</div>
+            <div class="detail-meta-value">${escapeHtml(job.employment_type || "Full-time")}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="job-detail-section">
+        <div class="detail-label">About the Role</div>
+        <div class="detail-text">${escapeHtml(job.description || "No description available.")}</div>
+      </div>
+
+      ${job.responsibilities ? `
+        <div class="job-detail-section">
+          <div class="detail-label">Responsibilities</div>
+          <div class="detail-text">${escapeHtml(job.responsibilities)}</div>
+        </div>
+      ` : ''}
+
+      ${job.qualifications ? `
+        <div class="job-detail-section">
+          <div class="detail-label">Qualifications</div>
+          <div class="detail-text">${escapeHtml(job.qualifications)}</div>
+        </div>
+      ` : ''}
+
+      ${skillsHtml ? `
+        <div class="job-detail-section">
+          <div class="detail-label">Required Skills</div>
+          <div class="job-detail-tags">${skillsHtml}</div>
+        </div>
+      ` : ''}
+
+      ${preferredSkillsHtml ? `
+        <div class="job-detail-section">
+          <div class="detail-label">Preferred Skills</div>
+          <div class="job-detail-tags">${preferredSkillsHtml}</div>
+        </div>
+      ` : ''}
+
+      ${benefitsHtml ? `
+        <div class="job-detail-section">
+          <div class="detail-label">Benefits</div>
+          <ul class="job-detail-benefits">${benefitsHtml}</ul>
+        </div>
+      ` : ''}
+
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--bdr);">
+        <button class="btn-apply" type="button" onclick="applyToJob(${job.id}, this); closeModal('jobDetailModal');" style="width:100%;">
+          <i class="bi bi-send"></i> Apply Now
+        </button>
+      </div>
+    `;
+
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 
   /* ── Apply accent color ── */
@@ -1797,7 +2109,7 @@
     const saveLabel = isSaved ? "Remove bookmark" : "Bookmark job";
 
     return `
-      <div class="job-item" style="animation-delay:${(index || 0) * 0.05}s" data-job-id="${job.id}">
+      <div class="job-item" style="animation-delay:${(index || 0) * 0.05}s" data-job-id="${job.id}" onclick="handleJobCardView(${job.id}, event)">
         <div class="ji-header">
           ${logoHtml}
           <div class="ji-head">
@@ -1808,7 +2120,8 @@
               <i class="bi bi-geo-alt"></i> ${escapeHtml(job.location || "Flexible")}
             </div>
           </div>
-          <button class="${saveClass}" type="button" data-job-id="${job.id}" title="" aria-label="${saveLabel}" onclick="toggleSavedJobWithFeedback(${job.id}, this)">
+          <button class="${saveClass}" type="button" data-job-id="${job.id}" onclick="toggleSavedJobWithFeedback(${job.id}, this)">
+            <span class="visually-hidden">${saveLabel}</span>
             <i class="bi ${saveIcon}"></i>
           </button>
         </div>
@@ -1837,6 +2150,27 @@
       </div>`;
   }
 
+  /* ── Mark job as recently viewed when its card is opened/clicked ── */
+  let _recentlyViewedDebounce = {};
+  function handleJobCardView(jobId, event) {
+    // Don't double-handle clicks that landed on the Apply or Bookmark
+    // buttons — applyToJob() already marks the job as viewed, and a
+    // bookmark click isn't really "viewing" the card's details.
+    if (event && event.target.closest('.btn-apply, .ji-bm')) return;
+
+    // Light debounce so rapid re-clicks on the same card don't spam the API.
+    if (_recentlyViewedDebounce[jobId]) return;
+    _recentlyViewedDebounce[jobId] = true;
+    setTimeout(() => { delete _recentlyViewedDebounce[jobId]; }, 2000);
+
+    markRecentlyViewed(jobId)
+      .then(() => loadSavedAndRecent())
+      .catch(() => {});
+
+    // Open job detail modal
+    openJobDetail(jobId);
+  }
+
   /* Applying to a job */
   function applyToJob(jobId, btn) {
     const orig = btn.innerHTML;
@@ -1861,28 +2195,37 @@
     const icon = btn.querySelector('i');
     if (!icon) return;
 
+    const label = btn.querySelector('.visually-hidden');
+
     if (isSaved) {
       btn.classList.add('saved');
       icon.className = 'bi bi-bookmark-fill';
-      btn.setAttribute('aria-label', 'Remove bookmark');
+      if (label) label.textContent = 'Remove bookmark';
     } else {
       btn.classList.remove('saved');
       icon.className = 'bi bi-bookmark';
-      btn.setAttribute('aria-label', 'Bookmark job');
+      if (label) label.textContent = 'Bookmark job';
     }
-    // Never let a title attribute sneak back in and trigger a native tooltip
-    btn.setAttribute('title', '');
+    // Strip any title/aria-label that might get re-added by other code and
+    // trigger a tooltip; the screen-reader label lives in the hidden span.
+    btn.removeAttribute('title');
+    btn.removeAttribute('aria-label');
   }
 
   function toggleSavedJobWithFeedback(jobId, btn) {
     const isCurrentlySaved = btn.classList.contains('saved');
     updateBookmarkButton(btn, !isCurrentlySaved);
 
-    return window.toggleSavedJob(jobId, btn)
-      .then((result) => {
-        updateBookmarkButton(btn, result.saved);
+    // Deliberately NOT passing btn to window.toggleSavedJob: that shared
+    // helper (in app.js) mutates button.innerHTML itself, replacing our
+    // icon-only markup with an icon + literal "Bookmark"/"Bookmarked" text.
+    // We only want the API call here; the button's appearance is fully
+    // managed by updateBookmarkButton() above and below.
+    return window.toggleSavedJob(jobId)
+      .then((saved) => {
+        updateBookmarkButton(btn, saved);
         loadSavedAndRecent();
-        return result;
+        return { saved };
       })
       .catch((error) => {
         updateBookmarkButton(btn, isCurrentlySaved);
@@ -1939,7 +2282,7 @@
 
     const recentHtml = recent.length
       ? recent.map((item, index) => renderMiniJob(item, index)).join("")
-      : emptyBlock("clock-history", "No recent views", "Apply to a job to see it here.");
+      : emptyBlock("clock-history", "No recent views", "Open a job to see it here.");
 
     document.getElementById("recentJobs").innerHTML = recentHtml;
   }

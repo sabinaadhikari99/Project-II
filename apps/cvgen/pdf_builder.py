@@ -13,11 +13,27 @@ import re
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.platypus import (
+    BaseDocTemplate, Frame, FrameBreak, KeepInFrame, NextPageTemplate, PageTemplate,
     Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle, HRFlowable,
 )
 
 from .cv_templates import get_template_meta
+
+PAGE_WIDTH, PAGE_HEIGHT = letter
+
+#: Vertical breathing room on every page of the full-bleed layouts. The
+#: horizontal edges are deliberately left at zero so a colored sidebar or
+#: header band reaches the paper edge.
+BLEED_GUTTER = 30
+
+#: The "block" heading chip, kept in step with the same chip in the HTML
+#: preview (`templates/cvgen/cv_preview.html`, `.heading-block .section-title`).
+#: Its 10px padding and 4px radius are scaled from the preview's 780px page to
+#: this 612pt one, so the gallery and the download agree on what a chip is.
+CHIP_PADDING = 8
+CHIP_RADIUS = 3
 
 FONT_FAMILIES = {
     'sans': {'normal': 'Helvetica', 'bold': 'Helvetica-Bold'},
@@ -49,6 +65,77 @@ def _contact_parts(profile):
         profile.email, profile.phone_number, profile.address,
         profile.linkedin_url, profile.github_url,
     ] if p]
+
+
+def _column_frame(x, width, pad, top=PAGE_HEIGHT, frame_id='col'):
+    """One column of a two-column page, running to the paper edge horizontally.
+
+    `top` is where the column starts, which the banded layout lowers to sit
+    below its header band.
+    """
+    bottom = BLEED_GUTTER
+    return Frame(
+        x, bottom, width, top - bottom, id=frame_id,
+        leftPadding=pad, rightPadding=pad,
+        topPadding=BLEED_GUTTER, bottomPadding=0,
+    )
+
+
+def _two_column_doc(buffer, page_one_frames, flowing_frame, on_first=None):
+    """A document whose second and later pages carry only the flowing column.
+
+    Both two-column layouts used to be a single Table row holding an entire
+    column in each cell. A table row cannot break, so the moment someone's CV
+    outgrew one page ReportLab raised LayoutError rather than continuing - the
+    bug this replaces. Splitting inside the row is not a fix either: ReportLab
+    fails to converge on content this size and never returns.
+
+    Frames are the construct that actually flows. The narrow column is filled
+    first and closed off with a FrameBreak, and continuation pages define only
+    the wide column, so overflow can never land in the space the sidebar
+    occupies.
+    """
+    doc = BaseDocTemplate(
+        buffer, pagesize=letter,
+        leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,
+    )
+    doc.addPageTemplates([
+        PageTemplate(id='first', frames=page_one_frames, onPage=on_first or _noop_page),
+        PageTemplate(id='later', frames=[flowing_frame], onPage=on_first or _noop_page),
+    ])
+    return doc
+
+
+def _noop_page(_canvas, _doc):
+    pass
+
+
+def _column_painter(x, width, color):
+    """Paints a full-height block of color behind one column.
+
+    Drawn onto the page rather than set as a table BACKGROUND so the color
+    covers the whole sheet on every page. A table background only ever covers
+    the height of its own content, which left the color stopping partway down.
+    """
+    def draw(canvas, _doc):
+        canvas.saveState()
+        canvas.setFillColor(color)
+        canvas.rect(x, 0, width, PAGE_HEIGHT, stroke=0, fill=1)
+        canvas.restoreState()
+    return draw
+
+
+def _fitted(flow, width, height, pad):
+    """Content guaranteed not to escape its column.
+
+    The narrow column is filled before the wide one, so anything it could not
+    hold would spill into the main column and land on top of the layout.
+    Shrinking is the lesser evil, and only bites on a genuinely overloaded CV.
+    """
+    return KeepInFrame(
+        width - 2 * pad, height - BLEED_GUTTER,
+        flow, mode='shrink',
+    )
 
 
 def _build_styles(accent_hex, font_key, text_color=None):
@@ -109,15 +196,26 @@ def _heading_flowables(title, heading_style, s):
     Keeps the three visual "families" (underline / block / plain caps) distinct
     across every template that uses them, regardless of layout."""
     if heading_style == 'block':
+        label = title.upper()
         chip_style = ParagraphStyle(
             'Chip', fontName=s['fonts']['bold'], fontSize=9.5,
             leading=12, textColor=colors.white,
         )
-        chip = Table([[Paragraph(title.upper(), chip_style)]], colWidths=[170])
+        # Sized to its own text and pinned left, which is what the HTML preview
+        # draws with `display: inline-block`. A fixed 170pt width turned every
+        # heading into a wide bar, and a Table defaults to hAlign CENTER, so
+        # each bar also sat in the middle of the page - neither of which is the
+        # design the user picked from the gallery.
+        width = stringWidth(label, chip_style.fontName, chip_style.fontSize) + 2 * CHIP_PADDING
+        chip = Table(
+            [[Paragraph(label, chip_style)]],
+            colWidths=[width], hAlign='LEFT',
+            cornerRadii=[CHIP_RADIUS] * 4,
+        )
         chip.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), s['accent']),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), CHIP_PADDING),
+            ('RIGHTPADDING', (0, 0), (-1, -1), CHIP_PADDING),
             ('TOPPADDING', (0, 0), (-1, -1), 4),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
         ]))
@@ -241,10 +339,6 @@ def _build_single_column_pdf(profile, meta):
 # ──────────────────────────────────────────────────────────────
 def _build_sidebar_pdf(profile, meta):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(
-        buffer, pagesize=letter,
-        rightMargin=0, leftMargin=0, topMargin=0, bottomMargin=0,
-    )
     s = _build_styles(meta['accent'], meta['font'])
     accent = s['accent']
 
@@ -283,27 +377,30 @@ def _build_sidebar_pdf(profile, meta):
     main_flow.extend(_project_entries_flowables('Projects', profile, heading_style, s))
     main_flow.extend(_additional_info_flowables(profile, heading_style, s))
 
-    sidebar_col = (180, sidebar_flow)
-    main_col = (432, main_flow)
-    columns = [sidebar_col, main_col] if meta.get('sidebar_side', 'left') == 'left' else [main_col, sidebar_col]
-    col_widths = [c[0] for c in columns]
-    col_content = [c[1] for c in columns]
-    sidebar_index = 0 if meta.get('sidebar_side', 'left') == 'left' else 1
-    main_index = 1 - sidebar_index
+    sidebar_width, main_width = 180, 432
+    sidebar_pad, main_pad = 18, 30
+    on_left = meta.get('sidebar_side', 'left') == 'left'
+    sidebar_x = 0 if on_left else main_width
+    main_x = sidebar_width if on_left else 0
 
-    table = Table([col_content], colWidths=col_widths)
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (sidebar_index, 0), (sidebar_index, 0), accent),
-        ('LEFTPADDING', (sidebar_index, 0), (sidebar_index, 0), 18),
-        ('RIGHTPADDING', (sidebar_index, 0), (sidebar_index, 0), 18),
-        ('LEFTPADDING', (main_index, 0), (main_index, 0), 30),
-        ('RIGHTPADDING', (main_index, 0), (main_index, 0), 30),
-        ('TOPPADDING', (0, 0), (-1, -1), 30),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 30),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-    ]))
+    sidebar_frame = _column_frame(sidebar_x, sidebar_width, sidebar_pad, frame_id='sidebar')
+    main_frame = _column_frame(main_x, main_width, main_pad, frame_id='main')
 
-    doc.build([table])
+    # The sidebar is filled first, then closed off, so the main column starts in
+    # its own frame and carries the overflow onto later pages by itself.
+    doc = _two_column_doc(
+        buffer,
+        page_one_frames=[sidebar_frame, main_frame],
+        flowing_frame=_column_frame(main_x, main_width, main_pad, frame_id='main'),
+        on_first=_column_painter(sidebar_x, sidebar_width, accent),
+    )
+
+    doc.build([
+        NextPageTemplate('later'),
+        _fitted(sidebar_flow, sidebar_width, PAGE_HEIGHT, sidebar_pad),
+        FrameBreak(),
+        *main_flow,
+    ])
     buffer.seek(0)
     return buffer
 
@@ -313,10 +410,6 @@ def _build_sidebar_pdf(profile, meta):
 # ──────────────────────────────────────────────────────────────
 def _build_banded_pdf(profile, meta):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(
-        buffer, pagesize=letter,
-        rightMargin=0, leftMargin=0, topMargin=0, bottomMargin=0,
-    )
     s = _build_styles(meta['accent'], meta['font'])
     accent = s['accent']
     fonts = s['fonts']
@@ -358,17 +451,39 @@ def _build_banded_pdf(profile, meta):
     side_flow.extend(_section_bullets('Certifications', profile.certifications, heading_style, s))
     side_flow.extend(_additional_info_flowables(profile, heading_style, s))
 
-    body = Table([[main_flow, side_flow]], colWidths=[370, 242])
-    body.setStyle(TableStyle([
-        ('LEFTPADDING', (0, 0), (0, 0), 40),
-        ('RIGHTPADDING', (0, 0), (0, 0), 20),
-        ('LEFTPADDING', (1, 0), (1, 0), 20),
-        ('RIGHTPADDING', (1, 0), (1, 0), 40),
-        ('TOPPADDING', (0, 0), (-1, -1), 24),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-    ]))
+    # Frames rather than a two-cell table row, for the same reason as the
+    # sidebar layout: a row cannot break, so this used to be one long CV away
+    # from raising LayoutError.
+    main_width, side_width = 370, 242
+    main_pad, side_pad = 40, 20
 
-    doc.build([band, body])
+    # The band is measured once and painted onto page one, so the columns below
+    # can be positioned against a height that is already known.
+    _, band_height = band.wrap(PAGE_WIDTH, PAGE_HEIGHT)
+    columns_top = PAGE_HEIGHT - band_height
+
+    def paint_band(canvas, doc):
+        if doc.page == 1:
+            band.drawOn(canvas, 0, columns_top)
+
+    side_frame = _column_frame(main_width, side_width, side_pad, columns_top, 'side')
+    main_frame = _column_frame(0, main_width, main_pad, columns_top, 'main')
+
+    doc = _two_column_doc(
+        buffer,
+        # Listed side-first so the narrow column is filled and closed before the
+        # main column begins; frame order is fill order, not left-to-right.
+        page_one_frames=[side_frame, main_frame],
+        flowing_frame=_column_frame(0, main_width, main_pad, frame_id='main'),
+        on_first=paint_band,
+    )
+
+    doc.build([
+        NextPageTemplate('later'),
+        _fitted(side_flow, side_width, columns_top, side_pad),
+        FrameBreak(),
+        *main_flow,
+    ])
     buffer.seek(0)
     return buffer
 
